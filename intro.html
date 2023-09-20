@@ -9,9 +9,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Lieven Clement" />
 
 
-<title>Position of the course</title>
+<title>Position of the Course</title>
 
 <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -33,6 +34,8 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
 <link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
 <script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
@@ -51,29 +54,12 @@
 
 
 
-
 <style type="text/css">
-/* for pandoc --citeproc since 2.11 */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-}
-.hanging div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
+#rmd-source-code {
+  display: none;
 }
 </style>
+
 
 
 
@@ -236,6 +222,9 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -357,6 +346,35 @@ div.tocify {
     <li>
       <a href="recapGeneralLinearModel.html">1.2 Recap linear model</a>
     </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="docs/martens_proteomics_bioinformatics.pdf">1. Proteomics Bioinformatics</a>
+    </li>
+    <li>
+      <a href="TargetDecoy.html">2.1 Identification - FDR - QC</a>
+    </li>
+    <li>
+      <a href="pda_quantification_preprocessing.html">2.2.1. Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_robustSummarisation_peptideModels.html">2.2.2. Wrap-up Preprocessing - Peptide-Level-Models</a>
+    </li>
+    <li>
+      <a href="pda_quantification_inference.html">2.3.1. Quantification - Differential Abundance Analysis</a>
+    </li>
+    <li>
+      <a href="pda_blocking_wrapup.html">2.3.2. Wrap-up DA - Blocking</a>
+    </li>
+    <li>
+      <a href="technicalDetailsProteomics.html">2.3.3 Technical Details</a>
+    </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="sequencing_intro.html">1.  Introduction to RNA-seq</a>
+    </li>
+    <li>
+      <a href="sequencing_countData.html">2.  Working with count data and GLMs</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -372,6 +390,29 @@ div.tocify {
     <li>
       <a href="multipleRegression_KPNA2.html">1 Intro KPNA2</a>
     </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">1. Bioinformatics for Proteomics</a>
+    </li>
+    <li>
+      <a href="TargetDecoyTutorial.html">2.1. Target Decoy QC</a>
+    </li>
+    <li>
+      <a href="pda_tutorialPreprocessing.html">2.2. Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_tutorialDesign.html">2.3. Quantification - Design</a>
+    </li>
+    <li class="dropdown-header">---- MODULE II RNA-seq ----</li>
+    <li>
+      <a href="sequencingTutorial1_mapping.html">1. Read mapping</a>
+    </li>
+    <li>
+      <a href="sequencingTutorial2_DE.html">2. Working with Count Data</a>
+    </li>
+    <li>
+      <a href="scRNA-seq-Tutorial.html">3. Single Cell RNA-seq Data Analysis</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -384,1231 +425,563 @@ div.tocify {
 
 <div id="header">
 
-
-
-<h1 class="title toc-ignore">Position of the course</h1>
-
-</div>
-
-
-<div id="setting-the-scene" class="section level1" number="1">
-<h1><span class="header-section-number">1</span> Setting the scene</h1>
-<p>Bioinformatics is an interdisciplinary field of science that develops
-methods and software tools for understanding biological data, especially
-when the data sets are large and complex. However, before we focus on
-methods to build knowledge on biological processes, it is important to
-ask ourselves the question what life is.</p>
-<p>When thinking about science it is crucial, as <span
-class="citation">Bohm (1980)</span> nicely formulates, to acknowledge
-that scientific theories are not “true knowledge” corresponding to “the
-reality as is”, but rather ever-changing insights that are giving shape
-and form to how we view and experience the world.</p>
-</div>
-<div id="what-is-life" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> What is life?</h1>
-We will start this introduction with Bohm’s example of a sunflower seed
-from which an entire plant is growing.
-<div>
-<div style="position:relative; padding-top: 56.25%">
-<iframe src="https://www.youtube.com/embed/_owPRdbaMdY?si=Hpee5spcKofhWsEo" frameborder="0" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;">
-</iframe>
-</div>
-</div>
-<p><em>Timelapse of a growing sunflower (Source: <a
-href="https://www.youtube.com/watch?v=_owPRdbaMdY"
-class="uri">https://www.youtube.com/watch?v=_owPRdbaMdY</a>)</em></p>
-<p>Remarkably, each plant cell contains all information from the seed,
-i.e. all its DNA as well as its cellular structure. However, as <span
-class="citation">Bohm (1980)</span> points out the seed contains little
-to nothing from the actual biomass of the plant that it has developed.
-The seed merely contains the information that is required to transform
-its environment to grow the plant from solar energy and the chaos of
-simple molecules CO<span class="math inline">\(_2\)</span>, nitrogen,
-phosphorous, etc. The plant will eventually produce new seeds, which
-will spread its information further throughout the environment and will
-transform it over and over again to grow plants. It thus becomes obvious
-that we do not need to make the distinction between “inanimated” and
-“animated” matter. Indeed, if we would stick to this old Cartesian way
-of thinking we are confronted with confusing questions like when would a
-so-called “inanimated” carbon atom become animated? As soon as it enters
-the leaf stomata or when it is assimilated into an organic compound?
-Does the carbon atom becomes inanimated again when it is released from
-the plant as it burns the sugars it has assimilated into CO<span
-class="math inline">\(_2\)</span> during the night?</p>
-<p>Indeed, we can consider that the environment is augmented with the
-information of the seed, which somehow seems to direct its environment
-to grow a corresponding plant. So life itself can be regarded as
-belonging to a totality including plant and the environment. So <span
-class="citation">Bohm (1980)</span> concludes that “we do not need to
-fragment the whole into life and inanimated matter, nor do we have to
-try to reduce life completely to nothing but an outcome of the
-latter”.</p>
-<p>The remaining of this chapter builds on the work of five
-scientists:</p>
-<ul>
-<li>Erwin Schrödinger who explicitly defined life as structuring
-“order-from-disorder”,</li>
-<li>Ilia Prigogine who developed the theory for this and coined the term
-“Dissipative Structures”,</li>
-<li>Christian de Duve one of the founding fathers of biochemistry,
-and</li>
-<li>Humberto Maturana and Francisco Varela with their concept of
-autopoiesis and emerging properties.</li>
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
 </ul>
-<div style="page-break-after: always;"></div>
-<div id="schrödinger-and-prigogine-a-thermodynamic-view-of-life"
-class="section level2" number="2.1">
-<h2><span class="header-section-number">2.1</span> Schrödinger and
-Prigogine: a Thermodynamic View of Life</h2>
-<p>In his seminal lecture series: “What Is Life? The Physical Aspect of
-the Living Cell” <span class="citation">Schrödinger (1944)</span>
-defined life as</p>
-<ol style="list-style-type: decimal">
-<li><p>an open system that can generate order from chaos by exploiting
-external energy sources,</p></li>
-<li><p>with the capacity to transmit its own specific blueprint from
-generation to generation.</p></li>
-</ol>
-<p>Note, that in his seminal lecture series <span
-class="citation">Schrödinger (1944)</span> also laid out key functions
-of the molecule that was involved in this specific blueprint and this
-while DNA was not even discovered.</p>
-<p>At first, the property that life can generate order or structure
-seems to contradict the second law of thermodynamics that states that: a
-system is always gearing towards maximal entropy.</p>
-<p>Entropy can be loosely defined as a physical quantity for the level
-of how energy is spread out. It is thus the tendency of a system to
-evolve from a concentrated energy state to an energy state that is more
-spread out. This can be easily understood from a simple example known to
-each of us: if you put a hot pot in a large room, the pot will cool down
-and the temperature in the room will slightly rise until the pot and the
-room have the same temperature. As a result the concentrated heat energy
-from the pot is nicely spread out over the entire room.</p>
-<p>Schrödinger understood that life was not violating this second law.
-Indeed, by being an <em>open</em> system, it can interact with the
-environment, and by eating and breathing there has to be a way of
-“concentrating order” or maintaining a higher more concentrated energy
-state.</p>
-<p>Prigogine was the first one who provided the theoretical framework
-for a type of chemistry that is key for life <span
-class="citation">(Prigogine and Stengers 1984)</span>. He realized that
-the chemistry of life is totally different from most chemical systems
-that were studied up to then. Indeed, the chemistry and processes of
-life are highly non-linear with many feedback loops and are operated far
-from equilibrium by continuously pushing matter and energy through
-it.</p>
-<p>We intuitively know the latter: our body is typically at a higher
-energy state than the corresponding material in a non-living state. We
-can simply acknowledge that as we are hotter than the room, and a crude
-way to estimate how long we are death is by measuring the temperature of
-a corpse. To maintain our higher energy state, to concentrate chemicals
-in our cells, and, to build complex molecules, cells and tissues from
-it, we have to keep on eating and breathing.</p>
-<div style="page-break-after: always;"></div>
-<div id="dissipative-structures" class="section level3" number="2.1.1">
-<h3><span class="header-section-number">2.1.1</span> Dissipative
-structures</h3>
-<p>Prigogine discovered that complex self-organising systems can
-spontaneously arise if they are open and can exchange lots of energy and
-matter with their surroundings. Key for it is a chaos of matter and a
-flow of energy through the system.</p>
-<p>Convection currents are for instance an example of a simple physical
-process generating massive structures. They can be observed when simply
-heating a shallow layer of fluid or gas from below, which establishes a
-temperature gradient that lets the fluids rest state to become unstable.
-Indeed, the warmer fluid at the bottom is lighter and starts to float to
-the top where it cools down again, whereas the colder fluid at the top
-is more heavy and sinks to the bottom, where it is heated. Large
-ensembles of molecules therefore start to exhibit coherent patterns of
-motion (see Figure @ref(fig:convectionCells)).</p>
-<div class="figure" style="text-align: center">
-<img src="figs/convection_cells.png" alt="Convection cells in a gravitational field. A fluid layer is heated from the bottom. The warmer fluid at the bottom becomes lighter and floats to the top where it cools down again, whereas the more heavy colder liquid sinks to the bottom where it is heated. This organizes the fluid layer in hexagonal convection cells (Source: Wikipedia - users Eyrian and Con-struct)" width="80%" />
-<p class="caption">
-Convection cells in a gravitational field. A fluid layer is heated from
-the bottom. The warmer fluid at the bottom becomes lighter and floats to
-the top where it cools down again, whereas the more heavy colder liquid
-sinks to the bottom where it is heated. This organizes the fluid layer
-in hexagonal convection cells (Source: Wikipedia - users Eyrian and
-Con-struct)
-</p>
 </div>
-<p>The convection motion leads to a spontaneous complex spatial
-organisation, almost a dance, of billions of molecules moving coherently
-and forming hexagonal convection cells. Such convection cells can be
-observed in a small dish of a fluid in a lab, up to the level of the
-earth’s atmosphere and the solar photosphere (see movie below).</p>
-<div>
-<div style="position:relative; padding-top: 56.25%">
-<iframe src="figs/granulation_sun.mp4" frameborder="0" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;">
-</iframe>
+
+
+
+<h1 class="title toc-ignore">Position of the Course</h1>
+<h4 class="author">Lieven Clement</h4>
+<h4 class="date"><a
+href="https://statomics.github.io">statOmics</a></h4>
+
 </div>
-</div>
-<p><em>Movie of the solar photosphere observed with the Swedish 1-m
-Solar Telescope (SST) on La Palma, Spain. The movie shows solar
-granulation which is a result of convective motions of bubbles of hot
-gas that rise from the solar interior. When these bubbles reach the
-surface, the gas cools and flows down again in the darker lanes between
-the bright cells. In these so-called intergranular lanes, we can also
-see small bright points and more extended bright elongated structures.
-These are regions with strong magnetic fields. (Source: Wikipedia, user
-Luc.rouppe, link: <a
-href="https://en.wikipedia.org/wiki/File:Granulation_Quiet_Sun_SST_25May2017.webm"
-class="uri">https://en.wikipedia.org/wiki/File:Granulation_Quiet_Sun_SST_25May2017.webm</a>)</em></p>
-<p>Prigogine showed that spontaneous self-organisation also occurs in
-chemical systems that are operated far from equilibrium by continuously
-pushing matter and energy through it. These self-organising processes
-are largely unpredictable and spontaneously arise in our universe. <span
-class="citation">Prigogine and Stengers (1984)</span> further argue that
-such chemical and physical processes are the basis of the complex
-self-organisation that we observe in living systems.</p>
-<p>In chemical systems the influx of energy allows the generation of
-structure while producing lots of entropy by dissipation. Dissipation
-means that energy has been converted from one energy form to another and
-that it can no longer be converted back in its original form. So
-dissipation is irreversible, which adds the arrow of time to life.
-Indeed conversion of energy to heat inherently takes place in all
-underlying chemical reactions and these cannot be reversed without the
-addition of new energy. Hence, a large part of the concentrated energy
-that enters cells through sunlight or chemical energy in food, is spread
-out in a less concentrated energy form: heat.</p>
-<p>The structure that spontaneously emerges in living organisms is thus
-not violating the second law because of the rise in entropy by the
-dissipation of heat. Prigogine therefore coined the novel term
-dissipative structures for such systems.</p>
-</div>
-<div id="attractors" class="section level3" number="2.1.2">
-<h3><span class="header-section-number">2.1.2</span> Attractors</h3>
-<p>Dissipative structures typically have multiple attractors,
-i.e. states, regimes, forms, shapes or structures to which they
-spontaneously evolve. The specific attractor to which the system is
-organising itself highly depends on the initial environmental
-conditions. Note, that dissipative structures are also characterized by
-feedback loops. These feedback loops allow the system to remain at its
-current attractor upon changes in the environment, e.g. a kind of
-homeostasis. However, some environmental stimuli are amplified by the
-feedback loops and can switch the dissipative structure towards another
-attractor and thus induce a regime switch.</p>
-<p>Prigogine argued that chemistry in cells, cells itself, tissues,
-organs, organisms, populations of organisms, ecosystems and our globe
-can be seen as dissipative structures <span class="citation">(Prigogine
-and Stengers 1984)</span>. The fruiting body of slime molds are a
-compelling example of a living system that often changes from attractor,
-see Figure @ref(fig:Dictyostelium). Dictyostelium slime molds, spend
-most of their lives as separate single-celled amoeba. But, upon stress
-one of the amoebas releases a chemical signal cAMP. Others detect this
-signal, and respond in two ways: the amoeba moves towards the signal and
-secretes more cAMP effectively boosting the signal. So the signal gets
-amplified by a feedback loop which eventually triggers the system to
-switch from their current attractor - a state of free living amoebas -
-towards a novel attractor - their fruiting body - that will release
-spores and will spread the slime molds towards novel environments (see
-e.g. youtube movie <a href="https://youtu.be/bkVhLJLG7ug"
-class="uri">https://youtu.be/bkVhLJLG7ug</a>).</p>
-<div>
-<div style="position:relative; padding-top: 56.25%">
-<iframe src="https://www.youtube.com/embed/bkVhLJLG7ug?si=hZ3ynS2XX6UcySuu" frameborder="0" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;">
-</iframe>
-</div>
-</div>
-<div class="figure" style="text-align: center">
-<img src="figs/Dictyostelida.jpg" alt="Stages of Dictyostelium lifecycle. (A - B) Dictyostelium cells chemotaxing toward cAMP released from a micropipette. Cells that have not yet sensed cAMP are shown in (A). Within 1 or 2 min the cells polarize and migrate toward the source of chemoattractant (B). (C - D) Scanning electron micrograph of streaming Dictyostelium cells (C) and the formation of aggregates (D). (E) Formation of aggregation centers on an agar plate. (F) Slugs moving on an agar plate. (G) Culmination stage. (H) Fruiting body. Figure from Müller-Taubergen et al. 2012" width="60%" />
-<p class="caption">
-Stages of Dictyostelium lifecycle. (A - B) Dictyostelium cells
-chemotaxing toward cAMP released from a micropipette. Cells that have
-not yet sensed cAMP are shown in (A). Within 1 or 2 min the cells
-polarize and migrate toward the source of chemoattractant (B). (C - D)
-Scanning electron micrograph of streaming Dictyostelium cells (C) and
-the formation of aggregates (D). (E) Formation of aggregation centers on
-an agar plate. (F) Slugs moving on an agar plate. (G) Culmination stage.
-(H) Fruiting body. Figure from Müller-Taubergen et al. 2012
-</p>
-</div>
-<div style="page-break-after: always;"></div>
-</div>
-<div id="dissipative-zones" class="section level3" number="2.1.3">
-<h3><span class="header-section-number">2.1.3</span> Dissipative
-zones</h3>
-<p>Our whole globe can be seen as a large dissipative structure located
-in our solar system, which is a dissipative zone.</p>
-<ol style="list-style-type: decimal">
-<li><p>There is an energy source, the sun that is radiating concentrated
-energy in photons.</p></li>
-<li><p>Life forms are organising structure from the chaos of molecules
-on Earth by dissipating energy from the solar photons, light and UV, to
-heat through their organic pigments, e.g. chlorophyll.</p></li>
-<li><p>Animals, bacteria and fungi are secondary dissipative structures
-that are feeding on the concentrated chemical energy in the form of
-sugar, starch, proteins and fats that are produced by plants and
-cyanobacteria. They again dissipate energy in the form of heat through
-respiration.</p></li>
-<li><p>The heat produced by life is dissipated to water and air and this
-induces tertiary dissipative processes like the water cycle, wind and
-sea currents etc.</p></li>
-<li><p>Eventually heat is radiated to space, which acts as an energy
-sink.</p></li>
-</ol>
-<p>Because the temperature of Earth remains roughly stable, more or less
-a similar amount of energy is radiated to space under the form of heat
-as what comes in under the form of photons from the sun. As the energy
-content of heat is lower and more disperse it has a higher entropy than
-that of the incoming sunlight. Because almost no mass is exchanged
-between Earth and space, mass has to be recycled and life is inherently
-cyclic.</p>
-<div style="page-break-after: always;"></div>
-</div>
-</div>
-<div id="de-duve-a-biochemical-view-of-life" class="section level2"
-number="2.2">
-<h2><span class="header-section-number">2.2</span> de Duve: a
-Biochemical View of Life</h2>
-<p>In his Book “Life Evolving - Molecules, Mind and Meaning”, <span
-class="citation">De Duve (2002)</span> gave a very simple but brilliant
-definition of life:</p>
+
+
+<p><a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a></p>
+<p></br></p>
+<div id="what-is-life" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> What is Life?</h1>
+<div id="schrödinger-en-prigogine" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Schrödinger en
+Prigogine</h2>
+<p>Book: “What Is Life? The Physical Aspect of the Living Cell”
+(Schrödinger, 1944).</p>
 <p>Life is</p>
 <ol style="list-style-type: decimal">
-<li>One,</li>
-<li>Chemistry, and</li>
-<li>Information</li>
+<li><p>een open system that can generate order from chaos by exploiting
+external energy sources (entropy is disorder),</p></li>
+<li><p>with the capacity to transmit its own specific blueprint from
+generation to generation (reproductive invariance).</p></li>
 </ol>
-<p>In the following sections we will explore what de Duve meant with
-each component in his definition.</p>
-<div id="lifeOne" class="section level3" number="2.2.1">
-<h3><span class="header-section-number">2.2.1</span> Life is One</h3>
-<p>Life is one because all living organisms on earth</p>
+<p>Note, that DNA was not known yet when Schrödinger wrote his seminal
+book.</p>
+<p></br></p>
+<div id="how-is-this-possible" class="section level3" number="1.1.1">
+<h3><span class="header-section-number">1.1.1</span> How is this
+possible</h3>
 <ul>
-<li>are built of cells</li>
-<li>evolved from the same species, LUCA, our last universal common
-ancestor</li>
-<li>use the same molecule for storing, converting and using energy</li>
-<li>use the same biological building blocks: lipids, sugars, amino acids
-for proteins and nucleic acids (DNA and RNA).</li>
+<li><p>Second law of thermodynamics: a closed system is always gearing
+towards maximal entropy</p></li>
+<li><p>Entropy is a measure for disorder</p></li>
 </ul>
-<div id="all-living-organisms-are-built-of-cells" class="section level4"
-number="2.2.1.1">
-<h4><span class="header-section-number">2.2.1.1</span> All Living
-Organisms are Built of Cells</h4>
-<p>“Life is One” because all organisms are composed of cells. Green
-algae that can perform photosynthesis are a beautiful example of
-unicellular organisms. They were key for the development of life on our
-planet by releasing oxygen in our atmosphere (Figure
-@ref(fig:greenAlgae)).</p>
-<div class="figure" style="text-align: center">
-<img src="figs/Prochlorococcus_marinus.jpg" alt="Cyanobacteria, unicellullar organisms that can perform photosynthesis. They were key in the development of life and radically changed Earth by releasing oxygen to our atmosphere (Source: Chisholm Lab, Wikipedia)" width="30%" />
-<p class="caption">
-Cyanobacteria, unicellullar organisms that can perform photosynthesis.
-They were key in the development of life and radically changed Earth by
-releasing oxygen to our atmosphere (Source: Chisholm Lab, Wikipedia)
-</p>
-</div>
-<p>A vital component of a cell is its membrane (the outer layer of the
-cell) that is separating them from their environment while enabling them
-to interact with it and to concentrate chemicals inside the cell.</p>
-<p>Multicellular organisms are composed of multiple cells. The cells are
-organised in tissues, e.g. spongy tissue in our bones or epithelium
-cells of our stomach; organs, e.g. bones or our stomach; organ systems,
-e.g. skeleton or digestive system; upto the organism. Figure
-@ref(fig:multiCellular) also shows how organisms are further organised
-in populations of organisms, ecosystems, and eventually our entire
-Biosphere. So “Life is One” because all living organisms consist of
-cells that are organised in large networks that work together.</p>
-<div class="figure" style="text-align: center">
-<img src="figs/organisationMulticellular.jpeg" alt="Multicellular organisms and biological organisation (Source: mrssmithsbiology)" width="30%" />
-<p class="caption">
-Multicellular organisms and biological organisation (Source:
-mrssmithsbiology)
-</p>
-</div>
-<div style="page-break-after: always;"></div>
-</div>
-<div id="last-universal-common-ancestor" class="section level4"
-number="2.2.1.2">
-<h4><span class="header-section-number">2.2.1.2</span> Last Universal
-Common Ancestor</h4>
-<p>“Life is One” because all species evolved from the same ancestral
-population of cells. This is also referred to as the Last Universal
-Common Ancestor (LUCA). It is nicely indicated by the tree of life in
-Figure @ref(fig:treeOfLife), which is one of the most important
-organising principles in biology. It shows the evolutionary
-relationships among different organisms and that all living beings
-eventually can be traced back to LUCA who is located at the root of the
-tree. Note, that the animal kingdom to which we belong is only a small
-branch in the tree.</p>
-<div class="figure" style="text-align: center">
-<img src="figs/Phylogenetic_tree.svg" alt="The tree of life is one of the most important organising principles in biology. It shows the evolutionary relationships among different organisms and also that all living beings eventually can be traced back to the last universal common ancestor (LUCA), who is located at the root of the tree (Source: Wikipedia)" width="80%" />
-<p class="caption">
-The tree of life is one of the most important organising principles in
-biology. It shows the evolutionary relationships among different
-organisms and also that all living beings eventually can be traced back
-to the last universal common ancestor (LUCA), who is located at the root
-of the tree (Source: Wikipedia)
-</p>
+<center>
+<img
+src="https://www.handysquad.com/wp-content/uploads/2020/10/tie-up-cables.jpg"
+style="width:30.0%" /> <span class="math inline">\(\rightarrow\)</span>
+<img
+src="https://eadn-wc05-201489.nxedge.io/cdn/wp-content/uploads/2018/09/EntropyChaos2-700-467.jpg"
+style="width:30.0%" />
+</center>
+<p></br></p>
+<ul>
+<li><p>Life is</p>
+<ul>
+<li><p>based on chemical reactions</p></li>
+<li><p>an open system</p></li>
+<li><p>solar energie</p></li>
+<li><p>chaos of molecules on earth<br />
+</p></li>
+<li><p>While chemical reactions produce structure a lot of energy is
+lost into heat: dissipation.</p>
+<p><span class="math inline">\(\rightarrow\)</span> Increase of
+entropy</p></li>
+</ul></li>
+</ul>
+<p></br></p>
+<p>Prigogine did research to chemical systems far from equilibrium.</p>
+<ul>
+<li><p>Open systems: influx of matter en energy</p></li>
+<li><p>Reactions consist of many feedback loops</p></li>
+<li><p>They dissipate incoming energy while producing structure</p></li>
+<li><p>He called them dissipative structures.</p></li>
+</ul>
+<p></br></p>
+<p>Our globe is lying in a dissipative zone</p>
+<ul>
+<li><p>Life produces entropy by dissipating energy from photons (light
+and UV) to heat through organic pigments (e.g. chlorophyll)</p></li>
+<li><p>This heat induces secondary dissipative processes like the water
+cycle, wind and sea currents etc.</p></li>
+<li><p>So life also transforms its environment.</p></li>
+</ul>
+<p></br></p>
 </div>
 </div>
-<div id="sectionEnergyCoin" class="section level4" number="2.2.1.3">
-<h4><span class="header-section-number">2.2.1.3</span> Energy coin</h4>
-<p>“Life is One” because all living organisms use the same “energy
-coin”, the ATP-ADP system, to store and reuse energy.
-Adinosine-triphosphate (ATP) consists of a ribose sugar with 3 phosphate
-groups and a base adinine. Splitting a phosphate group from
-adinosine-triphosphate (ATP) results in adinosine-diphosphate (ADP), a
-free phosphate group and energy. The other way around, energy can be
-stored as chemical energy by binding a phosphate group to ADP (see
-Figure @ref(fig:atp-adp)).</p>
-<p>Note, that ATP is also used to build RNA, an important molecule
-involved in storing, passing and expressing our genetic information.
-Indeed, ATP is incorporated in RNA upon splitting two phosphate groups.
-The resulting AMP (adinosine monophosphate) is one of the building
-blocks of RNA. See Section @ref(sectionNucleicAcids) for more details on
-RNA. So there is a close link between energy and genetic
-information!</p>
-<p>(ref:atp-adp-cap) Our energy coin ATP-ADP. Adinosine-triphosphate
-(ATP) consists of a base adinine, a ribose sugar and 3 phosphate groups.
-Splitting a phosphate group from adinosine-triphosphate (ATP) by a
-reaction with water (H<span class="math inline">\(_2\)</span>O) results
-in adinosine-diphosphate (ADP), a free phosphate group and releases
-energy. The other way around, energy can be stored as chemical energy by
-binding a phosphate group to ADP (Source: Adapted from Wikipedia)</p>
-<div class="figure" style="text-align: center">
-<img src="figs/ATP-ADP.png" alt="(ref:atp-adp-cap)" width="70%" />
-<p class="caption">
-(ref:atp-adp-cap)
-</p>
-</div>
-<div style="page-break-after: always;"></div>
-<p>###3 Building Blocks of Life</p>
-<p>“Life is One” because all living organisms are composed of the same
-basic bio-molecules and we all know more than we think about them
-because we are what we eat!</p>
-<p>Almost all molecules of living organisms are composed of</p>
+<div id="definition-according-to-de-duve" class="section level2"
+number="1.2">
+<h2><span class="header-section-number">1.2</span> Definition according
+to de Duve</h2>
+<p>Book: “Life Evolving - Molecules, Mind and Meaning” (de Duve, 2002,
+First chapters give a very good overview. Later chapters get rather
+speculative).</p>
+<p>Life is</p>
 <ol style="list-style-type: decimal">
-<li>Lipids, oil and fats, for storage and as building blocks for
-membranes,</li>
-<li>Carbohydrates, sugars, for storing energy and as a backbone of large
-bio-molecules,</li>
-<li>Amino acids, the building blocks of proteins, which are the
-workhorses of a cell and facilitate the majority of its chemical
-reactions, and</li>
-<li>Nucleic Acids, building blocks of RNA and DNA, which are used to
-store and use the genetic information we inherit from our parents.</li>
+<li>one</li>
+<li>chemistry</li>
+<li>information</li>
 </ol>
-<div id="lipids" class="section level5" number="2.2.1.3.1">
-<h5><span class="header-section-number">2.2.1.3.1</span> Lipids</h5>
-<div class="figure" style="text-align: center">
-<img src="figs/Cell_membrane_detailed_diagram_4.svg" alt="Phospho-lipids have a very important role in life as they form membranes. Phospholipids have a hydrophilic head that likes to mix with water and long hydrophobic tails that do not mix with water. They sponteneously gives rise to bilayers in aqueous solutions similar to the structure seen in membranes. Membranes are the boundaries of the cell and they allow passivie diffusion of small molecules through their bilayer. Larger molecules can be actively exchanged with the environment through membrane proteins (Source: Doug Hatfield, Wikipedia)" width="80%" />
-<p class="caption">
-Phospho-lipids have a very important role in life as they form
-membranes. Phospholipids have a hydrophilic head that likes to mix with
-water and long hydrophobic tails that do not mix with water. They
-sponteneously gives rise to bilayers in aqueous solutions similar to the
-structure seen in membranes. Membranes are the boundaries of the cell
-and they allow passivie diffusion of small molecules through their
-bilayer. Larger molecules can be actively exchanged with the environment
-through membrane proteins (Source: Doug Hatfield, Wikipedia)
-</p>
+<p></br></p>
+<p>In bioinformatics we will work with the information part of life,
+however, we should not forget that life is more than that!</p>
+<p></br></p>
+<p>Origin of life:</p>
+<ul>
+<li>first energy</li>
+<li>then chemistry and</li>
+<li>subsequently information</li>
+</ul>
+<p></br></p>
+<div id="life-is-one" class="section level3" number="1.2.1">
+<h3><span class="header-section-number">1.2.1</span> Life is one</h3>
+<div id="all-organism-consist-of-cells" class="section level4"
+number="1.2.1.1">
+<h4><span class="header-section-number">1.2.1.1</span> All organism
+consist of cells</h4>
+<ul>
+<li>unicellular organisms</li>
+</ul>
+<p><img src="figs/Prochlorococcus_marinus.jpg"
+style="width:50.0%" /><br />
+(Cyanobacterium, source: Chisholm Lab, wikipedia)</p>
+<p></br></p>
+<ul>
+<li>Essential: membrane that is separating them from there environment
+and enables interaction with the environment</li>
+</ul>
+<p></br></p>
+<ul>
+<li>Multicellular organisms</li>
+</ul>
+<p><img
+src="https://mrssmithsbiology.files.wordpress.com/2019/10/picture4.jpg" /><br />
+(source: mrssmithsbiology)</p>
+<p></br></p>
 </div>
-<p>Lipids, fats and oils, are used for storage. However, an important
-class of lipids, the phospholipids, make up membranes of cells and
-unicellular compartments called organelles see Figure @ref(fig:lipids).
-Indeed phospholipids have a polar head that likes to be in water and a
-long apolar tail that does not mix with water. Therefore bilayers of
-phospholipid molecules are spontaneously formed in aqueous
-solutions.</p>
-<div style="page-break-after: always;"></div>
-<p>Membranes provide the basis for concentrating specific molecules in
-(compartments of) living cells. This enable cells to build up a
-disequilibrium of chemical molecules that can perform work as a
-concentration gradient spontaneously dissipates toward its equilibrium
-value. So phospholipids are key for creating the boundary conditions
-necessary for cellular organization.</p>
+<div id="luca-last-universal-common-ancestor." class="section level4"
+number="1.2.1.2">
+<h4><span class="header-section-number">1.2.1.2</span> LUCA (last
+Universal Common Ancestor).</h4>
+<ul>
+<li>All cells orginate from the same population of ancestral cells
+living 3.5-3.8 billion years ago.</li>
+</ul>
+<p><img src="figs/Phylogenetic_tree.svg" /> (Source: wikipedia)</p>
+<p></br></p>
 </div>
-<div id="carbohydrates" class="section level5" number="2.2.1.3.2">
-<h5><span class="header-section-number">2.2.1.3.2</span>
+<div id="universal-fuel-for-life-is-actually-chemistry"
+class="section level4" number="1.2.1.3">
+<h4><span class="header-section-number">1.2.1.3</span> Universal fuel
+for life (is actually chemistry)</h4>
+<p><img src="figs/ATP-ADP.png" /> (Source: adapted from wikipedia)</p>
+<ul>
+<li>ATP: Adinose-tri-phosphate</li>
+<li>Note that AMP is one of the building blocks of RNA.</li>
+<li>Link between energy and information!</li>
+</ul>
+<p></br></p>
+</div>
+<div id="same-building-blocks-for-all-living-organisms"
+class="section level4" number="1.2.1.4">
+<h4><span class="header-section-number">1.2.1.4</span> Same building
+blocks for all living organisms</h4>
+<ol style="list-style-type: decimal">
+<li>Lipids: membranes</li>
+<li>Carbohydrates (sugars): energy + building blocks</li>
+<li>Amino acids: building blocks of proteins, which are the workhorses
+of a cell</li>
+<li>Nucleic Acids: building blocks of RNA and DNA</li>
+</ol>
+<p>Note, that poly aromatic carbohydrates (PAHs) are omnipresent
+interstellar space</p>
+<ul>
+<li>Cat’s paw nebula</li>
+<li>Green regions are regions where the radiation of hot stars induces
+fluorescence of PAHs.</li>
+</ul>
+<p><img src="figs/orionWithPAH.jpeg" style="width:200.0%" /> </br></p>
+<ul>
+<li><p>They are further transformed in interstellar space</p>
+<ul>
+<li>hydrogenation: waterstoffen,</li>
+<li>oxidation: zuurstof,</li>
+<li>hydroxylation (OH)</li>
+<li>…</li>
+</ul></li>
+</ul>
+<p><span class="math inline">\(\rightarrow\)</span> first step to amino
+acids (building blocks of proteins) and nucleotides (building blocks of
+RNA and DNA) are just there, abundant in outer space.</p>
+<div id="lipids" class="section level5" number="1.2.1.4.1">
+<h5><span class="header-section-number">1.2.1.4.1</span> Lipids</h5>
+<p><img src="figs/Cell_membrane_detailed_diagram_4.svg" /> (Source:
+Doug Hatfield, wikipedia)</p>
+<p></br></p>
+</div>
+<div id="carbohydrates" class="section level5" number="1.2.1.4.2">
+<h5><span class="header-section-number">1.2.1.4.2</span>
 Carbohydrates</h5>
-<p>Carbohydrates are important bio-molecules that are used for storage,
-energy and structure (Figure @ref(fig:carbohydrates)).</p>
-<div class="figure" style="text-align: center">
-<img src="figs/Carbohydrates-definition-classification-with-structure-and-functions.jpeg" alt="Carbohydrates perform the important functions of storage, energy source and structure. They can be organised in biopolymers, long chains of carbohydrate molecules that are bound together. The polysaccharides starch and glycogen for instance are used to store energy by plant and animal cells, respectively. Cellulose, on the other hand, is a polysaccharide that gives plants structure. Deoxyribose and ribose are important carbohydrates that form the backbone of the biopolymers DNA and RNA, respectively. (Source: thebiologynotes.com)" width="100%" />
-<p class="caption">
-Carbohydrates perform the important functions of storage, energy source
-and structure. They can be organised in biopolymers, long chains of
-carbohydrate molecules that are bound together. The polysaccharides
-starch and glycogen for instance are used to store energy by plant and
-animal cells, respectively. Cellulose, on the other hand, is a
-polysaccharide that gives plants structure. Deoxyribose and ribose are
-important carbohydrates that form the backbone of the biopolymers DNA
-and RNA, respectively. (Source: thebiologynotes.com)
-</p>
-</div>
-<ul>
-<li>Storage: glucose is stored inside animal cells using glycogen, a
-polymer of thousands of glucose molecules that are bound to each-other.
-Plants use a similar molecule, starch.</li>
-<li>Energy source: specific proteins can split glycogen and starch into
-glucose that is subsequently metabolized for energy.</li>
-<li>Structure: carbohydrates form the backbone of many bio-molecules,
-e.g. long chains of desoxyribose and ribose act as the backbone of the
-bio-polymers DNA and RNA, respectively; and glucose is the backbone of
-cellulose, which give plants structure.</li>
-</ul>
+<p><img
+src="https://thebiologynotes.com/wp-content/uploads/2020/11/Carbohydrates-definition-classification-with-structure-and-functions.jpeg" />
+(Source: thebiologynotes.com)</p>
 <p></br></p>
-<div style="page-break-after: always;"></div>
 </div>
-<div id="sectionAminoAcids" class="section level5" number="2.2.1.3.3">
-<h5><span class="header-section-number">2.2.1.3.3</span> Amino
+<div id="amino-acids" class="section level5" number="1.2.1.4.3">
+<h5><span class="header-section-number">1.2.1.4.3</span> Amino
 Acids</h5>
-<p>Amino acids by themselves are simple molecules (Figure
-@ref(fig:aminoAcids)). Although hundreds of amino acids exist in nature,
-life is using only 20 of them and it is combining them in long
-molecules, polymers, which are referred to as proteins. Proteins are
-hetero-polymers, consisting of the 20 amino acids that are arranged in
-long sequences that differ from protein to protein. So unlike starch,
-that only consists of glucose molecules that are all identical, proteins
-are capable of carrying information.</p>
-<p>(ref:aminoAcidsCap) Amino acids are simple molecules. They can be
-combined in long molecules, polymers, also known as proteins. Their long
-chain of amino acids spontaneously folds into a complex 3D structure
-from which their biological function emerges (Source:
-thebiologynotes.com)</p>
-<div class="figure" style="text-align: center">
-<img src="figs/Amino-acids-and-Proteins.jpeg" alt="(ref:aminoAcidsCap)" width="100%" />
-<p class="caption">
-(ref:aminoAcidsCap)
-</p>
+<p><img
+src="https://thebiologynotes.com/wp-content/uploads/2020/12/Amino-acids-and-Proteins.jpeg" />
+(Source: thebiologynotes.com)</p>
+<p></br></p>
 </div>
-<p>The crux of proteins is that their long chain of amino acids
-spontaneously folds into a complex 3D structure, which is determined by
-the properties and the specific sequence of its amino acids. From their
-complex and specific 3D structure their biological function emerges.</p>
-<p>Indeed, many proteins work as a “lock” in which specific
-(bio)molecules fit as a “key”. This enables proteins to bring molecules
-close together and to promote chemical reactions without being consumed.
-This process is also referred to as catalysis and proteins that perform
-catalysis are called enzymes, see Figure @ref(fig:enzyme).</p>
-<div class="figure" style="text-align: center">
-<img src="figs/EnzymePadlockKey.png" alt="Diagram of a protein performing an enzyme action (Source: Wikipedia)" width="50%" />
-<p class="caption">
-Diagram of a protein performing an enzyme action (Source: Wikipedia)
-</p>
-</div>
-<p>Proteins are the main workhorses of the cell and they are important
-for moving food, digesting food, copying DNA, for giving the cell
-structure, affecting the rates at which other proteins work, etc…</p>
-</div>
-<div id="sectionNucleicAcids" class="section level5" number="2.2.1.3.4">
-<h5><span class="header-section-number">2.2.1.3.4</span> Nucleic
+<div id="nucleic-acids" class="section level5" number="1.2.1.4.4">
+<h5><span class="header-section-number">1.2.1.4.4</span> Nucleic
 Acids</h5>
-<p>Nucleic acids are build of nucleotides. Each nucleotide is composed
-of one of four nitrogen-containing nucleobases, which carry the
-information</p>
-<ol style="list-style-type: decimal">
-<li>cytosine [C],</li>
-<li>guanine [G],</li>
-<li>adenine [A] or</li>
-<li>thymine [T] (DNA) or uracil [U] (RNA) ,</li>
-</ol>
-<p>a phosphate group and a sugar, i.e. ribose in ribonucleic acid (RNA,
-Figure @ref(fig:RNA)) and deoxyribose in deoxyribonucleic acid (DNA,
-Figure @ref(fig:DNA)).</p>
-<p>These nucleotides are the building blocks that are combined in long
-polymers: RNA and DNA. DNA and RNA are hetero-polymers and the
-nucleotides conceptually can be combined in any order. So they can
-contain information. Indeed, they are key to store and use the genetic
-information we inherit from our parents.</p>
-<p>DNA typically occurs as a double strand, where C and G, and, A and T
-hybridize to each other using respectively three and two hydrogen
-bridges to form the iconic double stranded helix structure, see Figure
-@ref(fig:DNA).</p>
-<p>There is a general consensus that life probably began by using RNA as
-information carrier. DNA, however, is much more stable and lasts longer
-in water than RNA. Therefore, DNA probably emerged later and is now used
-to store the genetic information in most organisms.</p>
-<p>Life is also one because we share the same genetic code, but we refer
-to Section @ref(lifeInformation) “Life is Information” for more
-details.</p>
-<div class="figure" style="text-align: center">
-<img src="figs/Difference_DNA_RNA-EN.svg" alt="Nucleic acid: RNA (left) and DNA (right). RNA appears typically in a single strand and DNA as a double stranded molecule (Source: Wikipedia)" width="50%" />
-<p class="caption">
-Nucleic acid: RNA (left) and DNA (right). RNA appears typically in a
-single strand and DNA as a double stranded molecule (Source: Wikipedia)
-</p>
-</div>
-<div class="figure" style="text-align: center">
-<img src="figs/RNA-Nucleobases.png" alt="RNA is a polymeric molecule with various biological roles in coding, decoding, regulation and expression of genes. RNA consists of a chain of nucleotides. Each nucleotide is build from a ribose sugar that forms the backbone of the RNA  polymer, a phosphate group that is used to connect the ribose sugar molecules and a base adenine (A), cytosine (C), guanine (G) or uracil (U) that are the carriers of information. The bases can form hydrogen bonds between cytosine and guanine, between adenine and uracil, and, between adenine and thymine (a base from DNA) (Source: Adapted from Wikipedia)" width="50%" />
-<p class="caption">
-RNA is a polymeric molecule with various biological roles in coding,
-decoding, regulation and expression of genes. RNA consists of a chain of
-nucleotides. Each nucleotide is build from a ribose sugar that forms the
-backbone of the RNA polymer, a phosphate group that is used to connect
-the ribose sugar molecules and a base adenine (A), cytosine (C), guanine
-(G) or uracil (U) that are the carriers of information. The bases can
-form hydrogen bonds between cytosine and guanine, between adenine and
-uracil, and, between adenine and thymine (a base from DNA) (Source:
-Adapted from Wikipedia)
-</p>
-</div>
-<div class="figure" style="text-align: center">
-<img src="figs/DNA_Nucleotides.jpeg" alt="DNA is a polymer composed of two polynucleotide chains that coil around each other to form a double helix carrying genetic instructions for the development, functioning, growth and reproduction of all known organisms and many viruses. Each DNA single strand consists of a chain of nucleotides. Each nucleotide is build from a deoxyribose sugar that forms the backbone of the DNA  polymer, a phosphate group that is used to connect the deoxyribose sugar molecules and a base adenine (A), cytosine (C), guanine (G) or thymine (T) that are the carriers of information. The bases form hydrogen bonds between cytosine and guanine, and, adenine and thymine to assemble single stranded DNA in double stranded DNA. (Source: Wikipedia)" width="50%" />
-<p class="caption">
-DNA is a polymer composed of two polynucleotide chains that coil around
-each other to form a double helix carrying genetic instructions for the
-development, functioning, growth and reproduction of all known organisms
-and many viruses. Each DNA single strand consists of a chain of
-nucleotides. Each nucleotide is build from a deoxyribose sugar that
-forms the backbone of the DNA polymer, a phosphate group that is used to
-connect the deoxyribose sugar molecules and a base adenine (A), cytosine
-(C), guanine (G) or thymine (T) that are the carriers of information.
-The bases form hydrogen bonds between cytosine and guanine, and, adenine
-and thymine to assemble single stranded DNA in double stranded DNA.
-(Source: Wikipedia)
-</p>
-</div>
-<div style="page-break-after: always;"></div>
+<ul>
+<li>Building blocks for the molecules that store the information that we
+inherit form our parents: RNA and DNA</li>
+</ul>
+<p><img src="figs/RNA-Nucleobases.svg" style="width:50.0%" /><br />
+(RNA, Source: wikipedia)</p>
+<p></br></p>
+<p><img src="figs/DNA_Nucleotides.jpeg" /><br />
+(DNA, Source: OpenStax, wikipedia)</p>
+<p></br></p>
+<p><img src="figs/Difference_DNA_RNA-EN.svg" /><br />
+(Source: Sponk, wikipedia)</p>
+<p></br></p>
 </div>
 </div>
+<div id="same-genetic-code-see-life-is-information"
+class="section level4" number="1.2.1.5">
+<h4><span class="header-section-number">1.2.1.5</span> Same genetic code
+(See Life is information)</h4>
+<p></br></p>
 </div>
-<div id="lifeChemistry" class="section level3" number="2.2.2">
-<h3><span class="header-section-number">2.2.2</span> Life is
+</div>
+<div id="life-is-chemistry" class="section level3" number="1.2.2">
+<h3><span class="header-section-number">1.2.2</span> Life is
 Chemistry</h3>
-<p>“Life is Chemistry” because a cell consists of a complex network of
-chemical reactions that are connected to each other. Many feedback loops
-exist in this chemistry making it largely nonlinear. The feedback loops
-enables a cell to maintain in its regime or to switch from regime or
-attractor upon external and/or internal stimuli. An overview of most
-reactions in a living cell is given in Figure
-@ref(fig:chemicalReactionsCell). You can zoom in on this map on <a
-href="http://biochemical-pathways.com/#/map/1"
-class="uri">http://biochemical-pathways.com/#/map/1</a>.</p>
-<div class="figure" style="text-align: center">
-<img src="figs/roche_pathways.jpg" alt="Network of the most important reactions in a living cell (Source: Dr. Gerhard Michal, Roche)" width="100%" />
-<p class="caption">
-Network of the most important reactions in a living cell (Source:
-Dr. Gerhard Michal, Roche)
-</p>
+<p><a href="http://biochemical-pathways.com/#/map/1"><img
+src="figs/roche_pathways.jpg" /></a> (Source: Dr. Gerhard Michal,
+Roche) <!-- 
+Not working http in https
+<div style="position:relative;padding-top:56.25%;">
+<iframe src= "http://googleweblight.com/?liteurl=https://biochemical-pathways.com/#/map/1" frameborder="0" allowfullscreen
+      style="position:absolute;top:0;left:0;width:100%;height:100%;">
+</iframe>
+</div> --></p>
+<div id="energy" class="section level4" number="1.2.2.1">
+<h4><span class="header-section-number">1.2.2.1</span> Energy</h4>
+<p><img src="figs/ATP-ADP.png" /> (Source: wikipedia)</p>
+<p></br></p>
 </div>
-<p>In the remainder of this section we will introduce energy and
-catalysis in more detail, and we also give an intriguing example of how
-proteins play a role in the self-organisation of a cell.</p>
-<div id="energy" class="section level4" number="2.2.2.1">
-<h4><span class="header-section-number">2.2.2.1</span> Energy</h4>
-<p>“Life is Chemistry” because it uses chemical reactions to store and
-use energy. See the ATP-ADP system in Section
-@ref(sectionEnergyCoin)</p>
-</div>
-<div id="catalysis" class="section level4" number="2.2.2.2">
-<h4><span class="header-section-number">2.2.2.2</span> Catalysis</h4>
-<p>“Life is Chemistry” because most chemical reactions are catalyzed,
-i.e. initiated, promoted and made faster by proteins. The proteins
-facilitate the reaction without being used. The reactions would never
-take place if we would only mix the molecules at the concentrations that
-are typically occurring in a cell.</p>
-<p>A catalyst is a chemical substance that helps a reaction to take
-place without being consumed. Proteins that are catalysts are also
-referred to as enzymes.</p>
-<p>Enzymes are proteins that</p>
-<ul>
-<li>initiate the reaction</li>
-<li>speed up the reaction and</li>
-<li>make sure that the outcome is always the same.</li>
-</ul>
-<p>Loosely speaking they are</p>
-<ul>
-<li>“fishing” certain molecules from the complex mixture in a cell,</li>
-<li>which consists of thousands of chemical compounds generally at low
-concentrations,</li>
-<li>through binding sites they can facilitate that these molecules
-(substrates) are getting close so that they can react and form a new
-compound.</li>
-</ul>
-<p>These binding sites emerged from to the unique 3D structure of the
-protein. In Figure @ref(fig:enzyme) a schematic overview is given of the
-enzyme action of a protein.</p>
-<p>In most cases enzymes work together in pathways, which consist of
-multiple chemical reactions for which (part of the) molecules produced
-in the previous reaction are used by another enzyme to facilitate the
-next reaction.</p>
-<p>The Krebs cycle is a well known example. This pathway is the main
-source of energy for a cell through metabolising carbohydrates, lipids
-and/or proteins. The Krebs cycle is a cyclic pathway of multiple
-chemical reactions each catalyzed by another enzyme (see Figure
-@ref(fig:krebsCycle) or the you tube movie <a
-href="https://www.youtube.com/embed/yk14dOOvwMk"
-class="uri">https://www.youtube.com/embed/yk14dOOvwMk</a>).</p>
-<p>The Krebs cycle is also used to generate building blocks for
-constructing certain nucleotides and amino acids.</p>
-<div class="figure" style="text-align: center">
-<img src="figs/Citric_acid_cycle_with_aconitate_2.svg" alt="Krebs cycle, a cyclic pathway connecting multiple reactions that provide the main source of energy for our cells by metabolising carbohydrates, proteins and lipids. Each reaction is catalised by an enzyme  (Source: Narayanese, Wikipedia)" width="70%" />
-<p class="caption">
-Krebs cycle, a cyclic pathway connecting multiple reactions that provide
-the main source of energy for our cells by metabolising carbohydrates,
-proteins and lipids. Each reaction is catalised by an enzyme (Source:
-Narayanese, Wikipedia)
-</p>
-</div>
-<p>We can end this section with a quote of <span class="citation">De
-Duve (2002)</span>: “Any living organism is a reflection of its enzyme
-arsenal”.</p>
-<div style="page-break-after: always;"></div>
-</div>
-<div id="self-organisation" class="section level4" number="2.2.2.3">
-<h4><span class="header-section-number">2.2.2.3</span>
-Self-Organisation</h4>
-<p>Life is also characterized by its ability for self-organisation. Some
-proteins are also important to give structure to a cell and they can
-spontaneously form structure. An intriguing illustration of
-self-organisation is provided by <span class="citation">Cheng and
-Ferrell (2019)</span> who homogenized Xenopus laevis egg cell cytoplasma
-extracts, i.e. the liquid with structures from the cell, and showed that
-the homogeneous extract spontaneously reorganized itself in cell like
-structures in a matter of minutes (see Figure @ref(fig:selforganisation)
-and you tube movie <a href="https://www.youtube.com/embed/prq1Occu22s"
-class="uri">https://www.youtube.com/embed/prq1Occu22s</a>).</p>
-<p>(ref:selforganisationCaption) Homogenized Xenopus laevis egg
-cytoplasmic extracts spontaneously organized into cell-like compartments
-<span class="citation">(Cheng and Ferrell 2019)</span></p>
-<div class="figure" style="text-align: center">
-<img src="figs/selforganisation.jpg" alt="(ref:selforganisationCaption)" width="100%" />
-<p class="caption">
-(ref:selforganisationCaption)
-</p>
-</div>
-<p></br> <span class="citation">Cheng and Ferrell (2019)</span> found
-that ATP, the energy currency of a cell; microtubuli, a kind of
-filamentous proteins; and dynein, a kind of motor protein, were required
-and driving this process of self-organisation.</p>
-<div class="figure" style="text-align: center">
-<img src="figs/DyneinHeavyChainOnMT.png" alt="Microtubulus (long filamentous protein) with Dynein &quot;motor&quot; protein attached (Source:  Wikipedia)" width="30%" />
-<p class="caption">
-Microtubulus (long filamentous protein) with Dynein “motor” protein
-attached (Source: Wikipedia)
-</p>
-</div>
-<p>Note, that proteins thus play a central role in life. They are key
-for catalysis and giving structure. Hence, a cell thus not only inherits
-genetic information, but, also its spatial organisation from a mother
-cell!</p>
-<div style="page-break-after: always;"></div>
-</div>
-</div>
-<div id="lifeInformation" class="section level3" number="2.2.3">
-<h3><span class="header-section-number">2.2.3</span> Life is
-Information</h3>
-<p>Our genetic information to build all our bio-molecules, which we
-inherit from our parents, is stored in our DNA. DNA is a hetero-polymer
-or a long chain of 4 different building blocks, nucleotides. So the
-genetic information is stored in an alphabet of 4 letters. This is
-adenine (A), cytosine (C), guanine (G) and thymine (T) for DNA.</p>
-<p>It makes no physical or chemical difference what the identity of the
-next nucleotide is in the DNA chain. So our DNA can be seen as a coding
-system to store and pass genetic information from one generation to the
-next. Life is therefore also information and not only chemistry. It is
-absolutely mind blowing how variation in the sequence of this “four
-letter code” can lead to such a wealth of distinct characteristics and
-functions that can be observed between different specimens of the same
-species, and, even more so between different life forms.</p>
-<p>In the reminder of this section we will focus on the flow of
-information in a cell in more detail.</p>
-<div id="the-central-paradigm-of-molecular-biology"
-class="section level4" number="2.2.3.1">
-<h4><span class="header-section-number">2.2.3.1</span> The central
-paradigm” of molecular biology</h4>
-<p>The “central paradigm” of molecular biology states that the sequence
-of nucleotides in DNA are first <em>transcribed</em> into RNA and then
-<em>translated</em> into proteins, see Figure
-@ref(fig:centralParadigm).</p>
-<p>Note, that some RNA molecules are also end products. Indeed RNA can
-also have a catalytic function, i.e. initiate and promote chemical
-reactions without being consumed.</p>
-<p>A <em>gene</em> is the unit of genetic material, a DNA sequence that
-is encoding for the synthesis of a gene product, either a protein or a
-functional RNA.</p>
-<div class="figure" style="text-align: center">
-<img src="figs/gene.svg" alt="Central paradigm of biology: a gene, a specific region in the DNA, is first transcribed into RNA and then into proteins. Note, that for RNA-genes the RNA molecule is the end product itself, which is referred to as non-coding RNA (ncRNA) (Source: Thomas Shafee, Wikipedia)" width="50%" />
-<p class="caption">
-Central paradigm of biology: a gene, a specific region in the DNA, is
-first transcribed into RNA and then into proteins. Note, that for
-RNA-genes the RNA molecule is the end product itself, which is referred
-to as non-coding RNA (ncRNA) (Source: Thomas Shafee, Wikipedia)
-</p>
+<div id="catalysis" class="section level4" number="1.2.2.2">
+<h4><span class="header-section-number">1.2.2.2</span> Catalysis</h4>
+<p><img src="figs/Citric_acid_cycle_with_aconitate_2.svg" /> (Source:
+Narayanese, wikipedia)</p>
+</br><br />
+
+<div
+style="position: relative;width: 100%;height: 0;padding-bottom: 56.25%;">
+<iframe src="https://www.youtube.com/embed/yk14dOOvwMk?start=8&amp;end=60" frameborder="0" style=" position:absolute;top: 0;left: 0;width: 100%;height: 100%;" allow="autoplay; encrypted-media" allowfullscreen data-external="1" start="8">
+</iframe>
 </div>
 <p></br></p>
-<p>Figure @ref(fig:transcriptionTranslation) shows the process of
-transcription of a gene from DNA to RNA and the translation of RNA to
-proteins.</p>
-<ol style="list-style-type: decimal">
-<li><p>The transcription of DNA to RNA is initiated by opening the DNA
-double strand. Then a complementary RNA strand is synthesized by
-exploiting that A hybridizes to U (or T) and G to C through hydrogen
-bounds.</p></li>
-<li><p>Once that the complementary RNA strand is made, it is further
-processed in the nucleus into messenger RNA (mRNA). The mRNA travels
-from the cell nucleus to the cell cytosol (cell liquid) where it is
-translated into proteins, and, where the majority of the reactions take
-place.</p></li>
-<li><p>There mRNA is translated into proteins by ribosomes. In the
-ribosomes the mRNA is bound to transfer RNA (tRNA). tRNA can bind to the
-mRNA molecule if it has 3 consecutive nucleotides that are complementary
-to the triplet of the 3 consecutive nucleotides on the mRNA template
-that is lying in the ribosome.</p></li>
-<li><p>The transfer RNA transports one specific amino-acid that is then
-incorporated in the protein that is being formed, which is the growing
-amino acid chain in Figure @ref(fig:transcriptionTranslation). The
-sequence of 3 consecutive nucleotides of DNA of a gene is therefore also
-called a <em>codon</em> because it encodes for a specific amino
-acid.</p></li>
-<li><p>Upon incorporation, the ribosome shifts to the next triplet of
-the mRNA and the next transfer RNA is bound to it, and so on until a
-stop codon is reached and the protein is finished.</p></li>
-</ol>
-<p>(ref:transcriptionTranslationCaption) In the cell nucleus the DNA
-strand opens up and is transcribed into an RNA molecule. Upon
-processing, the messenger RNA (mRNA) travels from the nucleus to the
-cytosol where it is translated into proteins. The mRNA is the template
-that fits into a ribosome that has the function to bind transfer RNA
-molecules to the mRNA template. It does that by hybridising to a tRNA,
-which has a triplet of three nucleotides that are complementary to those
-of the mRNA template. The tRNAs have a amino acid on their tail, which
-is incorporated into a long chain of amino acids, the protein that is
-produced. If the amino acid is incorporated, the ribosome moves to the
-next triplet and the process happens all over with a new tRNA (Source:
-<a
-href="http://www.tokresource.org/tok_classes/biobiobio/biomenu/transcription_translation/">tokresources.org</a>)</p>
-<div class="figure" style="text-align: center">
-<img src="figs/transcription_2.jpeg" alt="(ref:transcriptionTranslationCaption)" width="50%" />
-<p class="caption">
-(ref:transcriptionTranslationCaption)
-</p>
-</div>
-<p>There are in total 64=4<span class="math inline">\(^3\)</span> codons
-encoding for each of the 20 amino acids, and, for a start and a stop
-codon to initiate and stop the protein translation, respectively. Hence,
-there is a redundancy in the code, see @ref(fig:codonTable).</p>
-<div class="figure" style="text-align: center">
-<img src="figs/Aminoacids_table.svg" alt="Codon table connecting triplets of nucleotids to amino acids (Source: Wikipedia)" width="50%" />
-<p class="caption">
-Codon table connecting triplets of nucleotids to amino acids (Source:
-Wikipedia)
-</p>
-</div>
-<p>We can learn an important message from the codon table:</p>
+<p>“Any living organism is a reflection of its enzyme arsenal”</p>
 <ul>
-<li><p>There is no chemical necessity that explicitly connects the three
-nucleotides “CGG” to the amino acid arginine rather than to
-glutamine.</p></li>
-<li><p>Nucleotides themselves do not seem to a have chemical connection
-to the amino acids they encode</p></li>
-<li><p>Therefore we call it a code or information rather than just
-“genetic chemistry”</p></li>
+<li><p>Catalysis: a large number of chemical reactions would never
+happen when we only would mix molecules without a catalist.</p></li>
+<li><p>Catalist: chemical substance that helps a reaction to take place
+without being consumed itself.</p></li>
+<li><p>Biological catalists are referred to as enzymes</p></li>
+<li><p>Enzymes are proteins that</p>
+<ul>
+<li>are fishing certain molecules from the complex mixture in a
+cell,</li>
+<li>which consists of thousands of chemical compounds</li>
+<li>generally at low concentrations;</li>
+<li>through bindingsites they can facilitate that these molecules
+(substrates) are getting close so that they can react and form a new
+compound. </br></li>
+</ul></li>
 </ul>
-<p>The code apparently evolved so that many mutations give rise to</p>
+</div>
+<div id="self-organisation" class="section level4" number="1.2.2.3">
+<h4><span class="header-section-number">1.2.2.3</span>
+Self-organisation</h4>
+<ul>
+<li>Some proteins also give structure to a cell</li>
+<li>The can spontaneously form structrue</li>
+<li>See video where cytoplasm (“liquid in cell”) was homogenised and is
+subsequently organising itself in cell-like structures. </br><br />
+
+<div
+style="position: relative;width: 100%;height: 0;padding-bottom: 56.25%;">
+<iframe src="https://www.youtube.com/embed/prq1Occu22s?start=0&amp;end=7&amp;loop=1" frameborder="0" style=" position:absolute;top: 0;left: 0;width: 100%;height: 100%;" allow="autoplay; encrypted-media" allowfullscreen data-external="1" start="8">
+</iframe>
+</div></li>
+</ul>
+<p>(Source: Science DOI: 10.1126/science.aav7793)</p>
+<p></br></p>
+<p>Researchers found that the following was required for this:</p>
+<ul>
+<li>ATP: the energy source of a cell</li>
+<li>a filamentous proteines (microtubuli)</li>
+<li>Dynein, a kind of motor protein</li>
+</ul>
+<p><img src="figs/Tubulin_Infographic.jpeg" /><br />
+(Source: Pakorn Kanchanawong, wikipedia)</p>
+<p></br></p>
+<p>Proteins plays a central role in life: Catalysis + Structure</p>
+<p>A cell thus inherits not only genetic information but also its
+spatial organisation from a mother cell.</p>
+<p></br></p>
+</div>
+</div>
+<div id="life-is-information" class="section level3" number="1.2.3">
+<h3><span class="header-section-number">1.2.3</span> Life is
+information</h3>
+<p></br></p>
+<ul>
+<li>Gene: unit of genetic material, a DNA sequence that is encoding for
+the synthesis of a gene product, a protein or a functional RNA.</li>
+</ul>
+<p><img src="figs/gene.svg" /> (Source: Thomas Shafee, wikipedia)</p>
+<p></br></p>
+<ul>
+<li>DNA: 4 letter code (4 bases: ACGT)</li>
+<li>RNA: 4 letter code (4 bases: ACGU)</li>
+</ul>
+<p><img src="figs/Difference_DNA_RNA-EN.svg"
+style="width:50.0%" /><br />
+(Source: Sponk, wikipedia)</p>
+<p></br></p>
+<p><img
+src="https://aholdencirm.files.wordpress.com/2016/06/transcription_2.jpg" /><br />
+(Source: <a
+href="http://www.tokresource.org/tok_classes/biobiobio/biomenu/transcription_translation/">tokresources.org</a>)</p>
+<p></br></p>
+<ul>
+<li><p>Principle: hybridisation of complementary bases!</p></li>
+<li><p>Transport RNA: codon (triplet van 3 basen) for each nucleic acid
+that is transported </br></p></li>
+<li><p>Protein: chain of amino acids</p>
+<ul>
+<li>there exist more than 400 amino acids</li>
+<li>only 20 were selected by life to build proteins.</li>
+</ul></li>
+</ul>
+<p><img src="figs/Aminoacids_table.svg" style="width:50.0%" /><br />
+(Source: wikipedia)</p>
+<p></br></p>
+<ul>
+<li><p>Code is evolved so that many mutations give rise to</p>
 <ul>
 <li>synonymous codons (same amino acid) or</li>
-<li>to incorporate amino acids that are similar</li>
+<li>to incorporate amino acids that are similar<br />
+<span class="math inline">\(\rightarrow\)</span> protein function is
+conserved</li>
+</ul></li>
 </ul>
-<p>so that protein function is conserved.</p>
 <p></br></p>
-<p>DNA is thus the carrier of genetic information. However, RNA plays a
-more central role:</p>
 <ul>
-<li>Messenger RNA brings the genetic information from the cell nucleus
-to the cell cytosol where they are translated into proteins and where
-most of the chemical reactions take place.</li>
-<li>Ribozymes, i.e. catalytic RNA molecules, initiate and speed up
-particular reactions</li>
-<li>Transfer RNA plays an crucial role in the translation of
-proteins</li>
-<li>An RNA primer, i.e. a small RNA molecule, is essential to copy
-DNA</li>
-<li>RNA also acts as carrier of genetic information, e.g. corona
-virus.</li>
-</ul>
-<div style="page-break-after: always;"></div>
-</div>
-</div>
-</div>
-<div id="maturanaVarela" class="section level2" number="2.3">
-<h2><span class="header-section-number">2.3</span> Maturana and Varela:
-a Systems View of Life</h2>
-<p><span class="citation">Capra and Luisi (2014)</span> write in their
-book “The Systems View of Life”, that the “term
-<strong>autopoeisis</strong> was coined by Varela and Maturana in the
-1970s. <em>Auto</em>, of course, means <em>self</em> and refers to the
-autonomy of self-organising systems; and <em>poiesis</em> (which shares
-the same Greek root as the word poetry) means <em>making</em>. So,
-<em>autopoiesis</em> means self-making”.</p>
-<p>They continue stating that “the main characteristic of life is
-self-maintenance due to internal networking of a chemical system that
-continuously reproduces itself within the boundary of its own
-making”.</p>
-<p>Indeed, a living cell is the smallest autopoietic unit. The cell
-consists of a complex internal network of chemical reactions and this
-within the boundary of its outer membrane. It can organize itself,
-maintain itself, can make copies of itself and this with the enzymatic
-machinery that is present in the cell itself.</p>
-<p><strong>Networks of cells</strong> are then combined in larger
-autopoietic units, e.g. </p>
+<li><p>DNA is the carier of genetic material (cfr. hard drive)</p></li>
+<li><p>RNA plays a more central role:</p>
 <ul>
-<li>our gut microbiome that consists of a network of billions of
-unicellular bacteria and yeasts from which unique metabolic functions
-emerge that are essential for digesting our food, or,</li>
-<li>our tissues, networks of our own cells from which novel functions
-emerge, e.g. our thinking that emerges from the complex network of
-neurons in our brain.</li>
-</ul>
-<p>An organism or a biological system can therefore not be broken down
-or reduced to its parts to provide a complete understanding of it. A
-complete understanding is only possible when it is viewed as a whole.
-Indeed, new functions emerge at a higher level from the network that has
-been formed between its lower-level parts. Varela refers to these
-properties with the term <em>emergent properties</em>.</p>
-<div id="emergent-properties" class="section level3" number="2.3.1">
-<h3><span class="header-section-number">2.3.1</span> Emergent
-properties</h3>
-<p>Emergent properties can be found at each level. At the chemical
-level, where the protein hemoglobin for instance has the unique property
-that it can transport oxygen. This property emerges from its unique 3D
-structure (see Figure @ref(fig:hemoglobin)). We could never have derived
-its biological function at the protein-level by breaking it down to its
-constituting amino acids and only studying the individual properties of
-each of these amino acids (see section @ref(sectionAminoAcids) for more
-details on amino acids).</p>
-<div class="figure" style="text-align: center">
-<img src="figs/hemoglobin.jpeg" alt="Structure of hemoglobin that consists of 4 subunits, each having a heme group with an iron molecule that can bind oxygen. This function emerges from its unique 3D structure (Source: Wikipedia)" width="100%" />
-<p class="caption">
-Structure of hemoglobin that consists of 4 subunits, each having a heme
-group with an iron molecule that can bind oxygen. This function emerges
-from its unique 3D structure (Source: Wikipedia)
-</p>
-</div>
-<p>So hemoglobins’ property to transport oxygen naturally emerges at the
-protein level upon combining many simple amino acid molecules in the
-appropriate sequence. Indeed, this specific long chain of amino acid
-spontaneously folds into a unique 3D structure that gives the hemoglobin
-protein its unique function.</p>
-<div style="page-break-after: always;"></div>
-<p>Lichens are another compelling example of emergent properties (Figure
-@ref(fig:lichen)). Lichens are true colonists. They were among the first
-organisms that colonized the earth surface. Indeed, when glaciers pull
-back lichens appear on the bare hostile rocks and in the course of
-thousands of years they can convert these rocks into soil, an
-environment that is fertile for other species. However, their unique and
-important properties for life on earth could never have been expected
-when only studying a lichen’s components.</p>
-<div class="figure" style="text-align: center">
-<img src="figs/lichen.jpeg" alt="Lichens. Left: Lichens, a unique organism that can colonize rocks (Source: Shyamal, Wikipedia). Right: Lichens are a symbiosis of a green alga and a fungus. 1. Thick layers of fungal hyphae protecting the green alga 2. Green algae 3. Loosely packed fungal hyphae 4. Anchoring fungal hyphae that act as a kind of roots (Jdurant, Wikipedia)." width="45%" /><img src="figs/LichenDiagram.png" alt="Lichens. Left: Lichens, a unique organism that can colonize rocks (Source: Shyamal, Wikipedia). Right: Lichens are a symbiosis of a green alga and a fungus. 1. Thick layers of fungal hyphae protecting the green alga 2. Green algae 3. Loosely packed fungal hyphae 4. Anchoring fungal hyphae that act as a kind of roots (Jdurant, Wikipedia)." width="45%" />
-<p class="caption">
-Lichens. Left: Lichens, a unique organism that can colonize rocks
-(Source: Shyamal, Wikipedia). Right: Lichens are a symbiosis of a green
-alga and a fungus. 1. Thick layers of fungal hyphae protecting the green
-alga 2. Green algae 3. Loosely packed fungal hyphae 4. Anchoring fungal
-hyphae that act as a kind of roots (Jdurant, Wikipedia).
-</p>
-</div>
-<p>Although lichens macroscopically look like one being, they are
-effectively two beings: a green algae with the precious gift of
-photosynthesis that turns sunlight and air into sugars, and, a fungus
-that provides shelter and is gifted with the art to mine the rocks for
-minerals, but which cannot make sugars. They are joined in a symbiosis
-that is so close that their union becomes an entirely new organism. When
-biologists tried to unravel this unique algal-fungal marriage, they
-started to grow them in the lab in ideal conditions for both algae and
-fungus. However, under these conditions they both happily lived next to
-each other. So the unique properties of lichens could not be delineated
-from studying both species apart. Only when the scientists exposed them
-to ecofactors that became so harsh, they teamed up in reciprocity and
-gained their unique transformative power of turning rocks into fertile
-environments <span class="citation">(Kimmerer 2013)</span>.</p>
-</div>
-<div id="life-as-an-emergent-property" class="section level3"
-number="2.3.2">
-<h3><span class="header-section-number">2.3.2</span> Life as an emergent
-property</h3>
-<p><span class="citation">Capra and Luisi (2014)</span> convincingly
-argue that the same holds at any level and for life itself. Indeed the
-autopoietic property of a cell originates by properly combining all its
-molecules in the large networks of chemical reactions from which its
-structure and organisation, self maintenance, and self replication
-emerge. We cannot localize life. Life is simply a global property that
-emerges from the collective interactions of all kind of molecules in a
-cell, of the collection of cells in a tissue, of the collection of
-tissues in a organ system, of the collection of organ systems for an
-organism, of the collection of organisms in a population etc. At each
-level we have a network of lower level components from which new
-properties naturally emerge.</p>
-<p>So life itself is an emergent property, it is not present in the
-parts it originates from, and only emerges when its parts are assembled
-together correctly.</p>
-</div>
-<div id="life-as-a-gestalt-of-autopoetic-unit-cognition-and-environment"
-class="section level3" number="2.3.3">
-<h3><span class="header-section-number">2.3.3</span> Life as a gestalt
-of autopoetic unit, cognition and environment</h3>
-<p>For Maturana and Varela cognition is also inseparable from
-autopoiesis <span class="citation">(Capra and Luisi 2014)</span>. Each
-living organism is an open system that interacts with its environment
-through its sensory arsenal. It senses its environment, it feeds on its
-environment, releases products in it, it changes its environment, and,
-actualizes itself to its environment. The fact that an organism is
-changing its environment is often overlooked. However, life has
-dramatically transformed Earth. Indeed, think of photosynthesis for
-instance that radically changed Earth by the release of the highly
-reactive molecule oxygen.</p>
-<p>An organism at any time in its development is a record of its
-previous interactions with its environment and that determines its
-future interactions. Hence, cognition is a natural product of its
-evolution.</p>
-<p>Varela sees life as a gestalt of three domains <span
-class="citation">(Capra and Luisi 2014)</span>:</p>
+<li>Messenger RNA (cfr RAM memory)</li>
+<li>Ribozymes: catalitic function
 <ul>
-<li>Environment,</li>
-<li>Cognition and</li>
-<li>The autopoietic unit.</li>
+<li>transfer RNA for translation of proteins</li>
+<li>in ribosomes for translation of proteins</li>
+<li>a lot of other rybozymes (catalic RNA)</li>
+</ul></li>
+<li>RNA primer essential to copy DNA<br />
+</li>
+<li>Carrier of genetic material (e.g. corona virus)</li>
+</ul></li>
 </ul>
-<p>Life is the synergy of these three domains.</p>
-<div style="page-break-after: always;"></div>
-</div>
-<div id="our-social-system-as-an-emergent-property"
-class="section level3" number="2.3.4">
-<h3><span class="header-section-number">2.3.4</span> Our social system
-as an emergent property</h3>
-<p>The insights of Maturana and Varela have the compelling implication
-that we no longer need the duality of matter and mind when trying to
-understand human life. Life naturally arises as an emerging property of
-the large networks of matter or molecules at the level of each
-individual cell, the basic autopoietic unit, and then new properties
-emerge at a higher level when combining autopoietic units into tissues,
-organs, organ systems, organisms, populations, etc.</p>
-<p>As such, we can also view our cognitive awareness as an emerging
-property of the network of our neurons in our brain in response to the
-history of our interactions with our environment. Similar to other
-species, the unique novel functions and processes that do arise when
-human entities are forming networks are astounding.</p>
-<p>Indeed, at the next level, the network of people, our rich
-psycho-socio-emotional realm emerges. As human beings, our lives do not
-only take place in the physical domain, but also in the symbolic social
-domain, which is also very important for our development <span
-class="citation">(Capra and Luisi 2014)</span>.</p>
-<p>Similar to the biochemical system of a cell, the social system is an
-open system with social feedback loops. Indeed, each social system needs
-to sustain itself in a stable but dynamic way, by letting new members,
-materials and ideas to enter the system, which will in turn be
-transformed by the internal rules or organisation of the system <span
-class="citation">(Capra and Luisi 2014)</span>, leading to a kind of
-“social homeostasis”. Sometimes, these novel ideas can be so powerful
-that they transform the social system by itself, i.e. switching it
-towards a novel attractor. At the individual level, however, the
-transformation implied by the social system sometimes are a bliss, but
-they also can cause trauma. The observation that the “bio-logic” or
-pattern of organisation of a simple cell is similar to that of an entire
-social structure has large implications.</p>
-<p>Indeed, as <span class="citation">Kimmerer (2013)</span> points out
-so convincingly in her book Braiding Sweetgrass, these insights also
-invites us to learn from all forms of life that are surrounding us. The
-lichen example can teach us on our relationships and society. Indeed, in
-the lab environment when resources were plentiful both the fungus and
-green algae did not interact, only when the environment became harsh for
-both of them, they join forces and take their unique lichen form where
-there are intimately intertwined. A similar disruption of our social
-function can be seen in our modern western society that is flooded by
-resources, which cultivates individualism and loneliness.</p>
-<p>So this shared bio-logic from cells up to our symbolic realm,
-suggests a fundamental unity of life <span class="citation">(Capra and
-Luisi 2014)</span> and has large implications for our
-weltanschauung.</p>
+<p></br></p>
 </div>
 </div>
 </div>
-<div id="genesis-of-life-phylogenesis-and-evolution"
-class="section level1" number="3">
-<h1><span class="header-section-number">3</span> Genesis of life,
-phylogenesis and evolution?</h1>
-<div id="genesis-of-universe" class="section level2" number="3.1">
-<h2><span class="header-section-number">3.1</span> Genesis of
-Universe</h2>
-<p>An overview of the evolution of our universe is given in Figure
-@ref(fig:evolutionUniverse).</p>
-<div class="figure" style="text-align: center">
-<img src="figs/originKosmos.jpg" alt="Genesis and Evolution of our Universe (Source: NASA/WMAP Science Team, Wikipedia)" width="100%" />
-<p class="caption">
-Genesis and Evolution of our Universe (Source: NASA/WMAP Science Team,
-Wikipedia)
-</p>
+<div id="evolution-and-phylogenesis" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Evolution and
+phylogenesis</h1>
+<p></br></p>
+<p></br></p>
+<p><img src="figs/Phylogenetic_tree.svg" /> (Source: wikipedia)</p>
+<p></br></p>
+<div id="evolution" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Evolution</h2>
+<div id="variability-and-selection" class="section level3"
+number="2.1.1">
+<h3><span class="header-section-number">2.1.1</span> Variability and
+selection</h3>
+<p>Bacteria &amp; Archae<br />
+<img src="figs/Binary_Fission_2.svg" style="width:70.0%" /><br />
+(Source: Ecoddington, wikipedia)</p>
+<p>Eukaryota <img src="figs/Meiosis_Stages.svg" /> (Source: Ali Zifan,
+wikipedia)</p>
+<p></br></p>
+<center>
+<img src="figs/DNA_polymerase.svg" style="width:40.0%" /><br />
+(Source: wikipedia)
+</center>
+<p></br></p>
+<ul>
+<li><p>Error margin of DNA replication: 1 error per billion basepairs
+that are copied (Human genome 6.4 billion basepairs)</p></li>
+<li><p>Insertions/deletions: baseparen that are added or
+removed</p></li>
+<li><p>Recombination: reshuffling of genetic traits, e.g. during sexual
+reproduction (e.g. recombination of paternal and maternal segments
+during meiosis). <span class="math inline">\(\rightarrow\)</span>
+Mutations <span class="math inline">\(\rightarrow\)</span> Natural
+variability</p></li>
+<li><p>Most mutaties are neutral <span
+class="math inline">\(\rightarrow\)</span> Molecular/Genetic
+clock</p></li>
+<li><p>But not always</p></li>
+</ul>
+<p></br></p>
+<p><img src="figs/sickleCellWikipedia2.png" /> <img
+src="figs/Sickle_Cells_wiki.jpeg" style="width:45.0%" /> <img
+src="figs/Sickle_Cell_Anemia_wiki3.png" style="width:45.0%" /><br />
+(Source: Thomas Samuel (1), OpenStax College (2), BruceBlaus(3),
+wikipedia)</p>
+<p></br></p>
+<ul>
+<li>Many in Africa</li>
+<li>Why does this mutation remains?</li>
+<li>Selection by ecofactors: malaria resistence</li>
+</ul>
+<p></br></p>
 </div>
-<p>The most common theory is that our cosmos started with the Big Bang.
-A very energy-rich state.</p>
-<p>By expanding the universe quickly cooled down enough for energy to be
-converted into mass, i.e. the majority in hydrogen and a fraction in
-more heavy helium nuclei.</p>
-<div id="genesis-of-stars" class="section level3" number="3.1.1">
-<h3><span class="header-section-number">3.1.1</span> Genesis of
-Stars</h3>
-<p>Under the influence of the gravitational force, matter then started
-to cluster in nebula, gaseous clouds essentially consisting of hydrogen
-(H) and helium (He).</p>
-<p>Due to concentration difference in these first nebula, these clouds
-further contracted and eventually imploded (See Figure
-@ref(fig:genesisStar)).</p>
-<div class="figure" style="text-align: center">
-<img src="figs/I08-13-firststars6.jpeg" alt="Genesis of the first stars (Source: universe-review.ca)" width="100%" />
-<p class="caption">
-Genesis of the first stars (Source: universe-review.ca)
-</p>
+<div id="evolution-1" class="section level3" number="2.1.2">
+<h3><span class="header-section-number">2.1.2</span> Evolution</h3>
+<ul>
+<li><p>Natural process that forms the basis of the origin of species
+(plants, animals, bacteria, fungi, … and homonids)</p></li>
+<li><p>Driven by two opposing forces: <strong>variation</strong> en
+<strong>selection</strong></p></li>
+<li><p>Variation by spontaneous copy errors in genetic code:
+mutations</p></li>
+<li><p>Selection upon ecofactors, is mutation beneficial or harmfull for
+a particular organism in its specific environment.</p></li>
+<li><p>Odds on fixation of mutation depends on reproductive
+success</p></li>
+<li><p>Process of mutation and selection can eventually lead to new
+species upon many generations. </br></p></li>
+</ul>
 </div>
-<p>Extreme heating in the nebula that imploded by gravity gave rise to a
-condition in which all matter was in the form of a super hot plasma. In
-such a plasma nuclear fusion spontaneously takes place. In this process
-light atoms are combined into more heavy atoms and much energy is
-released.</p>
-<p>First all hydrogen atoms are converted into helium (see Figure
-@ref(fig:nuclearFusion)). The mass of the resulting Helium nuclei is
-slightly lower than that of the original helium nuclei and the mass
-difference has been converted again into energy.</p>
-<div class="figure" style="text-align: center">
-<img src="figs/fusion.svg" alt="Nuclear Fusion of hydrogen to the more heavy helium (Source: Sarang, Wikipedia)" width="50%" />
-<p class="caption">
-Nuclear Fusion of hydrogen to the more heavy helium (Source: Sarang,
-Wikipedia)
-</p>
+<div id="genetic-drift" class="section level3" number="2.1.3">
+<h3><span class="header-section-number">2.1.3</span> Genetic drift</h3>
+<ul>
+<li><p>Genetic drift: random fluctuations of alleles</p></li>
+<li><p>Particularly strong in small populations</p></li>
+<li><p>As opposed to selection it is not adaptive.</p></li>
+<li><p>New species will originate more quickly when a small fraction of
+the population gets isolated in a new environment.</p></li>
+</ul>
+<p></br></p>
 </div>
-<p>If all hydrogen in a star is used, the fusion stops because the
-activation energy to convert helium to lithium is too high (Figure
-@ref(fig:fusionEnergy)).</p>
-<div class="figure" style="text-align: center">
-<img src="figs/fusionEnergy.png" alt="Energy liberated by nuclear fusion. In a star nuclear fusion happens until Iron (Source: Wikipedia)" width="50%" />
-<p class="caption">
-Energy liberated by nuclear fusion. In a star nuclear fusion happens
-until Iron (Source: Wikipedia)
-</p>
+<div id="horizontal-gene-transfer" class="section level3"
+number="2.1.4">
+<h3><span class="header-section-number">2.1.4</span> Horizontal gene
+transfer</h3>
+<ul>
+<li><p>Non sexual transfer of genetic information</p></li>
+<li><p>Very common between prokaryotes (eubacteria and arachae
+bacteria)</p>
+<ul>
+<li>e.g. exchange of antibiotics resistance.</li>
+</ul></li>
+<li><p>between eukaryotes (mainly in protists, unicellular organisms
+with nucleus)</p></li>
+<li><p>between prokaryotes (eubacteria and arachae bacteria) and
+eukaryotes (protisten, fungae, plants and animals)</p></li>
+</ul>
+<p></br></p>
 </div>
-<p>Therefore, the star cools down, implodes and subsequently explodes
-into a supernova (see Figure @ref(fig:supernova)). During the supernova
-nuclear fusion further occurs towards more heavy elements up to iron
-(Figure @ref(fig:fusionEnergy)) and these elements are projected in the
-universe.</p>
-<div class="figure" style="text-align: center">
-<img src="figs/hires.jpeg" alt="Supernova of a star (Source:  www.universetoday.com)" width="50%" />
-<p class="caption">
-Supernova of a star (Source: www.universetoday.com)
-</p>
+<div id="teleonomy" class="section level3" number="2.1.5">
+<h3><span class="header-section-number">2.1.5</span> Teleonomy</h3>
+<ul>
+<li><p>There is only the primitive goal to maintain and reproduce the
+species.</p></li>
+<li><p>Evolution has no purpose or direction</p></li>
+<li><p>When complex organs and organisms originate its seems as if there
+is a direction/purpose but that is not the case.</p></li>
+</ul>
+<p></br></p>
+<p><img src="figs/evolutionEye.png" style="width:50.0%" /><br />
+(Source: Matticus78, wikipedia)</p>
+<p></br></p>
+<ul>
+<li><p>The eye is not developed by evolution with the purpose to
+see.</p></li>
+<li><p>The eye only has the function to see</p></li>
+<li><p>It is the result of a gradual process where each adaptation gave
+a reproductive advantage in a particular environment.</p></li>
+<li><p>In another environment it can be nolonger functional and than it
+might dissapear, e.g. moles eye</p></li>
+<li><p>The origin of a species is the result of evolution but not the
+purpose of evolution.</p></li>
+<li><p>Evolution is adaptation with as goal maintance and
+reproduction</p></li>
+</ul>
+<p></br></p>
+<div id="evolution-has-no-direction" class="section level4"
+number="2.1.5.1">
+<h4><span class="header-section-number">2.1.5.1</span> Evolution has no
+direction</h4>
+<ul>
+<li>Distribution of number of species and complexity</li>
+</ul>
+<p><img src="figs/selectionNoDirectionDef.png" /><br />
+(Source: Stephen J. Gould, 1996, Full House: the spread of Excellence
+from Plato To Darwin)</p>
+<ul>
+<li>Distribution of carbon mass fixated in different types of
+species.</li>
+</ul>
+<p><img
+src="https://www.pnas.org/cms/10.1073/pnas.1711842115/asset/44253c25-afd5-4fa1-b060-31591f934f5d/assets/graphic/pnas.1711842115fig01.jpeg" /><br />
+(Massa in giga ton koolstof. Source:
+doi.org/10.1073/pnas.1711842115)</p>
+<p></br></p>
+<ul>
+<li><p>Note, large error margin on bacteria (can be a factor 10
+larger).</p></li>
+<li><p>Number of bacterial cells in our body (Source:
+doi.org/10.1371/journal.pbio.1002533):</p>
+<ul>
+<li>#bacterial cells/#human cells earlier estimated as <span
+class="math inline">\(\pm\)</span> 10/1</li>
+<li>recent estimatiom <span class="math inline">\(\pm\)</span> 1/1.</li>
+<li>Human of 70kg <span class="math inline">\(\pm\)</span> 38 trillion
+bacterial cells/30 trillion humane cells (trillion: 1000 billion:
+10<span class="math inline">\(^{12}\)</span>!).</li>
+</ul></li>
+</ul>
+<p></br></p>
 </div>
-<p>A supernova gives rise to new nebula and these will eventually lead
-to new stars and the whole process begins all over.</p>
-<p>Hence, through nuclear fusion in the stars the more heavy atoms have
-been generated of which the bio-molecules of life are eventually built.
-So as often mentioned in a catchphrase: we are built out of cosmic
-dust.</p>
-</div>
-<div id="carbohydrates-in-interstellar-space" class="section level3"
-number="3.1.2">
-<h3><span class="header-section-number">3.1.2</span> Carbohydrates in
-Interstellar Space</h3>
-<p>Upon nuclear fusion in the stars many different elements are formed.
-For life, hydrogen, carbon, oxygen, sulfur, phosphorous and nitrogen
-atoms, among others, are key to compose organic matter.</p>
-<p>In interstellar space, carbon reacts spontaneously with other
-elements to form poly-aromatic carbohydrates (PAHs). This is for
-instance visible in a photograph of the Cat’s paw nebula (Figure
-@ref(fig:catPawNebula)). In the green regions radiation of hot stars
-induces fluorescence of PAHs.</p>
-<div class="figure" style="text-align: center">
-<img src="figs/orionWithPAH.jpeg" alt="Cat's Paw nebula, in the green regions radiation of hot stars induces fluorescence of PAHs (Source: NASA/JPL-Caltech, Wikipedia)" width="50%" />
-<p class="caption">
-Cat’s Paw nebula, in the green regions radiation of hot stars induces
-fluorescence of PAHs (Source: NASA/JPL-Caltech, Wikipedia)
-</p>
-</div>
-<p>PAHs were already be generated shortly after the Big Bang. Once they
-are produced, they are further transformed in interstellar space upon
-reaction with hydrogen and oxygen
-<!-- via hydrogenation (reaction with hydrogen), oxygenation (reaction with oxygen) -->
-among others to form precursor molecules (“forerunners”) for amino acids
-and nucleotides, which are the building blocks of proteins, and, of RNA
-and DNA, respectively. So these simple building blocks that are
-essential for the chemistry of life are already omnipresent in
-space.</p>
 </div>
 </div>
-<div id="genesis-of-life" class="section level2" number="3.2">
-<h2><span class="header-section-number">3.2</span> Genesis of Life</h2>
-<p>In a remote corner of our milky way, which is an average galaxy, an
-average planet was formed, which we know as our planet Earth. After the
-Earth cooled down liquid water was formed. The unique features of liquid
-water are essential for life as we know it. Indeed, once liquid water
-was available, life emerged in less than 300 million years, which is
-very short time interval on the geological timescale.</p>
-<!-- Water is a peculiar molecule and it has the unique feature to form hydrogen bounds between the hydrogen and oxygen atoms of different molecules (see Figure \@ref(fig:water)). 
-
-<div class="figure" style="text-align: center">
-<img src="figs/3D_model_hydrogen_bonds_in_water.svg" alt="Structure of water. A unique feature of water is that it forms hydrogen bounds indicated by (1) (Source: Wikipedia)" width="25%" />
-<p class="caption">Structure of water. A unique feature of water is that it forms hydrogen bounds indicated by (1) (Source: Wikipedia)</p>
-</div>
-
-These hydrogen bounds cause water to be liquid at higher temperatures than what we would expect based on the small size of the molecule. It also makes water to freeze with volume increase! Water has its lowest volume while it is liquid at 4°C. -->
-<p>So on earth conditions emerged that made the <em>“genesis of
-life”</em> as we know it, possible. The exact process that led to the
-life forms on earth is unknown and will probably remain so. However, a
-general rationale is displayed in Figure @ref(fig:originOfLife).</p>
-<div class="figure" style="text-align: center">
-<img src="figs/origin_of_life_stages.svg" alt="Stages in the origin of life range from well-understood, such as the abiotic synthesis of simple organic molecules, to largely unknown, like the origin of the last universal common ancestor (LUCA) with its complex molecular functionalities. (Source: Chiswick Chap, Wikipedia)" width="100%" />
-<p class="caption">
-Stages in the origin of life range from well-understood, such as the
-abiotic synthesis of simple organic molecules, to largely unknown, like
-the origin of the last universal common ancestor (LUCA) with its complex
-molecular functionalities. (Source: Chiswick Chap, Wikipedia)
-</p>
-</div>
-<p>First, a chemical evolutionary process gave rise to organic molecules
-with increasing complexity. It is a general consensus that RNA molecules
-emerged first from free nucleotides. RNA molecules are known to be
-catalytic and are carriers of genetic information. They can also
-replicate themselves under anoxic conditions (in the absence of oxygen)
-and in the presence of iron, conditions that occurred at young planet
-Earth (e.g. <span class="citation">Hsiao et al. (2013)</span>). These
-RNA molecules evolved either alone, the RNA-world hypothesis, or already
-in conjunction with proteins.</p>
-<p>Next, it is assumed that prebiotic molecules, which could
-self-replicate, were encapsulated by phospholipids, which spontaneously
-form membrane like structures. This resulted in a protocell with a
-membrane (see Figure @ref(fig:originOfLife)). In these protocells a
-further chemical evolution was possible, separated from the environment,
-which ultimately led to a self-replicating and self-organizing cell that
-was built from the four essential type of bio-molecules of life: lipids,
-carbohydrates, proteins and nucleic acids.</p>
-<p>Further biological evolution of these first living cells eventually
-gave rise to our last universal common ancestor (LUCA). LUCA must have
-had at least 355 genes, which all living organisms have in common. LUCA
-was anaerobic, living without oxygen, and maintained its hereditary
-material using DNA, the genetic code, and produced proteins from RNA
-templates in ribosomes. LUCA retrieved its energy from oceanic volcanic
-activity in deep sea vents, i.e. the intensely hot plumes caused by
-seawater interacting with magma erupting through the ocean floor. And
-eventually LUCA evolved into all species that currently live on
-Earth.</p>
-</div>
-<div id="phylogenesis" class="section level2" number="3.3">
-<h2><span class="header-section-number">3.3</span> Phylogenesis</h2>
-<p>All species evolved from the same ancestral population of cells. This
-is also referred to as the same Last Universal Common Ancestor (LUCA).
-In the tree of life the evolutionary relations are summarized between
-different organisms (and groups of organisms). All living beings
-eventually can be traced back to the last universal common ancestor who
-is located at the root of the tree, see Figure
-@ref(fig:treeOfLifeBis).</p>
-<div class="figure" style="text-align: center">
-<img src="figs/Phylogenetic_tree.svg" alt="The tree of life is one of the most important organizing principles in biology. It shows the evolutionary relationships among different organisms and that all living beings eventually can be traced back to the last universal common ancestor who is located at the root of the tree (Source: wikipedia)" width="100%" />
-<p class="caption">
-The tree of life is one of the most important organizing principles in
-biology. It shows the evolutionary relationships among different
-organisms and that all living beings eventually can be traced back to
-the last universal common ancestor who is located at the root of the
-tree (Source: wikipedia)
-</p>
-</div>
-<p>Phylogenesis is the process of the origin of all species from the
-tree of life from LUCA.</p>
-<div id="timescale" class="section level3" number="3.3.1">
-<h3><span class="header-section-number">3.3.1</span> Timescale</h3>
-<!-- ![](https://naturedocumentaries.org/wp-content/uploads/2017/12/liferockystartstrip.jpg) -->
-<p><img src="figs/liferockystartstrip.jpeg" /></p>
+<div id="phylogenese" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Phylogenese</h2>
+<p>Origin of all species by evolution</p>
+<p><img src="figs/Phylogenetic_tree.svg" /><br />
+(Source: wikipedia)</p>
+<p></br></p>
+<div id="timescale" class="section level3" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> Timescale</h3>
+<p><img
+src="https://naturedocumentaries.org/wp-content/uploads/2017/12/liferockystartstrip.jpg" /></p>
 <table>
 <thead>
 <tr class="header">
@@ -1632,562 +1005,217 @@ tree of life from LUCA.</p>
 </tbody>
 </table>
 <p>(Source: naturedocumetaries.org)</p>
-<p>At its origin about 4.5 Billion Years Ago (BYA) the Earth was black,
-a hot basalt rock and dust in a cold vacuum. As the Earth cooled down
-she became Grey Earth (4.3 BYA) as she was mainly covered by granite and
-rocks. Another 500 million years later she was covered with liquid
-water: Blue Earth (3.8 BYA).</p>
-<p>In only 300 million years she radically changed into Red Earth (3.5
-BYA) due to life. Indeed, cyanobacteria emerged that can do
-photosynthesis and produce oxygen, a very reactive molecule. This led
-all free iron in the ocean to precipitate as iron oxide or rust (red).
-There was an explosion of the number of minerals, they went from
-approximately 250 to more than 5000 mineral species. Oxygen also caused
-a mass extinction because only few organisms could cope with its highly
-reactive nature. The coming 3 billion years life on Earth stayed
-relatively similar.</p>
-<p>Around 540 MYA Earth was struck by a large ice age, White Earth.
-Again leading to a mass extinction due to the cold. However, volcanic
-activity came to the rescue by producing greenhouse gasses and an
-atmosphere that could retain more heat.</p>
-<p>In less than 20 million years (MY) Earth radically changed again and
-turned into Green Earth (520 MYA). There was an explosion of life, and
-life suddenly evolved from being mainly unicellular to complex
-multicellular forms.</p>
-</div>
-<div id="endosymbiosis" class="section level3" number="3.3.2">
-<h3><span class="header-section-number">3.3.2</span> Change Point:
-Eukaryotic Cells and Increase of Oxygen</h3>
-<p>There are two archetypes of cells:</p>
 <ul>
-<li>Prokaryota, simple cells of a size of 0.1 to 5.0 <span
-class="math inline">\(\mu m\)</span> with DNA that is lying freely in
-the cell cytosol (the fluid in the cell), see Figure
-@ref(fig:prokaryotaCell) and</li>
-</ul>
-<div class="figure" style="text-align: center">
-<img src="figs/prokaryoteCell.svg" alt="Diagram of a typical prokaryotic cell. The cell is simple, the DNA is lying free in the cell (Source: Ali Zifan, Wikipedia)" width="50%" />
-<p class="caption">
-Diagram of a typical prokaryotic cell. The cell is simple, the DNA is
-lying free in the cell (Source: Ali Zifan, Wikipedia)
-</p>
-</div>
+<li><p>Black Earth (4.5 BYA): hot basalt rock and dust in a cold
+vacuum</p></li>
+<li><p>Grey Earth (4.3 BYA): granite</p></li>
+<li><p>Blue Earth (3.8 BYA): water</p></li>
+<li><p>Red Earth (3.5 BYA): Radical change due to life.</p>
 <ul>
-<li>Eukaryota are larger and more complex cells, 10-100 <span
-class="math inline">\(\mu m\)</span> in size. They have a variety of
-internal membrane-bound structures, called organelles, and a
-cytoskeleton, which play an important role in defining the cell’s
-organization and shape. Eukaryotic DNA is stored in chromosomes. A
-chromosome is a long DNA molecule that is stored in a compact form. A
-chromosome contains a part or all of the genetic material of an
-organism. Human cells have 46 chromosomes, i.e. 23 chromosome pairs.
-Each pair consists of one copy from our biological mother and one from
-our biological father. The chromosomes are located in the cell nucleus,
-which is the organelle maintaining the integrity of chromosomes and thus
-of our genes, and plays an important role in the regulation of gene
-expression and of the activities of the cell. See Figures
-@ref(fig:animalCell) and @ref(fig:plantCell).</li>
+<li>Cyanobacteria <span class="math inline">\(\rightarrow\)</span>
+fotosynthesis <span class="math inline">\(\rightarrow\)</span>
+oxygen</li>
+<li>All iron in the ocean precipitates as iron oxide (rust, red)</li>
+<li>250 <span class="math inline">\(\rightarrow\)</span> &gt; 5000
+minerals.</li>
+<li>Mass extinction</li>
+</ul></li>
+<li><p>White Earth (540 MYA)</p>
+<ul>
+<li>Large ice age</li>
+<li>Mass extinction</li>
+<li>Volcanic activity comes to the rescue: greenhouse gasses</li>
+</ul></li>
+<li><p>Green Earth (520 MYA)</p>
+<ul>
+<li>Explosion of life</li>
+<li>from unicellular to more complex life.</li>
+</ul></li>
 </ul>
-<div class="figure" style="text-align: center">
-<img src="figs/animalCell.svg" alt="Diagram of a typical animal cell. Animal cells are eukaryotic cells. They are typically much larger than those of prokaryotas. They have a variety of internal membrane-bound structures, called organelles, and a cytoskeleton, which play an important role in defining the cell's organization and shape. Eukaryotic DNA is divided into chromosomes, that are located in the cell nucleus, which is the organelle maintaining the integrity of genes, and plays an important role in the regulation of gene expression and of the activities of the cell. (Source: Mariana Ruiz Villarreal, Wikipedia)" width="50%" />
-<p class="caption">
-Diagram of a typical animal cell. Animal cells are eukaryotic cells.
-They are typically much larger than those of prokaryotas. They have a
-variety of internal membrane-bound structures, called organelles, and a
-cytoskeleton, which play an important role in defining the cell’s
-organization and shape. Eukaryotic DNA is divided into chromosomes, that
-are located in the cell nucleus, which is the organelle maintaining the
-integrity of genes, and plays an important role in the regulation of
-gene expression and of the activities of the cell. (Source: Mariana Ruiz
-Villarreal, Wikipedia)
-</p>
-</div>
-<div class="figure" style="text-align: center">
-<img src="figs/plantCell.svg" alt="Diagram of a typical plant cell. Animal cells are eukaryotic cells. They are typically much larger than those of prokaryotas. They have a variety of internal membrane-bound structures, called organelles, and a cytoskeleton, which play an important role in defining the cell's organization and shape. Eukaryotic DNA is divided into chromosomes, that are located in the cell nucleus, which is the organelle maintaining the integrity of genes, and plays an important role in the regulation of gene expression and of the activities of the cell. Plant cells also have a cell wall and chloroplasts that can perform photosynthesis. (Source: Mariana Ruiz Villarreal, Wikipedia)" width="50%" />
-<p class="caption">
-Diagram of a typical plant cell. Animal cells are eukaryotic cells. They
-are typically much larger than those of prokaryotas. They have a variety
-of internal membrane-bound structures, called organelles, and a
-cytoskeleton, which play an important role in defining the cell’s
-organization and shape. Eukaryotic DNA is divided into chromosomes, that
-are located in the cell nucleus, which is the organelle maintaining the
-integrity of genes, and plays an important role in the regulation of
-gene expression and of the activities of the cell. Plant cells also have
-a cell wall and chloroplasts that can perform photosynthesis. (Source:
-Mariana Ruiz Villarreal, Wikipedia)
-</p>
-</div>
-<p>From 3.5 BYA - 540 MYA we find mainly prokaryotic and some simple
-eukaryotic organisms in fossils and life was mainly unicellular.</p>
-<p>Eukaryotic cells are believed to be generated by endosymbiosis,
-i.e. a symbiotic relationship where one organism lives inside the other,
-which is beneficial for both organisms.</p>
-<p>The process of endosymbiosis that led to eukaryotic cells is
-displayed in Figure @ref(fig:endosymbiosis).</p>
-<div class="figure" style="text-align: center">
-<img src="figs/endosymbiosis.svg" alt="Genesis of eukaryotic cells (Source: wikipedia)" width="80%" />
-<p class="caption">
-Genesis of eukaryotic cells (Source: wikipedia)
-</p>
-</div>
-<p>First an anaerobic<a href="#fn1" class="footnote-ref"
-id="fnref1"><sup>1</sup></a> prokaryotic cell was assumed to have grown
-and to have developed membrane systems inside the cell, which gave rise
-to the formation of the nucleus. At a certain point of time this large
-prokaryotic cell with internal membrane systems must have ingested an
-aerobic<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>
-proteobacterium, which managed to avoid digestion. The two cells started
-with an endosymbiotic relation.</p>
-<p>The proteobacterium provided the host cell with additional energy
-through the synthesis of ATP by metabolizing carbohydrates and lipids
-using oxygen and the host cell fed the proteobacterium with these
-bio-molecules. This gave the endosymbiotic pair the ability to grow
-further in size and to thrive in the oxygen rich environment of planet
-Earth that was established during the Cambrian era that started 540
-million years ago. The increase of oxygen is believed to be one of the
-major triggers that gave rise to the “biological big bang” that led to
-an explosion of novel species and the emergence of all large groups<a
-href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> in the
-animal kingdom <span class="citation">(He et al. 2019)</span>.</p>
-<p>During their endosymbiotic evolution the proteobacterium gradually
-handed over many genes to the cell nucleus, and became under regulation
-of the nucleus. It eventually evolved to mitochondria, the organelles
-that are the energy plants of a cell. So, we inherit more from mother
-than father: we inherit our cell structure as well as our energy system,
-i.e. our mitochondria and their remaining DNA, from mother side through
-her egg cell.</p>
-<p>For plant cells, a second endosymbiotic event must have occurred with
-eukaryotic cells and cyanobacteria. The ingested cyanobacteria has
-evolved in a similar way into chloroplasts, which give plants the
-ability for photosynthesis and led them become the most successful life
-form of the globe. Fossil evidence of land plants dates back to 485 MYA
-- 420 MYA, however, phylogenetic analysis also suggests an earlier
-origin in the Cambrian <span class="citation">(Strother and Foster
-2021)</span>.</p>
-<p>Other key differences between Prokaryota and Eukaryota are in terms
-of their reproduction. For Prokaryota that only takes place by cell
-division. A mutation in the DNA is thus fixed in all daughter cells.
-While nearly all Eukaryota have a phase of sexual reproduction. They are
-diploid organisms, i.e. they have two copies of each gene, one from
-fathers’ and mothers’ side. This enables successive mutations to be made
-in one copy because another functional copy of the gene is available.
-Moreover during sexual reproduction recombination of chromosomes occurs,
-i.e. reshuffling of paternal and maternal genes, which leads to much
-more variation.</p>
-<p>The Eukaryota further evolved in protists, which are unicellular
-organisms, fungae, plants and animals.</p>
-</div>
-</div>
-<div id="evolution" class="section level2" number="3.4">
-<h2><span class="header-section-number">3.4</span> Evolution</h2>
-<p>How does the evolution of LUCA to all species of the tree of life
-occurred? Evolution is largely driven by variability and selection.</p>
-<div id="variability-and-selection" class="section level3"
-number="3.4.1">
-<h3><span class="header-section-number">3.4.1</span> Variability and
-Selection</h3>
-<p>Variation occurs, among others, through errors in the copying of DNA
-for cell division of prokaryotic cells and gamete<a href="#fn4"
-class="footnote-ref" id="fnref4"><sup>4</sup></a> production for
-eukaryotic cells (see Figure @ref(fig:dnaPolymerase)).</p>
-<div class="figure" style="text-align: center">
-<img src="figs/DNA_polymerase.svg" alt="Copying of DNA by DNA-polymerase. DNA polymerase extends a DNA strand by incorporating a complementary nucleoside-tri-phosphate and splitting two of the three phosphate groups. Note, again the link between energy and information. Errors are often corrected by proofreading. However, some of the errors remain." width="45%" />
-<p class="caption">
-Copying of DNA by DNA-polymerase. DNA polymerase extends a DNA strand by
-incorporating a complementary nucleoside-tri-phosphate and splitting two
-of the three phosphate groups. Note, again the link between energy and
-information. Errors are often corrected by proofreading. However, some
-of the errors remain.
-</p>
-</div>
 <p></br></p>
-<p>The error margin of DNA replication is 1 error per billion base pairs
-that are copied, which can lead to point mutations. Note, that we humans
-have a genome size of about 6.4 billion base pairs.</p>
-<p>Other sources of variability are</p>
+</div>
+<div id="changepoint-genesis-of-eukaryotic-cell" class="section level3"
+number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> Changepoint:
+Genesis of eukaryotic cell</h3>
+<p>Two archetypes: prokaryoten (simple cells, 0.1 to 5.0 <span
+class="math inline">\(\mu m\)</span>) and eukaryotes (larger and more
+complex cells, 10-100 <span class="math inline">\(\mu m\)</span>)</p>
+<p><img src="figs/prokaryoteCell.svg" style="width:30.0%" /> <img
+src="figs/animalCell.svg" style="width:30.0%" /> <img
+src="figs/plantCell.svg" style="width:30.0%" /><br />
+(Source: Ali Zifan (1) &amp; Mariana Ruiz Villarreal (2 &amp; 3),
+wikipedia)</p>
+<p></br></p>
 <ul>
-<li>Insertions or deletions, i.e. base pairs that are added or removed,
-respectively.</li>
-<li>Recombination, reshuffling of genetic traits, e.g. during sexual
-reproduction</li>
+<li>3.5 BYA - 520 MYA only prokaryote cells in fossils</li>
 </ul>
-<p>Most mutations are neutral, i.e. the mutated codon encodes for the
-same amino acid. Neutral mutations can be used as a molecular/genetic
-clock to tell how far apart two species are in an evolutionary
-sense.</p>
-<p>But, mutations are not always neutral! For instance, sickle cell
-anemia is caused by one point mutation in hemoglobin (see Figure
-@ref(fig:sickleCell1) and @ref(fig:sickleCell2)). A T (thymine base) is
-mutated to an A (adenine base), which results in a codon that encodes
-for the amino acid valine instead of glutamic acid. This causes dramatic
-changes to the 3D structure of the hemoglobin protein and causes a
-deformation of the red blood cells from a round to sickle shape, which
-leads to anemia.</p>
-<p>Why does this mutation remain? It mainly occurs in Africa, where the
-mutation for sickle cell anemia is selected because it makes affected
-individuals resistant against malaria, which gives them a evolutionary
-competitive advantage despite their anemia. However, offspring who
-inherit the mutation of both parents are not viable. Therefore, the
-regular variant of hemoglobin also remains.</p>
-<div class="figure" style="text-align: center">
-<img src="figs/sickleCellWikipedia2.png" alt="Mutation of Hemoglobin in patients with sickle cell anemia (Source: Wikipedia)" width="45%" />
-<p class="caption">
-Mutation of Hemoglobin in patients with sickle cell anemia (Source:
-Wikipedia)
-</p>
-</div>
-<div class="figure" style="text-align: center">
-<img src="figs/Sickle_Cell_Anemia_wiki3.png" alt="Deformed red blood cells in patients with sickle cell anemia (Source: Wikipedia)" width="45%" />
-<p class="caption">
-Deformed red blood cells in patients with sickle cell anemia (Source:
-Wikipedia)
-</p>
-</div>
-<p>Hence, evolution is a natural process that is driven by two opposing
-forces: variation and selection.</p>
-<p>Variation occurs by spontaneous copy errors in genetic code or
-mutations, among others.</p>
-<p>Selection occurs upon ecofactors: Is a mutation beneficial or harmful
-for a particular organism in its specific environment? The odds on
-fixation of the mutation thus depends on the reproductive success.</p>
-<p>The process of genetic variation and selection can eventually lead to
-evolution of new species upon many generations.</p>
-</div>
-<div id="genetic-drift" class="section level3" number="3.4.2">
-<h3><span class="header-section-number">3.4.2</span> Genetic Drift</h3>
-<p>Another important process for the origin of species is genetic drift.
-This are random fluctuations of alleles, which are particular sequence
-variants of a gene. Genetic drift is particularly strong in small
-populations. As opposed to selection it is not adaptive.</p>
-<p>New species will thus originate more quickly when a small fraction of
-the population gets isolated in a new environment.</p>
-</div>
-<div id="horizontal-gene-transfer" class="section level3"
-number="3.4.3">
-<h3><span class="header-section-number">3.4.3</span> Horizontal Gene
-Transfer</h3>
-<p>Horizontal gene transfer, which is non-sexual transfer of genetic
-information between two distinct organisms, is also important for the
-evolutionary process.</p>
-<p>This is very common between Prokaryota, i.e. eubacteria and archaea
-bacteria, think on the super bugs in hospitals that acquired resistance
-to multiple antibiotics. It also occurs between Eukaryota. Mainly in
-protists, which are unicellular organisms with a nucleus. As well as
-between Prokaryota on the one hand and Eukaryota on the other hand.</p>
-</div>
-<div id="endosymbiosis-1" class="section level3" number="3.4.4">
-<h3><span class="header-section-number">3.4.4</span> Endosymbiosis</h3>
-<p>Endosymbiosis is also a very important driver of evolution. Niles
-Eldredge and Stephen Jay Gould have shown that the fossil record
-indicates that evolution happens in bursts: it is slow most of the time
-until suddenly rapid changes occur over a brief time <span
-class="citation">(Margulis 1999)</span>. According to Lynn Margulis this
-can be explained due to endosymbiosis, where one species starts to live
-within another species, which is a source of evolutionary novelty that
-can give rise to an explosion of novel life forms. We already touched in
-more detail upon an important endosymbiosis event in section
-@ref(endosymbiosis).</p>
-</div>
-<div id="teleonomy" class="section level3" number="3.4.5">
-<h3><span class="header-section-number">3.4.5</span> Teleonomy</h3>
-<p>The term teleonomy means that evolution only has the primitive goal
-to maintain and reproduce the species, and, that it thus has no other
-purpose and thus also no direction.</p>
-<p>When complex organs and organisms originate it might seem as if there
-is a direction or purpose, but, that is not the case! A good example is
-the development of an eye, see Figure @ref(fig:evolutionEye).</p>
-<div class="figure" style="text-align: center">
-<img src="figs/evolutionEye.png" alt="The evolution of an eye (Source: Wikipedia)" width="45%" />
-<p class="caption">
-The evolution of an eye (Source: Wikipedia)
-</p>
-</div>
-<p>Indeed,</p>
+<p></br></p>
+<p>Genesis of Eukaryotic cell by endosymbiosis:</p>
+<p><img src="figs/endosymbiosis.svg" /><br />
+(Source: Kelvinsong, wikipedia)</p>
+<p></br></p>
 <ul>
-<li><p>The eye is not developed by evolution with the purpose to
-see.</p></li>
-<li><p>The eye only has the function to see.</p></li>
-<li><p>It is the result of a gradual process where each adaptation gave
-a reproductive advantage in a particular environment.</p></li>
-<li><p>In another environment it can be no longer functional and than it
-might disappear or might become dysfunctional, e.g. moles eyes.</p></li>
+<li>Prokaryotes: reproduction by cell devision, mutation fixed in all
+daugther cells.</li>
 </ul>
-<p>Hence, the origin of a species is the result of evolution, but, not
-the purpose of evolution. Evolution is thus adaptation with as sole goal
-maintenance and reproduction.</p>
-<p>From the distribution of the complexity of species in Figure
-@ref(fig:distributionComplexity), it is clear that the most abundant
-species in number always has been bacteria. Indeed, evolution has no
-direction. The distribution of complexity at present, however, has a
-tail to the right. This mainly stems from the fact that there is lower
-bound of complexity of living organisms. Hence, evolution could not
-generate organisms with a complexity below this lower bound and it
-therefore only seems as if it slightly favors increasing complexity.</p>
-<p>(ref:gould) Distribution of complexity of species <span
-class="citation">(Gould 1997)</span></p>
-<div class="figure" style="text-align: center">
-<img src="figs/selectionNoDirectionDef.jpg" alt="(ref:gould)" width="45%" />
-<p class="caption">
-(ref:gould)
-</p>
-</div>
-<p><span class="citation">Bar-On, Phillips, and Milo (2018)</span>
-published the distribution of carbon mass fixated in different types of
-species in Figure @ref(fig:carbonFixated), which also shows that there
-is no preference towards more complex organisms.</p>
-<p>(ref:carbonFixatedCap) Mass in giga tons of carbon for different
-groups of species. <span class="citation">(Bar-On, Phillips, and Milo
-2018)</span></p>
-<div class="figure" style="text-align: center">
-<img src="figs/pnas.1711842115fig01.jpg" alt="(ref:carbonFixatedCap)" width="100%" />
-<p class="caption">
-(ref:carbonFixatedCap)
-</p>
-</div>
-<p>Note, that</p>
+<p></br></p>
 <ul>
-<li><p>Plants are the most successful group in terms of the mass of
-carbon that they fixate.</p></li>
-<li><p>Bacteria clearly dominate the more complex animal
-kingdom.</p></li>
-<li><p>Animals represent a relative small fraction. Among animals,
-cattle and humans are over represented.</p></li>
-</ul>
-<p>Other compelling evidence that there is no direction to evolution
-stems from the number of bacterial cells in our body. <span
-class="citation">Sender, Fuchs, and Milo (2016)</span> showed that the
-ratio of the number of bacterial cells to the number of human cells is
-close to 1. A human with a weight of 70kg has <span
-class="math inline">\(\pm\)</span> 38 trillion bacterial cells and 30
-trillion humane cells. Note, that trillion is a thousand billion or
-10<span class="math inline">\(^{12}\)</span>!</p>
-<p>So, all these examples make clear that evolution has no direction.
-For every organism with a higher complexity there also emerge many
-organisms with lower complexity! However, we can view evolution as a
-creative process that is generating novel life forms that are well
-adapted to their environment.</p>
-</div>
-</div>
-</div>
-<div id="onthogenesis" class="section level1" number="4">
-<h1><span class="header-section-number">4</span> Onthogenesis</h1>
-<p>The ontogenesis is the development of an organism from a fertilized
-egg cell up to the adult stage until we eventually die.</p>
-<p>Our ontogenesis starts from the genetic potential we inherit from our
-parents through their egg and sperm cell. The fertilized egg cell then
-starts to divide and at a certain point the cells start to differentiate
-into different tissues. Each of our cells, apart from our germ cells,
-has the same genetic material!</p>
-<p>Another very important factor in our development is our environment
-and how we interact with our environment. Indeed, our phenotype, our
-observable traits and characteristics, stem from the complex interplay
-between our genomic makeup, our genotype, and environmental factors.</p>
-<p>Key questions that arise in this respect is how cells of different
-tissues of the same organism that share the same genetic code can be
-morphologically so distinct, and how the environment and changes in our
-environment can impact our phenotype?</p>
-<p>This is due to epigenetics!</p>
-<div id="epigenetics" class="section level2" number="4.1">
-<h2><span class="header-section-number">4.1</span> Epigenetics</h2>
-<p>Epigenetics is the study of how development, behavior and environment
-can cause changes that affect the way we use our genes. Unlike genetic
-changes, epigenetic changes are reversible and do not change your DNA
-sequence, but they can change how our body can (or cannot) read a DNA
-sequence, see Figure @ref(fig:epigenetics).</p>
-<div class="figure" style="text-align: center">
-<img src="figs/Epigenetic_mechanisms.png" alt="Principes of epigenetics. Small molecules, epigenetic markers, interact with the DNA and histones. They can cause a gene to be accessible or inaccessible for RNA transcription (Source: NIH, Wikipedia)" width="100%" />
-<p class="caption">
-Principes of epigenetics. Small molecules, epigenetic markers, interact
-with the DNA and histones. They can cause a gene to be accessible or
-inaccessible for RNA transcription (Source: NIH, Wikipedia)
-</p>
-</div>
-<p>Epigenetic markers, however, are copied during cell division to the
-two new cells that are formed. This causes a liver cell to remain a
-liver cell and a brain cell to remain a brain cell upon cell
-division.</p>
-<p>Epigenetic markers are small molecules that interact either directly
-with the DNA or with histones, which are specific proteins that act as
-spools that wind the long DNA molecule in a more compact/condense form.
-They can make genes accessible or inaccessible for RNA transcription and
-thus eventually for the production of proteins. Two common types are</p>
+<li><p>Eukaryotes: nearly all have a phase of sexual reproduction</p>
 <ul>
-<li>DNA methylation: binding a methyl group directly to DNA<a
-href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>.</li>
-<li>Histone acetylation: binding an acetyl group to histone proteins<a
-href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a>.</li>
+<li>much more variation: recombination of chromosomes</li>
+<li>diploid organisms have two copies of each gene (father and mother)
+<span class="math inline">\(\rightarrow\)</span> successive mutations in
+1 copy possible in the presence of another functional copy of the
+gene.</li>
+</ul></li>
 </ul>
-<!-- Note, that binding a molecule on a protein after translation is also referred to as post translational modification (PTM). -->
-<p>Both types can impact the activity of genes. On the one hand DNA
-methylation actively represses the expression of a specific gene, while
-DNA demethylation enhances gene expression. On the other hand histone
-acetylation makes the structure of a region of DNA more open and thus
-more accessible for transcription of the genes in that region, while
-de-acetylation has the opposite effect.</p>
-</div>
-<div id="epigenetics-during-embryonal-development"
-class="section level2" number="4.2">
-<h2><span class="header-section-number">4.2</span> Epigenetics during
-Embryonal Development</h2>
-<p>Epigenetics plays an important role in embryonic development (see
-Figure @ref(fig:epiEmbryo)).</p>
-<p>(ref:epiEmbryoLab) Epigenetics in embryo genesis at CpG islands,
-regions that can bind with many methyl groups. All CpG islands of a
-sperm cell are almost fully methylated. That of an egg cell are
-methylated around 50%. Upon fertilization the methylation drops and
-almost all genes become accessible for the undifferentiated blastula. As
-cells differentiate and get specific functions in tissues methylation
-increases again (Source: Mariuswalter, Wikipedia)</p>
-<div class="figure" style="text-align: center">
-<img src="figs/DNA_methylation_reprogramming.png" alt="(ref:epiEmbryoLab)" width="100%" />
-<p class="caption">
-(ref:epiEmbryoLab)
-</p>
-</div>
-<p>CpG islands are regions in our DNA that can be heavily methylated.
-They are major regulatory units and around 70% of our genes have CpG
-islands in their promotor regions<a href="#fn7" class="footnote-ref"
-id="fnref7"><sup>7</sup></a>. Methylation of the promotor region is
-typically associated with a reduction of gene expression. In Figure
-@ref(fig:epiEmbryo) we observe that the CpG islands of a sperm cell are
-almost fully methylated, which indicates that many genes are likely to
-be silenced. Indeed, a sperm cell has one main function and that is to
-swim forward and fertilize the egg cell. The CpG islands of an egg cell
-are methylated around 50%. Upon fertilization the methylation drops in
-the blastocyst (an early stage of embryonic development, about five days
-upon fertilization). This is required for the cells to regain the
-property that they can divide and differentiate to all cell-types of the
-developing organism. As differentiation of the cells starts and as they
-evolve into tissues, methylation increases again so that the cells have
-access to less genes and get more specific functions. Note, that the
-methylation status is also passed upon cell division, which leads to
-invariance of differentiated cells: indeed, a liver cell remains a liver
-cell upon division and a brain cell a brain cell, etc.</p>
-</div>
-<div id="epigenetics-and-aging" class="section level2" number="4.3">
-<h2><span class="header-section-number">4.3</span> Epigenetics and
-Aging</h2>
-<p>Epigenetics are also largely driven by ecofactors. This can be nicely
-illustrated with identical twins who have almost the same genome. It
-gets more easy to tell them apart over time due to epigenetic changes
-that are triggered by the different environments to which they were
-exposed and that effectively changed how they are using their genes. A
-good example is the difference in skin ageing between twins that had a
-different exposure to UV radiation (e.g. Figure @ref(fig:epiUV)).</p>
-<p>(ref:epiUVlab) Difference in skin ageing between twins is largely
-induced by epigenetic changes originating from a difference in exposure
-to UV radiation <span class="citation">(Schwab and Hogenson
-2017)</span></p>
-<div class="figure" style="text-align: center">
-<img src="figs/dentical-twins-with-phenotypic-discordance-due-to-environmental-exposure-Although-MZ.png" alt="(ref:epiUVlab)" width="50%" />
-<p class="caption">
-(ref:epiUVlab)
-</p>
-</div>
-<p>Aging and longevity are influenced by genetic, epigenetic, and
-environmental factors during development, growth, maturity, and older
-stages. It has been shown that the genetic component (heritability)
-plays only a moderate role in aging and longevity, so epigenetics seems
-to be a major contributor <span class="citation">(Adwan-Shekhidem and
-Atzmon 2018)</span>. Indeed, many epigenetics markers and in
-particularly DNA methylation sites have been shown to be remarkable
-predictors of chronological age. Aging has been shown to be associated
-with profound changes in the epigenetic landscape, that give rise to
-alterations of gene expression and genome architecture.</p>
-</div>
-<div id="epigenetics-and-learning" class="section level2" number="4.4">
-<h2><span class="header-section-number">4.4</span> Epigenetics and
-Learning</h2>
-<p>Epigenetics is plays also an important rol in learning <span
-class="citation">(Creighton et al. 2020)</span>.</p>
-<p>In the last decade, it has been shown that epigenetics is very
-important in development of the brain and for learning.</p>
-<p>Animal research has shown that the disruption and inhibition of gene
-expression and translation in the brain shortly after a learning event,
-has a tremendous impact on long time memories (<span
-class="math inline">\(\geq 24\)</span> hours), but not on short term
-memories. These manipulation had most impact in the first hours upon the
-learning event. Suggesting that the initial memory consolidation happens
-within a 6 hour time window.</p>
-<p>Learning typically happens in waves. Genes activated shortly after
-learning return to baseline within 24 hours, a time point at which a
-second wave of gene expression is triggered. In the second wave, genes
-are included that encode for epigenetic regulators. So, the first wave
-within 6 hours upon learning is known to up regulate transcription
-factors important to initiate the second wave of transcription, which is
-needed to establish long-lasting memories.</p>
-<p>Understanding memory consolidation gets even more complex due to the
-reorganization of neural networks associated with recent memory storage
-and later memory phases (<span class="math inline">\(&gt;7\)</span>
-days).</p>
-<div id="dna-methylation-and-memory" class="section level3"
-number="4.4.1">
-<h3><span class="header-section-number">4.4.1</span> DNA Methylation and
-Memory</h3>
-<p>In a large number of studies, DNA methylation has been shown to play
-an important role in multiple stages of memory formation.</p>
-<p>On the one hand it is shown that DNA methylation is transient,
-i.e. rapidly induced and reversed in the first hours upon learning. On
-the other hand, stably altered cortical DNA methylation has been shown
-up to 4 weeks upon learning and blocking the cortical DNA methylations
-has been shown to impair memory. So methylation plays a role in
-different stages of the process of memory formation.</p>
-<p>It also has been shown that methylation influences memory through
-different mechanisms, e.g. </p>
+<p></br></p>
 <ul>
-<li>Regulation of the activity of enhancers, i.e. short DNA regions that
-enhance the transcription of genes</li>
-<li>Alternative splicing, i.e. transcribed RNA from a gene region is
-spliced by which certain exons, i.e. coding stretches, are removed,
-resulting in the production of different gene products from the same
-gene. So methylation can change the specific gene products that are
-transcribed from a particular gene.</li>
-<li>Expression of micro RNAs, short non-coding RNAs, that are
-biologically active.</li>
+<li><p>Eukaryotes evolve further in</p>
+<ul>
+<li>protists (unicellular)</li>
+<li>fungae</li>
+<li>plants</li>
+<li>animals</li>
+</ul></li>
 </ul>
-<p>A large body of literature support the role of methylation in
-learning and it is shown that methylation associated to learning occurs
-in the hippocampus, prefrontal cortex and the amygdala of the brain
-(Figure @ref(fig:brainRegionsLearning)).</p>
-<div class="figure" style="text-align: center">
-<img src="figs/Brain_regions_in_memory_formation.png" alt="Brain regions involved in memory formation. (Source: Wikipedia)" width="50%" />
-<p class="caption">
-Brain regions involved in memory formation. (Source: Wikipedia)
-</p>
+<p></br></p>
+<p>Genetic information of a species can be seen as a record of the
+environments and development that it underwent up to this point</p>
+<p></br></p>
 </div>
 </div>
-<div id="histone-modifications-and-memory" class="section level3"
-number="4.4.2">
-<h3><span class="header-section-number">4.4.2</span> Histone
-Modifications and Memory</h3>
-<p>Another type of epigenetic regulation is through the modification of
-histones, i.e. the proteins that act as spools around which the long DNA
-molecule is winded and which can affect the accessibility of a DNA
-region upon modification.</p>
-<p>Histone modifications with epigenetic markers have been shown to be
-mainly important in the initial phase of memory consolidation. They are
-rapidly modified after which they return to baseline. These
-modifications cause “unwinding or winding the DNA from or around the
-histones” making particular genes accessible or inaccessible for
-expression.</p>
-<p>Histone epigenetic markers seem to regulate the transcriptional
-sensitivity towards external stimuli. Histone acetylation that makes the
-DNA more accessible, for instance, has been shown to increase learning
-induced gene expression and seem to be particularly important for
-regulating memory strength.</p>
-<p>So recent progress has shown the tremendous importance of epigenetics
-for brain development and learning, however, the field of
-neuro-epigenetics is still in its infancy and many open questions
-remain.</p>
+<div id="evolution-of-evolution" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Evolution of
+evolution</h2>
+<ol style="list-style-type: decimal">
+<li><p>Chemical evolution: selection of building blocks and complex
+chemistry</p></li>
+<li><p>Biological evolution: cell/organism <span
+class="math inline">\(\rightarrow\)</span> selection genetic information
+and function</p></li>
+<li><p>Cultural evolution can bypass natural evolution:</p>
+<ul>
+<li>artificial selection: breeding of plants, pets, cattle, genetic
+manipulation, etc.</li>
+<li>Technology: fast adaptation to new environment</li>
+</ul></li>
+</ol>
+<p></br></p>
 </div>
 </div>
+<div id="ontogenesis" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Ontogenesis</h1>
+<ul>
+<li><p>Ontogenesis: development of organism from fertilized egg cell to
+adult individual until death</p></li>
+<li><p>Each cell (except egg and sperm cell) of multi-cellular organism
+has same genetic material!</p></li>
+<li><p>Why are cells of same organism so morphologically
+diverse?</p></li>
+</ul>
+<p></br></p>
+<div id="epigenetics" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Epigenetics</h2>
+<p><img src="figs/Epigenetic_mechanisms.png" /><br />
+(Source: NIH, wikipedia)</p>
+<p></br></p>
+<p><img src="figs/DNA_methylation_reprogramming.png" /><br />
+(Source: Mariuswalter, wikipedia)</p>
+<p></br></p>
+<ul>
+<li><p>Differentiation <span class="math inline">\(\rightarrow\)</span>
+epigenetics</p></li>
+<li><p>Epigenetics: epigenetic markers on DNA and histones <span
+class="math inline">\(\rightarrow\)</span> gene can be transcribed or
+not.</p></li>
+<li><p>Epigenetics is driven by ecofactors.</p></li>
+<li><p>identical twins have almost the same genome (small differences
+have been build up in the womb), but it gets more easy to tell them
+apart over time: epigenetics</p></li>
+</ul>
+<p></br></p>
+<center>
+<img
+src="https://www.researchgate.net/profile/Tara-Hogenson/publication/320386487/figure/fig1/AS:783847914471429@1563895314907/dentical-twins-with-phenotypic-discordance-due-to-environmental-exposure-Although-MZ.png"
+style="width:50.0%" />
+</center>
+<p>(Difference due to eco-factor UV-exposure, Source: Swab &amp;
+Hogenson, DOI: 10.1007/978-3-319-31143-2_65-1)</p>
+<p></br></p>
+<p><img
+src="https://www.ncbi.nlm.nih.gov/pmc/articles/instance/3501579/bin/nihms402187f3.jpg" /><br />
+(Source doi: 10.1111/j.1526-4637.2012.01488.x)</p>
+<p></br></p>
+<ul>
+<li>Epigenetics is very important in development of the brain and for
+learning.</li>
+</ul>
+<p></br></p>
 </div>
-<div id="organization-of-the-course" class="section level1" number="5">
-<h1><span class="header-section-number">5</span> Organization of the
+</div>
+<div id="statistical-genomics" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Statistical
+Genomics</h1>
+<ul>
+<li><p>Genomics is the studies all genetic information of an organism
+together: specific code, effects, functions and interactions</p></li>
+<li><p>With current high throughput methods we can measure the
+entire</p>
+<ul>
+<li>genome</li>
+<li>transcriptome: expressed transcript of all genes</li>
+<li>proteome: all translated proteins</li>
+<li>epigenome</li>
+<li>…</li>
+</ul></li>
+<li><p>With statistical genomics we will try to make sense of this
+wealth of data so that we can find biomarkers and ’omics patterns that
+are reproducible.</p></li>
+</ul>
+</div>
+<div id="closing-remarks" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Closing remarks</h1>
+<ul>
+<li>Life is
+<ul>
+<li>one</li>
+<li>chemistry</li>
+<li>information</li>
+</ul></li>
+</ul>
+<p></br></p>
+<ul>
+<li><p>Note, however that we should not reduce organisms to their
+genome</p></li>
+<li><p>Indeed, organisms and life cannot be studied without considering
+there intimate relation to their environment/ecosystem</p>
+<ul>
+<li><p>molecules do not work alone but in large networks</p></li>
+<li><p>environmental conditions are important for self
+organisation</p></li>
+<li><p>selective evolution: selection by eco-factors</p></li>
+<li><p>organisms adapt/shape in turn their environment and eco-factors:
+e.g. cyanobacteria</p></li>
+<li><p>individual evolution: eco-factors <span
+class="math inline">\(\leftrightarrow\)</span> epigenetics</p></li>
+<li><p>eco-factors are also determined by other organisms:
+eco-system</p></li>
+<li><p>Organisms interact and collaborate in their ecosystem</p></li>
+<li><p>Genetic information can be considered as the record of all
+conditions in which our ancestral cells have lived.</p>
+<p><span class="math inline">\(\rightarrow\)</span> “Web of
+Life”</p></li>
+</ul></li>
+</ul>
+</div>
+<div id="organization-of-the-course" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Organization of the
 course</h1>
 <div id="module-i-quantitative-proteomics" class="section level2"
-number="5.1">
-<h2><span class="header-section-number">5.1</span> Module I:
+number="6.1">
+<h2><span class="header-section-number">6.1</span> Module I:
 Quantitative Proteomics</h2>
 <ol style="list-style-type: decimal">
 <li><p>Identification and quantification of peptides and
@@ -2207,8 +1235,8 @@ significance</li>
 </ol>
 </div>
 <div id="module-ii-next-generation-sequencing-ngs-transcriptomics"
-class="section level2" number="5.2">
-<h2><span class="header-section-number">5.2</span> Module II: Next
+class="section level2" number="6.2">
+<h2><span class="header-section-number">6.2</span> Module II: Next
 generation sequencing (NGS, Transcriptomics)</h2>
 <ol style="list-style-type: decimal">
 <li><p>NGS Data exploration</p></li>
@@ -2221,8 +1249,8 @@ generation sequencing (NGS, Transcriptomics)</h2>
 </ol></li>
 </ol>
 </div>
-<div id="details" class="section level2" number="5.3">
-<h2><span class="header-section-number">5.3</span> Details</h2>
+<div id="details" class="section level2" number="6.3">
+<h2><span class="header-section-number">6.3</span> Details</h2>
 <ol style="list-style-type: decimal">
 <li><p>Theory and Tutorials are blended</p>
 <ul>
@@ -2237,130 +1265,8 @@ R code and R output.</p></li>
 </ol>
 </div>
 </div>
-<div id="references" class="section level1 unnumbered">
-<h1 class="unnumbered">References</h1>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-Adwan2018" class="csl-entry">
-Adwan-Shekhidem, Huda, and Gil Atzmon. 2018. <span>“Chapter 5 - the
-Epigenetic Regulation of Telomere Maintenance in Aging.”</span> In
-<em>Epigenetics of Aging and Longevity</em>, edited by Alexey Moskalev
-and Alexander M. Vaiserman, 4:119–36. Translational Epigenetics. Boston,
-USA: Academic Press. https://doi.org/<a
-href="https://doi.org/10.1016/B978-0-12-811060-7.00005-X">https://doi.org/10.1016/B978-0-12-811060-7.00005-X</a>.
-</div>
-<div id="ref-Bar-On2018" class="csl-entry">
-Bar-On, Yinon M., Rob Phillips, and Ron Milo. 2018. <span>“The Biomass
-Distribution on Earth.”</span> <em>Proceedings of the National Academy
-of Sciences</em> 115 (25): 6506–11. <a
-href="https://doi.org/10.1073/pnas.1711842115">https://doi.org/10.1073/pnas.1711842115</a>.
-</div>
-<div id="ref-bohm1980" class="csl-entry">
-Bohm, D. 1980. <em>Wholeness and the Implicate Order</em>. Routledge
-Classics. Routledge.
-</div>
-<div id="ref-capraLuisi2014" class="csl-entry">
-Capra, F., and P. L. Luisi. 2014. <em>The Systems View of Life: A
-Unifying Vision</em>. Cambridge, UK: Cambridge University Press.
-</div>
-<div id="ref-Cheng2019" class="csl-entry">
-Cheng, Xianrui, and James E. Ferrell. 2019. <span>“Spontaneous Emergence
-of Cell-Like Organization in Xenopus Egg Extracts.”</span>
-<em>Science</em> 366 (6465): 631–37. <a
-href="https://doi.org/10.1126/science.aav7793">https://doi.org/10.1126/science.aav7793</a>.
-</div>
-<div id="ref-Creighton2020" class="csl-entry">
-Creighton, S. D., G. Stefanelli, A. Reda, and I. B. Zovkic. 2020.
-<span>“Epigenetic Mechanisms of Learning and Memory: Implications for
-Aging.”</span> <em>International Journal of Molecular Sciences</em> 21
-(18): 6918. <a
-href="https://doi.org/doi.org/10.3390/ijms21186918">https://doi.org/doi.org/10.3390/ijms21186918</a>.
-</div>
-<div id="ref-deDuve2002" class="csl-entry">
-De Duve, C. 2002. <em>Life Evolving: Molecules, Mind, and Meaning</em>.
-Oxford, UK: Oxford University Press.
-</div>
-<div id="ref-gould1997" class="csl-entry">
-Gould, S. J. 1997. <em>Full House: The Spread of Excellence from Plato
-to Darwin</em>. New York, USA: Three Rivers Press.
-</div>
-<div id="ref-he2019" class="csl-entry">
-He, Tianchen, Maoyan Zhu, Benjamin JW Mills, Peter M Wynn, Andrey Yu
-Zhuravlev, Rosalie Tostevin, Philip AE Pogge von Strandmann, Aihua Yang,
-Simon W Poulton, and Graham A Shields. 2019. <span>“Possible Links
-Between Extreme Oxygen Perturbations and the Cambrian Radiation of
-Animals.”</span> <em>Nature Geoscience</em> 12 (6): 468–74.
-</div>
-<div id="ref-Williams2013" class="csl-entry">
-Hsiao, Chiaolong, I-Chun Chou, C. Denise Okafor, Jessica C. Bowman, Eric
-B. O’Neill, Shreyas S. Athavale, Anton S. Petrov, et al. 2013.
-<span>“RNA with Iron(II) as a Cofactor Catalyses Electron
-Transfer.”</span> <em>Nature Chemistry</em> 5: 525–28. <a
-href="https://doi.org/10.1038/nchem.1649">https://doi.org/10.1038/nchem.1649</a>.
-</div>
-<div id="ref-Kimmerer2013" class="csl-entry">
-Kimmerer, R. 2013. <em>Braiding Sweetgrass: Indigenous Wisdom,
-Scientific Knowledge and the Teachings of Plants</em>. Milkweed
-Editions.
-</div>
-<div id="ref-margulis1999" class="csl-entry">
-Margulis, L. 1999. <em>The Symbiotic Planet: A New Look at
-Evolution</em>. Science Masters. Phoenix.
-</div>
-<div id="ref-prigogineStengers1984" class="csl-entry">
-Prigogine, I., and Stengers. 1984. <em>Order Out of Chaos: Man’s New
-Dialogue with Nature</em>. London, UK: Verso.
-</div>
-<div id="ref-schrodinger1944" class="csl-entry">
-Schrödinger, E. 1944. <em>What Is Life? The Physical Aspect of the
-Living Cell &amp; Mind and Matter</em>. Tarner Lectures. Cambridge
-University Press.
-</div>
-<div id="ref-Schwab2017" class="csl-entry">
-Schwab, Tanya L., and Tara L. Hogenson. 2017. <span>“Effect of
-Epigenetic Differences in Identical Twins.”</span> In <em>Handbook of
-Nutrition, Diet, and Epigenetics</em>, edited by Vinood Patel and Victor
-Preedy, 1–18. Cham: Springer International Publishing. <a
-href="https://doi.org/10.1007/978-3-319-31143-2_65-1">https://doi.org/10.1007/978-3-319-31143-2_65-1</a>.
-</div>
-<div id="ref-Sender2016" class="csl-entry">
-Sender, R., S. Fuchs, and R. Milo. 2016. <span>“Revised Estimates for
-the Number of Human and Bacteria Cells in the Body.”</span> <em>PLOS
-Biology</em> 14 (8): 1–14. <a
-href="https://doi.org/10.1371/journal.pbio.1002533">https://doi.org/10.1371/journal.pbio.1002533</a>.
-</div>
-<div id="ref-StrotherFoster2021" class="csl-entry">
-Strother, Paul K., and Clinton Foster. 2021. <span>“A Fossil Record of
-Land Plant Origins from Charophyte Algae.”</span> <em>Science</em> 373
-(6556): 792–96. <a
-href="https://doi.org/10.1126/science.abj2927">https://doi.org/10.1126/science.abj2927</a>.
-</div>
-</div>
-</div>
-<div class="footnotes footnotes-end-of-document">
-<hr />
-<ol>
-<li id="fn1"><p>Anaerobic: living in the absence of oxygen<a
-href="#fnref1" class="footnote-back">↩︎</a></p></li>
-<li id="fn2"><p>Aerobic: oxygen using and respiration with oxygen
-provides more energy<a href="#fnref2"
-class="footnote-back">↩︎</a></p></li>
-<li id="fn3"><p>Large groups of a kingdom are more formally referred to
-as <em>phyla</em><a href="#fnref3" class="footnote-back">↩︎</a></p></li>
-<li id="fn4"><p>Gamete: sperm or egg cell<a href="#fnref4"
-class="footnote-back">↩︎</a></p></li>
-<li id="fn5"><p>A methyl group (-CH<span
-class="math inline">\(_3\)</span>) consists of one carbon and three
-hydrogen atoms<a href="#fnref5" class="footnote-back">↩︎</a></p></li>
-<li id="fn6"><p>An acetyl group (-CO-CH<span
-class="math inline">\(_3\)</span>) consists of two carbon, one oxygen
-and three hydrogen atoms<a href="#fnref6"
-class="footnote-back">↩︎</a></p></li>
-<li id="fn7"><p>A promoter is a sequence of DNA to which proteins bind
-to initiate transcription of the gene downstream of the promotor<a
-href="#fnref7" class="footnote-back">↩︎</a></p></li>
-</ol>
-</div>
 
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUG9zaXRpb24gb2YgdGhlIENvdXJzZSIKYXV0aG9yOiAiTGlldmVuIENsZW1lbnQiCmRhdGU6ICJbc3RhdE9taWNzXShodHRwczovL3N0YXRvbWljcy5naXRodWIuaW8pIgpvdXRwdXQ6CiAgICBodG1sX2RvY3VtZW50OgogICAgICBjb2RlX2Rvd25sb2FkOiB0cnVlCiAgICAgIHRvYzogdHJ1ZQogICAgICB0b2NfZmxvYXQ6IHRydWUKICAgICAgaGlnaGxpZ2h0OiB0YW5nbwogICAgICBudW1iZXJfc2VjdGlvbnM6IHRydWUKLS0tCgo8YSByZWw9ImxpY2Vuc2UiIGhyZWY9Imh0dHBzOi8vY3JlYXRpdmVjb21tb25zLm9yZy9saWNlbnNlcy9ieS1uYy1zYS80LjAiPjxpbWcgYWx0PSJDcmVhdGl2ZSBDb21tb25zIExpY2Vuc2UiIHN0eWxlPSJib3JkZXItd2lkdGg6MCIgc3JjPSJodHRwczovL2kuY3JlYXRpdmVjb21tb25zLm9yZy9sL2J5LW5jLXNhLzQuMC84OHgzMS5wbmciIC8+PC9hPgoKCjwvYnI+CgojIFdoYXQgaXMgTGlmZT8KCiMjIFNjaHLDtmRpbmdlciBlbiBQcmlnb2dpbmUKCkJvb2s6ICJXaGF0IElzIExpZmU/IFRoZSBQaHlzaWNhbCBBc3BlY3Qgb2YgdGhlIExpdmluZyBDZWxsIiAoU2NocsO2ZGluZ2VyLCAxOTQ0KS4gCgpMaWZlIGlzIAoKMS4gZWVuIG9wZW4gc3lzdGVtIHRoYXQgY2FuIGdlbmVyYXRlIG9yZGVyIGZyb20gY2hhb3MgYnkgZXhwbG9pdGluZyBleHRlcm5hbCBlbmVyZ3kgc291cmNlcyAoZW50cm9weSBpcyBkaXNvcmRlciksCgoyLiB3aXRoIHRoZSBjYXBhY2l0eSB0byB0cmFuc21pdCBpdHMgb3duIHNwZWNpZmljIGJsdWVwcmludCBmcm9tIGdlbmVyYXRpb24gdG8gZ2VuZXJhdGlvbiAocmVwcm9kdWN0aXZlIGludmFyaWFuY2UpLiAKCk5vdGUsIHRoYXQgRE5BIHdhcyBub3Qga25vd24geWV0IHdoZW4gU2NocsO2ZGluZ2VyIHdyb3RlIGhpcyBzZW1pbmFsIGJvb2suIAoKCjwvYnI+ICAKCiMjIyBIb3cgaXMgdGhpcyBwb3NzaWJsZQoKLSBTZWNvbmQgbGF3IG9mIHRoZXJtb2R5bmFtaWNzOiBhIGNsb3NlZCBzeXN0ZW0gaXMgYWx3YXlzIGdlYXJpbmcgdG93YXJkcyBtYXhpbWFsIGVudHJvcHkKCi0gRW50cm9weSBpcyBhIG1lYXN1cmUgZm9yIGRpc29yZGVyIAoKPGNlbnRlcj4hW10oaHR0cHM6Ly93d3cuaGFuZHlzcXVhZC5jb20vd3AtY29udGVudC91cGxvYWRzLzIwMjAvMTAvdGllLXVwLWNhYmxlcy5qcGcpe3dpZHRoPTMwJX0gJFxyaWdodGFycm93JCAhW10oaHR0cHM6Ly9lYWRuLXdjMDUtMjAxNDg5Lm54ZWRnZS5pby9jZG4vd3AtY29udGVudC91cGxvYWRzLzIwMTgvMDkvRW50cm9weUNoYW9zMi03MDAtNDY3LmpwZyl7d2lkdGg9MzAlfQo8L2NlbnRlcj4KCjwvYnI+CgotIExpZmUgaXMgCiAgICAKICAgIC0gYmFzZWQgb24gY2hlbWljYWwgcmVhY3Rpb25zCiAgICAtIGFuIG9wZW4gc3lzdGVtCiAgICAtIHNvbGFyIGVuZXJnaWUgCiAgICAtIGNoYW9zIG9mIG1vbGVjdWxlcyBvbiBlYXJ0aCAgCiAgICAtIFdoaWxlIGNoZW1pY2FsIHJlYWN0aW9ucyBwcm9kdWNlIHN0cnVjdHVyZSBhIGxvdCBvZiBlbmVyZ3kgaXMgbG9zdCBpbnRvIGhlYXQ6IGRpc3NpcGF0aW9uLiAKICAgICAgCiAgICAgICRccmlnaHRhcnJvdyQgSW5jcmVhc2Ugb2YgZW50cm9weQoKPC9icj4KClByaWdvZ2luZSBkaWQgcmVzZWFyY2ggdG8gY2hlbWljYWwgc3lzdGVtcyBmYXIgZnJvbSBlcXVpbGlicml1bS4gCgotIE9wZW4gc3lzdGVtczogaW5mbHV4IG9mIG1hdHRlciBlbiBlbmVyZ3kgCgotIFJlYWN0aW9ucyBjb25zaXN0IG9mIG1hbnkgZmVlZGJhY2sgbG9vcHMgIAoKLSBUaGV5IGRpc3NpcGF0ZSBpbmNvbWluZyBlbmVyZ3kgd2hpbGUgcHJvZHVjaW5nIHN0cnVjdHVyZQoKLSBIZSBjYWxsZWQgdGhlbSBkaXNzaXBhdGl2ZSBzdHJ1Y3R1cmVzLiAKCjwvYnI+CgpPdXIgZ2xvYmUgaXMgbHlpbmcgaW4gYSBkaXNzaXBhdGl2ZSB6b25lIAoKLSBMaWZlIHByb2R1Y2VzIGVudHJvcHkgYnkgZGlzc2lwYXRpbmcgZW5lcmd5IGZyb20gcGhvdG9ucyAobGlnaHQgYW5kIFVWKSB0byBoZWF0IHRocm91Z2ggb3JnYW5pYyBwaWdtZW50cyAoZS5nLiBjaGxvcm9waHlsbCkgICAKCi0gVGhpcyBoZWF0IGluZHVjZXMgc2Vjb25kYXJ5IGRpc3NpcGF0aXZlIHByb2Nlc3NlcyBsaWtlIHRoZSB3YXRlciBjeWNsZSwgd2luZCBhbmQgc2VhIGN1cnJlbnRzIGV0Yy4gCgotIFNvIGxpZmUgYWxzbyB0cmFuc2Zvcm1zIGl0cyBlbnZpcm9ubWVudC4KCjwvYnI+ICAKCiMjIERlZmluaXRpb24gYWNjb3JkaW5nIHRvIGRlIER1dmUKCgpCb29rOiAiTGlmZSBFdm9sdmluZyAtIE1vbGVjdWxlcywgTWluZCBhbmQgTWVhbmluZyIgKGRlIER1dmUsIDIwMDIsIEZpcnN0IGNoYXB0ZXJzIGdpdmUgYSB2ZXJ5IGdvb2Qgb3ZlcnZpZXcuIExhdGVyIGNoYXB0ZXJzIGdldCByYXRoZXIgc3BlY3VsYXRpdmUpLgoKTGlmZSBpcyAKCjEuIG9uZQoyLiBjaGVtaXN0cnkKMy4gaW5mb3JtYXRpb24gCgo8L2JyPiAgCgpJbiBiaW9pbmZvcm1hdGljcyB3ZSB3aWxsIHdvcmsgd2l0aCB0aGUgaW5mb3JtYXRpb24gcGFydCBvZiBsaWZlLCBob3dldmVyLCB3ZSBzaG91bGQgbm90IGZvcmdldCB0aGF0IGxpZmUgaXMgbW9yZSB0aGFuIHRoYXQhIAoKPC9icj4KCk9yaWdpbiBvZiBsaWZlOgoKLSBmaXJzdCBlbmVyZ3kKLSB0aGVuIGNoZW1pc3RyeSBhbmQKLSBzdWJzZXF1ZW50bHkgaW5mb3JtYXRpb24KCjwvYnI+ICAKCiMjIyBMaWZlIGlzIG9uZQoKCiMjIyMgQWxsIG9yZ2FuaXNtIGNvbnNpc3Qgb2YgY2VsbHMKCi0gdW5pY2VsbHVsYXIgb3JnYW5pc21zCgohW10oLi9maWdzL1Byb2NobG9yb2NvY2N1c19tYXJpbnVzLmpwZyl7d2lkdGg9NTAlfSAgCihDeWFub2JhY3Rlcml1bSwgc291cmNlOiBDaGlzaG9sbSBMYWIsIHdpa2lwZWRpYSkgCgo8L2JyPiAgCgotIEVzc2VudGlhbDogbWVtYnJhbmUgdGhhdCBpcyBzZXBhcmF0aW5nIHRoZW0gZnJvbSB0aGVyZSBlbnZpcm9ubWVudCBhbmQgZW5hYmxlcyBpbnRlcmFjdGlvbiB3aXRoIHRoZSBlbnZpcm9ubWVudCAKCjwvYnI+ICAKCi0gTXVsdGljZWxsdWxhciBvcmdhbmlzbXMgCgohW10oaHR0cHM6Ly9tcnNzbWl0aHNiaW9sb2d5LmZpbGVzLndvcmRwcmVzcy5jb20vMjAxOS8xMC9waWN0dXJlNC5qcGcpICAKKHNvdXJjZTogbXJzc21pdGhzYmlvbG9neSkKCjwvYnI+ICAKCiMjIyMgTFVDQSAobGFzdCBVbml2ZXJzYWwgQ29tbW9uIEFuY2VzdG9yKS4KCi0gQWxsIGNlbGxzIG9yZ2luYXRlIGZyb20gdGhlIHNhbWUgcG9wdWxhdGlvbiBvZiBhbmNlc3RyYWwgY2VsbHMgbGl2aW5nIDMuNS0zLjggYmlsbGlvbiB5ZWFycyBhZ28uICAKCiFbXSguL2ZpZ3MvUGh5bG9nZW5ldGljX3RyZWUuc3ZnKQooU291cmNlOiB3aWtpcGVkaWEpICAgIAoKPC9icj4gIAogICAgCiMjIyMgVW5pdmVyc2FsIGZ1ZWwgZm9yIGxpZmUgKGlzIGFjdHVhbGx5IGNoZW1pc3RyeSkKCiFbXSguL2ZpZ3MvQVRQLUFEUC5wbmcpCihTb3VyY2U6IGFkYXB0ZWQgZnJvbSB3aWtpcGVkaWEpCgotIEFUUDogQWRpbm9zZS10cmktcGhvc3BoYXRlCi0gTm90ZSB0aGF0IEFNUCBpcyBvbmUgb2YgdGhlIGJ1aWxkaW5nIGJsb2NrcyBvZiBSTkEuIAotIExpbmsgYmV0d2VlbiBlbmVyZ3kgYW5kIGluZm9ybWF0aW9uISAKCjwvYnI+ICAKCiMjIyMgU2FtZSBidWlsZGluZyBibG9ja3MgZm9yIGFsbCBsaXZpbmcgb3JnYW5pc21zIAoKMS4gTGlwaWRzOiBtZW1icmFuZXMKMi4gQ2FyYm9oeWRyYXRlcyAoc3VnYXJzKTogZW5lcmd5ICsgYnVpbGRpbmcgYmxvY2tzCjMuIEFtaW5vIGFjaWRzOiBidWlsZGluZyBibG9ja3Mgb2YgcHJvdGVpbnMsIHdoaWNoIGFyZSB0aGUgd29ya2hvcnNlcyBvZiBhIGNlbGwgCjQuIE51Y2xlaWMgQWNpZHM6IGJ1aWxkaW5nIGJsb2NrcyBvZiBSTkEgYW5kIEROQQoKTm90ZSwgdGhhdCBwb2x5IGFyb21hdGljIGNhcmJvaHlkcmF0ZXMgKFBBSHMpIGFyZSBvbW5pcHJlc2VudCBpbnRlcnN0ZWxsYXIgc3BhY2UKCiAgLSBDYXQncyBwYXcgbmVidWxhCiAgLSBHcmVlbiByZWdpb25zIGFyZSByZWdpb25zIHdoZXJlIHRoZSByYWRpYXRpb24gb2YgaG90IHN0YXJzIGluZHVjZXMgZmx1b3Jlc2NlbmNlIG9mIFBBSHMuIAogICAgCiFbXSguL2ZpZ3Mvb3Jpb25XaXRoUEFILmpwZWcpe3dpZHRoPTIwMCV9IAo8L2JyPiAgCgotIFRoZXkgYXJlIGZ1cnRoZXIgdHJhbnNmb3JtZWQgaW4gaW50ZXJzdGVsbGFyIHNwYWNlCgogICAgLSBoeWRyb2dlbmF0aW9uOiB3YXRlcnN0b2ZmZW4sIAogICAgLSBveGlkYXRpb246IHp1dXJzdG9mLCAKICAgIC0gaHlkcm94eWxhdGlvbiAoT0gpIAogICAgLSAuLi4KCiRccmlnaHRhcnJvdyQgZmlyc3Qgc3RlcCB0byBhbWlubyBhY2lkcyAoYnVpbGRpbmcgYmxvY2tzIG9mIHByb3RlaW5zKSBhbmQgbnVjbGVvdGlkZXMgKGJ1aWxkaW5nIGJsb2NrcyBvZiBSTkEgYW5kIEROQSkgYXJlIGp1c3QgdGhlcmUsIGFidW5kYW50IGluIG91dGVyIHNwYWNlLgoKIyMjIyMgTGlwaWRzIAohW10oLi9maWdzL0NlbGxfbWVtYnJhbmVfZGV0YWlsZWRfZGlhZ3JhbV80LnN2ZykKKFNvdXJjZTogRG91ZyBIYXRmaWVsZCwgd2lraXBlZGlhKQoKPC9icj4gIAoKIyMjIyMgQ2FyYm9oeWRyYXRlcyAKIVtdKGh0dHBzOi8vdGhlYmlvbG9neW5vdGVzLmNvbS93cC1jb250ZW50L3VwbG9hZHMvMjAyMC8xMS9DYXJib2h5ZHJhdGVzLWRlZmluaXRpb24tY2xhc3NpZmljYXRpb24td2l0aC1zdHJ1Y3R1cmUtYW5kLWZ1bmN0aW9ucy5qcGVnKQooU291cmNlOiB0aGViaW9sb2d5bm90ZXMuY29tKQoKPC9icj4gIAoKIyMjIyMgQW1pbm8gQWNpZHMKIVtdKGh0dHBzOi8vdGhlYmlvbG9neW5vdGVzLmNvbS93cC1jb250ZW50L3VwbG9hZHMvMjAyMC8xMi9BbWluby1hY2lkcy1hbmQtUHJvdGVpbnMuanBlZykKKFNvdXJjZTogdGhlYmlvbG9neW5vdGVzLmNvbSkKCjwvYnI+ICAKICAgIAojIyMjIyBOdWNsZWljIEFjaWRzCgotIEJ1aWxkaW5nIGJsb2NrcyBmb3IgdGhlIG1vbGVjdWxlcyB0aGF0IHN0b3JlIHRoZSBpbmZvcm1hdGlvbiB0aGF0IHdlIGluaGVyaXQgZm9ybSBvdXIgcGFyZW50czogUk5BIGFuZCBETkEKCgohW10oLi9maWdzL1JOQS1OdWNsZW9iYXNlcy5zdmcpe3dpZHRoPTUwJX0gIAooUk5BLCBTb3VyY2U6IHdpa2lwZWRpYSkKCjwvYnI+ICAKCiFbXSguL2ZpZ3MvRE5BX051Y2xlb3RpZGVzLmpwZWcpICAKKEROQSwgU291cmNlOiBPcGVuU3RheCwgd2lraXBlZGlhKQoKPC9icj4gIAoKIVtdKC4vZmlncy9EaWZmZXJlbmNlX0ROQV9STkEtRU4uc3ZnKSAgCihTb3VyY2U6IFNwb25rLCB3aWtpcGVkaWEpCgo8L2JyPiAgCiAgICAKCiMjIyMgU2FtZSBnZW5ldGljIGNvZGUgKFNlZSBMaWZlIGlzIGluZm9ybWF0aW9uKQoKPC9icj4gIAoKIyMjIExpZmUgaXMgQ2hlbWlzdHJ5CgpbIVtdKC4vZmlncy9yb2NoZV9wYXRod2F5cy5qcGcpXShodHRwOi8vYmlvY2hlbWljYWwtcGF0aHdheXMuY29tLyMvbWFwLzEpCihTb3VyY2U6IERyLiBHZXJoYXJkIE1pY2hhbCwgUm9jaGUpCjwhLS0gCk5vdCB3b3JraW5nIGh0dHAgaW4gaHR0cHMKPGRpdiBzdHlsZT0icG9zaXRpb246cmVsYXRpdmU7cGFkZGluZy10b3A6NTYuMjUlOyI+CjxpZnJhbWUgc3JjPSAiaHR0cDovL2dvb2dsZXdlYmxpZ2h0LmNvbS8/bGl0ZXVybD1odHRwczovL2Jpb2NoZW1pY2FsLXBhdGh3YXlzLmNvbS8jL21hcC8xIiBmcmFtZWJvcmRlcj0iMCIgYWxsb3dmdWxsc2NyZWVuCiAgICAgIHN0eWxlPSJwb3NpdGlvbjphYnNvbHV0ZTt0b3A6MDtsZWZ0OjA7d2lkdGg6MTAwJTtoZWlnaHQ6MTAwJTsiPgo8L2lmcmFtZT4KPC9kaXY+IC0tPgoKIyMjIyBFbmVyZ3kgCgohW10oLi9maWdzL0FUUC1BRFAucG5nKQooU291cmNlOiB3aWtpcGVkaWEpCgo8L2JyPiAgCgojIyMjIENhdGFseXNpcwoKIVtdKC4vZmlncy9DaXRyaWNfYWNpZF9jeWNsZV93aXRoX2Fjb25pdGF0ZV8yLnN2ZykKKFNvdXJjZTogTmFyYXlhbmVzZSwgd2lraXBlZGlhKQoKPC9icj4gIAo8ZGl2IHN0eWxlPSJwb3NpdGlvbjogcmVsYXRpdmU7d2lkdGg6IDEwMCU7aGVpZ2h0OiAwO3BhZGRpbmctYm90dG9tOiA1Ni4yNSU7Ij4KPGlmcmFtZQpzcmM9Imh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL2VtYmVkL3lrMTRkT092d01rP3N0YXJ0PTgmZW5kPTYwIgpmcmFtZWJvcmRlcj0iMCIKc3R5bGU9IiBwb3NpdGlvbjphYnNvbHV0ZTt0b3A6IDA7bGVmdDogMDt3aWR0aDogMTAwJTtoZWlnaHQ6IDEwMCU7IgphbGxvdz0iYXV0b3BsYXk7IGVuY3J5cHRlZC1tZWRpYSIgYWxsb3dmdWxsc2NyZWVuIGRhdGEtZXh0ZXJuYWw9IjEiIHN0YXJ0PTg+PC9pZnJhbWU+CjwvZGl2Pgo8L2JyPiAgCgoiQW55IGxpdmluZyBvcmdhbmlzbSBpcyBhIHJlZmxlY3Rpb24gb2YgaXRzIGVuenltZSBhcnNlbmFsIiAKIAotIENhdGFseXNpczogYSBsYXJnZSBudW1iZXIgb2YgY2hlbWljYWwgcmVhY3Rpb25zIHdvdWxkIG5ldmVyIGhhcHBlbiB3aGVuIHdlIG9ubHkgd291bGQgbWl4IG1vbGVjdWxlcyB3aXRob3V0IGEgY2F0YWxpc3QuIAoKLSBDYXRhbGlzdDogY2hlbWljYWwgc3Vic3RhbmNlIHRoYXQgaGVscHMgYSByZWFjdGlvbiB0byB0YWtlIHBsYWNlIHdpdGhvdXQgYmVpbmcgY29uc3VtZWQgaXRzZWxmLgoKLSBCaW9sb2dpY2FsIGNhdGFsaXN0cyBhcmUgcmVmZXJyZWQgdG8gYXMgZW56eW1lcyAgCgotIEVuenltZXMgYXJlIHByb3RlaW5zIHRoYXQgIAogIAogIC0gYXJlIGZpc2hpbmcgY2VydGFpbiBtb2xlY3VsZXMgZnJvbSB0aGUgY29tcGxleCBtaXh0dXJlIGluIGEgY2VsbCwgCiAgLSB3aGljaCBjb25zaXN0cyBvZiB0aG91c2FuZHMgb2YgY2hlbWljYWwgY29tcG91bmRzIAogIC0gZ2VuZXJhbGx5IGF0IGxvdyBjb25jZW50cmF0aW9uczsKICAtIHRocm91Z2ggYmluZGluZ3NpdGVzIHRoZXkgY2FuIGZhY2lsaXRhdGUgdGhhdCB0aGVzZSBtb2xlY3VsZXMgKHN1YnN0cmF0ZXMpIGFyZSBnZXR0aW5nIGNsb3NlIHNvIHRoYXQgdGhleSBjYW4gcmVhY3QgYW5kIGZvcm0gYSBuZXcgY29tcG91bmQuIAo8L2JyPiAgCgojIyMjIFNlbGYtb3JnYW5pc2F0aW9uCgotIFNvbWUgcHJvdGVpbnMgYWxzbyBnaXZlIHN0cnVjdHVyZSB0byBhIGNlbGwgCi0gVGhlIGNhbiBzcG9udGFuZW91c2x5IGZvcm0gc3RydWN0cnVlIAotIFNlZSB2aWRlbyB3aGVyZSBjeXRvcGxhc20gKCJsaXF1aWQgaW4gY2VsbCIpIHdhcyBob21vZ2VuaXNlZCBhbmQgaXMgc3Vic2VxdWVudGx5IG9yZ2FuaXNpbmcgaXRzZWxmIGluIGNlbGwtbGlrZSBzdHJ1Y3R1cmVzLiAKPC9icj4gIAo8ZGl2IHN0eWxlPSJwb3NpdGlvbjogcmVsYXRpdmU7d2lkdGg6IDEwMCU7aGVpZ2h0OiAwO3BhZGRpbmctYm90dG9tOiA1Ni4yNSU7Ij4KPGlmcmFtZQpzcmM9Imh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL2VtYmVkL3BycTFPY2N1MjJzP3N0YXJ0PTAmZW5kPTcmbG9vcD0xIgpmcmFtZWJvcmRlcj0iMCIKc3R5bGU9IiBwb3NpdGlvbjphYnNvbHV0ZTt0b3A6IDA7bGVmdDogMDt3aWR0aDogMTAwJTtoZWlnaHQ6IDEwMCU7IgphbGxvdz0iYXV0b3BsYXk7IGVuY3J5cHRlZC1tZWRpYSIgYWxsb3dmdWxsc2NyZWVuIGRhdGEtZXh0ZXJuYWw9IjEiIHN0YXJ0PTg+PC9pZnJhbWU+CjwvZGl2PgoKKFNvdXJjZTogU2NpZW5jZSBET0k6IDEwLjExMjYvc2NpZW5jZS5hYXY3NzkzKQoKPC9icj4gIAoKUmVzZWFyY2hlcnMgZm91bmQgdGhhdCB0aGUgZm9sbG93aW5nIHdhcyByZXF1aXJlZCBmb3IgdGhpczogCgotIEFUUDogdGhlIGVuZXJneSBzb3VyY2Ugb2YgYSBjZWxsIAotIGEgZmlsYW1lbnRvdXMgcHJvdGVpbmVzIChtaWNyb3R1YnVsaSkgCi0gRHluZWluLCBhIGtpbmQgb2YgbW90b3IgcHJvdGVpbgoKIVtdKC4vZmlncy9UdWJ1bGluX0luZm9ncmFwaGljLmpwZWcpICAKKFNvdXJjZTogUGFrb3JuIEthbmNoYW5hd29uZywgd2lraXBlZGlhKQoKPC9icj4gIAoKUHJvdGVpbnMgcGxheXMgYSBjZW50cmFsIHJvbGUgaW4gbGlmZTogQ2F0YWx5c2lzICsgU3RydWN0dXJlIAoKQSBjZWxsIHRodXMgaW5oZXJpdHMgbm90IG9ubHkgZ2VuZXRpYyBpbmZvcm1hdGlvbiBidXQgYWxzbyBpdHMgc3BhdGlhbCBvcmdhbmlzYXRpb24gZnJvbSBhIG1vdGhlciBjZWxsLiAKCjwvYnI+ICAKCiMjIyBMaWZlIGlzIGluZm9ybWF0aW9uCgo8L2JyPiAgCgotIEdlbmU6IHVuaXQgb2YgZ2VuZXRpYyBtYXRlcmlhbCwgYSBETkEgc2VxdWVuY2UgdGhhdCBpcyBlbmNvZGluZyBmb3IgdGhlIHN5bnRoZXNpcyBvZiBhIGdlbmUgcHJvZHVjdCwgYSBwcm90ZWluIG9yIGEgZnVuY3Rpb25hbCBSTkEuIAoKIVtdKC4vZmlncy9nZW5lLnN2ZykKKFNvdXJjZTogVGhvbWFzIFNoYWZlZSwgd2lraXBlZGlhKQoKPC9icj4KCi0gRE5BOiA0IGxldHRlciBjb2RlICg0IGJhc2VzOiBBQ0dUKQotIFJOQTogNCBsZXR0ZXIgY29kZSAoNCBiYXNlczogQUNHVSkKCiFbXSguL2ZpZ3MvRGlmZmVyZW5jZV9ETkFfUk5BLUVOLnN2Zyl7d2lkdGg9NTAlfSAgCihTb3VyY2U6IFNwb25rLCB3aWtpcGVkaWEpCgo8L2JyPiAgCgohW10oaHR0cHM6Ly9haG9sZGVuY2lybS5maWxlcy53b3JkcHJlc3MuY29tLzIwMTYvMDYvdHJhbnNjcmlwdGlvbl8yLmpwZykgIAooU291cmNlOiBbdG9rcmVzb3VyY2VzLm9yZ10oaHR0cDovL3d3dy50b2tyZXNvdXJjZS5vcmcvdG9rX2NsYXNzZXMvYmlvYmlvYmlvL2Jpb21lbnUvdHJhbnNjcmlwdGlvbl90cmFuc2xhdGlvbi8pKQoKPC9icj4gIAoKLSBQcmluY2lwbGU6IGh5YnJpZGlzYXRpb24gb2YgY29tcGxlbWVudGFyeSBiYXNlcyEgCi0gVHJhbnNwb3J0IFJOQTogY29kb24gKHRyaXBsZXQgdmFuIDMgYmFzZW4pIGZvciBlYWNoIG51Y2xlaWMgYWNpZCB0aGF0IGlzIHRyYW5zcG9ydGVkCjwvYnI+ICAKCi0gUHJvdGVpbjogY2hhaW4gb2YgYW1pbm8gYWNpZHMgCgogICAgLSB0aGVyZSBleGlzdCBtb3JlIHRoYW4gIDQwMCBhbWlubyBhY2lkcwogICAgLSBvbmx5IDIwIHdlcmUgc2VsZWN0ZWQgYnkgbGlmZSB0byBidWlsZCBwcm90ZWlucy4gCgohW10oLi9maWdzL0FtaW5vYWNpZHNfdGFibGUuc3ZnKXt3aWR0aD01MCV9ICAKKFNvdXJjZTogd2lraXBlZGlhKQoKPC9icj4gIAoKLSBDb2RlIGlzIGV2b2x2ZWQgc28gdGhhdCBtYW55IG11dGF0aW9ucyBnaXZlIHJpc2UgdG8gCgogIC0gc3lub255bW91cyBjb2RvbnMgKHNhbWUgYW1pbm8gYWNpZCkgb3IKICAtIHRvIGluY29ycG9yYXRlIGFtaW5vIGFjaWRzIHRoYXQgYXJlIHNpbWlsYXIgIAogICRccmlnaHRhcnJvdyQgcHJvdGVpbiBmdW5jdGlvbiBpcyBjb25zZXJ2ZWQgCgo8L2JyPiAgCgotIEROQSBpcyB0aGUgY2FyaWVyIG9mIGdlbmV0aWMgbWF0ZXJpYWwgKGNmci4gaGFyZCBkcml2ZSkKCi0gUk5BIHBsYXlzIGEgbW9yZSBjZW50cmFsIHJvbGU6IAoKICAgIC0gTWVzc2VuZ2VyIFJOQSAoY2ZyIFJBTSBtZW1vcnkpCiAgICAtIFJpYm96eW1lczogY2F0YWxpdGljIGZ1bmN0aW9uCiAgICAgICAgLSB0cmFuc2ZlciBSTkEgZm9yIHRyYW5zbGF0aW9uIG9mIHByb3RlaW5zIAogICAgICAgIC0gaW4gcmlib3NvbWVzIGZvciB0cmFuc2xhdGlvbiBvZiBwcm90ZWlucyAKICAgICAgICAtIGEgbG90IG9mIG90aGVyIHJ5Ym96eW1lcyAoY2F0YWxpYyBSTkEpCiAgICAtIFJOQSBwcmltZXIgZXNzZW50aWFsIHRvIGNvcHkgRE5BICAgCiAgICAtIENhcnJpZXIgb2YgZ2VuZXRpYyBtYXRlcmlhbCAoZS5nLiBjb3JvbmEgdmlydXMpCgo8L2JyPiAgCgoKCiMgRXZvbHV0aW9uIGFuZCBwaHlsb2dlbmVzaXMKCjwvYnI+CgoKPC9icj4KCiFbXSguL2ZpZ3MvUGh5bG9nZW5ldGljX3RyZWUuc3ZnKQooU291cmNlOiB3aWtpcGVkaWEpICAgIAoKPC9icj4gIAoKIyMgRXZvbHV0aW9uCgojIyMgVmFyaWFiaWxpdHkgYW5kIHNlbGVjdGlvbgoKQmFjdGVyaWEgJiBBcmNoYWUgIAohW10oLi9maWdzL0JpbmFyeV9GaXNzaW9uXzIuc3ZnKXt3aWR0aD03MCV9ICAKKFNvdXJjZTogRWNvZGRpbmd0b24sIHdpa2lwZWRpYSkKCkV1a2FyeW90YQohW10oLi9maWdzL01laW9zaXNfU3RhZ2VzLnN2ZykKKFNvdXJjZTogQWxpIFppZmFuLCB3aWtpcGVkaWEpCgo8L2JyPiAgCgo8Y2VudGVyPgohW10oLi9maWdzL0ROQV9wb2x5bWVyYXNlLnN2Zyl7d2lkdGg9NDAlfSAgCihTb3VyY2U6IHdpa2lwZWRpYSkKPC9jZW50ZXI+Cgo8L2JyPiAKCi0gRXJyb3IgbWFyZ2luIG9mIEROQSAgcmVwbGljYXRpb246IDEgZXJyb3IgcGVyIGJpbGxpb24gYmFzZXBhaXJzIHRoYXQgYXJlIGNvcGllZCAoSHVtYW4gZ2Vub21lIDYuNCBiaWxsaW9uIGJhc2VwYWlycykgIAoKLSBJbnNlcnRpb25zL2RlbGV0aW9uczogYmFzZXBhcmVuIHRoYXQgYXJlIGFkZGVkIG9yIHJlbW92ZWQgIAoKLSBSZWNvbWJpbmF0aW9uOiByZXNodWZmbGluZyBvZiBnZW5ldGljIHRyYWl0cywgZS5nLiBkdXJpbmcgc2V4dWFsIHJlcHJvZHVjdGlvbiAoZS5nLiByZWNvbWJpbmF0aW9uIG9mIHBhdGVybmFsIGFuZCBtYXRlcm5hbCBzZWdtZW50cyBkdXJpbmcgbWVpb3NpcykuCiRccmlnaHRhcnJvdyQgTXV0YXRpb25zCiRccmlnaHRhcnJvdyQgTmF0dXJhbCB2YXJpYWJpbGl0eQoKLSBNb3N0IG11dGF0aWVzIGFyZSBuZXV0cmFsICRccmlnaHRhcnJvdyQgTW9sZWN1bGFyL0dlbmV0aWMgY2xvY2sKLSBCdXQgbm90IGFsd2F5cwoKPC9icj4gIAoKIVtdKC4vZmlncy9zaWNrbGVDZWxsV2lraXBlZGlhMi5wbmcpCiFbXSguL2ZpZ3MvU2lja2xlX0NlbGxzX3dpa2kuanBlZyl7d2lkdGg9NDUlfQohW10oLi9maWdzL1NpY2tsZV9DZWxsX0FuZW1pYV93aWtpMy5wbmcpe3dpZHRoPTQ1JX0gIAooU291cmNlOiBUaG9tYXMgU2FtdWVsICgxKSwgT3BlblN0YXggQ29sbGVnZSAoMiksIEJydWNlQmxhdXMoMyksIHdpa2lwZWRpYSkKCjwvYnI+ICAKCi0gTWFueSBpbiBBZnJpY2EgCi0gV2h5IGRvZXMgdGhpcyBtdXRhdGlvbiByZW1haW5zPyAKLSBTZWxlY3Rpb24gYnkgZWNvZmFjdG9yczogbWFsYXJpYSByZXNpc3RlbmNlIAoKPC9icj4gIAoKCiMjIyBFdm9sdXRpb24KCgotIE5hdHVyYWwgcHJvY2VzcyB0aGF0IGZvcm1zIHRoZSBiYXNpcyBvZiB0aGUgb3JpZ2luIG9mIHNwZWNpZXMgKHBsYW50cywgYW5pbWFscywgYmFjdGVyaWEsIGZ1bmdpLCAuLi4gYW5kIGhvbW9uaWRzKQoKLSBEcml2ZW4gYnkgdHdvIG9wcG9zaW5nIGZvcmNlczogKip2YXJpYXRpb24qKiBlbiAqKnNlbGVjdGlvbioqCgotIFZhcmlhdGlvbiBieSBzcG9udGFuZW91cyBjb3B5IGVycm9ycyBpbiBnZW5ldGljIGNvZGU6ICBtdXRhdGlvbnMKCi0gU2VsZWN0aW9uIHVwb24gZWNvZmFjdG9ycywgaXMgbXV0YXRpb24gYmVuZWZpY2lhbCBvciBoYXJtZnVsbCBmb3IgYSBwYXJ0aWN1bGFyIG9yZ2FuaXNtIGluIGl0cyBzcGVjaWZpYyBlbnZpcm9ubWVudC4KCi0gT2RkcyBvbiBmaXhhdGlvbiBvZiBtdXRhdGlvbiBkZXBlbmRzIG9uIHJlcHJvZHVjdGl2ZSBzdWNjZXNzCgotIFByb2Nlc3Mgb2YgbXV0YXRpb24gYW5kIHNlbGVjdGlvbiBjYW4gZXZlbnR1YWxseSBsZWFkIHRvIG5ldyBzcGVjaWVzIHVwb24gbWFueSBnZW5lcmF0aW9ucy4gCjwvYnI+ICAKCgojIyMgR2VuZXRpYyBkcmlmdCAKCgotIEdlbmV0aWMgZHJpZnQ6IHJhbmRvbSBmbHVjdHVhdGlvbnMgb2YgYWxsZWxlcyAgCgotIFBhcnRpY3VsYXJseSBzdHJvbmcgaW4gc21hbGwgcG9wdWxhdGlvbnMKCi0gQXMgb3Bwb3NlZCB0byBzZWxlY3Rpb24gaXQgaXMgbm90IGFkYXB0aXZlLiAKCi0gTmV3IHNwZWNpZXMgd2lsbCBvcmlnaW5hdGUgbW9yZSBxdWlja2x5IHdoZW4gYSBzbWFsbCBmcmFjdGlvbiBvZiB0aGUgcG9wdWxhdGlvbiBnZXRzIGlzb2xhdGVkIGluIGEgbmV3IGVudmlyb25tZW50LiAKCjwvYnI+ICAKCgojIyMgSG9yaXpvbnRhbCBnZW5lIHRyYW5zZmVyIAotIE5vbiBzZXh1YWwgdHJhbnNmZXIgb2YgZ2VuZXRpYyBpbmZvcm1hdGlvbiAKCi0gVmVyeSBjb21tb24gYmV0d2VlbiBwcm9rYXJ5b3RlcyAoZXViYWN0ZXJpYSBhbmQgYXJhY2hhZSBiYWN0ZXJpYSkgCgogIC0gZS5nLiBleGNoYW5nZSBvZiBhbnRpYmlvdGljcyByZXNpc3RhbmNlLiAKCi0gYmV0d2VlbiBldWthcnlvdGVzIChtYWlubHkgaW4gcHJvdGlzdHMsIHVuaWNlbGx1bGFyIG9yZ2FuaXNtcyB3aXRoIG51Y2xldXMpICAKCi0gYmV0d2VlbiBwcm9rYXJ5b3RlcyAoZXViYWN0ZXJpYSBhbmQgYXJhY2hhZSBiYWN0ZXJpYSkgYW5kIGV1a2FyeW90ZXMgKHByb3Rpc3RlbiwgZnVuZ2FlLCBwbGFudHMgYW5kIGFuaW1hbHMpCgo8L2JyPiAgCgojIyMgVGVsZW9ub215CgotIFRoZXJlIGlzIG9ubHkgdGhlIHByaW1pdGl2ZSBnb2FsIHRvIG1haW50YWluIGFuZCByZXByb2R1Y2UgdGhlIHNwZWNpZXMuIAoKLSBFdm9sdXRpb24gaGFzIG5vIHB1cnBvc2Ugb3IgZGlyZWN0aW9uIAoKLSBXaGVuIGNvbXBsZXggb3JnYW5zIGFuZCBvcmdhbmlzbXMgb3JpZ2luYXRlIGl0cyBzZWVtcyBhcyBpZiB0aGVyZSBpcyBhIGRpcmVjdGlvbi9wdXJwb3NlIGJ1dCB0aGF0IGlzIG5vdCB0aGUgY2FzZS4gCgo8L2JyPiAgCgohW10oLi9maWdzL2V2b2x1dGlvbkV5ZS5wbmcpe3dpZHRoPTUwJX0gIAooU291cmNlOiBNYXR0aWN1czc4LCB3aWtpcGVkaWEpCgo8L2JyPiAgCgotIFRoZSBleWUgaXMgbm90IGRldmVsb3BlZCBieSBldm9sdXRpb24gd2l0aCB0aGUgcHVycG9zZSB0byBzZWUuIAoKLSBUaGUgZXllIG9ubHkgaGFzIHRoZSBmdW5jdGlvbiB0byBzZWUKCi0gSXQgaXMgdGhlIHJlc3VsdCBvZiBhIGdyYWR1YWwgcHJvY2VzcyB3aGVyZSBlYWNoIGFkYXB0YXRpb24gZ2F2ZSBhIHJlcHJvZHVjdGl2ZSBhZHZhbnRhZ2UgaW4gYSBwYXJ0aWN1bGFyIGVudmlyb25tZW50LiAKCi0gSW4gYW5vdGhlciBlbnZpcm9ubWVudCBpdCBjYW4gYmUgbm9sb25nZXIgZnVuY3Rpb25hbCBhbmQgdGhhbiBpdCBtaWdodCBkaXNzYXBlYXIsIGUuZy4gbW9sZXMgZXllIAogICAgCi0gVGhlIG9yaWdpbiBvZiBhIHNwZWNpZXMgaXMgdGhlIHJlc3VsdCBvZiBldm9sdXRpb24gYnV0IG5vdCB0aGUgcHVycG9zZSBvZiBldm9sdXRpb24uIAoKLSBFdm9sdXRpb24gaXMgYWRhcHRhdGlvbiB3aXRoIGFzIGdvYWwgbWFpbnRhbmNlIGFuZCByZXByb2R1Y3Rpb24gCgo8L2JyPiAgCgojIyMjIEV2b2x1dGlvbiBoYXMgbm8gZGlyZWN0aW9uCgotIERpc3RyaWJ1dGlvbiBvZiBudW1iZXIgb2Ygc3BlY2llcyBhbmQgY29tcGxleGl0eQoKIVtdKC4vZmlncy9zZWxlY3Rpb25Ob0RpcmVjdGlvbkRlZi5wbmcpICAKKFNvdXJjZTogU3RlcGhlbiBKLiBHb3VsZCwgMTk5NiwgRnVsbCBIb3VzZTogdGhlIHNwcmVhZCBvZiBFeGNlbGxlbmNlIGZyb20gUGxhdG8gVG8gRGFyd2luKSAgCiAgCi0gRGlzdHJpYnV0aW9uIG9mIGNhcmJvbiBtYXNzIGZpeGF0ZWQgaW4gZGlmZmVyZW50IHR5cGVzIG9mIHNwZWNpZXMuIAoKIVtdKGh0dHBzOi8vd3d3LnBuYXMub3JnL2Ntcy8xMC4xMDczL3BuYXMuMTcxMTg0MjExNS9hc3NldC80NDI1M2MyNS1hZmQ1LTRmYTEtYjA2MC0zMTU5MWY5MzRmNWQvYXNzZXRzL2dyYXBoaWMvcG5hcy4xNzExODQyMTE1ZmlnMDEuanBlZykgIAooTWFzc2EgaW4gZ2lnYSB0b24ga29vbHN0b2YuIFNvdXJjZTogZG9pLm9yZy8xMC4xMDczL3BuYXMuMTcxMTg0MjExNSkKCjwvYnI+ICAKCi0gTm90ZSwgbGFyZ2UgZXJyb3IgbWFyZ2luIG9uIGJhY3RlcmlhIChjYW4gYmUgYSBmYWN0b3IgMTAgbGFyZ2VyKS4gCgotIE51bWJlciBvZiBiYWN0ZXJpYWwgY2VsbHMgaW4gb3VyIGJvZHkgKFNvdXJjZTogZG9pLm9yZy8xMC4xMzcxL2pvdXJuYWwucGJpby4xMDAyNTMzKTogCiAgLSBcI2JhY3RlcmlhbCBjZWxscy9cI2h1bWFuIGNlbGxzIGVhcmxpZXIgZXN0aW1hdGVkIGFzICRccG0kIDEwLzEgCiAgLSByZWNlbnQgZXN0aW1hdGlvbSAgJFxwbSQgMS8xLiAKICAtIEh1bWFuIG9mIDcwa2cgJFxwbSQgMzggdHJpbGxpb24gYmFjdGVyaWFsIGNlbGxzLzMwIHRyaWxsaW9uIGh1bWFuZSBjZWxscyAodHJpbGxpb246IDEwMDAgYmlsbGlvbjogMTAkXnsxMn0kISkuCgoKPC9icj4gIAoKIyMgUGh5bG9nZW5lc2UgCgpPcmlnaW4gb2YgYWxsIHNwZWNpZXMgYnkgZXZvbHV0aW9uCgohW10oLi9maWdzL1BoeWxvZ2VuZXRpY190cmVlLnN2ZykgIAooU291cmNlOiB3aWtpcGVkaWEpICAgIAoKPC9icj4gIAoKIyMjIFRpbWVzY2FsZQoKIVtdKGh0dHBzOi8vbmF0dXJlZG9jdW1lbnRhcmllcy5vcmcvd3AtY29udGVudC91cGxvYWRzLzIwMTcvMTIvbGlmZXJvY2t5c3RhcnRzdHJpcC5qcGcpCgp8IDQuNSBCWUEgfCA0LjMgQllBIHwgMy44IEJZQSB8IDMuNSBCWUEgfCA1NDAgTVlBIHwgNTIwIE1ZQSB8CnwtLS0tLS0tLS18LS0tLS0tLS0tfC0tLS0tLS0tLXwtLS0tLS0tLS18LS0tLS0tLS0tfC0tLS0tLS0tLXwKfCAgICAgICAgIHwgICAgICAgICB8ICAgICAgICAgfCAgICAgICAgIHwgICAgICAgICB8ICAgICAgICAgfAoKKFNvdXJjZTogbmF0dXJlZG9jdW1ldGFyaWVzLm9yZykKCgotIEJsYWNrIEVhcnRoICg0LjUgQllBKTogaG90IGJhc2FsdCByb2NrIGFuZCBkdXN0IGluIGEgY29sZCB2YWN1dW0KCi0gR3JleSBFYXJ0aCAoNC4zIEJZQSk6IGdyYW5pdGUKCi0gQmx1ZSBFYXJ0aCAoMy44IEJZQSk6IHdhdGVyCgotIFJlZCBFYXJ0aCAoMy41IEJZQSk6IFJhZGljYWwgY2hhbmdlIGR1ZSB0byBsaWZlLiAKCiAgICAtIEN5YW5vYmFjdGVyaWEgJFxyaWdodGFycm93JCBmb3Rvc3ludGhlc2lzICRccmlnaHRhcnJvdyQgb3h5Z2VuCiAgICAtIEFsbCBpcm9uIGluIHRoZSBvY2VhbiBwcmVjaXBpdGF0ZXMgYXMgaXJvbiBveGlkZSAocnVzdCwgcmVkKSAKICAgIC0gMjUwICRccmlnaHRhcnJvdyQgPiA1MDAwIG1pbmVyYWxzLiAKICAgIC0gTWFzcyBleHRpbmN0aW9uCiAgCiAgCi0gV2hpdGUgRWFydGggKDU0MCBNWUEpCiAgICAtIExhcmdlIGljZSBhZ2UKICAgIC0gTWFzcyBleHRpbmN0aW9uCiAgICAtIFZvbGNhbmljIGFjdGl2aXR5IGNvbWVzIHRvIHRoZSByZXNjdWU6IGdyZWVuaG91c2UgZ2Fzc2VzIAogIAogIAotIEdyZWVuIEVhcnRoICg1MjAgTVlBKQogICAgCiAgICAtIEV4cGxvc2lvbiBvZiBsaWZlIAogICAgLSBmcm9tIHVuaWNlbGx1bGFyIHRvIG1vcmUgY29tcGxleCBsaWZlLiAgCgo8L2JyPiAgCgojIyMgQ2hhbmdlcG9pbnQ6IEdlbmVzaXMgb2YgZXVrYXJ5b3RpYyBjZWxsCgpUd28gYXJjaGV0eXBlczogcHJva2FyeW90ZW4gKHNpbXBsZSBjZWxscywgIDAuMSB0byA1LjAgJFxtdSBtJCkgYW5kIGV1a2FyeW90ZXMgKGxhcmdlciBhbmQgbW9yZSBjb21wbGV4IGNlbGxzLCAxMC0xMDAgJFxtdSBtJCkgCgohW10oLi9maWdzL3Byb2thcnlvdGVDZWxsLnN2Zyl7d2lkdGg9MzAlfQohW10oLi9maWdzL2FuaW1hbENlbGwuc3ZnKXt3aWR0aD0zMCV9CiFbXSguL2ZpZ3MvcGxhbnRDZWxsLnN2Zyl7d2lkdGg9MzAlfSAgCihTb3VyY2U6ICBBbGkgWmlmYW4gKDEpICYgTWFyaWFuYSBSdWl6IFZpbGxhcnJlYWwgKDIgJiAzKSwgd2lraXBlZGlhKSAKCjwvYnI+ICAKCi0gMy41IEJZQSAtIDUyMCBNWUEgb25seSBwcm9rYXJ5b3RlIGNlbGxzIGluIGZvc3NpbHMKCjwvYnI+ICAKCgpHZW5lc2lzIG9mIEV1a2FyeW90aWMgY2VsbCBieSBlbmRvc3ltYmlvc2lzOgoKIVtdKC4vZmlncy9lbmRvc3ltYmlvc2lzLnN2ZykgIAooU291cmNlOiBLZWx2aW5zb25nLCB3aWtpcGVkaWEpCgo8L2JyPiAgCgotIFByb2thcnlvdGVzOiByZXByb2R1Y3Rpb24gYnkgY2VsbCBkZXZpc2lvbiwgbXV0YXRpb24gZml4ZWQgaW4gYWxsIGRhdWd0aGVyIGNlbGxzLiAKCjwvYnI+ICAKCi0gRXVrYXJ5b3RlczogbmVhcmx5IGFsbCBoYXZlIGEgcGhhc2Ugb2Ygc2V4dWFsIHJlcHJvZHVjdGlvbgogIAogIC0gbXVjaCBtb3JlIHZhcmlhdGlvbjogcmVjb21iaW5hdGlvbiBvZiBjaHJvbW9zb21lcwogIC0gZGlwbG9pZCBvcmdhbmlzbXMgaGF2ZSB0d28gY29waWVzIG9mIGVhY2ggZ2VuZSAoZmF0aGVyIGFuZCBtb3RoZXIpICRccmlnaHRhcnJvdyQgc3VjY2Vzc2l2ZSBtdXRhdGlvbnMgaW4gMSBjb3B5IHBvc3NpYmxlIGluIHRoZSBwcmVzZW5jZSBvZiBhbm90aGVyIGZ1bmN0aW9uYWwgY29weSBvZiB0aGUgZ2VuZS4gCiAgCjwvYnI+ICAKICAKLSBFdWthcnlvdGVzIGV2b2x2ZSBmdXJ0aGVyIGluIAoKICAtIHByb3Rpc3RzICh1bmljZWxsdWxhcikKICAtIGZ1bmdhZQogIC0gcGxhbnRzCiAgLSBhbmltYWxzCgo8L2JyPiAgCgpHZW5ldGljIGluZm9ybWF0aW9uIG9mIGEgc3BlY2llcyBjYW4gYmUgc2VlbiBhcyBhIHJlY29yZCBvZiB0aGUgZW52aXJvbm1lbnRzIGFuZCBkZXZlbG9wbWVudCB0aGF0IGl0IHVuZGVyd2VudCB1cCB0byB0aGlzIHBvaW50IAoKPC9icj4gIAoKIyMgRXZvbHV0aW9uIG9mIGV2b2x1dGlvbgoKMS4gQ2hlbWljYWwgZXZvbHV0aW9uOiBzZWxlY3Rpb24gb2YgYnVpbGRpbmcgYmxvY2tzIGFuZCBjb21wbGV4IGNoZW1pc3RyeQoyLiBCaW9sb2dpY2FsIGV2b2x1dGlvbjogY2VsbC9vcmdhbmlzbSAkXHJpZ2h0YXJyb3ckIHNlbGVjdGlvbiBnZW5ldGljIGluZm9ybWF0aW9uIGFuZCBmdW5jdGlvbgozLiBDdWx0dXJhbCBldm9sdXRpb24gY2FuIGJ5cGFzcyBuYXR1cmFsIGV2b2x1dGlvbjoKICAgIAogICAgLSBhcnRpZmljaWFsIHNlbGVjdGlvbjogYnJlZWRpbmcgb2YgcGxhbnRzLCBwZXRzLCBjYXR0bGUsIGdlbmV0aWMgbWFuaXB1bGF0aW9uLCBldGMuCiAgICAtIFRlY2hub2xvZ3k6IGZhc3QgYWRhcHRhdGlvbiB0byBuZXcgZW52aXJvbm1lbnQKCjwvYnI+ICAKICAgIAojIE9udG9nZW5lc2lzCgotIE9udG9nZW5lc2lzOiBkZXZlbG9wbWVudCBvZiBvcmdhbmlzbSBmcm9tIGZlcnRpbGl6ZWQgZWdnIGNlbGwgdG8gYWR1bHQgaW5kaXZpZHVhbCB1bnRpbCBkZWF0aCAKCi0gRWFjaCBjZWxsIChleGNlcHQgZWdnIGFuZCBzcGVybSBjZWxsKSBvZiBtdWx0aS1jZWxsdWxhciBvcmdhbmlzbSBoYXMgc2FtZSBnZW5ldGljIG1hdGVyaWFsIQoKCi0gV2h5IGFyZSBjZWxscyBvZiBzYW1lIG9yZ2FuaXNtIHNvIG1vcnBob2xvZ2ljYWxseSBkaXZlcnNlPyAKCjwvYnI+CgojIyBFcGlnZW5ldGljcwoKIVtdKC4vZmlncy9FcGlnZW5ldGljX21lY2hhbmlzbXMucG5nKSAgCihTb3VyY2U6IE5JSCwgd2lraXBlZGlhKQoKPC9icj4KCiFbXSguL2ZpZ3MvRE5BX21ldGh5bGF0aW9uX3JlcHJvZ3JhbW1pbmcucG5nKSAgCihTb3VyY2U6IE1hcml1c3dhbHRlciwgd2lraXBlZGlhKQoKPC9icj4gIAoKLSBEaWZmZXJlbnRpYXRpb24gJFxyaWdodGFycm93JCBlcGlnZW5ldGljcwoKLSBFcGlnZW5ldGljczogZXBpZ2VuZXRpYyBtYXJrZXJzIG9uIEROQSBhbmQgaGlzdG9uZXMgJFxyaWdodGFycm93JCBnZW5lIGNhbiBiZSB0cmFuc2NyaWJlZCBvciBub3QuIAoKLSBFcGlnZW5ldGljcyBpcyBkcml2ZW4gYnkgZWNvZmFjdG9ycy4gCgotIGlkZW50aWNhbCB0d2lucyBoYXZlIGFsbW9zdCB0aGUgc2FtZSBnZW5vbWUgKHNtYWxsIGRpZmZlcmVuY2VzIGhhdmUgYmVlbiBidWlsZCB1cCBpbiB0aGUgd29tYiksIGJ1dCBpdCBnZXRzIG1vcmUgZWFzeSB0byB0ZWxsIHRoZW0gYXBhcnQgb3ZlciB0aW1lOiBlcGlnZW5ldGljcwoKCjwvYnI+IAoKPGNlbnRlcj4KIVtdKGh0dHBzOi8vd3d3LnJlc2VhcmNoZ2F0ZS5uZXQvcHJvZmlsZS9UYXJhLUhvZ2Vuc29uL3B1YmxpY2F0aW9uLzMyMDM4NjQ4Ny9maWd1cmUvZmlnMS9BUzo3ODM4NDc5MTQ0NzE0MjlAMTU2Mzg5NTMxNDkwNy9kZW50aWNhbC10d2lucy13aXRoLXBoZW5vdHlwaWMtZGlzY29yZGFuY2UtZHVlLXRvLWVudmlyb25tZW50YWwtZXhwb3N1cmUtQWx0aG91Z2gtTVoucG5nKXt3aWR0aD01MCV9CjwvY2VudGVyPgooRGlmZmVyZW5jZSBkdWUgdG8gZWNvLWZhY3RvciBVVi1leHBvc3VyZSwgU291cmNlOiBTd2FiICYgSG9nZW5zb24sIERPSTogMTAuMTAwNy85NzgtMy0zMTktMzExNDMtMl82NS0xKQoKPC9icj4gCgohW10oaHR0cHM6Ly93d3cubmNiaS5ubG0ubmloLmdvdi9wbWMvYXJ0aWNsZXMvaW5zdGFuY2UvMzUwMTU3OS9iaW4vbmlobXM0MDIxODdmMy5qcGcpICAKKFNvdXJjZSBkb2k6IDEwLjExMTEvai4xNTI2LTQ2MzcuMjAxMi4wMTQ4OC54KQoKPC9icj4gIAoKLSBFcGlnZW5ldGljcyBpcyB2ZXJ5IGltcG9ydGFudCBpbiBkZXZlbG9wbWVudCBvZiB0aGUgYnJhaW4gYW5kIGZvciBsZWFybmluZy4gCgoKCjwvYnI+ICAKCiMgU3RhdGlzdGljYWwgR2Vub21pY3MgCgotIEdlbm9taWNzIGlzIHRoZSBzdHVkaWVzIGFsbCBnZW5ldGljIGluZm9ybWF0aW9uIG9mIGFuIG9yZ2FuaXNtCnRvZ2V0aGVyOiBzcGVjaWZpYyBjb2RlLCBlZmZlY3RzLCBmdW5jdGlvbnMgYW5kIGludGVyYWN0aW9ucwoKLSBXaXRoIGN1cnJlbnQgaGlnaCB0aHJvdWdocHV0IG1ldGhvZHMgd2UgY2FuIG1lYXN1cmUgdGhlIGVudGlyZSAKICAgIC0gZ2Vub21lCiAgICAtIHRyYW5zY3JpcHRvbWU6IGV4cHJlc3NlZCB0cmFuc2NyaXB0IG9mIGFsbCBnZW5lcwogICAgLSBwcm90ZW9tZTogYWxsIHRyYW5zbGF0ZWQgcHJvdGVpbnMKICAgIC0gZXBpZ2Vub21lCiAgICAtIC4uLgogICAgCi0gV2l0aCBzdGF0aXN0aWNhbCBnZW5vbWljcyB3ZSB3aWxsIHRyeSB0byBtYWtlIHNlbnNlIG9mIHRoaXMgd2VhbHRoIG9mIGRhdGEgc28gdGhhdCB3ZSBjYW4gZmluZCBiaW9tYXJrZXJzIGFuZCAnb21pY3MgcGF0dGVybnMgdGhhdCBhcmUgcmVwcm9kdWNpYmxlLiAKCgojIENsb3NpbmcgcmVtYXJrcyAKCi0gTGlmZSBpcwogICAgLSBvbmUKICAgIC0gY2hlbWlzdHJ5IAogICAgLSBpbmZvcm1hdGlvbiAKCjwvYnI+ICAKCi0gTm90ZSwgaG93ZXZlciB0aGF0IHdlIHNob3VsZCBub3QgcmVkdWNlIG9yZ2FuaXNtcyB0byB0aGVpciBnZW5vbWUKLSBJbmRlZWQsIG9yZ2FuaXNtcyBhbmQgbGlmZSBjYW5ub3QgYmUgc3R1ZGllZCB3aXRob3V0IGNvbnNpZGVyaW5nIHRoZXJlIGludGltYXRlIHJlbGF0aW9uIHRvIHRoZWlyIGVudmlyb25tZW50L2Vjb3N5c3RlbQoKICAgIC0gbW9sZWN1bGVzIGRvIG5vdCB3b3JrIGFsb25lIGJ1dCBpbiBsYXJnZSBuZXR3b3JrcwogICAgLSBlbnZpcm9ubWVudGFsIGNvbmRpdGlvbnMgYXJlIGltcG9ydGFudCBmb3Igc2VsZiBvcmdhbmlzYXRpb24KICAgIC0gc2VsZWN0aXZlIGV2b2x1dGlvbjogc2VsZWN0aW9uIGJ5IGVjby1mYWN0b3JzIAogICAgLSBvcmdhbmlzbXMgYWRhcHQvc2hhcGUgaW4gdHVybiB0aGVpciBlbnZpcm9ubWVudCBhbmQgZWNvLWZhY3RvcnM6IGUuZy4gY3lhbm9iYWN0ZXJpYQogICAgLSBpbmRpdmlkdWFsIGV2b2x1dGlvbjogZWNvLWZhY3RvcnMgJFxsZWZ0cmlnaHRhcnJvdyQgZXBpZ2VuZXRpY3MgCiAgICAtIGVjby1mYWN0b3JzIGFyZSBhbHNvIGRldGVybWluZWQgYnkgb3RoZXIgb3JnYW5pc21zOiBlY28tc3lzdGVtCiAgICAtIE9yZ2FuaXNtcyBpbnRlcmFjdCBhbmQgY29sbGFib3JhdGUgaW4gdGhlaXIgZWNvc3lzdGVtCiAgICAtIEdlbmV0aWMgaW5mb3JtYXRpb24gY2FuIGJlIGNvbnNpZGVyZWQgYXMgdGhlIHJlY29yZCBvZiBhbGwgY29uZGl0aW9ucyBpbiB3aGljaCBvdXIgYW5jZXN0cmFsIGNlbGxzIGhhdmUgbGl2ZWQuICAgCiAgICAgIAogICAgICAkXHJpZ2h0YXJyb3ckICJXZWIgb2YgTGlmZSIgCgoKIyBPcmdhbml6YXRpb24gb2YgdGhlIGNvdXJzZQoKIyMgTW9kdWxlIEk6IFF1YW50aXRhdGl2ZSBQcm90ZW9taWNzCgogIDEuIElkZW50aWZpY2F0aW9uIGFuZCBxdWFudGlmaWNhdGlvbiBvZiBwZXB0aWRlcyBhbmQgcHJvdGVpbnMKICAyLiBEYXRhIGV4cGxvcmF0aW9uIGFuZCBxdWFsaXR5IGNvbnRyb2wgdXNpbmcgcGxvdHMKICAzLiBQcmVwcm9jZXNzaW5nOiBsb2ctdHJhbnNmb3JtYXRpb24sIEZpbHRlcmluZywgTm9ybWFsaXphdGlvbiwKU3VtbWFyaXphdGlvbgogIDQuIERlYWxpbmcgd2l0aCBiYXRjaCBlZmZlY3RzIGFuZCBvdGhlciBjb25mb3VuZGVycwogIDUuIFN0YXRpc3RpY2FsIENvbmNlcHRzCiAgCiAgICAgIDEuIExpbmVhciBtb2RlbHMvTGluZWFyIG1peGVkIG1vZGVscwogICAgICAyLiBUcmFkZS1vZmYgYmV0d2VlbiBiaW9sb2dpY2FsIHJlbGV2YW5jZS9lZmZlY3Qgc2l6ZSB2cyBzdGF0aXN0aWNhbApzaWduaWZpY2FuY2UKICAgICAgMy4gRW1waXJpY2FsIEJheWVzIE1ldGhvZHMKICAgICAgNC4gTXVsdGlwbGUgdGVzdGluZwogICAgCiMjIE1vZHVsZSBJSTogTmV4dCBnZW5lcmF0aW9uIHNlcXVlbmNpbmcgKE5HUywgVHJhbnNjcmlwdG9taWNzKQoKICAxLiBOR1MgRGF0YSBleHBsb3JhdGlvbgogIDIuIFByZXByb2Nlc3Npbmcvbm9ybWFsaXphdGlvbgogIDMuIEFkZGl0aW9uYWwgU3RhdGlzdGljYWwgQ29uY2VwdHMKICAgIAogICAgICAxLiBHZW5lcmFsaXplZCBsaW5lYXIgbW9kZWxzIChHTE0pIGZvciBiaW5hcnkgZGF0YQogICAgICAyLiBHTE0gZm9yIGNvdW50IGRhdGEKICAgICAgMy4gT3ZlcmRpc3BlcnNpb24KCiMjIERldGFpbHMKCiAgMS4gVGhlb3J5IGFuZCBUdXRvcmlhbHMgYXJlIGJsZW5kZWQKICAgIAogICAgICAtIE1vZHVsZSBJOiB3ZWVrIDEtNQogICAgICAtIE1vZHVsZSBJSTogd2VlayA2LTEwCiAgICAgIC0gUHJvamVjdDogd2VlayAxLTEwIHZpYSBzbWFsbCBhc3NpZ25tZW50cyArIHdlZWsgMTEtMTIKICAKICAyLiAgQ29tbXVuaWNhdGlvbiBhbmQgc3VibWlzc2lvbiBvZiBwcm9qZWN0cyB2aWEgVWZvcmEKICAzLiBBbGwgdHV0b3JpYWxzIGZyb20gd2VlayAyIG9ud2FyZHMgYXJlIGJhc2VkIG9uClIvQmlvY29uZHVjdG9yIHZpYSBSLXN0dWRpbwpTY3JpcHRzIGFyZSBtYWRlIGluIFIvbWFya2Rvd246IGEgZmlsZSBmb3JtYXQgdG8gY29tYmluZQp0ZXh0LCBSIGNvZGUgYW5kIFIgb3V0cHV0LgoK</div>
 
 
 </div>
@@ -2396,6 +1302,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("intro.Rmd");
+});
+</script>
 
 <script>
 $(document).ready(function ()  {
