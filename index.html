@@ -259,6 +259,25 @@ $(document).ready(function () {
     <li>
       <a href="recapGeneralLinearModel.html">1.2 Recap linear model</a>
     </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="docs/martens_proteomics_bioinformatics.pdf">1. Proteomics Bioinformatics</a>
+    </li>
+    <li>
+      <a href="TargetDecoy.html">2.1 Identification - FDR - QC</a>
+    </li>
+    <li>
+      <a href="pda_quantification_preprocessing.html">2.2.1. Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_robustSummarisation_peptideModels.html">2.2.2. Wrap-up Preprocessing - Peptide-Level-Models</a>
+    </li>
+    <li>
+      <a href="pda_quantification_inference.html">2.3.1. Quantification - Differential Abundance Analysis</a>
+    </li>
+    <li>
+      <a href="pda_blocking_wrapup.html">2.3.2. Wrap-up DA - Blocking</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -273,6 +292,19 @@ $(document).ready(function () {
     <li class="dropdown-header">---- INTRODUCTION ----</li>
     <li>
       <a href="multipleRegression_KPNA2.html">1 Intro KPNA2</a>
+    </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">1. Bioinformatics for Proteomics</a>
+    </li>
+    <li>
+      <a href="TargetDecoyTutorial.html">2.1. Target Decoy QC</a>
+    </li>
+    <li>
+      <a href="pda_tutorialPreprocessing.html">2.2. Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_tutorialDesign.html">2.3. Quantification - Design</a>
     </li>
   </ul>
 </li>
@@ -368,33 +400,65 @@ href="./recapGeneralLinearModel.pdf">PDF</a></li>
 href="https://raw.githubusercontent.com/statOmics/SGA/master/figures.tar.gz">download
 figures</a></li>
 </ul>
+</div>
+<div id="module-i-proteomics-data-analysis-week-1-5"
+class="section level2">
+<h2>Module I: Proteomics Data Analysis (Week 1-5)</h2>
+<div id="bioinformatics-for-proteomics" class="section level3">
+<h3>1. Bioinformatics for proteomics</h3>
+<ul>
+<li>Lecture: <a
+href="./docs/martens_proteomics_bioinformatics.pdf">PDF</a>, <a
+href="https://www.youtube.com/watch?v=ZgwNWRul98o">youtube</a></li>
+<li>Tutorials: <a
+href="https://www.compomics.com/bioinformatics-for-proteomics/">identification</a></li>
+</ul>
+</div>
+<div id="statistics-for-proteomics-data-analysis"
+class="section level3">
+<h3>2. Statistics for Proteomics Data Analysis</h3>
+<div id="identification" class="section level4">
+<h4>2.1. Identification</h4>
+<ul>
+<li><a href="TargetDecoy.html">Target Decoy QC</a></li>
+<li><a href="TargetDecoyTutorial.html">Tutorial</a>, <a
+href="mzIDMsgfSwissprotExample.html">example</a></li>
+<li>Solution: <a href="mzIDuniprotTutorial.html">Uniprot search</a>, <a
+href="mzIDswissprotTutorial.html">Swissprot search</a></li>
+</ul>
+</div>
+<div
+id="preprocessing-analysis-of-label-free-quantitative-proteomics-experiments-with-simple-designs"
+class="section level4">
+<h4>2.2. Preprocessing &amp; Analysis of Label Free Quantitative
+Proteomics Experiments with Simple Designs</h4>
+<ul>
+<li>Lecture: <a href="./pda_quantification_preprocessing.html">html</a>,
+<a href="./pda_quantification_preprocessing.pdf">pdf</a></li>
+<li>Tutorial: <a
+href="./pda_tutorialPreprocessing.html">preprocessing</a></li>
+<li>Wrap-up Peptide-based Models: <a
+href="./pda_robustSummarisation_peptideModels.html">html</a>, <a
+href="./pda_robustSummarisation_peptideModels.pdf">pdf</a></li>
+<li>Solutions: <a href="cancer3x3.html">cancer3x3</a>, <a
+href="cancer6x6.html">cancer6x6</a>, <a
+href="cancer9x9.html">cancer9x9</a></li>
+</ul>
+</div>
+<div
+id="statistical-inference-analysis-of-experiments-with-factorial-designs"
+class="section level4">
+<h4>2.3. Statistical Inference &amp; Analysis of Experiments with
+Factorial Designs</h4>
+<ul>
+<li>Lecture Differential Abundance Analysis: <a
+href="./pda_quantification_inference.html">html</a>, <a
+href="./pda_quantification_inference.pdf">pdf</a></li>
+<li>Tutorial: <a href="pda_tutorialDesign.html">Design</a></li>
+<li>Wrap-up Blocking: <a href="./pda_blocking_wrapup.html">html</a>, <a
+href="./pda_blocking_wrapup.pdf">pdf</a></li>
+</ul>
 <!--
-
-## Module I: Proteomics Data Analysis (Week 1-5)
-
-### 1. Bioinformatics for proteomics
-   
-   - Lecture: [PDF](./docs/martens_proteomics_bioinformatics.pdf), [youtube](https://www.youtube.com/watch?v=ZgwNWRul98o)
-   - Tutorials: [identification](https://www.compomics.com/bioinformatics-for-proteomics/)
-
-### 2. Statistics for Proteomics Data Analysis
-   
-#### 2.1. Identification
-
-- [Target Decoy QC](TargetDecoy.html)
-- [Tutorial](TargetDecoyTutorial.html), [example](mzIDMsgfSwissprotExample.html)
-- Solution: [Uniprot search](mzIDuniprotTutorial.html), [Swissprot search](mzIDswissprotTutorial.html)
-
-#### 2.2. Preprocessing & Analysis of Label Free Quantitative Proteomics Experiments with Simple Designs
-  - Lecture: [html](./pda_quantification_preprocessing.html), [pdf](./pda_quantification_preprocessing.pdf)
-  - Tutorial: [preprocessing](./pda_tutorialPreprocessing.html)
-  - Wrap-up Peptide-based Models: [html](./pda_robustSummarisation_peptideModels.html), [pdf](./pda_robustSummarisation_peptideModels.pdf)
-  - Solutions: [cancer3x3](cancer3x3.html), [cancer6x6](cancer6x6.html), [cancer9x9](cancer9x9.html)
-
-#### 2.3. Statistical Inference & Analysis of Experiments with Factorial Designs
-  - Lecture Differential Abundance Analysis: [html](./pda_quantification_inference.html), [pdf](./pda_quantification_inference.pdf)
-  - Tutorial: [Design](pda_tutorialDesign.html)
-  - Wrap-up Blocking: [html](./pda_blocking_wrapup.html), [pdf](./pda_blocking_wrapup.pdf)
   - Solution: [Heart Example](heartMainInteraction.html)
   - Technical Details: [Technical Details](technicalDetailsProteomics.html)
   
@@ -424,6 +488,8 @@ figures</a></li>
 - Tutorial on scRNA-seq: [handout](./scRNA-seq-Tutorial.html)
 
 -->
+</div>
+</div>
 </div>
 </div>
 

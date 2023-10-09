@@ -460,16 +460,6 @@ div.tocify {
     <li>
       <a href="pda_blocking_wrapup.html">2.3.2. Wrap-up DA - Blocking</a>
     </li>
-    <li>
-      <a href="technicalDetailsProteomics.html">2.3.3 Technical Details</a>
-    </li>
-    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
-    <li>
-      <a href="sequencing_intro.html">1.  Introduction to RNA-seq</a>
-    </li>
-    <li>
-      <a href="sequencing_countData.html">2.  Working with count data and GLMs</a>
-    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -497,16 +487,6 @@ div.tocify {
     </li>
     <li>
       <a href="pda_tutorialDesign.html">2.3. Quantification - Design</a>
-    </li>
-    <li class="dropdown-header">---- MODULE II RNA-seq ----</li>
-    <li>
-      <a href="sequencingTutorial1_mapping.html">1. Read mapping</a>
-    </li>
-    <li>
-      <a href="sequencingTutorial2_DE.html">2. Working with Count Data</a>
-    </li>
-    <li>
-      <a href="scRNA-seq-Tutorial.html">3. Single Cell RNA-seq Data Analysis</a>
     </li>
   </ul>
 </li>
@@ -558,31 +538,38 @@ Bioconductor page</a> for more information.</p>
 ## 
 ## replacement repositories:
 ##     CRAN: https://cloud.r-project.org</code></pre>
-<pre><code>## Bioconductor version 3.15 (BiocManager 1.30.18), R 4.2.2 (2022-10-31)</code></pre>
+<pre><code>## Bioconductor version 3.15 (BiocManager 1.30.18), R 4.2.3 (2023-03-15)</code></pre>
 <pre><code>## Installing package(s) &#39;scRNAseq&#39;</code></pre>
 <pre><code>## Installation paths not writeable, unable to update packages
-##   path: /opt/R/4.2.2/lib/R/library
+##   path: /opt/R/4.2.3/lib/R/library
 ##   packages:
-##     boot</code></pre>
-<pre><code>## Old packages: &#39;BiocManager&#39;, &#39;BiocParallel&#39;, &#39;Biostrings&#39;, &#39;bit&#39;, &#39;bookdown&#39;,
-##   &#39;broom&#39;, &#39;bslib&#39;, &#39;callr&#39;, &#39;car&#39;, &#39;cli&#39;, &#39;clue&#39;, &#39;cluster&#39;, &#39;commonmark&#39;,
+##     class, KernSmooth, lattice, spatial</code></pre>
+<pre><code>## Old packages: &#39;askpass&#39;, &#39;BH&#39;, &#39;BiocManager&#39;, &#39;BiocParallel&#39;, &#39;Biostrings&#39;,
+##   &#39;bit&#39;, &#39;blob&#39;, &#39;bookdown&#39;, &#39;boot&#39;, &#39;broom&#39;, &#39;bslib&#39;, &#39;cachem&#39;, &#39;callr&#39;,
+##   &#39;car&#39;, &#39;cli&#39;, &#39;clue&#39;, &#39;cluster&#39;, &#39;codetools&#39;, &#39;colorspace&#39;, &#39;commonmark&#39;,
 ##   &#39;cpp11&#39;, &#39;crayon&#39;, &#39;curl&#39;, &#39;data.table&#39;, &#39;DBI&#39;, &#39;dbplyr&#39;,
-##   &#39;DelayedMatrixStats&#39;, &#39;desc&#39;, &#39;digest&#39;, &#39;dplyr&#39;, &#39;DT&#39;, &#39;dtplyr&#39;, &#39;ensembldb&#39;,
-##   &#39;evaluate&#39;, &#39;farver&#39;, &#39;fontawesome&#39;, &#39;forcats&#39;, &#39;foreign&#39;, &#39;gargle&#39;,
-##   &#39;generics&#39;, &#39;GenomeInfoDb&#39;, &#39;GenomicAlignments&#39;, &#39;GenomicFeatures&#39;,
-##   &#39;ggplot2&#39;, &#39;ggpubr&#39;, &#39;ggrepel&#39;, &#39;ggsignif&#39;, &#39;googlesheets4&#39;, &#39;gtable&#39;,
-##   &#39;haven&#39;, &#39;hms&#39;, &#39;htmltools&#39;, &#39;httpuv&#39;, &#39;httr&#39;, &#39;igraph&#39;, &#39;IRanges&#39;, &#39;irlba&#39;,
-##   &#39;isoband&#39;, &#39;jpeg&#39;, &#39;jsonlite&#39;, &#39;KEGGREST&#39;, &#39;knitr&#39;, &#39;lifecycle&#39;, &#39;limma&#39;,
-##   &#39;lme4&#39;, &#39;locfit&#39;, &#39;lubridate&#39;, &#39;maptools&#39;, &#39;MASS&#39;, &#39;Matrix&#39;,
+##   &#39;DelayedMatrixStats&#39;, &#39;deldir&#39;, &#39;desc&#39;, &#39;digest&#39;, &#39;dplyr&#39;, &#39;dqrng&#39;, &#39;DT&#39;,
+##   &#39;dtplyr&#39;, &#39;ensembldb&#39;, &#39;evaluate&#39;, &#39;fansi&#39;, &#39;farver&#39;, &#39;fastmap&#39;,
+##   &#39;fontawesome&#39;, &#39;forcats&#39;, &#39;foreign&#39;, &#39;formatR&#39;, &#39;fs&#39;, &#39;gargle&#39;, &#39;generics&#39;,
+##   &#39;GenomeInfoDb&#39;, &#39;GenomicAlignments&#39;, &#39;GenomicFeatures&#39;, &#39;ggbeeswarm&#39;,
+##   &#39;ggplot2&#39;, &#39;ggpubr&#39;, &#39;ggrepel&#39;, &#39;ggsci&#39;, &#39;ggsignif&#39;, &#39;googledrive&#39;,
+##   &#39;googlesheets4&#39;, &#39;gtable&#39;, &#39;haven&#39;, &#39;highr&#39;, &#39;hms&#39;, &#39;htmltools&#39;,
+##   &#39;htmlwidgets&#39;, &#39;httpuv&#39;, &#39;httr&#39;, &#39;igraph&#39;, &#39;interp&#39;, &#39;IRanges&#39;, &#39;isoband&#39;,
+##   &#39;jpeg&#39;, &#39;jsonlite&#39;, &#39;KEGGREST&#39;, &#39;knitr&#39;, &#39;labeling&#39;, &#39;later&#39;, &#39;lifecycle&#39;,
+##   &#39;limma&#39;, &#39;lme4&#39;, &#39;locfit&#39;, &#39;lubridate&#39;, &#39;maptools&#39;, &#39;MASS&#39;, &#39;Matrix&#39;,
 ##   &#39;MatrixGenerics&#39;, &#39;MatrixModels&#39;, &#39;matrixStats&#39;, &#39;mgcv&#39;, &#39;minqa&#39;, &#39;modelr&#39;,
-##   &#39;nlme&#39;, &#39;nnet&#39;, &#39;openssl&#39;, &#39;pillar&#39;, &#39;pkgload&#39;, &#39;plotly&#39;, &#39;plyr&#39;, &#39;png&#39;,
-##   &#39;processx&#39;, &#39;ps&#39;, &#39;purrr&#39;, &#39;quantreg&#39;, &#39;R.methodsS3&#39;, &#39;R.oo&#39;, &#39;R.utils&#39;,
-##   &#39;Rcpp&#39;, &#39;RcppArmadillo&#39;, &#39;RcppEigen&#39;, &#39;RcppHNSW&#39;, &#39;RCurl&#39;, &#39;readr&#39;, &#39;readxl&#39;,
-##   &#39;renv&#39;, &#39;reprex&#39;, &#39;restfulr&#39;, &#39;rintrojs&#39;, &#39;rlang&#39;, &#39;rmarkdown&#39;, &#39;RSQLite&#39;,
-##   &#39;rstatix&#39;, &#39;rstudioapi&#39;, &#39;rtracklayer&#39;, &#39;rvest&#39;, &#39;sass&#39;, &#39;ScaledMatrix&#39;,
-##   &#39;scales&#39;, &#39;scuttle&#39;, &#39;shiny&#39;, &#39;SingleCellExperiment&#39;, &#39;sp&#39;, &#39;survival&#39;,
-##   &#39;sys&#39;, &#39;testthat&#39;, &#39;tibble&#39;, &#39;tidyr&#39;, &#39;tidyselect&#39;, &#39;vctrs&#39;, &#39;viridisLite&#39;,
-##   &#39;vroom&#39;, &#39;xfun&#39;, &#39;XML&#39;, &#39;yaml&#39;, &#39;zoo&#39;</code></pre>
+##   &#39;multcomp&#39;, &#39;mvtnorm&#39;, &#39;ncdf4&#39;, &#39;nlme&#39;, &#39;nnet&#39;, &#39;openssl&#39;, &#39;pbkrtest&#39;,
+##   &#39;pillar&#39;, &#39;pkgload&#39;, &#39;plotly&#39;, &#39;plyr&#39;, &#39;png&#39;, &#39;prettyunits&#39;, &#39;printr&#39;,
+##   &#39;processx&#39;, &#39;promises&#39;, &#39;ps&#39;, &#39;purrr&#39;, &#39;quantreg&#39;, &#39;R.methodsS3&#39;, &#39;R.oo&#39;,
+##   &#39;R.utils&#39;, &#39;Rcpp&#39;, &#39;RcppArmadillo&#39;, &#39;RcppEigen&#39;, &#39;RcppHNSW&#39;, &#39;RCurl&#39;,
+##   &#39;readr&#39;, &#39;readxl&#39;, &#39;rematch&#39;, &#39;renv&#39;, &#39;reprex&#39;, &#39;restfulr&#39;, &#39;rintrojs&#39;,
+##   &#39;rlang&#39;, &#39;rmarkdown&#39;, &#39;RSQLite&#39;, &#39;rstatix&#39;, &#39;rstudioapi&#39;, &#39;rtracklayer&#39;,
+##   &#39;rvest&#39;, &#39;sass&#39;, &#39;ScaledMatrix&#39;, &#39;scales&#39;, &#39;scuttle&#39;, &#39;shiny&#39;,
+##   &#39;SingleCellExperiment&#39;, &#39;sourcetools&#39;, &#39;sp&#39;, &#39;statmod&#39;, &#39;stringi&#39;, &#39;stringr&#39;,
+##   &#39;survival&#39;, &#39;sys&#39;, &#39;testthat&#39;, &#39;TH.data&#39;, &#39;tibble&#39;, &#39;tidyr&#39;, &#39;tidyselect&#39;,
+##   &#39;tidyverse&#39;, &#39;tinytex&#39;, &#39;tzdb&#39;, &#39;utf8&#39;, &#39;uuid&#39;, &#39;vctrs&#39;, &#39;viridis&#39;,
+##   &#39;viridisLite&#39;, &#39;vroom&#39;, &#39;waldo&#39;, &#39;withr&#39;, &#39;xfun&#39;, &#39;xgboost&#39;, &#39;XML&#39;, &#39;xml2&#39;,
+##   &#39;yaml&#39;, &#39;zoo&#39;</code></pre>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Code below might ask you to create an ExperimentHub directory. </span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Type &#39;yes&#39; and hit Enter, to allow this.</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(scRNAseq))</span>

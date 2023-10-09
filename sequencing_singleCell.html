@@ -459,16 +459,6 @@ div.tocify {
     <li>
       <a href="pda_blocking_wrapup.html">2.3.2. Wrap-up DA - Blocking</a>
     </li>
-    <li>
-      <a href="technicalDetailsProteomics.html">2.3.3 Technical Details</a>
-    </li>
-    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
-    <li>
-      <a href="sequencing_intro.html">1.  Introduction to RNA-seq</a>
-    </li>
-    <li>
-      <a href="sequencing_countData.html">2.  Working with count data and GLMs</a>
-    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -497,16 +487,6 @@ div.tocify {
     <li>
       <a href="pda_tutorialDesign.html">2.3. Quantification - Design</a>
     </li>
-    <li class="dropdown-header">---- MODULE II RNA-seq ----</li>
-    <li>
-      <a href="sequencingTutorial1_mapping.html">1. Read mapping</a>
-    </li>
-    <li>
-      <a href="sequencingTutorial2_DE.html">2. Working with Count Data</a>
-    </li>
-    <li>
-      <a href="scRNA-seq-Tutorial.html">3. Single Cell RNA-seq Data Analysis</a>
-    </li>
   </ul>
 </li>
       </ul>
@@ -530,7 +510,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Sequencing: Single Cell RNA-seq</h1>
 <h4 class="author">Lieven Clement and Koen Van den Berge</h4>
-<h4 class="date">Last edited on 01 December, 2022</h4>
+<h4 class="date">Last edited on 09 October, 2023</h4>
 
 </div>
 
@@ -651,31 +631,38 @@ Kang et al. 2018, doi: 10.1038/nbt.4042
 ## 
 ## replacement repositories:
 ##     CRAN: https://cloud.r-project.org</code></pre>
-<pre><code>## Bioconductor version 3.15 (BiocManager 1.30.18), R 4.2.2 (2022-10-31)</code></pre>
+<pre><code>## Bioconductor version 3.15 (BiocManager 1.30.18), R 4.2.3 (2023-03-15)</code></pre>
 <pre><code>## Installing package(s) &#39;muscData&#39;</code></pre>
 <pre><code>## Installation paths not writeable, unable to update packages
-##   path: /opt/R/4.2.2/lib/R/library
+##   path: /opt/R/4.2.3/lib/R/library
 ##   packages:
-##     boot</code></pre>
-<pre><code>## Old packages: &#39;BiocManager&#39;, &#39;BiocParallel&#39;, &#39;Biostrings&#39;, &#39;bit&#39;, &#39;bookdown&#39;,
-##   &#39;broom&#39;, &#39;bslib&#39;, &#39;callr&#39;, &#39;car&#39;, &#39;cli&#39;, &#39;clue&#39;, &#39;cluster&#39;, &#39;commonmark&#39;,
+##     class, KernSmooth, lattice, spatial</code></pre>
+<pre><code>## Old packages: &#39;askpass&#39;, &#39;BH&#39;, &#39;BiocManager&#39;, &#39;BiocParallel&#39;, &#39;Biostrings&#39;,
+##   &#39;bit&#39;, &#39;blob&#39;, &#39;bookdown&#39;, &#39;boot&#39;, &#39;broom&#39;, &#39;bslib&#39;, &#39;cachem&#39;, &#39;callr&#39;,
+##   &#39;car&#39;, &#39;cli&#39;, &#39;clue&#39;, &#39;cluster&#39;, &#39;codetools&#39;, &#39;colorspace&#39;, &#39;commonmark&#39;,
 ##   &#39;cpp11&#39;, &#39;crayon&#39;, &#39;curl&#39;, &#39;data.table&#39;, &#39;DBI&#39;, &#39;dbplyr&#39;,
-##   &#39;DelayedMatrixStats&#39;, &#39;desc&#39;, &#39;digest&#39;, &#39;dplyr&#39;, &#39;DT&#39;, &#39;dtplyr&#39;, &#39;ensembldb&#39;,
-##   &#39;evaluate&#39;, &#39;farver&#39;, &#39;fontawesome&#39;, &#39;forcats&#39;, &#39;foreign&#39;, &#39;gargle&#39;,
-##   &#39;generics&#39;, &#39;GenomeInfoDb&#39;, &#39;GenomicAlignments&#39;, &#39;GenomicFeatures&#39;,
-##   &#39;ggplot2&#39;, &#39;ggpubr&#39;, &#39;ggrepel&#39;, &#39;ggsignif&#39;, &#39;googlesheets4&#39;, &#39;gtable&#39;,
-##   &#39;haven&#39;, &#39;hms&#39;, &#39;htmltools&#39;, &#39;httpuv&#39;, &#39;httr&#39;, &#39;igraph&#39;, &#39;IRanges&#39;, &#39;irlba&#39;,
-##   &#39;isoband&#39;, &#39;jpeg&#39;, &#39;jsonlite&#39;, &#39;KEGGREST&#39;, &#39;knitr&#39;, &#39;lifecycle&#39;, &#39;limma&#39;,
-##   &#39;lme4&#39;, &#39;locfit&#39;, &#39;lubridate&#39;, &#39;maptools&#39;, &#39;MASS&#39;, &#39;Matrix&#39;,
+##   &#39;DelayedMatrixStats&#39;, &#39;deldir&#39;, &#39;desc&#39;, &#39;digest&#39;, &#39;dplyr&#39;, &#39;dqrng&#39;, &#39;DT&#39;,
+##   &#39;dtplyr&#39;, &#39;ensembldb&#39;, &#39;evaluate&#39;, &#39;fansi&#39;, &#39;farver&#39;, &#39;fastmap&#39;,
+##   &#39;fontawesome&#39;, &#39;forcats&#39;, &#39;foreign&#39;, &#39;formatR&#39;, &#39;fs&#39;, &#39;gargle&#39;, &#39;generics&#39;,
+##   &#39;GenomeInfoDb&#39;, &#39;GenomicAlignments&#39;, &#39;GenomicFeatures&#39;, &#39;ggbeeswarm&#39;,
+##   &#39;ggplot2&#39;, &#39;ggpubr&#39;, &#39;ggrepel&#39;, &#39;ggsci&#39;, &#39;ggsignif&#39;, &#39;googledrive&#39;,
+##   &#39;googlesheets4&#39;, &#39;gtable&#39;, &#39;haven&#39;, &#39;highr&#39;, &#39;hms&#39;, &#39;htmltools&#39;,
+##   &#39;htmlwidgets&#39;, &#39;httpuv&#39;, &#39;httr&#39;, &#39;igraph&#39;, &#39;interp&#39;, &#39;IRanges&#39;, &#39;isoband&#39;,
+##   &#39;jpeg&#39;, &#39;jsonlite&#39;, &#39;KEGGREST&#39;, &#39;knitr&#39;, &#39;labeling&#39;, &#39;later&#39;, &#39;lifecycle&#39;,
+##   &#39;limma&#39;, &#39;lme4&#39;, &#39;locfit&#39;, &#39;lubridate&#39;, &#39;maptools&#39;, &#39;MASS&#39;, &#39;Matrix&#39;,
 ##   &#39;MatrixGenerics&#39;, &#39;MatrixModels&#39;, &#39;matrixStats&#39;, &#39;mgcv&#39;, &#39;minqa&#39;, &#39;modelr&#39;,
-##   &#39;nlme&#39;, &#39;nnet&#39;, &#39;openssl&#39;, &#39;pillar&#39;, &#39;pkgload&#39;, &#39;plotly&#39;, &#39;plyr&#39;, &#39;png&#39;,
-##   &#39;processx&#39;, &#39;ps&#39;, &#39;purrr&#39;, &#39;quantreg&#39;, &#39;R.methodsS3&#39;, &#39;R.oo&#39;, &#39;R.utils&#39;,
-##   &#39;Rcpp&#39;, &#39;RcppArmadillo&#39;, &#39;RcppEigen&#39;, &#39;RcppHNSW&#39;, &#39;RCurl&#39;, &#39;readr&#39;, &#39;readxl&#39;,
-##   &#39;renv&#39;, &#39;reprex&#39;, &#39;restfulr&#39;, &#39;rintrojs&#39;, &#39;rlang&#39;, &#39;rmarkdown&#39;, &#39;RSQLite&#39;,
-##   &#39;rstatix&#39;, &#39;rstudioapi&#39;, &#39;rtracklayer&#39;, &#39;rvest&#39;, &#39;sass&#39;, &#39;ScaledMatrix&#39;,
-##   &#39;scales&#39;, &#39;scuttle&#39;, &#39;shiny&#39;, &#39;SingleCellExperiment&#39;, &#39;sp&#39;, &#39;survival&#39;,
-##   &#39;sys&#39;, &#39;testthat&#39;, &#39;tibble&#39;, &#39;tidyr&#39;, &#39;tidyselect&#39;, &#39;vctrs&#39;, &#39;viridisLite&#39;,
-##   &#39;vroom&#39;, &#39;xfun&#39;, &#39;XML&#39;, &#39;yaml&#39;, &#39;zoo&#39;</code></pre>
+##   &#39;multcomp&#39;, &#39;mvtnorm&#39;, &#39;ncdf4&#39;, &#39;nlme&#39;, &#39;nnet&#39;, &#39;openssl&#39;, &#39;pbkrtest&#39;,
+##   &#39;pillar&#39;, &#39;pkgload&#39;, &#39;plotly&#39;, &#39;plyr&#39;, &#39;png&#39;, &#39;prettyunits&#39;, &#39;printr&#39;,
+##   &#39;processx&#39;, &#39;promises&#39;, &#39;ps&#39;, &#39;purrr&#39;, &#39;quantreg&#39;, &#39;R.methodsS3&#39;, &#39;R.oo&#39;,
+##   &#39;R.utils&#39;, &#39;Rcpp&#39;, &#39;RcppArmadillo&#39;, &#39;RcppEigen&#39;, &#39;RcppHNSW&#39;, &#39;RCurl&#39;,
+##   &#39;readr&#39;, &#39;readxl&#39;, &#39;rematch&#39;, &#39;renv&#39;, &#39;reprex&#39;, &#39;restfulr&#39;, &#39;rintrojs&#39;,
+##   &#39;rlang&#39;, &#39;rmarkdown&#39;, &#39;RSQLite&#39;, &#39;rstatix&#39;, &#39;rstudioapi&#39;, &#39;rtracklayer&#39;,
+##   &#39;rvest&#39;, &#39;sass&#39;, &#39;ScaledMatrix&#39;, &#39;scales&#39;, &#39;scuttle&#39;, &#39;shiny&#39;,
+##   &#39;SingleCellExperiment&#39;, &#39;sourcetools&#39;, &#39;sp&#39;, &#39;statmod&#39;, &#39;stringi&#39;, &#39;stringr&#39;,
+##   &#39;survival&#39;, &#39;sys&#39;, &#39;testthat&#39;, &#39;TH.data&#39;, &#39;tibble&#39;, &#39;tidyr&#39;, &#39;tidyselect&#39;,
+##   &#39;tidyverse&#39;, &#39;tinytex&#39;, &#39;tzdb&#39;, &#39;utf8&#39;, &#39;uuid&#39;, &#39;vctrs&#39;, &#39;viridis&#39;,
+##   &#39;viridisLite&#39;, &#39;vroom&#39;, &#39;waldo&#39;, &#39;withr&#39;, &#39;xfun&#39;, &#39;xgboost&#39;, &#39;XML&#39;, &#39;xml2&#39;,
+##   &#39;yaml&#39;, &#39;zoo&#39;</code></pre>
 <pre><code>## snapshotDate(): 2022-04-26</code></pre>
 <pre><code>## see ?muscData and browseVignettes(&#39;muscData&#39;) for documentation</code></pre>
 <pre><code>## downloading 1 resources</code></pre>
@@ -877,12 +864,12 @@ SingleCellExperiment object</h3>
 <pre><code>## DataFrame with 6 rows and 2 columns
 ##                                    Sample            Barcode
 ##                               &lt;character&gt;        &lt;character&gt;
-## AAACCTGAGAAACCAT-1 /tmp/Rtmpdo6NMt/pbmc.. AAACCTGAGAAACCAT-1
-## AAACCTGAGAAACCGC-1 /tmp/Rtmpdo6NMt/pbmc.. AAACCTGAGAAACCGC-1
-## AAACCTGAGAAACCTA-1 /tmp/Rtmpdo6NMt/pbmc.. AAACCTGAGAAACCTA-1
-## AAACCTGAGAAACGAG-1 /tmp/Rtmpdo6NMt/pbmc.. AAACCTGAGAAACGAG-1
-## AAACCTGAGAAACGCC-1 /tmp/Rtmpdo6NMt/pbmc.. AAACCTGAGAAACGCC-1
-## AAACCTGAGAAAGTGG-1 /tmp/Rtmpdo6NMt/pbmc.. AAACCTGAGAAAGTGG-1</code></pre>
+## AAACCTGAGAAACCAT-1 /tmp/Rtmp16MrqY/pbmc.. AAACCTGAGAAACCAT-1
+## AAACCTGAGAAACCGC-1 /tmp/Rtmp16MrqY/pbmc.. AAACCTGAGAAACCGC-1
+## AAACCTGAGAAACCTA-1 /tmp/Rtmp16MrqY/pbmc.. AAACCTGAGAAACCTA-1
+## AAACCTGAGAAACGAG-1 /tmp/Rtmp16MrqY/pbmc.. AAACCTGAGAAACGAG-1
+## AAACCTGAGAAACGCC-1 /tmp/Rtmp16MrqY/pbmc.. AAACCTGAGAAACGCC-1
+## AAACCTGAGAAAGTGG-1 /tmp/Rtmp16MrqY/pbmc.. AAACCTGAGAAAGTGG-1</code></pre>
 <p><br/><br/></p>
 </div>
 <div id="use-sensible-gene-names" class="section level3" number="2.2.3">
@@ -1823,32 +1810,39 @@ trajectory inference, where this is important.</p></li>
 ## 
 ## replacement repositories:
 ##     CRAN: https://cloud.r-project.org</code></pre>
-<pre><code>## Bioconductor version 3.15 (BiocManager 1.30.18), R 4.2.2 (2022-10-31)</code></pre>
+<pre><code>## Bioconductor version 3.15 (BiocManager 1.30.18), R 4.2.3 (2023-03-15)</code></pre>
 <pre><code>## Installing package(s) &#39;uwot&#39;</code></pre>
 <pre><code>## also installing the dependencies &#39;FNN&#39;, &#39;RcppAnnoy&#39;, &#39;RcppProgress&#39;</code></pre>
 <pre><code>## Installation paths not writeable, unable to update packages
-##   path: /opt/R/4.2.2/lib/R/library
+##   path: /opt/R/4.2.3/lib/R/library
 ##   packages:
-##     boot</code></pre>
-<pre><code>## Old packages: &#39;BiocManager&#39;, &#39;BiocParallel&#39;, &#39;Biostrings&#39;, &#39;bit&#39;, &#39;bookdown&#39;,
-##   &#39;broom&#39;, &#39;bslib&#39;, &#39;callr&#39;, &#39;car&#39;, &#39;cli&#39;, &#39;clue&#39;, &#39;cluster&#39;, &#39;commonmark&#39;,
+##     class, KernSmooth, lattice, spatial</code></pre>
+<pre><code>## Old packages: &#39;askpass&#39;, &#39;BH&#39;, &#39;BiocManager&#39;, &#39;BiocParallel&#39;, &#39;Biostrings&#39;,
+##   &#39;bit&#39;, &#39;blob&#39;, &#39;bookdown&#39;, &#39;boot&#39;, &#39;broom&#39;, &#39;bslib&#39;, &#39;cachem&#39;, &#39;callr&#39;,
+##   &#39;car&#39;, &#39;cli&#39;, &#39;clue&#39;, &#39;cluster&#39;, &#39;codetools&#39;, &#39;colorspace&#39;, &#39;commonmark&#39;,
 ##   &#39;cpp11&#39;, &#39;crayon&#39;, &#39;curl&#39;, &#39;data.table&#39;, &#39;DBI&#39;, &#39;dbplyr&#39;,
-##   &#39;DelayedMatrixStats&#39;, &#39;desc&#39;, &#39;digest&#39;, &#39;dplyr&#39;, &#39;DT&#39;, &#39;dtplyr&#39;, &#39;ensembldb&#39;,
-##   &#39;evaluate&#39;, &#39;farver&#39;, &#39;fontawesome&#39;, &#39;forcats&#39;, &#39;foreign&#39;, &#39;gargle&#39;,
-##   &#39;generics&#39;, &#39;GenomeInfoDb&#39;, &#39;GenomicAlignments&#39;, &#39;GenomicFeatures&#39;,
-##   &#39;ggplot2&#39;, &#39;ggpubr&#39;, &#39;ggrepel&#39;, &#39;ggsignif&#39;, &#39;googlesheets4&#39;, &#39;gtable&#39;,
-##   &#39;haven&#39;, &#39;hms&#39;, &#39;htmltools&#39;, &#39;httpuv&#39;, &#39;httr&#39;, &#39;igraph&#39;, &#39;IRanges&#39;, &#39;irlba&#39;,
-##   &#39;isoband&#39;, &#39;jpeg&#39;, &#39;jsonlite&#39;, &#39;KEGGREST&#39;, &#39;knitr&#39;, &#39;lifecycle&#39;, &#39;limma&#39;,
-##   &#39;lme4&#39;, &#39;locfit&#39;, &#39;lubridate&#39;, &#39;maptools&#39;, &#39;MASS&#39;, &#39;Matrix&#39;,
+##   &#39;DelayedMatrixStats&#39;, &#39;deldir&#39;, &#39;desc&#39;, &#39;digest&#39;, &#39;dplyr&#39;, &#39;dqrng&#39;, &#39;DT&#39;,
+##   &#39;dtplyr&#39;, &#39;ensembldb&#39;, &#39;evaluate&#39;, &#39;fansi&#39;, &#39;farver&#39;, &#39;fastmap&#39;,
+##   &#39;fontawesome&#39;, &#39;forcats&#39;, &#39;foreign&#39;, &#39;formatR&#39;, &#39;fs&#39;, &#39;gargle&#39;, &#39;generics&#39;,
+##   &#39;GenomeInfoDb&#39;, &#39;GenomicAlignments&#39;, &#39;GenomicFeatures&#39;, &#39;ggbeeswarm&#39;,
+##   &#39;ggplot2&#39;, &#39;ggpubr&#39;, &#39;ggrepel&#39;, &#39;ggsci&#39;, &#39;ggsignif&#39;, &#39;googledrive&#39;,
+##   &#39;googlesheets4&#39;, &#39;gtable&#39;, &#39;haven&#39;, &#39;highr&#39;, &#39;hms&#39;, &#39;htmltools&#39;,
+##   &#39;htmlwidgets&#39;, &#39;httpuv&#39;, &#39;httr&#39;, &#39;igraph&#39;, &#39;interp&#39;, &#39;IRanges&#39;, &#39;isoband&#39;,
+##   &#39;jpeg&#39;, &#39;jsonlite&#39;, &#39;KEGGREST&#39;, &#39;knitr&#39;, &#39;labeling&#39;, &#39;later&#39;, &#39;lifecycle&#39;,
+##   &#39;limma&#39;, &#39;lme4&#39;, &#39;locfit&#39;, &#39;lubridate&#39;, &#39;maptools&#39;, &#39;MASS&#39;, &#39;Matrix&#39;,
 ##   &#39;MatrixGenerics&#39;, &#39;MatrixModels&#39;, &#39;matrixStats&#39;, &#39;mgcv&#39;, &#39;minqa&#39;, &#39;modelr&#39;,
-##   &#39;nlme&#39;, &#39;nnet&#39;, &#39;openssl&#39;, &#39;pillar&#39;, &#39;pkgload&#39;, &#39;plotly&#39;, &#39;plyr&#39;, &#39;png&#39;,
-##   &#39;processx&#39;, &#39;ps&#39;, &#39;purrr&#39;, &#39;quantreg&#39;, &#39;R.methodsS3&#39;, &#39;R.oo&#39;, &#39;R.utils&#39;,
-##   &#39;Rcpp&#39;, &#39;RcppArmadillo&#39;, &#39;RcppEigen&#39;, &#39;RcppHNSW&#39;, &#39;RCurl&#39;, &#39;readr&#39;, &#39;readxl&#39;,
-##   &#39;renv&#39;, &#39;reprex&#39;, &#39;restfulr&#39;, &#39;rintrojs&#39;, &#39;rlang&#39;, &#39;rmarkdown&#39;, &#39;RSQLite&#39;,
-##   &#39;rstatix&#39;, &#39;rstudioapi&#39;, &#39;rtracklayer&#39;, &#39;rvest&#39;, &#39;sass&#39;, &#39;ScaledMatrix&#39;,
-##   &#39;scales&#39;, &#39;scuttle&#39;, &#39;shiny&#39;, &#39;SingleCellExperiment&#39;, &#39;sp&#39;, &#39;survival&#39;,
-##   &#39;sys&#39;, &#39;testthat&#39;, &#39;tibble&#39;, &#39;tidyr&#39;, &#39;tidyselect&#39;, &#39;vctrs&#39;, &#39;viridisLite&#39;,
-##   &#39;vroom&#39;, &#39;xfun&#39;, &#39;XML&#39;, &#39;yaml&#39;, &#39;zoo&#39;</code></pre>
+##   &#39;multcomp&#39;, &#39;mvtnorm&#39;, &#39;ncdf4&#39;, &#39;nlme&#39;, &#39;nnet&#39;, &#39;openssl&#39;, &#39;pbkrtest&#39;,
+##   &#39;pillar&#39;, &#39;pkgload&#39;, &#39;plotly&#39;, &#39;plyr&#39;, &#39;png&#39;, &#39;prettyunits&#39;, &#39;printr&#39;,
+##   &#39;processx&#39;, &#39;promises&#39;, &#39;ps&#39;, &#39;purrr&#39;, &#39;quantreg&#39;, &#39;R.methodsS3&#39;, &#39;R.oo&#39;,
+##   &#39;R.utils&#39;, &#39;Rcpp&#39;, &#39;RcppArmadillo&#39;, &#39;RcppEigen&#39;, &#39;RcppHNSW&#39;, &#39;RCurl&#39;,
+##   &#39;readr&#39;, &#39;readxl&#39;, &#39;rematch&#39;, &#39;renv&#39;, &#39;reprex&#39;, &#39;restfulr&#39;, &#39;rintrojs&#39;,
+##   &#39;rlang&#39;, &#39;rmarkdown&#39;, &#39;RSQLite&#39;, &#39;rstatix&#39;, &#39;rstudioapi&#39;, &#39;rtracklayer&#39;,
+##   &#39;rvest&#39;, &#39;sass&#39;, &#39;ScaledMatrix&#39;, &#39;scales&#39;, &#39;scuttle&#39;, &#39;shiny&#39;,
+##   &#39;SingleCellExperiment&#39;, &#39;sourcetools&#39;, &#39;sp&#39;, &#39;statmod&#39;, &#39;stringi&#39;, &#39;stringr&#39;,
+##   &#39;survival&#39;, &#39;sys&#39;, &#39;testthat&#39;, &#39;TH.data&#39;, &#39;tibble&#39;, &#39;tidyr&#39;, &#39;tidyselect&#39;,
+##   &#39;tidyverse&#39;, &#39;tinytex&#39;, &#39;tzdb&#39;, &#39;utf8&#39;, &#39;uuid&#39;, &#39;vctrs&#39;, &#39;viridis&#39;,
+##   &#39;viridisLite&#39;, &#39;vroom&#39;, &#39;waldo&#39;, &#39;withr&#39;, &#39;xfun&#39;, &#39;xgboost&#39;, &#39;XML&#39;, &#39;xml2&#39;,
+##   &#39;yaml&#39;, &#39;zoo&#39;</code></pre>
 <div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>sce <span class="ot">&lt;-</span> <span class="fu">runUMAP</span>(sce, <span class="at">dimred =</span> <span class="st">&#39;PCA&#39;</span>, <span class="at">external_neighbors=</span><span class="cn">TRUE</span>)</span>
 <span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotUMAP</span>(sce)</span></code></pre></div>
 <p><img src="sequencing_singleCell_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
