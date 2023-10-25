@@ -459,6 +459,16 @@ div.tocify {
     <li>
       <a href="pda_blocking_wrapup.html">2.3.2. Wrap-up DA - Blocking</a>
     </li>
+    <li>
+      <a href="technicalDetailsProteomics.html">2.3.3 Technical Details</a>
+    </li>
+    <li class="dropdown-header">---- MODULE II RNA-seq ----</li>
+    <li>
+      <a href="sequencing_intro.html">1.  Introduction to RNA-seq</a>
+    </li>
+    <li>
+      <a href="sequencing_countData.html">2.  Working with count data and GLMs</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -486,6 +496,16 @@ div.tocify {
     </li>
     <li>
       <a href="pda_tutorialDesign.html">2.3. Quantification - Design</a>
+    </li>
+    <li class="dropdown-header">---- MODULE II RNA-seq ----</li>
+    <li>
+      <a href="sequencingTutorial1_mapping.html">1. Read mapping</a>
+    </li>
+    <li>
+      <a href="sequencingTutorial2_DE.html">2. Working with Count Data</a>
+    </li>
+    <li>
+      <a href="scRNA-seq-Tutorial.html">3. Single Cell RNA-seq Data Analysis</a>
     </li>
   </ul>
 </li>
@@ -659,18 +679,18 @@ example</h4>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)<span class="sc">$</span>cov.unscaled <span class="sc">*</span> <span class="fu">sigma</span>(fit)<span class="sc">^</span><span class="dv">2</span></span></code></pre></div>
 <pre><code>##                   (Intercept)     locationR       tissueV      patient4
 ## (Intercept)         0.3938774 -2.625849e-01 -2.625849e-01 -1.969387e-01
-## locationR          -0.2625849  5.251699e-01  2.625849e-01  9.179357e-17
-## tissueV            -0.2625849  2.625849e-01  5.251699e-01  6.475378e-17
-## patient4           -0.1969387  9.179357e-17  6.475378e-17  3.938774e-01
-## patient8           -0.1969387  1.372344e-16  1.337955e-16  1.969387e-01
-## locationR:tissueV   0.2625849 -5.251699e-01 -5.251699e-01  3.121582e-17
+## locationR          -0.2625849  5.251699e-01  2.625849e-01  1.549906e-16
+## tissueV            -0.2625849  2.625849e-01  5.251699e-01  1.549906e-16
+## patient4           -0.1969387  1.549906e-16  1.549906e-16  3.938774e-01
+## patient8           -0.1969387  1.249600e-16  1.249600e-16  1.969387e-01
+## locationR:tissueV   0.2625849 -5.251699e-01 -5.251699e-01 -1.332518e-16
 ##                        patient8 locationR:tissueV
 ## (Intercept)       -1.969387e-01      2.625849e-01
-## locationR          1.372344e-16     -5.251699e-01
-## tissueV            1.337955e-16     -5.251699e-01
-## patient4           1.969387e-01      3.121582e-17
-## patient8           3.938774e-01     -1.321146e-16
-## locationR:tissueV -1.321146e-16      1.050340e+00</code></pre>
+## locationR          1.249600e-16     -5.251699e-01
+## tissueV            1.249600e-16     -5.251699e-01
+## patient4           1.969387e-01     -1.332518e-16
+## patient8           3.938774e-01     -1.236848e-16
+## locationR:tissueV -1.236848e-16      1.050340e+00</code></pre>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(X)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ncol</span>(X)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>mse <span class="ot">&lt;-</span> <span class="fu">sum</span>((y<span class="sc">-</span>X<span class="sc">%*%</span>betas)<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>(n<span class="sc">-</span>p)</span>
@@ -691,7 +711,7 @@ example</h4>
 ## patient8                  0.0000000
 ## locationR:tissueV         1.0503398</code></pre>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(SigmaBeta <span class="sc">-</span> <span class="fu">summary</span>(fit)<span class="sc">$</span>cov.unscaled <span class="sc">*</span> <span class="fu">sigma</span>(fit)<span class="sc">^</span><span class="dv">2</span>)</span></code></pre></div>
-<pre><code>## [1] -2.553513e-15  4.662937e-15</code></pre>
+<pre><code>## [1] -3.996803e-15  7.993606e-15</code></pre>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="fu">summary</span>(fit)<span class="sc">$</span>coef[,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], <span class="at">betas =</span> betas, <span class="at">seBetas =</span> <span class="fu">diag</span>(SigmaBeta)<span class="sc">^</span>.<span class="dv">5</span>)</span></code></pre></div>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
@@ -1103,8 +1123,8 @@ model</h3>
 <span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)</span></code></pre></div>
 <p><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 <div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(mEst<span class="sc">$</span>w,<span class="dv">3</span>)</span></code></pre></div>
-<pre><code>##  [1] 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 0.956 1.000
-## [13] 1.000 0.475 0.906 1.000 1.000 1.000 1.000 0.192</code></pre>
+<pre><code>##  [1] 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000
+## [13] 1.000 0.780 1.000 1.000 1.000 1.000 1.000 0.213</code></pre>
 <p>The plot clearly shows that the outlier has a high impact on the
 slope estimate. This is because the outlier is at a high leverage point,
 i.e. far from the average covariate pattern.</p>
@@ -1125,9 +1145,9 @@ variance estimator to calculate the z</h4>
 <div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> lmMod<span class="sc">$</span>res</span>
 <span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>stdev <span class="ot">&lt;-</span> <span class="fu">mad</span>(res)</span>
 <span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>stdev</span></code></pre></div>
-<pre><code>## [1] 1.334225</code></pre>
+<pre><code>## [1] 1.266585</code></pre>
 <div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(<span class="fu">abs</span>(res<span class="sc">-</span><span class="fu">median</span>(res)))<span class="sc">*</span><span class="fl">1.4826</span></span></code></pre></div>
-<pre><code>## [1] 1.334225</code></pre>
+<pre><code>## [1] 1.266585</code></pre>
 <div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> res<span class="sc">/</span>stdev</span></code></pre></div>
 </div>
 <div id="calculate-weights-use-psi.huber-function"
@@ -1425,7 +1445,7 @@ fitted mean in the experiment but with standard deviation of 1.</p>
 <li>We observe a large variability in the individual protein level
 standard deviation estimates.</li>
 <li>We simulated proteins with standard deviation of 1, but the protein
-estimates vary from 0.21, … , 2.14.</li>
+estimates vary from 0.23, … , 2.06.</li>
 <li>Large uncertainty on the estimation of variances in small
 samples</li>
 <li>The empirical Bayes method, however, recognises that all proteins
@@ -1438,7 +1458,7 @@ simulation.</li>
 </ul>
 <p>Note, that the prior degrees of freedom are also set to infinity:</p>
 <div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getDF</span>(<span class="fu">rowData</span>(sims[[<span class="st">&quot;sim_equalVar&quot;</span>]])<span class="sc">$</span>msqrobModels[[<span class="dv">1</span>]])</span></code></pre></div>
-<pre><code>## [1] 4.904467</code></pre>
+<pre><code>## [1] 6</code></pre>
 <div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getDfPosterior</span>(<span class="fu">rowData</span>(sims[[<span class="st">&quot;sim_equalVar&quot;</span>]])<span class="sc">$</span>msqrobModels[[<span class="dv">1</span>]])</span></code></pre></div>
 <pre><code>## [1] Inf</code></pre>
 <p>which imposes shrinkage to the prior standard deviation!</p>
