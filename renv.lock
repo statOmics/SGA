@@ -2487,6 +2487,14 @@
         "nloptr"
       ]
     },
+      "locfdr": {
+      "Package": "locfdr",
+      "Version": "1.1-8",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "2698cbc879db321e87ee97aa5c9abacd",
+      "Requirements": []
+    },
     "locfit": {
       "Package": "locfit",
       "Version": "1.5-9.5",
