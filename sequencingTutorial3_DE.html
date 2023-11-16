@@ -9,14 +9,15 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Lieven Clement" />
 
 
-<title>Statistical Genomics Analysis</title>
+<title>III. Differential analysis at the gene level and transcript level</title>
 
 <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -340,211 +341,58 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Statistical Genomics Analysis</h1>
+<h1 class="title toc-ignore">III. Differential analysis at the gene
+level and transcript level</h1>
+<h4 class="author">Lieven Clement</h4>
+<h4 class="date"><a href="https://statomics.github.io">statOmics</a>,
+Ghent University</h4>
 
 </div>
 
 
-<p><img src="figures/wpGraph.jpeg" width="986" /></p>
-<div id="course-description" class="section level1">
-<h1>Course Description</h1>
-<p>High-throughput ’omics studies generate ever larger datasets and, as
-a consequence, complex data interpretation challenges. This course
-focusses on statistical concepts involved in preprocessing,
-quantification and differential analysis of high-throughput ’omics data.
-The core focus will be on shotgun proteomics and (bulk and single-cell)
-RNA-sequencing. Experimental design is essential to allow for correct
-interpretation in all ’omics studies, and we will cover how to design a
-statistically efficient experiment, as well as discuss the impact
-experimental design has on how we model ’omics data, introducing
-concepts such as blocking. The course will rely exclusively on free and
-user-friendly open-source tools in R/Bioconductor. We hope that this
-will provide a solid basis for beginners, but will also bring new
-perspectives to those already familiar with standard data analysis
-workflows for proteomics and next-generation sequencing
-applications.</p>
-</div>
-<div id="target-audience" class="section level1">
-<h1>Target Audience</h1>
-<p>This course is oriented towards biologists and bioinformaticians with
-a particular interest in differential analysis for quantitative ’omics
-data.</p>
-</div>
-<div id="prerequisites" class="section level1">
-<h1>Prerequisites</h1>
-<p>The prerequisites for the Statistical Genomics Analysis course are
-the successful completion of a basic course of statistics that covers
-topics on data exploration and descriptive statistics, statistical
-modeling, and inference: linear models, confidence intervals, t-tests,
-F-tests, anova, chi-squared test. The basis concepts may be revisited in
-the online course at <a href="https://statomics.github.io/PSLS/"
-class="uri">https://statomics.github.io/PSLS/</a> (English) and in <a
-href="https://statomics.github.io/sbc/"
-class="uri">https://statomics.github.io/sbc/</a> (Dutch).</p>
-<p>In addition, knowledge of programming in <code>R</code> is preferred.
-A primer to <code>R</code> and Data visualization in <code>R</code> can
-be found at:</p>
+<p><a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a></p>
+<div id="airway-example" class="section level3">
+<h3>Airway example</h3>
+<p>The data used in this workflow comes from an RNA-seq experiment where
+airway smooth muscle cells were treated with dexamethasone, a synthetic
+glucocorticoid steroid with anti-inflammatory effects (Himes et
+al. 2014). Glucocorticoids are used, for example, by people with asthma
+to reduce inflammation of the airways. In the experiment, four human
+airway smooth muscle cell lines were treated with 1 micromolar
+dexamethasone for 18 hours. For each of the four cell lines, we have a
+treated and an untreated sample. For more description of the experiment
+see the article, PubMed entry <a
+href="https://pubmed.ncbi.nlm.nih.gov/24926665/">PMID: 24926665</a>, and
+for raw data see the GEO entry <a
+href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE52778">GSE52778</a>.</p>
+<p>We will conduct an analysis at the gene and transcript level by
+starting from quantification using the fast alignment-free transcript
+mapper Salmon.</p>
+<p>This can be done as follows:</p>
 <ul>
-<li><code>R</code> Basics: <a
-href="https://dodona.ugent.be/nl/courses/335/"
-class="uri">https://dodona.ugent.be/nl/courses/335/</a></li>
-<li><code>R</code> Data Exploration: <a
-href="https://dodona.ugent.be/nl/courses/345/"
-class="uri">https://dodona.ugent.be/nl/courses/345/</a></li>
+<li>Building index with salmon</li>
 </ul>
-</div>
-<div id="software" class="section level1">
-<h1>Software</h1>
+<pre><code>salmon index --gencode -t gencode.v32.transcripts.fa -i gencode.v32_salmon_index</code></pre>
 <ul>
-<li><p>Participants are required to bring their own laptop with <a
-href="https://www.r-project.org/">R</a> version 4.2 or greater.</p></li>
-<li><p>We also recommend to also install the latest version of <a
-href="https://www.rstudio.com/products/rstudio/download/">RStudio</a>.</p></li>
-<li><p>Installation script: to install all required packages, please
-copy and paste this line of code in your R console.</p></li>
+<li>Mapping one sample with salmon:</li>
 </ul>
-<pre><code>source(&quot;https://raw.githubusercontent.com/statOmics/SGA/master/install.R&quot;)</code></pre>
-</div>
-<div id="detailed-program" class="section level1">
-<h1>Detailed Program</h1>
-<div id="introduction" class="section level2">
-<h2>1. Introduction</h2>
-<p>1.1. Position of the course: <a href="./intro.html">HTML</a></p>
-<p>1.2. Recap Linear Models (Week 1)</p>
-<ul>
-<li>Lecture: <a href="./recapGeneralLinearModel.html">HTML</a>, <a
-href="./recapGeneralLinearModel.pdf">PDF</a></li>
-<li>Tutorial KPNA2: <a href="./multipleRegression_KPNA2.html">HTML</a>,
-<a href="./multipleRegression_KPNA2.pdf">PDF</a></li>
-<li>link to a compressed figures directory: <a
-href="https://raw.githubusercontent.com/statOmics/SGA/master/figures.tar.gz">download
-figures</a></li>
-</ul>
-</div>
-<div id="module-i-proteomics-data-analysis-week-1-5"
-class="section level2">
-<h2>Module I: Proteomics Data Analysis (Week 1-5)</h2>
-<div id="bioinformatics-for-proteomics" class="section level3">
-<h3>1. Bioinformatics for proteomics</h3>
-<ul>
-<li>Lecture: <a
-href="./docs/martens_proteomics_bioinformatics.pdf">PDF</a>, <a
-href="https://www.youtube.com/watch?v=ZgwNWRul98o">youtube</a></li>
-<li>Tutorials: <a
-href="https://www.compomics.com/bioinformatics-for-proteomics/">identification</a></li>
-</ul>
-</div>
-<div id="statistics-for-proteomics-data-analysis"
-class="section level3">
-<h3>2. Statistics for Proteomics Data Analysis</h3>
-<div id="identification" class="section level4">
-<h4>2.1. Identification</h4>
-<ul>
-<li><a href="TargetDecoy.html">Target Decoy QC</a></li>
-<li><a href="TargetDecoyTutorial.html">Tutorial</a>, <a
-href="mzIDMsgfSwissprotExample.html">example</a></li>
-<li>Solution: <a href="mzIDuniprotTutorial.html">Uniprot search</a>, <a
-href="mzIDswissprotTutorial.html">Swissprot search</a></li>
-</ul>
-</div>
-<div
-id="preprocessing-analysis-of-label-free-quantitative-proteomics-experiments-with-simple-designs"
-class="section level4">
-<h4>2.2. Preprocessing &amp; Analysis of Label Free Quantitative
-Proteomics Experiments with Simple Designs</h4>
-<ul>
-<li><p>Lecture: <a
-href="./pda_quantification_preprocessing.html">html</a>, <a
-href="./pda_quantification_preprocessing.pdf">pdf</a></p></li>
-<li><p>Tutorial: <a
-href="./pda_tutorialPreprocessing.html">preprocessing</a></p></li>
-<li><p>Wrap-up Peptide-based Models: <a
-href="./pda_robustSummarisation_peptideModels.html">html</a>, <a
-href="./pda_robustSummarisation_peptideModels.pdf">pdf</a></p></li>
-<li><p>Solutions: <a href="cancer3x3.html">cancer3x3</a>, <a
-href="cancer6x6.html">cancer6x6</a>, <a
-href="cancer9x9.html">cancer9x9</a></p></li>
-</ul>
-</div>
-<div
-id="statistical-inference-analysis-of-experiments-with-factorial-designs"
-class="section level4">
-<h4>2.3. Statistical Inference &amp; Analysis of Experiments with
-Factorial Designs</h4>
-<ul>
-<li><p>Lecture Differential Abundance Analysis: <a
-href="./pda_quantification_inference.html">html</a>, <a
-href="./pda_quantification_inference.pdf">pdf</a></p></li>
-<li><p>Tutorial: <a href="pda_tutorialDesign.html">Design</a></p></li>
-<li><p>Wrap-up Blocking: <a href="./pda_blocking_wrapup.html">html</a>,
-<a href="./pda_blocking_wrapup.pdf">pdf</a></p></li>
-<li><p>Solution: <a href="heartMainInteraction.html">Heart
-Example</a></p></li>
-<li><p>Technical Details: <a
-href="technicalDetailsProteomics.html">Technical Details</a></p></li>
-</ul>
-</div>
-</div>
-</div>
-<div id="module-ii-next-generation-sequencing-week-6-12"
-class="section level2">
-<h2>Module II: Next-generation Sequencing (Week 6-12)</h2>
-<div
-id="introduction-to-sequencing-technology-qc-read-mapping-and-count-table"
-class="section level3">
-<h3>1. Introduction to sequencing technology, QC, read mapping and count
-table</h3>
-<ul>
-<li>Lecture Introduction to Sequencing: <a
-href="./sequencing_intro.html">html</a>,<a
-href="./sequencing_intro.pdf">pdf</a></li>
-<li>Tutorial: <a href="./sequencingTutorial1_mapping.html">handout</a>,
-<a href="./docs/elegansAlignmentCountTable.html">C. elegans
-Example</a></li>
-</ul>
-</div>
-<div id="introduction-to-count-data-and-glms" class="section level3">
-<h3>2. Introduction to count data and GLMs</h3>
-<ul>
-<li>Lecture Working with count data and GLMs: <a
-href="./sequencing_countData.html">html</a>, <a
-href="./sequencing_countData.pdf">pdf</a></li>
-<li>Tutorial: <a href="sequencingTutorial2_DE.html">handout</a>, <a
-href="./elegansDE.html">C. elegans example</a></li>
-</ul>
-</div>
-<div id="technical-details-on-rna-seq-de-analysis"
-class="section level3">
-<h3>3. Technical details on RNA-seq DE analysis</h3>
-<ul>
-<li>Lecture: <a href="./sequencing_technicalDE.html">html</a>, <a
-href="./sequencing_technicalDE.pdf">pdf</a></li>
-</ul>
-</div>
-<div id="de-analysis-starting-from-transcript-level-counts"
-class="section level3">
-<h3>4. DE analysis starting from transcript level counts</h3>
-<ul>
-<li><a href="https://f1000research.com/articles/4-1521/v2">Soneson et
-al. 2016</a></li>
-<li>Tutorial: <a href="sequencingTutorial3_DE.html">handout</a></li>
-</ul>
-</div>
-<div id="solutions-bulk-rna-seq-data-analysis" class="section level3">
-<h3>4. Solutions Bulk RNA-seq Data Analysis</h3>
-<ul>
-<li>airway example: <a href="./airway.html">html</a> <!--
-- Parathyroid Example: [html](./parathyroid.html), [pdf](./parathyroid.pdf)
-
-### 5. Introduction to Single Cell Transcriptomics (scRNA-seq) 
-
-- Lecture Intro to scRNA-seq: [html](./sequencing_singleCell.html), [pdf](./sequencing_singleCell.pdf)
-- Tutorial on scRNA-seq: [handout](./scRNA-seq-Tutorial.html)
-
---></li>
-</ul>
-</div>
-</div>
+<pre><code>salmon quant -i gencode.v32_salmon_index -l A --gcBias -1 SRR1039508_subset_1.fastq -2 SRR1039508_subset_2.fastq --validateMappings -o quant/SRR1039508_subset_quant</code></pre>
+<p>More details can be found in <a
+href="https://combine-lab.github.io/salmon/getting_started/">Intro to
+salmon</a>. The mapped output from Salmon can be found at: <a
+href="https://github.com/statOmics/SGA/archive/airwaySeqData.zip">data</a>.</p>
+<ol style="list-style-type: decimal">
+<li>Import the data with tximeta package: see <a
+href="https://bioconductor.org/packages/release/bioc/vignettes/tximeta/inst/doc/tximeta.html#Running_tximeta">tximeta</a>
+vignette on bioconductor</li>
+<li>Run a DE analysis on the gene-level counts with quasi-likelihood
+workflow of edgeR</li>
+<li>Run a DE analysis on the transcript level counts with
+quasi-likelihood workflow of edgeR</li>
+</ol>
+<p>Tip: I had to use the argument <code>importer=read.delim</code> in
+the tximeta function because the default function to read the files
+returned an error on my laptop.</p>
 </div>
 
 
