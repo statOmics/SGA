@@ -838,9 +838,9 @@ Linear Hypotheses:
                            Estimate Std. Error t value Pr(&gt;|t|)    
 grade3 == 0                  1.6675     0.1827   9.127  &lt; 0.001 ***
 grade3 + grade3:node1 == 0   0.8928     0.1827   4.886  &lt; 0.001 ***
-node1 == 0                   0.6577     0.1827   3.600  0.00711 ** 
-node1 + grade3:node1 == 0   -0.1170     0.1827  -0.640  0.89816    
-grade3:node1 == 0           -0.7748     0.2584  -2.998  0.02680 *  
+node1 == 0                   0.6577     0.1827   3.600  0.00715 ** 
+node1 + grade3:node1 == 0   -0.1170     0.1827  -0.640  0.89819    
+grade3:node1 == 0           -0.7748     0.2584  -2.998  0.02678 *  
 ---
 Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 (Adjusted p values reported -- single-step method)</code></pre>
@@ -850,31 +850,31 @@ Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&
 
 Fit: lm(formula = gene %&gt;% log2 ~ grade * node, data = kpna2)
 
-Quantile = 2.6969
+Quantile = 2.6954
 95% family-wise confidence level
  
 
 Linear Hypotheses:
                            Estimate lwr      upr     
-grade3 == 0                 1.66754  1.17479  2.16029
-grade3 + grade3:node1 == 0  0.89279  0.40004  1.38554
-node1 == 0                  0.65773  0.16498  1.15048
-node1 + grade3:node1 == 0  -0.11702 -0.60977  0.37573
-grade3:node1 == 0          -0.77475 -1.47161 -0.07789</code></pre>
+grade3 == 0                 1.66754  1.17505  2.16003
+grade3 + grade3:node1 == 0  0.89279  0.40030  1.38528
+node1 == 0                  0.65773  0.16524  1.15022
+node1 + grade3:node1 == 0  -0.11702 -0.60951  0.37547
+grade3:node1 == 0          -0.77475 -1.47124 -0.07826</code></pre>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span><span class="sc">^</span><span class="fu">confint</span>(fitGlht)<span class="sc">$</span>confint</span></code></pre></div>
-<pre><code>                       Estimate       lwr      upr
-grade3                3.1767209 2.2570143 4.471197
-grade3 + grade3:node1 1.8567602 1.3192013 2.613368
-node1                 1.5775997 1.1208618 2.220453
-node1 + grade3:node1  0.9220906 0.6551320 1.297832
-grade3:node1          0.5844896 0.3604493 0.947784
+<pre><code>                       Estimate       lwr       upr
+grade3                3.1767209 2.2577431 4.4697539
+grade3 + grade3:node1 1.8567602 1.3196273 2.6125245
+node1                 1.5775997 1.1212237 2.2197362
+node1 + grade3:node1  0.9220906 0.6553436 1.2974127
+grade3:node1          0.5844896 0.3606139 0.9473513
 attr(,&quot;conf.level&quot;)
 [1] 0.95
 attr(,&quot;calpha&quot;)
-[1] 2.698906</code></pre>
+[1] 2.696357</code></pre>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span><span class="sc">^-</span><span class="fu">confint</span>(fitGlht)<span class="sc">$</span>confint[<span class="st">&quot;grade3:node1&quot;</span>,]</span></code></pre></div>
 <pre><code>Estimate      lwr      upr 
-1.710895 2.773072 1.055566 </code></pre>
+1.710895 2.773551 1.055384 </code></pre>
 </div>
 <div id="conclusion" class="section level1" number="5">
 <h1><span class="header-section-number">5</span> Conclusion</h1>
@@ -890,7 +890,7 @@ histological grade 3 tumors than patients with histological grade 1
 tumors (95% CI [1.32, 2.61]).</p></li>
 <li><p>The association between the KPNA2 expression with the lymph node
 status in grade 1 patients is very significant (<span
-class="math inline">\(p=\)</span> 0.0071).<br />
+class="math inline">\(p=\)</span> 0.0072).<br />
 The KPNA2 expression in histological grade 1 patients with affected
 lymph nodes is on average 1.58 times higher than for grade 1 patients
 with unaffected lymph nodes (95% CI [1.12, 2.22]). In grade 3 patients,

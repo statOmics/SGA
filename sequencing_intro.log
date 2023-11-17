@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999995 (TeX Live 2023) (preloaded format=xelatex 2023.11.16)  16 NOV 2023 16:42
+This is XeTeX, Version 3.141592653-2.6-0.999995 (TeX Live 2023) (preloaded format=xelatex 2023.11.17)  17 NOV 2023 13:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -178,22 +178,22 @@ LaTeX Font Info:    Redeclaring font encoding TS1 on input line 47.
 \l__um_primecount_int=\count285
 \g__um_primekern_muskip=\muskip17
 (/home/runner/.TinyTeX/texmf-dist/tex/latex/unicode-math/unicode-math-table.tex))) (/home/runner/.TinyTeX/texmf-dist/tex/latex/xcolor/xcolor.sty
-Package: xcolor 2023/11/11 v3.00 LaTeX color extensions (UK)
+Package: xcolor 2023/11/15 v3.01 LaTeX color extensions (UK)
 (/home/runner/.TinyTeX/texmf-dist/tex/latex/graphics-cfg/color.cfg
 File: color.cfg 2016/01/02 v1.6 sample color configuration
 )
-Package xcolor Info: Driver file: xetex.def on input line 264.
+Package xcolor Info: Driver file: xetex.def on input line 274.
 (/home/runner/.TinyTeX/texmf-dist/tex/latex/graphics-def/xetex.def
 File: xetex.def 2022/09/22 v5.0n Graphics/color driver for xetex
 ) (/home/runner/.TinyTeX/texmf-dist/tex/latex/graphics/mathcolor.ltx)
-Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1340.
-Package xcolor Info: Model `RGB' extended on input line 1356.
-Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1358.
-Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1359.
-Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1360.
-Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1361.
-Package xcolor Info: Model `Gray' substituted by `gray' on input line 1362.
-Package xcolor Info: Model `wave' substituted by `hsb' on input line 1363.
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1350.
+Package xcolor Info: Model `RGB' extended on input line 1366.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1368.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1370.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1371.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1372.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1373.
 ) (/home/runner/.TinyTeX/texmf-dist/tex/latex/geometry/geometry.sty
 Package: geometry 2020/01/02 v5.9 Page Geometry
 (/home/runner/.TinyTeX/texmf-dist/tex/latex/graphics/keyval.sty
@@ -1555,10 +1555,10 @@ Package rerunfilecheck Info: File `sequencing_intro.out' has not changed.
 (rerunfilecheck)             Checksum: F993F53EB2BE192D0BCC53144EF172E2;2351.
  ) 
 Here is how much of TeX's memory you used:
- 17759 strings out of 476923
- 332398 string characters out of 5806190
+ 17761 strings out of 476923
+ 332449 string characters out of 5806190
  1950186 words of memory out of 5000000
- 39384 multiletter control sequences out of 15000+600000
+ 39386 multiletter control sequences out of 15000+600000
  564504 words of font info for 87 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  90i,6n,120p,712b,460s stack positions out of 10000i,1000n,20000p,200000b,200000s

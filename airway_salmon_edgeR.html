@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Lieven Clement" />
+
+
+<title>Airway: DE analysis based on transcript counts and DESeq2</title>
+
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SGA</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-chalkboard-teacher"></span>
+     
+    Lectures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">---- INTRODUCTION ----</li>
+    <li>
+      <a href="intro.html">1.1 Position</a>
+    </li>
+    <li>
+      <a href="recapGeneralLinearModel.html">1.2 Recap linear model</a>
+    </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="docs/martens_proteomics_bioinformatics.pdf">1. Proteomics Bioinformatics</a>
+    </li>
+    <li>
+      <a href="TargetDecoy.html">2.1 Identification - FDR - QC</a>
+    </li>
+    <li>
+      <a href="pda_quantification_preprocessing.html">2.2.1. Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_robustSummarisation_peptideModels.html">2.2.2. Wrap-up Preprocessing - Peptide-Level-Models</a>
+    </li>
+    <li>
+      <a href="pda_quantification_inference.html">2.3.1. Quantification - Differential Abundance Analysis</a>
+    </li>
+    <li>
+      <a href="pda_blocking_wrapup.html">2.3.2. Wrap-up DA - Blocking</a>
+    </li>
+    <li>
+      <a href="technicalDetailsProteomics.html">2.3.3 Technical Details</a>
+    </li>
+    <li class="dropdown-header">---- MODULE II RNA-seq ----</li>
+    <li>
+      <a href="sequencing_intro.html">1.  Introduction to RNA-seq</a>
+    </li>
+    <li>
+      <a href="sequencing_countData.html">2.  Working with count data and GLMs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-laptop"></span>
+     
+    tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">---- INTRODUCTION ----</li>
+    <li>
+      <a href="multipleRegression_KPNA2.html">1 Intro KPNA2</a>
+    </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">1. Bioinformatics for Proteomics</a>
+    </li>
+    <li>
+      <a href="TargetDecoyTutorial.html">2.1. Target Decoy QC</a>
+    </li>
+    <li>
+      <a href="pda_tutorialPreprocessing.html">2.2. Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_tutorialDesign.html">2.3. Quantification - Design</a>
+    </li>
+    <li class="dropdown-header">---- MODULE II RNA-seq ----</li>
+    <li>
+      <a href="sequencingTutorial1_mapping.html">1. Read mapping</a>
+    </li>
+    <li>
+      <a href="sequencingTutorial2_DE.html">2. Working with Count Data</a>
+    </li>
+    <li>
+      <a href="scRNA-seq-Tutorial.html">3. Single Cell RNA-seq Data Analysis</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Airway: DE analysis based on transcript
+counts and DESeq2</h1>
+<h4 class="author">Lieven Clement</h4>
+<h4 class="date">statOmics, Ghent University (<a
+href="https://statomics.github.io"
+class="uri">https://statomics.github.io</a>)</h4>
+
+</div>
+
+
+<div id="background" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Background</h1>
+<p>The data used in this workflow comes from an RNA-seq experiment where
+airway smooth muscle cells were treated with dexamethasone, a synthetic
+glucocorticoid steroid with anti-inflammatory effects (Himes et
+al. 2014). Glucocorticoids are used, for example, by people with asthma
+to reduce inflammation of the airways. In the experiment, four human
+airway smooth muscle cell lines were treated with 1 micromolar
+dexamethasone for 18 hours. For each of the four cell lines, we have a
+treated and an untreated sample. For more description of the experiment
+see the article, PubMed entry 24926665, and for raw data see the GEO
+entry GSE52778.</p>
+<p>Many parts of this tutorial are based on parts of a published RNA-seq
+workflow available via Love et al. 2015 <a
+href="http://f1000research.com/articles/4-1070">F1000Research</a> and as
+a <a
+href="https://www.bioconductor.org/packages/release/workflows/html/rnaseqGene.html">Bioconductor
+package</a> and on Charlotte Soneson’s material from the <a
+href="https://uclouvain-cbio.github.io/BSS2019/rnaseq_gene_summerschool_belgium_2019.html">bss2019</a>
+workshop.</p>
+</div>
+<div id="data" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Data</h1>
+<p>We will use the salmon quantification files here. This is a
+lightweight transcript level mapper.</p>
+<div id="meta-data" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Meta data</h2>
+<p>As before, we will retrieve the meta data by linking the SRA files to
+the meta data on GEO.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(edgeR)</span></code></pre></div>
+<pre><code>## Loading required package: limma</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div>
+<pre><code>## ── Attaching packages
+## ───────────────────────────────────────
+## tidyverse 1.3.2 ──</code></pre>
+<pre><code>## ✔ ggplot2 3.3.6     ✔ purrr   0.3.4
+## ✔ tibble  3.1.7     ✔ dplyr   1.0.9
+## ✔ tidyr   1.2.0     ✔ stringr 1.4.1
+## ✔ readr   2.1.2     ✔ forcats 0.5.1
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GEOquery)</span></code></pre></div>
+<pre><code>## Loading required package: Biobase
+## Loading required package: BiocGenerics
+## 
+## Attaching package: &#39;BiocGenerics&#39;
+## 
+## The following objects are masked from &#39;package:dplyr&#39;:
+## 
+##     combine, intersect, setdiff, union
+## 
+## The following object is masked from &#39;package:limma&#39;:
+## 
+##     plotMA
+## 
+## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     IQR, mad, sd, var, xtabs
+## 
+## The following objects are masked from &#39;package:base&#39;:
+## 
+##     anyDuplicated, append, as.data.frame, basename, cbind, colnames,
+##     dirname, do.call, duplicated, eval, evalq, Filter, Find, get, grep,
+##     grepl, intersect, is.unsorted, lapply, Map, mapply, match, mget,
+##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
+##     rbind, Reduce, rownames, sapply, setdiff, sort, table, tapply,
+##     union, unique, unsplit, which.max, which.min
+## 
+## Welcome to Bioconductor
+## 
+##     Vignettes contain introductory material; view with
+##     &#39;browseVignettes()&#39;. To cite Bioconductor, see
+##     &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.
+## 
+## Setting options(&#39;download.file.method.GEOquery&#39;=&#39;auto&#39;)
+## Setting options(&#39;GEOquery.inmemory.gpl&#39;=FALSE)</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">&quot;https://github.com/statOmics/SGA/archive/airwaySeqData.zip&quot;</span>,<span class="st">&quot;SGA-airwaySeqData.zip&quot;</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">&quot;SGA-airwaySeqData.zip&quot;</span>, <span class="at">exdir =</span> <span class="st">&quot;./&quot;</span>)</span></code></pre></div>
+<div id="geo-data" class="section level3" number="2.1.1">
+<h3><span class="header-section-number">2.1.1</span> GEO data</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>gse<span class="ot">&lt;-</span><span class="fu">getGEO</span>(<span class="st">&quot;GSE52778&quot;</span>)</span></code></pre></div>
+<pre><code>## Found 1 file(s)</code></pre>
+<pre><code>## GSE52778_series_matrix.txt.gz</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>pdata<span class="ot">&lt;-</span><span class="fu">pData</span>(gse[[<span class="dv">1</span>]])</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>pdata<span class="sc">$</span>SampleName<span class="ot">&lt;-</span><span class="fu">rownames</span>(pdata) <span class="sc">%&gt;%</span> as.factor</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(pdata)[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>,]</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["title"],"name":[1],"type":["chr"],"align":["left"]},{"label":["geo_accession"],"name":[2],"type":["chr"],"align":["left"]},{"label":["status"],"name":[3],"type":["chr"],"align":["left"]},{"label":["submission_date"],"name":[4],"type":["chr"],"align":["left"]},{"label":["last_update_date"],"name":[5],"type":["chr"],"align":["left"]},{"label":["type"],"name":[6],"type":["chr"],"align":["left"]},{"label":["channel_count"],"name":[7],"type":["chr"],"align":["left"]},{"label":["source_name_ch1"],"name":[8],"type":["chr"],"align":["left"]},{"label":["organism_ch1"],"name":[9],"type":["chr"],"align":["left"]},{"label":["characteristics_ch1"],"name":[10],"type":["chr"],"align":["left"]},{"label":["characteristics_ch1.1"],"name":[11],"type":["chr"],"align":["left"]},{"label":["characteristics_ch1.2"],"name":[12],"type":["chr"],"align":["left"]},{"label":["characteristics_ch1.3"],"name":[13],"type":["chr"],"align":["left"]},{"label":["characteristics_ch1.4"],"name":[14],"type":["chr"],"align":["left"]},{"label":["treatment_protocol_ch1"],"name":[15],"type":["chr"],"align":["left"]},{"label":["growth_protocol_ch1"],"name":[16],"type":["chr"],"align":["left"]},{"label":["molecule_ch1"],"name":[17],"type":["chr"],"align":["left"]},{"label":["extract_protocol_ch1"],"name":[18],"type":["chr"],"align":["left"]},{"label":["extract_protocol_ch1.1"],"name":[19],"type":["chr"],"align":["left"]},{"label":["taxid_ch1"],"name":[20],"type":["chr"],"align":["left"]},{"label":["data_processing"],"name":[21],"type":["chr"],"align":["left"]},{"label":["data_processing.1"],"name":[22],"type":["chr"],"align":["left"]},{"label":["data_processing.2"],"name":[23],"type":["chr"],"align":["left"]},{"label":["data_processing.3"],"name":[24],"type":["chr"],"align":["left"]},{"label":["data_processing.4"],"name":[25],"type":["chr"],"align":["left"]},{"label":["data_processing.5"],"name":[26],"type":["chr"],"align":["left"]},{"label":["data_processing.6"],"name":[27],"type":["chr"],"align":["left"]},{"label":["platform_id"],"name":[28],"type":["chr"],"align":["left"]},{"label":["contact_name"],"name":[29],"type":["chr"],"align":["left"]},{"label":["contact_email"],"name":[30],"type":["chr"],"align":["left"]},{"label":["contact_laboratory"],"name":[31],"type":["chr"],"align":["left"]},{"label":["contact_department"],"name":[32],"type":["chr"],"align":["left"]},{"label":["contact_institute"],"name":[33],"type":["chr"],"align":["left"]},{"label":["contact_address"],"name":[34],"type":["chr"],"align":["left"]},{"label":["contact_city"],"name":[35],"type":["chr"],"align":["left"]},{"label":["contact_state"],"name":[36],"type":["chr"],"align":["left"]},{"label":["contact_zip/postal_code"],"name":[37],"type":["chr"],"align":["left"]},{"label":["contact_country"],"name":[38],"type":["chr"],"align":["left"]},{"label":["data_row_count"],"name":[39],"type":["chr"],"align":["left"]},{"label":["instrument_model"],"name":[40],"type":["chr"],"align":["left"]},{"label":["library_selection"],"name":[41],"type":["chr"],"align":["left"]},{"label":["library_source"],"name":[42],"type":["chr"],"align":["left"]},{"label":["library_strategy"],"name":[43],"type":["chr"],"align":["left"]},{"label":["relation"],"name":[44],"type":["chr"],"align":["left"]},{"label":["relation.1"],"name":[45],"type":["chr"],"align":["left"]},{"label":["supplementary_file_1"],"name":[46],"type":["chr"],"align":["left"]},{"label":["cell line:ch1"],"name":[47],"type":["chr"],"align":["left"]},{"label":["cell type:ch1"],"name":[48],"type":["chr"],"align":["left"]},{"label":["ercc_mix:ch1"],"name":[49],"type":["chr"],"align":["left"]},{"label":["tissue:ch1"],"name":[50],"type":["chr"],"align":["left"]},{"label":["treatment:ch1"],"name":[51],"type":["chr"],"align":["left"]},{"label":["SampleName"],"name":[52],"type":["fct"],"align":["left"]}],"data":[{"1":"N61311_untreated","2":"GSM1275862","3":"Public on Jan 01 2014","4":"Nov 26 2013","5":"May 15 2019","6":"SRA","7":"1","8":"airway smooth muscle cells","9":"Homo sapiens","10":"treatment: Untreated","11":"tissue: human airway smooth muscle cells","12":"ercc_mix: -","13":"cell line: N61311","14":"cell type: airway smooth muscle cells","15":"Cells from each donor were treated with 1 μM dexamethasone,  1 μM albuterol, both dexamethasone and albuterol, or control vehicle for 18 h.","16":"Primary ASM cells were isolated from four white aborted lung transplant donors with no chronic illness. Passages 4 to 7 ASM cells maintained in Ham's F12 medium supplemented with 10% FBS were used in all experiments.","17":"total RNA","18":"Total RNA was extracted using the miRNAeasy mini kit (Qiagen Sciences, Inc., Germantown, MD).","19":"TruSeq RNA Sample Prep Kit v2 (Illumina, Inc., San Diego, CA).","20":"9606","21":"Illumina Casava1.8 software used for basecalling.","22":"Sequenced reads were trimmed by 12bp then mapped to hg19 whole genome using tophat v.2.0.4 with parameters -G [hg19_ERCC_gtf] --no-novel-juncs --transcriptome-only","23":"For each sample, Cufflinks (v.2.0.2) was used to quantify External RNA Controls Consortium (ERCC) Spike-In and hg19 transcripts based on reads that mapped to the provided hg19 and ERCC reference files.","24":"Differential expression of genes and transcripts in samples treated with Dex vs. Untreated samples was obtained using Cuffdiff (v.2.0.2) with the quantified transcripts computed by Cufflinks (v.2.0.2), while applying bias correction. Options: -p 12 --min-outlier-p 0.05 -b [hg19_reference_index] -u [hg19_gtf] -L Dex,Control  [List of accepted_hits.bam for each sample sorted by condition (i.e. Dex,Control)]","25":"CummeRbund R package (v.0.1.3) was used to create FPKM matrix of all samples","26":"Genome_build: hg19","27":"Supplementary_files_format_and_content: tab-delimited text files on Series record include FPKM values for each sample (ALL_Sample_FPKM_Matrix.txt) and gene-based differential expression results for Dex vs. Untreated condition (Dex_vs_Untreated_gene_exp.diff)","28":"GPL11154","29":"Blanca,E,Himes","30":"bhimes@pennmedicine.upenn.edu","31":"402 Blockley Hall","32":"Department of Biostatistics, Epidemiology and Informatics","33":"University of Pennsylvania","34":"423 Guardian Dr","35":"Philadelphia","36":"PA","37":"19104","38":"USA","39":"0","40":"Illumina HiSeq 2000","41":"cDNA","42":"transcriptomic","43":"RNA-Seq","44":"BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN02422669","45":"SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX384345","46":"NONE","47":"N61311","48":"airway smooth muscle cells","49":"-","50":"human airway smooth muscle cells","51":"Untreated","52":"GSM1275862","_rn_":"GSM1275862"},{"1":"N61311_Dex","2":"GSM1275863","3":"Public on Jan 01 2014","4":"Nov 26 2013","5":"May 15 2019","6":"SRA","7":"1","8":"airway smooth muscle cells","9":"Homo sapiens","10":"treatment: Dexamethasone","11":"tissue: human airway smooth muscle cells","12":"ercc_mix: -","13":"cell line: N61311","14":"cell type: airway smooth muscle cells","15":"Cells from each donor were treated with 1 μM dexamethasone,  1 μM albuterol, both dexamethasone and albuterol, or control vehicle for 18 h.","16":"Primary ASM cells were isolated from four white aborted lung transplant donors with no chronic illness. Passages 4 to 7 ASM cells maintained in Ham's F12 medium supplemented with 10% FBS were used in all experiments.","17":"total RNA","18":"Total RNA was extracted using the miRNAeasy mini kit (Qiagen Sciences, Inc., Germantown, MD).","19":"TruSeq RNA Sample Prep Kit v2 (Illumina, Inc., San Diego, CA).","20":"9606","21":"Illumina Casava1.8 software used for basecalling.","22":"Sequenced reads were trimmed by 12bp then mapped to hg19 whole genome using tophat v.2.0.4 with parameters -G [hg19_ERCC_gtf] --no-novel-juncs --transcriptome-only","23":"For each sample, Cufflinks (v.2.0.2) was used to quantify External RNA Controls Consortium (ERCC) Spike-In and hg19 transcripts based on reads that mapped to the provided hg19 and ERCC reference files.","24":"Differential expression of genes and transcripts in samples treated with Dex vs. Untreated samples was obtained using Cuffdiff (v.2.0.2) with the quantified transcripts computed by Cufflinks (v.2.0.2), while applying bias correction. Options: -p 12 --min-outlier-p 0.05 -b [hg19_reference_index] -u [hg19_gtf] -L Dex,Control  [List of accepted_hits.bam for each sample sorted by condition (i.e. Dex,Control)]","25":"CummeRbund R package (v.0.1.3) was used to create FPKM matrix of all samples","26":"Genome_build: hg19","27":"Supplementary_files_format_and_content: tab-delimited text files on Series record include FPKM values for each sample (ALL_Sample_FPKM_Matrix.txt) and gene-based differential expression results for Dex vs. Untreated condition (Dex_vs_Untreated_gene_exp.diff)","28":"GPL11154","29":"Blanca,E,Himes","30":"bhimes@pennmedicine.upenn.edu","31":"402 Blockley Hall","32":"Department of Biostatistics, Epidemiology and Informatics","33":"University of Pennsylvania","34":"423 Guardian Dr","35":"Philadelphia","36":"PA","37":"19104","38":"USA","39":"0","40":"Illumina HiSeq 2000","41":"cDNA","42":"transcriptomic","43":"RNA-Seq","44":"BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN02422675","45":"SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX384346","46":"NONE","47":"N61311","48":"airway smooth muscle cells","49":"-","50":"human airway smooth muscle cells","51":"Dexamethasone","52":"GSM1275863","_rn_":"GSM1275863"},{"1":"N61311_Alb","2":"GSM1275864","3":"Public on Jan 01 2014","4":"Nov 26 2013","5":"May 15 2019","6":"SRA","7":"1","8":"airway smooth muscle cells","9":"Homo sapiens","10":"treatment: Albuterol","11":"tissue: human airway smooth muscle cells","12":"ercc_mix: -","13":"cell line: N61311","14":"cell type: airway smooth muscle cells","15":"Cells from each donor were treated with 1 μM dexamethasone,  1 μM albuterol, both dexamethasone and albuterol, or control vehicle for 18 h.","16":"Primary ASM cells were isolated from four white aborted lung transplant donors with no chronic illness. Passages 4 to 7 ASM cells maintained in Ham's F12 medium supplemented with 10% FBS were used in all experiments.","17":"total RNA","18":"Total RNA was extracted using the miRNAeasy mini kit (Qiagen Sciences, Inc., Germantown, MD).","19":"TruSeq RNA Sample Prep Kit v2 (Illumina, Inc., San Diego, CA).","20":"9606","21":"Illumina Casava1.8 software used for basecalling.","22":"Sequenced reads were trimmed by 12bp then mapped to hg19 whole genome using tophat v.2.0.4 with parameters -G [hg19_ERCC_gtf] --no-novel-juncs --transcriptome-only","23":"For each sample, Cufflinks (v.2.0.2) was used to quantify External RNA Controls Consortium (ERCC) Spike-In and hg19 transcripts based on reads that mapped to the provided hg19 and ERCC reference files.","24":"Differential expression of genes and transcripts in samples treated with Dex vs. Untreated samples was obtained using Cuffdiff (v.2.0.2) with the quantified transcripts computed by Cufflinks (v.2.0.2), while applying bias correction. Options: -p 12 --min-outlier-p 0.05 -b [hg19_reference_index] -u [hg19_gtf] -L Dex,Control  [List of accepted_hits.bam for each sample sorted by condition (i.e. Dex,Control)]","25":"CummeRbund R package (v.0.1.3) was used to create FPKM matrix of all samples","26":"Genome_build: hg19","27":"Supplementary_files_format_and_content: tab-delimited text files on Series record include FPKM values for each sample (ALL_Sample_FPKM_Matrix.txt) and gene-based differential expression results for Dex vs. Untreated condition (Dex_vs_Untreated_gene_exp.diff)","28":"GPL11154","29":"Blanca,E,Himes","30":"bhimes@pennmedicine.upenn.edu","31":"402 Blockley Hall","32":"Department of Biostatistics, Epidemiology and Informatics","33":"University of Pennsylvania","34":"423 Guardian Dr","35":"Philadelphia","36":"PA","37":"19104","38":"USA","39":"0","40":"Illumina HiSeq 2000","41":"cDNA","42":"transcriptomic","43":"RNA-Seq","44":"BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN02422668","45":"SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX384347","46":"NONE","47":"N61311","48":"airway smooth muscle cells","49":"-","50":"human airway smooth muscle cells","51":"Albuterol","52":"GSM1275864","_rn_":"GSM1275864"},{"1":"N61311_Alb_Dex","2":"GSM1275865","3":"Public on Jan 01 2014","4":"Nov 26 2013","5":"May 15 2019","6":"SRA","7":"1","8":"airway smooth muscle cells","9":"Homo sapiens","10":"treatment: Albuterol_Dexamethasone","11":"tissue: human airway smooth muscle cells","12":"ercc_mix: -","13":"cell line: N61311","14":"cell type: airway smooth muscle cells","15":"Cells from each donor were treated with 1 μM dexamethasone,  1 μM albuterol, both dexamethasone and albuterol, or control vehicle for 18 h.","16":"Primary ASM cells were isolated from four white aborted lung transplant donors with no chronic illness. Passages 4 to 7 ASM cells maintained in Ham's F12 medium supplemented with 10% FBS were used in all experiments.","17":"total RNA","18":"Total RNA was extracted using the miRNAeasy mini kit (Qiagen Sciences, Inc., Germantown, MD).","19":"TruSeq RNA Sample Prep Kit v2 (Illumina, Inc., San Diego, CA).","20":"9606","21":"Illumina Casava1.8 software used for basecalling.","22":"Sequenced reads were trimmed by 12bp then mapped to hg19 whole genome using tophat v.2.0.4 with parameters -G [hg19_ERCC_gtf] --no-novel-juncs --transcriptome-only","23":"For each sample, Cufflinks (v.2.0.2) was used to quantify External RNA Controls Consortium (ERCC) Spike-In and hg19 transcripts based on reads that mapped to the provided hg19 and ERCC reference files.","24":"Differential expression of genes and transcripts in samples treated with Dex vs. Untreated samples was obtained using Cuffdiff (v.2.0.2) with the quantified transcripts computed by Cufflinks (v.2.0.2), while applying bias correction. Options: -p 12 --min-outlier-p 0.05 -b [hg19_reference_index] -u [hg19_gtf] -L Dex,Control  [List of accepted_hits.bam for each sample sorted by condition (i.e. Dex,Control)]","25":"CummeRbund R package (v.0.1.3) was used to create FPKM matrix of all samples","26":"Genome_build: hg19","27":"Supplementary_files_format_and_content: tab-delimited text files on Series record include FPKM values for each sample (ALL_Sample_FPKM_Matrix.txt) and gene-based differential expression results for Dex vs. Untreated condition (Dex_vs_Untreated_gene_exp.diff)","28":"GPL11154","29":"Blanca,E,Himes","30":"bhimes@pennmedicine.upenn.edu","31":"402 Blockley Hall","32":"Department of Biostatistics, Epidemiology and Informatics","33":"University of Pennsylvania","34":"423 Guardian Dr","35":"Philadelphia","36":"PA","37":"19104","38":"USA","39":"0","40":"Illumina HiSeq 2000","41":"cDNA","42":"transcriptomic","43":"RNA-Seq","44":"BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN02422667","45":"SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX384348","46":"NONE","47":"N61311","48":"airway smooth muscle cells","49":"-","50":"human airway smooth muscle cells","51":"Albuterol_Dexamethasone","52":"GSM1275865","_rn_":"GSM1275865"},{"1":"N052611_untreated","2":"GSM1275866","3":"Public on Jan 01 2014","4":"Nov 26 2013","5":"May 15 2019","6":"SRA","7":"1","8":"airway smooth muscle cells","9":"Homo sapiens","10":"treatment: Untreated","11":"tissue: human airway smooth muscle cells","12":"ercc_mix: -","13":"cell line: N052611","14":"cell type: airway smooth muscle cells","15":"Cells from each donor were treated with 1 μM dexamethasone,  1 μM albuterol, both dexamethasone and albuterol, or control vehicle for 18 h.","16":"Primary ASM cells were isolated from four white aborted lung transplant donors with no chronic illness. Passages 4 to 7 ASM cells maintained in Ham's F12 medium supplemented with 10% FBS were used in all experiments.","17":"total RNA","18":"Total RNA was extracted using the miRNAeasy mini kit (Qiagen Sciences, Inc., Germantown, MD).","19":"TruSeq RNA Sample Prep Kit v2 (Illumina, Inc., San Diego, CA).","20":"9606","21":"Illumina Casava1.8 software used for basecalling.","22":"Sequenced reads were trimmed by 12bp then mapped to hg19 whole genome using tophat v.2.0.4 with parameters -G [hg19_ERCC_gtf] --no-novel-juncs --transcriptome-only","23":"For each sample, Cufflinks (v.2.0.2) was used to quantify External RNA Controls Consortium (ERCC) Spike-In and hg19 transcripts based on reads that mapped to the provided hg19 and ERCC reference files.","24":"Differential expression of genes and transcripts in samples treated with Dex vs. Untreated samples was obtained using Cuffdiff (v.2.0.2) with the quantified transcripts computed by Cufflinks (v.2.0.2), while applying bias correction. Options: -p 12 --min-outlier-p 0.05 -b [hg19_reference_index] -u [hg19_gtf] -L Dex,Control  [List of accepted_hits.bam for each sample sorted by condition (i.e. Dex,Control)]","25":"CummeRbund R package (v.0.1.3) was used to create FPKM matrix of all samples","26":"Genome_build: hg19","27":"Supplementary_files_format_and_content: tab-delimited text files on Series record include FPKM values for each sample (ALL_Sample_FPKM_Matrix.txt) and gene-based differential expression results for Dex vs. Untreated condition (Dex_vs_Untreated_gene_exp.diff)","28":"GPL11154","29":"Blanca,E,Himes","30":"bhimes@pennmedicine.upenn.edu","31":"402 Blockley Hall","32":"Department of Biostatistics, Epidemiology and Informatics","33":"University of Pennsylvania","34":"423 Guardian Dr","35":"Philadelphia","36":"PA","37":"19104","38":"USA","39":"0","40":"Illumina HiSeq 2000","41":"cDNA","42":"transcriptomic","43":"RNA-Seq","44":"BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN02422678","45":"SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX384349","46":"NONE","47":"N052611","48":"airway smooth muscle cells","49":"-","50":"human airway smooth muscle cells","51":"Untreated","52":"GSM1275866","_rn_":"GSM1275866"},{"1":"N052611_Dex","2":"GSM1275867","3":"Public on Jan 01 2014","4":"Nov 26 2013","5":"May 15 2019","6":"SRA","7":"1","8":"airway smooth muscle cells","9":"Homo sapiens","10":"treatment: Dexamethasone","11":"tissue: human airway smooth muscle cells","12":"ercc_mix: 1","13":"cell line: N052611","14":"cell type: airway smooth muscle cells","15":"Cells from each donor were treated with 1 μM dexamethasone,  1 μM albuterol, both dexamethasone and albuterol, or control vehicle for 18 h.","16":"Primary ASM cells were isolated from four white aborted lung transplant donors with no chronic illness. Passages 4 to 7 ASM cells maintained in Ham's F12 medium supplemented with 10% FBS were used in all experiments.","17":"total RNA","18":"Total RNA was extracted using the miRNAeasy mini kit (Qiagen Sciences, Inc., Germantown, MD).","19":"TruSeq RNA Sample Prep Kit v2 (Illumina, Inc., San Diego, CA).","20":"9606","21":"Illumina Casava1.8 software used for basecalling.","22":"Sequenced reads were trimmed by 12bp then mapped to hg19 whole genome using tophat v.2.0.4 with parameters -G [hg19_ERCC_gtf] --no-novel-juncs --transcriptome-only","23":"For each sample, Cufflinks (v.2.0.2) was used to quantify External RNA Controls Consortium (ERCC) Spike-In and hg19 transcripts based on reads that mapped to the provided hg19 and ERCC reference files.","24":"Differential expression of genes and transcripts in samples treated with Dex vs. Untreated samples was obtained using Cuffdiff (v.2.0.2) with the quantified transcripts computed by Cufflinks (v.2.0.2), while applying bias correction. Options: -p 12 --min-outlier-p 0.05 -b [hg19_reference_index] -u [hg19_gtf] -L Dex,Control  [List of accepted_hits.bam for each sample sorted by condition (i.e. Dex,Control)]","25":"CummeRbund R package (v.0.1.3) was used to create FPKM matrix of all samples","26":"Genome_build: hg19","27":"Supplementary_files_format_and_content: tab-delimited text files on Series record include FPKM values for each sample (ALL_Sample_FPKM_Matrix.txt) and gene-based differential expression results for Dex vs. Untreated condition (Dex_vs_Untreated_gene_exp.diff)","28":"GPL11154","29":"Blanca,E,Himes","30":"bhimes@pennmedicine.upenn.edu","31":"402 Blockley Hall","32":"Department of Biostatistics, Epidemiology and Informatics","33":"University of Pennsylvania","34":"423 Guardian Dr","35":"Philadelphia","36":"PA","37":"19104","38":"USA","39":"0","40":"Illumina HiSeq 2000","41":"cDNA","42":"transcriptomic","43":"RNA-Seq","44":"BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN02422670","45":"SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX384350","46":"NONE","47":"N052611","48":"airway smooth muscle cells","49":"1","50":"human airway smooth muscle cells","51":"Dexamethasone","52":"GSM1275867","_rn_":"GSM1275867"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="sra-info" class="section level3" number="2.1.2">
+<h3><span class="header-section-number">2.1.2</span> SRA info</h3>
+<p>Download SRA info. To link sample info to info sequencing: Go to
+corresponding SRA page and save the information via the “Send to: File
+button” This file can also be used to make a script to download
+sequencing files from the web. Note that sra files can be converted to
+fastq files via the fastq-dump function of the sra-tools.</p>
+<p>File is also available on course website.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>sraInfo<span class="ot">&lt;-</span><span class="fu">read.csv</span>(<span class="st">&quot;https://raw.githubusercontent.com/statOmics/SGA/airwaySeqData/SraRunInfo.csv&quot;</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>sraInfo<span class="sc">$</span>SampleName <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(sraInfo<span class="sc">$</span>SampleName)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(pdata<span class="sc">$</span>SampleName)<span class="sc">==</span><span class="fu">levels</span>(sraInfo<span class="sc">$</span>SampleName)</span></code></pre></div>
+<pre><code>##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## [16] TRUE</code></pre>
+<p>SampleNames are can be linked.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>pdata<span class="ot">&lt;-</span><span class="fu">merge</span>(pdata,sraInfo,<span class="at">by=</span><span class="st">&quot;SampleName&quot;</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>pdata<span class="sc">$</span>Run</span></code></pre></div>
+<pre><code>##  [1] &quot;SRR1039508&quot; &quot;SRR1039509&quot; &quot;SRR1039510&quot; &quot;SRR1039511&quot; &quot;SRR1039512&quot;
+##  [6] &quot;SRR1039513&quot; &quot;SRR1039514&quot; &quot;SRR1039515&quot; &quot;SRR1039516&quot; &quot;SRR1039517&quot;
+## [11] &quot;SRR1039518&quot; &quot;SRR1039519&quot; &quot;SRR1039520&quot; &quot;SRR1039521&quot; &quot;SRR1039522&quot;
+## [16] &quot;SRR1039523&quot;</code></pre>
+<p>We do not have the Albuterol samples</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(pdata) <span class="ot">&lt;-</span> pdata<span class="sc">$</span>Run</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>pdata <span class="ot">&lt;-</span> pdata[<span class="sc">-</span><span class="fu">grep</span>(<span class="st">&quot;Albuterol&quot;</span>,pdata[,<span class="st">&quot;treatment:ch1&quot;</span>]),]</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>pdata[,<span class="fu">grep</span>(<span class="st">&quot;:ch1&quot;</span>,<span class="fu">colnames</span>(pdata))]</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["cell line:ch1"],"name":[1],"type":["chr"],"align":["left"]},{"label":["cell type:ch1"],"name":[2],"type":["chr"],"align":["left"]},{"label":["ercc_mix:ch1"],"name":[3],"type":["chr"],"align":["left"]},{"label":["tissue:ch1"],"name":[4],"type":["chr"],"align":["left"]},{"label":["treatment:ch1"],"name":[5],"type":["chr"],"align":["left"]}],"data":[{"1":"N61311","2":"airway smooth muscle cells","3":"-","4":"human airway smooth muscle cells","5":"Untreated","_rn_":"SRR1039508"},{"1":"N61311","2":"airway smooth muscle cells","3":"-","4":"human airway smooth muscle cells","5":"Dexamethasone","_rn_":"SRR1039509"},{"1":"N052611","2":"airway smooth muscle cells","3":"-","4":"human airway smooth muscle cells","5":"Untreated","_rn_":"SRR1039512"},{"1":"N052611","2":"airway smooth muscle cells","3":"1","4":"human airway smooth muscle cells","5":"Dexamethasone","_rn_":"SRR1039513"},{"1":"N080611","2":"airway smooth muscle cells","3":"-","4":"human airway smooth muscle cells","5":"Untreated","_rn_":"SRR1039516"},{"1":"N080611","2":"airway smooth muscle cells","3":"-","4":"human airway smooth muscle cells","5":"Dexamethasone","_rn_":"SRR1039517"},{"1":"N061011","2":"airway smooth muscle cells","3":"1","4":"human airway smooth muscle cells","5":"Untreated","_rn_":"SRR1039520"},{"1":"N061011","2":"airway smooth muscle cells","3":"1","4":"human airway smooth muscle cells","5":"Dexamethasone","_rn_":"SRR1039521"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>pdata<span class="sc">$</span>cellLine <span class="ot">&lt;-</span> pdata[, <span class="fu">grep</span>(<span class="st">&quot;cell line:ch1&quot;</span>, <span class="fu">colnames</span>(pdata))] <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  as.factor</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>pdata<span class="sc">$</span>treatment<span class="ot">&lt;-</span>pdata[, <span class="fu">grep</span>(<span class="st">&quot;treatment:ch1&quot;</span>, <span class="fu">colnames</span>(pdata))] <span class="sc">%&gt;%</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  as.factor</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>pdata<span class="sc">$</span>treatment<span class="ot">&lt;-</span><span class="fu">relevel</span>(pdata<span class="sc">$</span>treatment, <span class="st">&quot;Untreated&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="alignment-free-transcript-quantification"
+class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Alignment-free
+transcript quantification</h2>
+<p>Software such as <em>kallisto</em> <span
+class="citation">[@Bray2016Near]</span>, <em>Salmon</em> <span
+class="citation">[@Patro2017Salmon]</span> and <em>Sailfish</em> <span
+class="citation">[@Patro2014Sailfish]</span>, as well as other
+transcript quantification methods like <em>Cufflinks</em> <span
+class="citation">[@Trapnell2010Cufflinks;
+@Trapnell2013Cufflinks2]</span> and <em>RSEM</em> <span
+class="citation">[@Li2011RSEM]</span>, differ from the counting methods
+introduced in the previous tutorials in that they provide
+quantifications (usually both as counts and as TPMs) for each
+<em>transcript</em>. These can then be summarized on the gene level by
+adding all values for transcripts from the same gene. A simple way to
+import results from these packages into R is provided by the
+<code>tximport</code> and <code>tximeta</code> packages. Here,
+<em>tximport</em> reads the quantifications into a list of matrices, and
+<em>tximeta</em> aggregates the information into a
+<em>SummarizedExperiment</em> object, and also automatically adds
+additional annotations for the features. Both packages can return
+quantifications on the transcript level or aggregate them on the gene
+level. They also calculate average transcript lengths for each gene and
+each sample, which can be used as offsets to improve the differential
+expression analysis by accounting for differential isoform usage across
+samples <span class="citation">[@Soneson2015Differential]</span>.
+aturecounts object</p>
+<div id="libraries" class="section level3" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> Libraries</h3>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>({</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="sc">!</span><span class="st">&quot;tximeta&quot;</span> <span class="sc">%in%</span> <span class="fu">installed.packages</span>()[,<span class="dv">1</span>]) BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">&quot;tximeta&quot;</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="sc">!</span><span class="st">&quot;org.Hs.eg.db&quot;</span> <span class="sc">%in%</span> <span class="fu">installed.packages</span>()[,<span class="dv">1</span>]) BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">&quot;org.Hs.eg.db&quot;</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(tximeta)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(org.Hs.eg.db)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(SummarizedExperiment)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(ggplot2)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(tidyverse)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+<pre><code>## &#39;getOption(&quot;repos&quot;)&#39; replaces Bioconductor standard repositories, see
+## &#39;?repositories&#39; for details
+## 
+## replacement repositories:
+##     CRAN: https://cran.rstudio.com</code></pre>
+<pre><code>## Bioconductor version 3.15 (BiocManager 1.30.18), R 4.2.3 (2023-03-15)</code></pre>
+<pre><code>## Installing package(s) &#39;tximeta&#39;</code></pre>
+<pre><code>## also installing the dependency &#39;tximport&#39;</code></pre>
+<pre><code>## Installation paths not writeable, unable to update packages
+##   path: /opt/R/4.2.3/lib/R/library
+##   packages:
+##     class, KernSmooth, lattice, rpart, spatial</code></pre>
+<pre><code>## Old packages: &#39;askpass&#39;, &#39;BH&#39;, &#39;BiocManager&#39;, &#39;BiocParallel&#39;, &#39;Biostrings&#39;,
+##   &#39;bit&#39;, &#39;blob&#39;, &#39;bookdown&#39;, &#39;boot&#39;, &#39;broom&#39;, &#39;bslib&#39;, &#39;cachem&#39;, &#39;callr&#39;,
+##   &#39;car&#39;, &#39;cli&#39;, &#39;clue&#39;, &#39;cluster&#39;, &#39;codetools&#39;, &#39;colorspace&#39;, &#39;commonmark&#39;,
+##   &#39;cpp11&#39;, &#39;crayon&#39;, &#39;curl&#39;, &#39;data.table&#39;, &#39;DBI&#39;, &#39;dbplyr&#39;,
+##   &#39;DelayedMatrixStats&#39;, &#39;deldir&#39;, &#39;desc&#39;, &#39;digest&#39;, &#39;dplyr&#39;, &#39;dqrng&#39;, &#39;DT&#39;,
+##   &#39;dtplyr&#39;, &#39;ensembldb&#39;, &#39;evaluate&#39;, &#39;fansi&#39;, &#39;farver&#39;, &#39;fastmap&#39;,
+##   &#39;fontawesome&#39;, &#39;forcats&#39;, &#39;foreign&#39;, &#39;formatR&#39;, &#39;fs&#39;, &#39;gargle&#39;, &#39;generics&#39;,
+##   &#39;GenomeInfoDb&#39;, &#39;GenomicAlignments&#39;, &#39;GenomicFeatures&#39;, &#39;ggbeeswarm&#39;,
+##   &#39;ggplot2&#39;, &#39;ggpubr&#39;, &#39;ggrepel&#39;, &#39;ggsci&#39;, &#39;ggsignif&#39;, &#39;googledrive&#39;,
+##   &#39;googlesheets4&#39;, &#39;gtable&#39;, &#39;haven&#39;, &#39;highr&#39;, &#39;hms&#39;, &#39;htmltools&#39;,
+##   &#39;htmlwidgets&#39;, &#39;httpuv&#39;, &#39;httr&#39;, &#39;igraph&#39;, &#39;interp&#39;, &#39;IRanges&#39;, &#39;isoband&#39;,
+##   &#39;jpeg&#39;, &#39;jsonlite&#39;, &#39;KEGGREST&#39;, &#39;knitr&#39;, &#39;labeling&#39;, &#39;later&#39;, &#39;lifecycle&#39;,
+##   &#39;limma&#39;, &#39;lme4&#39;, &#39;locfit&#39;, &#39;lubridate&#39;, &#39;MASS&#39;, &#39;Matrix&#39;, &#39;MatrixGenerics&#39;,
+##   &#39;MatrixModels&#39;, &#39;matrixStats&#39;, &#39;mgcv&#39;, &#39;minqa&#39;, &#39;modelr&#39;, &#39;multcomp&#39;,
+##   &#39;mvtnorm&#39;, &#39;ncdf4&#39;, &#39;nlme&#39;, &#39;nnet&#39;, &#39;openssl&#39;, &#39;pbkrtest&#39;, &#39;pillar&#39;,
+##   &#39;pkgload&#39;, &#39;plotly&#39;, &#39;plyr&#39;, &#39;png&#39;, &#39;prettyunits&#39;, &#39;printr&#39;, &#39;processx&#39;,
+##   &#39;promises&#39;, &#39;ps&#39;, &#39;purrr&#39;, &#39;quantreg&#39;, &#39;R.methodsS3&#39;, &#39;R.oo&#39;, &#39;R.utils&#39;,
+##   &#39;Rcpp&#39;, &#39;RcppArmadillo&#39;, &#39;RcppEigen&#39;, &#39;RcppHNSW&#39;, &#39;RCurl&#39;, &#39;readr&#39;, &#39;readxl&#39;,
+##   &#39;rematch&#39;, &#39;renv&#39;, &#39;reprex&#39;, &#39;restfulr&#39;, &#39;rintrojs&#39;, &#39;rlang&#39;, &#39;rmarkdown&#39;,
+##   &#39;rprojroot&#39;, &#39;RSQLite&#39;, &#39;rstatix&#39;, &#39;rstudioapi&#39;, &#39;rtracklayer&#39;, &#39;rvest&#39;,
+##   &#39;sass&#39;, &#39;ScaledMatrix&#39;, &#39;scales&#39;, &#39;scuttle&#39;, &#39;shiny&#39;, &#39;SingleCellExperiment&#39;,
+##   &#39;sourcetools&#39;, &#39;sp&#39;, &#39;statmod&#39;, &#39;stringi&#39;, &#39;stringr&#39;, &#39;survival&#39;, &#39;sys&#39;,
+##   &#39;testthat&#39;, &#39;TH.data&#39;, &#39;tibble&#39;, &#39;tidyr&#39;, &#39;tidyselect&#39;, &#39;tidyverse&#39;,
+##   &#39;tinytex&#39;, &#39;tzdb&#39;, &#39;utf8&#39;, &#39;uuid&#39;, &#39;vctrs&#39;, &#39;viridis&#39;, &#39;viridisLite&#39;,
+##   &#39;vroom&#39;, &#39;waldo&#39;, &#39;withr&#39;, &#39;xfun&#39;, &#39;xgboost&#39;, &#39;XML&#39;, &#39;xml2&#39;, &#39;yaml&#39;, &#39;zoo&#39;</code></pre>
+<pre><code>## &#39;getOption(&quot;repos&quot;)&#39; replaces Bioconductor standard repositories, see
+## &#39;?repositories&#39; for details
+## 
+## replacement repositories:
+##     CRAN: https://cran.rstudio.com</code></pre>
+<pre><code>## Bioconductor version 3.15 (BiocManager 1.30.18), R 4.2.3 (2023-03-15)</code></pre>
+<pre><code>## Installing package(s) &#39;org.Hs.eg.db&#39;</code></pre>
+<pre><code>## Installation paths not writeable, unable to update packages
+##   path: /opt/R/4.2.3/lib/R/library
+##   packages:
+##     class, KernSmooth, lattice, rpart, spatial</code></pre>
+<pre><code>## Old packages: &#39;askpass&#39;, &#39;BH&#39;, &#39;BiocManager&#39;, &#39;BiocParallel&#39;, &#39;Biostrings&#39;,
+##   &#39;bit&#39;, &#39;blob&#39;, &#39;bookdown&#39;, &#39;boot&#39;, &#39;broom&#39;, &#39;bslib&#39;, &#39;cachem&#39;, &#39;callr&#39;,
+##   &#39;car&#39;, &#39;cli&#39;, &#39;clue&#39;, &#39;cluster&#39;, &#39;codetools&#39;, &#39;colorspace&#39;, &#39;commonmark&#39;,
+##   &#39;cpp11&#39;, &#39;crayon&#39;, &#39;curl&#39;, &#39;data.table&#39;, &#39;DBI&#39;, &#39;dbplyr&#39;,
+##   &#39;DelayedMatrixStats&#39;, &#39;deldir&#39;, &#39;desc&#39;, &#39;digest&#39;, &#39;dplyr&#39;, &#39;dqrng&#39;, &#39;DT&#39;,
+##   &#39;dtplyr&#39;, &#39;ensembldb&#39;, &#39;evaluate&#39;, &#39;fansi&#39;, &#39;farver&#39;, &#39;fastmap&#39;,
+##   &#39;fontawesome&#39;, &#39;forcats&#39;, &#39;foreign&#39;, &#39;formatR&#39;, &#39;fs&#39;, &#39;gargle&#39;, &#39;generics&#39;,
+##   &#39;GenomeInfoDb&#39;, &#39;GenomicAlignments&#39;, &#39;GenomicFeatures&#39;, &#39;ggbeeswarm&#39;,
+##   &#39;ggplot2&#39;, &#39;ggpubr&#39;, &#39;ggrepel&#39;, &#39;ggsci&#39;, &#39;ggsignif&#39;, &#39;googledrive&#39;,
+##   &#39;googlesheets4&#39;, &#39;gtable&#39;, &#39;haven&#39;, &#39;highr&#39;, &#39;hms&#39;, &#39;htmltools&#39;,
+##   &#39;htmlwidgets&#39;, &#39;httpuv&#39;, &#39;httr&#39;, &#39;igraph&#39;, &#39;interp&#39;, &#39;IRanges&#39;, &#39;isoband&#39;,
+##   &#39;jpeg&#39;, &#39;jsonlite&#39;, &#39;KEGGREST&#39;, &#39;knitr&#39;, &#39;labeling&#39;, &#39;later&#39;, &#39;lifecycle&#39;,
+##   &#39;limma&#39;, &#39;lme4&#39;, &#39;locfit&#39;, &#39;lubridate&#39;, &#39;MASS&#39;, &#39;Matrix&#39;, &#39;MatrixGenerics&#39;,
+##   &#39;MatrixModels&#39;, &#39;matrixStats&#39;, &#39;mgcv&#39;, &#39;minqa&#39;, &#39;modelr&#39;, &#39;multcomp&#39;,
+##   &#39;mvtnorm&#39;, &#39;ncdf4&#39;, &#39;nlme&#39;, &#39;nnet&#39;, &#39;openssl&#39;, &#39;pbkrtest&#39;, &#39;pillar&#39;,
+##   &#39;pkgload&#39;, &#39;plotly&#39;, &#39;plyr&#39;, &#39;png&#39;, &#39;prettyunits&#39;, &#39;printr&#39;, &#39;processx&#39;,
+##   &#39;promises&#39;, &#39;ps&#39;, &#39;purrr&#39;, &#39;quantreg&#39;, &#39;R.methodsS3&#39;, &#39;R.oo&#39;, &#39;R.utils&#39;,
+##   &#39;Rcpp&#39;, &#39;RcppArmadillo&#39;, &#39;RcppEigen&#39;, &#39;RcppHNSW&#39;, &#39;RCurl&#39;, &#39;readr&#39;, &#39;readxl&#39;,
+##   &#39;rematch&#39;, &#39;renv&#39;, &#39;reprex&#39;, &#39;restfulr&#39;, &#39;rintrojs&#39;, &#39;rlang&#39;, &#39;rmarkdown&#39;,
+##   &#39;rprojroot&#39;, &#39;RSQLite&#39;, &#39;rstatix&#39;, &#39;rstudioapi&#39;, &#39;rtracklayer&#39;, &#39;rvest&#39;,
+##   &#39;sass&#39;, &#39;ScaledMatrix&#39;, &#39;scales&#39;, &#39;scuttle&#39;, &#39;shiny&#39;, &#39;SingleCellExperiment&#39;,
+##   &#39;sourcetools&#39;, &#39;sp&#39;, &#39;statmod&#39;, &#39;stringi&#39;, &#39;stringr&#39;, &#39;survival&#39;, &#39;sys&#39;,
+##   &#39;testthat&#39;, &#39;TH.data&#39;, &#39;tibble&#39;, &#39;tidyr&#39;, &#39;tidyselect&#39;, &#39;tidyverse&#39;,
+##   &#39;tinytex&#39;, &#39;tzdb&#39;, &#39;utf8&#39;, &#39;uuid&#39;, &#39;vctrs&#39;, &#39;viridis&#39;, &#39;viridisLite&#39;,
+##   &#39;vroom&#39;, &#39;waldo&#39;, &#39;withr&#39;, &#39;xfun&#39;, &#39;xgboost&#39;, &#39;XML&#39;, &#39;xml2&#39;, &#39;yaml&#39;, &#39;zoo&#39;</code></pre>
+</div>
+<div id="importing-salmon-abundance-quantification"
+class="section level3" number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> Importing Salmon
+abundance quantification</h3>
+<p>The code below imports the <em>Salmon</em> quantifications into R
+using the <em>tximeta</em> package. Note how the transcriptome that was
+used for the quantification is automatically recognized and used to
+annotate the resulting data object. In order for this to work,
+<em>tximeta</em> requires that the output folder structure from Salmon
+is retained, since it reads information from the associated log files in
+addition to the quantified abundances themselves. With the
+<code>addIds()</code> function, we can add additional annotation
+columns.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="do">## List all quant.sf output files from Salmon</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>salmonfiles <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;SGA-airwaySeqData/salmon/&quot;</span>, pdata<span class="sc">$</span>Run, <span class="st">&quot;/quant.sf&quot;</span>)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(salmonfiles) <span class="ot">&lt;-</span> pdata<span class="sc">$</span>Run</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">all</span>(<span class="fu">file.exists</span>(salmonfiles)))</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Add a column &quot;files&quot; to the metadata table. This table must contain at least</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="do">## two columns: &quot;names&quot; and &quot;files&quot;</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>coldata <span class="ot">&lt;-</span> <span class="fu">cbind</span>(pdata, <span class="at">files =</span> salmonfiles, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>coldata<span class="sc">$</span>names <span class="ot">&lt;-</span> coldata<span class="sc">$</span>Run</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Import quantifications on the transcript level</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>st <span class="ot">&lt;-</span> tximeta<span class="sc">::</span><span class="fu">tximeta</span>(coldata,<span class="at">importer=</span>read.delim)</span></code></pre></div>
+<pre><code>## importing quantifications</code></pre>
+<pre><code>## 1 2 3 4 5 6 7 8 
+## found matching transcriptome:
+## [ GENCODE - Homo sapiens - release 29 ]
+## useHub=TRUE: checking for TxDb via &#39;AnnotationHub&#39;
+## snapshotDate(): 2022-04-25
+## found matching TxDb via &#39;AnnotationHub&#39;
+## downloading 1 resources
+## retrieving 1 resource
+## loading from cache
+## Loading required package: GenomicFeatures
+## generating transcript ranges</code></pre>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Summarize quantifications on the gene level</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>sg <span class="ot">&lt;-</span> tximeta<span class="sc">::</span><span class="fu">summarizeToGene</span>(st)</span></code></pre></div>
+<pre><code>## loading existing TxDb created: 2023-11-17 13:07:01
+## obtaining transcript-to-gene mapping from database
+## generating gene ranges
+## summarizing abundance
+## summarizing counts
+## summarizing length</code></pre>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Add gene symbols</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>sg <span class="ot">&lt;-</span> tximeta<span class="sc">::</span><span class="fu">addIds</span>(sg, <span class="st">&quot;SYMBOL&quot;</span>, <span class="at">gene =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>## mapping to new IDs using org.Hs.eg.db
+## if all matching IDs are desired, and &#39;1:many mappings&#39; are reported,
+## set multiVals=&#39;list&#39; to obtain all the matching IDs
+## &#39;select()&#39; returned 1:many mapping between keys and columns</code></pre>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>sg</span></code></pre></div>
+<pre><code>## class: RangedSummarizedExperiment 
+## dim: 58294 8 
+## metadata(6): tximetaInfo quantInfo ... txomeInfo txdbInfo
+## assays(3): counts abundance length
+## rownames(58294): ENSG00000000003.14 ENSG00000000005.5 ...
+##   ENSG00000285993.1 ENSG00000285994.1
+## rowData names(3): gene_id tx_ids SYMBOL
+## colnames(8): SRR1039508 SRR1039509 ... SRR1039520 SRR1039521
+## colData names(101): SampleName title ... treatment names</code></pre>
+<p>Note that <em>Salmon</em> returns <em>estimated</em> counts, which
+are not necessarily integers. They may need to be rounded before they
+are passed to count-based statistical methods (e.g. <em>DESeq2</em>).
+This is not necesary for <em>edgeR</em>.</p>
+</div>
+</div>
+</div>
+<div id="de-analysis-at-the-gene-level" class="section level1"
+number="3">
+<h1><span class="header-section-number">3</span> DE analysis at the gene
+level</h1>
+<div id="setup-count-object-in-edger" class="section level2"
+number="3.1">
+<h2><span class="header-section-number">3.1</span> Setup count object in
+edgeR</h2>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>({</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(edgeR)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>dge <span class="ot">&lt;-</span> <span class="fu">makeDGEList</span>(sg)</span></code></pre></div>
+</div>
+<div id="filtering-and-normalisation" class="section level2"
+number="3.2">
+<h2><span class="header-section-number">3.2</span> Filtering and
+normalisation</h2>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>treatment<span class="sc">+</span>cellLine,<span class="at">data=</span><span class="fu">colData</span>(sg))</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>keep <span class="ot">&lt;-</span> <span class="fu">filterByExpr</span>(dge, design)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>dge <span class="ot">&lt;-</span> dge[keep, ,keep.lib.sizes<span class="ot">=</span><span class="cn">FALSE</span>]</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>dge <span class="ot">&lt;-</span> <span class="fu">calcNormFactors</span>(dge)</span></code></pre></div>
+<pre><code>## Warning in calcNormFactors.DGEList(dge): object contains offsets, which take precedence over library
+## sizes and norm factors (and which will not be recomputed).</code></pre>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>dge<span class="sc">$</span>samples</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["group"],"name":[1],"type":["fct"],"align":["left"]},{"label":["lib.size"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["norm.factors"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["SampleName"],"name":[4],"type":["fct"],"align":["left"]},{"label":["title"],"name":[5],"type":["chr"],"align":["left"]},{"label":["geo_accession"],"name":[6],"type":["chr"],"align":["left"]},{"label":["status"],"name":[7],"type":["chr"],"align":["left"]},{"label":["submission_date"],"name":[8],"type":["chr"],"align":["left"]},{"label":["last_update_date"],"name":[9],"type":["chr"],"align":["left"]},{"label":["type"],"name":[10],"type":["chr"],"align":["left"]},{"label":["channel_count"],"name":[11],"type":["chr"],"align":["left"]},{"label":["source_name_ch1"],"name":[12],"type":["chr"],"align":["left"]},{"label":["organism_ch1"],"name":[13],"type":["chr"],"align":["left"]},{"label":["characteristics_ch1"],"name":[14],"type":["chr"],"align":["left"]},{"label":["characteristics_ch1.1"],"name":[15],"type":["chr"],"align":["left"]},{"label":["characteristics_ch1.2"],"name":[16],"type":["chr"],"align":["left"]},{"label":["characteristics_ch1.3"],"name":[17],"type":["chr"],"align":["left"]},{"label":["characteristics_ch1.4"],"name":[18],"type":["chr"],"align":["left"]},{"label":["treatment_protocol_ch1"],"name":[19],"type":["chr"],"align":["left"]},{"label":["growth_protocol_ch1"],"name":[20],"type":["chr"],"align":["left"]},{"label":["molecule_ch1"],"name":[21],"type":["chr"],"align":["left"]},{"label":["extract_protocol_ch1"],"name":[22],"type":["chr"],"align":["left"]},{"label":["extract_protocol_ch1.1"],"name":[23],"type":["chr"],"align":["left"]},{"label":["taxid_ch1"],"name":[24],"type":["chr"],"align":["left"]},{"label":["data_processing"],"name":[25],"type":["chr"],"align":["left"]},{"label":["data_processing.1"],"name":[26],"type":["chr"],"align":["left"]},{"label":["data_processing.2"],"name":[27],"type":["chr"],"align":["left"]},{"label":["data_processing.3"],"name":[28],"type":["chr"],"align":["left"]},{"label":["data_processing.4"],"name":[29],"type":["chr"],"align":["left"]},{"label":["data_processing.5"],"name":[30],"type":["chr"],"align":["left"]},{"label":["data_processing.6"],"name":[31],"type":["chr"],"align":["left"]},{"label":["platform_id"],"name":[32],"type":["chr"],"align":["left"]},{"label":["contact_name"],"name":[33],"type":["chr"],"align":["left"]},{"label":["contact_email"],"name":[34],"type":["chr"],"align":["left"]},{"label":["contact_laboratory"],"name":[35],"type":["chr"],"align":["left"]},{"label":["contact_department"],"name":[36],"type":["chr"],"align":["left"]},{"label":["contact_institute"],"name":[37],"type":["chr"],"align":["left"]},{"label":["contact_address"],"name":[38],"type":["chr"],"align":["left"]},{"label":["contact_city"],"name":[39],"type":["chr"],"align":["left"]},{"label":["contact_state"],"name":[40],"type":["chr"],"align":["left"]},{"label":["contact_zip.postal_code"],"name":[41],"type":["chr"],"align":["left"]},{"label":["contact_country"],"name":[42],"type":["chr"],"align":["left"]},{"label":["data_row_count"],"name":[43],"type":["chr"],"align":["left"]},{"label":["instrument_model"],"name":[44],"type":["chr"],"align":["left"]},{"label":["library_selection"],"name":[45],"type":["chr"],"align":["left"]},{"label":["library_source"],"name":[46],"type":["chr"],"align":["left"]},{"label":["library_strategy"],"name":[47],"type":["chr"],"align":["left"]},{"label":["relation"],"name":[48],"type":["chr"],"align":["left"]},{"label":["relation.1"],"name":[49],"type":["chr"],"align":["left"]},{"label":["supplementary_file_1"],"name":[50],"type":["chr"],"align":["left"]},{"label":["cell.line.ch1"],"name":[51],"type":["chr"],"align":["left"]},{"label":["cell.type.ch1"],"name":[52],"type":["chr"],"align":["left"]},{"label":["ercc_mix.ch1"],"name":[53],"type":["chr"],"align":["left"]},{"label":["tissue.ch1"],"name":[54],"type":["chr"],"align":["left"]},{"label":["treatment.ch1"],"name":[55],"type":["chr"],"align":["left"]},{"label":["Run"],"name":[56],"type":["chr"],"align":["left"]},{"label":["ReleaseDate"],"name":[57],"type":["chr"],"align":["left"]},{"label":["LoadDate"],"name":[58],"type":["chr"],"align":["left"]},{"label":["spots"],"name":[59],"type":["int"],"align":["right"]},{"label":["bases"],"name":[60],"type":["dbl"],"align":["right"]},{"label":["spots_with_mates"],"name":[61],"type":["int"],"align":["right"]},{"label":["avgLength"],"name":[62],"type":["int"],"align":["right"]},{"label":["size_MB"],"name":[63],"type":["int"],"align":["right"]},{"label":["AssemblyName"],"name":[64],"type":["lgl"],"align":["right"]},{"label":["download_path"],"name":[65],"type":["chr"],"align":["left"]},{"label":["Experiment"],"name":[66],"type":["chr"],"align":["left"]},{"label":["LibraryName"],"name":[67],"type":["lgl"],"align":["right"]},{"label":["LibraryStrategy"],"name":[68],"type":["chr"],"align":["left"]},{"label":["LibrarySelection"],"name":[69],"type":["chr"],"align":["left"]},{"label":["LibrarySource"],"name":[70],"type":["chr"],"align":["left"]},{"label":["LibraryLayout"],"name":[71],"type":["chr"],"align":["left"]},{"label":["InsertSize"],"name":[72],"type":["int"],"align":["right"]},{"label":["InsertDev"],"name":[73],"type":["int"],"align":["right"]},{"label":["Platform"],"name":[74],"type":["chr"],"align":["left"]},{"label":["Model"],"name":[75],"type":["chr"],"align":["left"]},{"label":["SRAStudy"],"name":[76],"type":["chr"],"align":["left"]},{"label":["BioProject"],"name":[77],"type":["chr"],"align":["left"]},{"label":["Study_Pubmed_id"],"name":[78],"type":["int"],"align":["right"]},{"label":["ProjectID"],"name":[79],"type":["int"],"align":["right"]},{"label":["Sample"],"name":[80],"type":["chr"],"align":["left"]},{"label":["BioSample"],"name":[81],"type":["chr"],"align":["left"]},{"label":["SampleType"],"name":[82],"type":["chr"],"align":["left"]},{"label":["TaxID"],"name":[83],"type":["int"],"align":["right"]},{"label":["ScientificName"],"name":[84],"type":["chr"],"align":["left"]},{"label":["g1k_pop_code"],"name":[85],"type":["lgl"],"align":["right"]},{"label":["source"],"name":[86],"type":["lgl"],"align":["right"]},{"label":["g1k_analysis_group"],"name":[87],"type":["lgl"],"align":["right"]},{"label":["Subject_ID"],"name":[88],"type":["lgl"],"align":["right"]},{"label":["Sex"],"name":[89],"type":["lgl"],"align":["right"]},{"label":["Disease"],"name":[90],"type":["lgl"],"align":["right"]},{"label":["Tumor"],"name":[91],"type":["chr"],"align":["left"]},{"label":["Affection_Status"],"name":[92],"type":["lgl"],"align":["right"]},{"label":["Analyte_Type"],"name":[93],"type":["lgl"],"align":["right"]},{"label":["Histological_Type"],"name":[94],"type":["lgl"],"align":["right"]},{"label":["Body_Site"],"name":[95],"type":["lgl"],"align":["right"]},{"label":["CenterName"],"name":[96],"type":["chr"],"align":["left"]},{"label":["Submission"],"name":[97],"type":["chr"],"align":["left"]},{"label":["dbgap_study_accession"],"name":[98],"type":["lgl"],"align":["right"]},{"label":["Consent"],"name":[99],"type":["chr"],"align":["left"]},{"label":["RunHash"],"name":[100],"type":["chr"],"align":["left"]},{"label":["ReadHash"],"name":[101],"type":["chr"],"align":["left"]},{"label":["cellLine"],"name":[102],"type":["fct"],"align":["left"]},{"label":["treatment"],"name":[103],"type":["fct"],"align":["left"]},{"label":["names"],"name":[104],"type":["chr"],"align":["left"]}],"data":[{"1":"1","2":"21048096","3":"1.0574583","4":"GSM1275862","5":"N61311_untreated","6":"GSM1275862","7":"Public on Jan 01 2014","8":"Nov 26 2013","9":"May 15 2019","10":"SRA","11":"1","12":"airway smooth muscle cells","13":"Homo sapiens","14":"treatment: Untreated","15":"tissue: human airway smooth muscle cells","16":"ercc_mix: -","17":"cell line: N61311","18":"cell type: airway smooth muscle cells","19":"Cells from each donor were treated with 1 μM dexamethasone,  1 μM albuterol, both dexamethasone and albuterol, or control vehicle for 18 h.","20":"Primary ASM cells were isolated from four white aborted lung transplant donors with no chronic illness. Passages 4 to 7 ASM cells maintained in Ham's F12 medium supplemented with 10% FBS were used in all experiments.","21":"total RNA","22":"Total RNA was extracted using the miRNAeasy mini kit (Qiagen Sciences, Inc., Germantown, MD).","23":"TruSeq RNA Sample Prep Kit v2 (Illumina, Inc., San Diego, CA).","24":"9606","25":"Illumina Casava1.8 software used for basecalling.","26":"Sequenced reads were trimmed by 12bp then mapped to hg19 whole genome using tophat v.2.0.4 with parameters -G [hg19_ERCC_gtf] --no-novel-juncs --transcriptome-only","27":"For each sample, Cufflinks (v.2.0.2) was used to quantify External RNA Controls Consortium (ERCC) Spike-In and hg19 transcripts based on reads that mapped to the provided hg19 and ERCC reference files.","28":"Differential expression of genes and transcripts in samples treated with Dex vs. Untreated samples was obtained using Cuffdiff (v.2.0.2) with the quantified transcripts computed by Cufflinks (v.2.0.2), while applying bias correction. Options: -p 12 --min-outlier-p 0.05 -b [hg19_reference_index] -u [hg19_gtf] -L Dex,Control  [List of accepted_hits.bam for each sample sorted by condition (i.e. Dex,Control)]","29":"CummeRbund R package (v.0.1.3) was used to create FPKM matrix of all samples","30":"Genome_build: hg19","31":"Supplementary_files_format_and_content: tab-delimited text files on Series record include FPKM values for each sample (ALL_Sample_FPKM_Matrix.txt) and gene-based differential expression results for Dex vs. Untreated condition (Dex_vs_Untreated_gene_exp.diff)","32":"GPL11154","33":"Blanca,E,Himes","34":"bhimes@pennmedicine.upenn.edu","35":"402 Blockley Hall","36":"Department of Biostatistics, Epidemiology and Informatics","37":"University of Pennsylvania","38":"423 Guardian Dr","39":"Philadelphia","40":"PA","41":"19104","42":"USA","43":"0","44":"Illumina HiSeq 2000","45":"cDNA","46":"transcriptomic","47":"RNA-Seq","48":"BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN02422669","49":"SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX384345","50":"NONE","51":"N61311","52":"airway smooth muscle cells","53":"-","54":"human airway smooth muscle cells","55":"Untreated","56":"SRR1039508","57":"2014-01-02 09:16:11","58":"2013-11-26 16:39:38","59":"22935521","60":"2889875646","61":"22935521","62":"126","63":"1588","64":"NA","65":"https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos5/sra-pub-zq-11/SRR001/039/SRR1039508/SRR1039508.sralite.1","66":"SRX384345","67":"NA","68":"RNA-Seq","69":"cDNA","70":"TRANSCRIPTOMIC","71":"PAIRED","72":"0","73":"0","74":"ILLUMINA","75":"Illumina HiSeq 2000","76":"SRP033351","77":"PRJNA229998","78":"2","79":"229998","80":"SRS508568","81":"SAMN02422669","82":"simple","83":"9606","84":"Homo sapiens","85":"NA","86":"NA","87":"NA","88":"NA","89":"NA","90":"NA","91":"no","92":"NA","93":"NA","94":"NA","95":"NA","96":"GEO","97":"SRA114259","98":"NA","99":"public","100":"65345B22A4745B616DD5840CF2AD90EE","101":"54B084AA7AD2A02B39D37CBBD5B1C3DC","102":"N61311","103":"Untreated","104":"SRR1039508","_rn_":"SRR1039508"},{"1":"1","2":"19242531","3":"1.0197241","4":"GSM1275863","5":"N61311_Dex","6":"GSM1275863","7":"Public on Jan 01 2014","8":"Nov 26 2013","9":"May 15 2019","10":"SRA","11":"1","12":"airway smooth muscle cells","13":"Homo sapiens","14":"treatment: Dexamethasone","15":"tissue: human airway smooth muscle cells","16":"ercc_mix: -","17":"cell line: N61311","18":"cell type: airway smooth muscle cells","19":"Cells from each donor were treated with 1 μM dexamethasone,  1 μM albuterol, both dexamethasone and albuterol, or control vehicle for 18 h.","20":"Primary ASM cells were isolated from four white aborted lung transplant donors with no chronic illness. Passages 4 to 7 ASM cells maintained in Ham's F12 medium supplemented with 10% FBS were used in all experiments.","21":"total RNA","22":"Total RNA was extracted using the miRNAeasy mini kit (Qiagen Sciences, Inc., Germantown, MD).","23":"TruSeq RNA Sample Prep Kit v2 (Illumina, Inc., San Diego, CA).","24":"9606","25":"Illumina Casava1.8 software used for basecalling.","26":"Sequenced reads were trimmed by 12bp then mapped to hg19 whole genome using tophat v.2.0.4 with parameters -G [hg19_ERCC_gtf] --no-novel-juncs --transcriptome-only","27":"For each sample, Cufflinks (v.2.0.2) was used to quantify External RNA Controls Consortium (ERCC) Spike-In and hg19 transcripts based on reads that mapped to the provided hg19 and ERCC reference files.","28":"Differential expression of genes and transcripts in samples treated with Dex vs. Untreated samples was obtained using Cuffdiff (v.2.0.2) with the quantified transcripts computed by Cufflinks (v.2.0.2), while applying bias correction. Options: -p 12 --min-outlier-p 0.05 -b [hg19_reference_index] -u [hg19_gtf] -L Dex,Control  [List of accepted_hits.bam for each sample sorted by condition (i.e. Dex,Control)]","29":"CummeRbund R package (v.0.1.3) was used to create FPKM matrix of all samples","30":"Genome_build: hg19","31":"Supplementary_files_format_and_content: tab-delimited text files on Series record include FPKM values for each sample (ALL_Sample_FPKM_Matrix.txt) and gene-based differential expression results for Dex vs. Untreated condition (Dex_vs_Untreated_gene_exp.diff)","32":"GPL11154","33":"Blanca,E,Himes","34":"bhimes@pennmedicine.upenn.edu","35":"402 Blockley Hall","36":"Department of Biostatistics, Epidemiology and Informatics","37":"University of Pennsylvania","38":"423 Guardian Dr","39":"Philadelphia","40":"PA","41":"19104","42":"USA","43":"0","44":"Illumina HiSeq 2000","45":"cDNA","46":"transcriptomic","47":"RNA-Seq","48":"BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN02422675","49":"SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX384346","50":"NONE","51":"N61311","52":"airway smooth muscle cells","53":"-","54":"human airway smooth muscle cells","55":"Dexamethasone","56":"SRR1039509","57":"2014-01-02 09:16:11","58":"2013-11-26 16:38:41","59":"21155707","60":"2665619082","61":"21155707","62":"126","63":"1480","64":"NA","65":"https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos5/sra-pub-zq-11/SRR001/039/SRR1039509/SRR1039509.sralite.1","66":"SRX384346","67":"NA","68":"RNA-Seq","69":"cDNA","70":"TRANSCRIPTOMIC","71":"PAIRED","72":"0","73":"0","74":"ILLUMINA","75":"Illumina HiSeq 2000","76":"SRP033351","77":"PRJNA229998","78":"2","79":"229998","80":"SRS508567","81":"SAMN02422675","82":"simple","83":"9606","84":"Homo sapiens","85":"NA","86":"NA","87":"NA","88":"NA","89":"NA","90":"NA","91":"no","92":"NA","93":"NA","94":"NA","95":"NA","96":"GEO","97":"SRA114259","98":"NA","99":"public","100":"E2F5FBD3278F29EC6EA7B00FC95C28B2","101":"294D13FE5364BA88B5FEAD68A53CB11B","102":"N61311","103":"Dexamethasone","104":"SRR1039509","_rn_":"SRR1039509"},{"1":"1","2":"26056111","3":"0.9940845","4":"GSM1275866","5":"N052611_untreated","6":"GSM1275866","7":"Public on Jan 01 2014","8":"Nov 26 2013","9":"May 15 2019","10":"SRA","11":"1","12":"airway smooth muscle cells","13":"Homo sapiens","14":"treatment: Untreated","15":"tissue: human airway smooth muscle cells","16":"ercc_mix: -","17":"cell line: N052611","18":"cell type: airway smooth muscle cells","19":"Cells from each donor were treated with 1 μM dexamethasone,  1 μM albuterol, both dexamethasone and albuterol, or control vehicle for 18 h.","20":"Primary ASM cells were isolated from four white aborted lung transplant donors with no chronic illness. Passages 4 to 7 ASM cells maintained in Ham's F12 medium supplemented with 10% FBS were used in all experiments.","21":"total RNA","22":"Total RNA was extracted using the miRNAeasy mini kit (Qiagen Sciences, Inc., Germantown, MD).","23":"TruSeq RNA Sample Prep Kit v2 (Illumina, Inc., San Diego, CA).","24":"9606","25":"Illumina Casava1.8 software used for basecalling.","26":"Sequenced reads were trimmed by 12bp then mapped to hg19 whole genome using tophat v.2.0.4 with parameters -G [hg19_ERCC_gtf] --no-novel-juncs --transcriptome-only","27":"For each sample, Cufflinks (v.2.0.2) was used to quantify External RNA Controls Consortium (ERCC) Spike-In and hg19 transcripts based on reads that mapped to the provided hg19 and ERCC reference files.","28":"Differential expression of genes and transcripts in samples treated with Dex vs. Untreated samples was obtained using Cuffdiff (v.2.0.2) with the quantified transcripts computed by Cufflinks (v.2.0.2), while applying bias correction. Options: -p 12 --min-outlier-p 0.05 -b [hg19_reference_index] -u [hg19_gtf] -L Dex,Control  [List of accepted_hits.bam for each sample sorted by condition (i.e. Dex,Control)]","29":"CummeRbund R package (v.0.1.3) was used to create FPKM matrix of all samples","30":"Genome_build: hg19","31":"Supplementary_files_format_and_content: tab-delimited text files on Series record include FPKM values for each sample (ALL_Sample_FPKM_Matrix.txt) and gene-based differential expression results for Dex vs. Untreated condition (Dex_vs_Untreated_gene_exp.diff)","32":"GPL11154","33":"Blanca,E,Himes","34":"bhimes@pennmedicine.upenn.edu","35":"402 Blockley Hall","36":"Department of Biostatistics, Epidemiology and Informatics","37":"University of Pennsylvania","38":"423 Guardian Dr","39":"Philadelphia","40":"PA","41":"19104","42":"USA","43":"0","44":"Illumina HiSeq 2000","45":"cDNA","46":"transcriptomic","47":"RNA-Seq","48":"BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN02422678","49":"SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX384349","50":"NONE","51":"N052611","52":"airway smooth muscle cells","53":"-","54":"human airway smooth muscle cells","55":"Untreated","56":"SRR1039512","57":"2014-01-02 09:16:11","58":"2013-11-26 16:47:15","59":"28136282","60":"3545171532","61":"28136282","62":"126","63":"2055","64":"NA","65":"https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos5/sra-pub-zq-11/SRR001/039/SRR1039512/SRR1039512.sralite.1","66":"SRX384349","67":"NA","68":"RNA-Seq","69":"cDNA","70":"TRANSCRIPTOMIC","71":"PAIRED","72":"0","73":"0","74":"ILLUMINA","75":"Illumina HiSeq 2000","76":"SRP033351","77":"PRJNA229998","78":"2","79":"229998","80":"SRS508571","81":"SAMN02422678","82":"simple","83":"9606","84":"Homo sapiens","85":"NA","86":"NA","87":"NA","88":"NA","89":"NA","90":"NA","91":"no","92":"NA","93":"NA","94":"NA","95":"NA","96":"GEO","97":"SRA114259","98":"NA","99":"public","100":"828A997474D0BBD6E5E14DEDB0D9E31D","101":"5834A34CA3CE7EF962A396098543C9E6","102":"N052611","103":"Untreated","104":"SRR1039512","_rn_":"SRR1039512"},{"1":"1","2":"15638168","3":"0.9467391","4":"GSM1275867","5":"N052611_Dex","6":"GSM1275867","7":"Public on Jan 01 2014","8":"Nov 26 2013","9":"May 15 2019","10":"SRA","11":"1","12":"airway smooth muscle cells","13":"Homo sapiens","14":"treatment: Dexamethasone","15":"tissue: human airway smooth muscle cells","16":"ercc_mix: 1","17":"cell line: N052611","18":"cell type: airway smooth muscle cells","19":"Cells from each donor were treated with 1 μM dexamethasone,  1 μM albuterol, both dexamethasone and albuterol, or control vehicle for 18 h.","20":"Primary ASM cells were isolated from four white aborted lung transplant donors with no chronic illness. Passages 4 to 7 ASM cells maintained in Ham's F12 medium supplemented with 10% FBS were used in all experiments.","21":"total RNA","22":"Total RNA was extracted using the miRNAeasy mini kit (Qiagen Sciences, Inc., Germantown, MD).","23":"TruSeq RNA Sample Prep Kit v2 (Illumina, Inc., San Diego, CA).","24":"9606","25":"Illumina Casava1.8 software used for basecalling.","26":"Sequenced reads were trimmed by 12bp then mapped to hg19 whole genome using tophat v.2.0.4 with parameters -G [hg19_ERCC_gtf] --no-novel-juncs --transcriptome-only","27":"For each sample, Cufflinks (v.2.0.2) was used to quantify External RNA Controls Consortium (ERCC) Spike-In and hg19 transcripts based on reads that mapped to the provided hg19 and ERCC reference files.","28":"Differential expression of genes and transcripts in samples treated with Dex vs. Untreated samples was obtained using Cuffdiff (v.2.0.2) with the quantified transcripts computed by Cufflinks (v.2.0.2), while applying bias correction. Options: -p 12 --min-outlier-p 0.05 -b [hg19_reference_index] -u [hg19_gtf] -L Dex,Control  [List of accepted_hits.bam for each sample sorted by condition (i.e. Dex,Control)]","29":"CummeRbund R package (v.0.1.3) was used to create FPKM matrix of all samples","30":"Genome_build: hg19","31":"Supplementary_files_format_and_content: tab-delimited text files on Series record include FPKM values for each sample (ALL_Sample_FPKM_Matrix.txt) and gene-based differential expression results for Dex vs. Untreated condition (Dex_vs_Untreated_gene_exp.diff)","32":"GPL11154","33":"Blanca,E,Himes","34":"bhimes@pennmedicine.upenn.edu","35":"402 Blockley Hall","36":"Department of Biostatistics, Epidemiology and Informatics","37":"University of Pennsylvania","38":"423 Guardian Dr","39":"Philadelphia","40":"PA","41":"19104","42":"USA","43":"0","44":"Illumina HiSeq 2000","45":"cDNA","46":"transcriptomic","47":"RNA-Seq","48":"BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN02422670","49":"SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX384350","50":"NONE","51":"N052611","52":"airway smooth muscle cells","53":"1","54":"human airway smooth muscle cells","55":"Dexamethasone","56":"SRR1039513","57":"2014-01-02 09:16:11","58":"2013-11-26 17:02:02","59":"43356464","60":"3791311776","61":"16823088","62":"87","63":"2271","64":"NA","65":"https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos5/sra-pub-zq-11/SRR001/039/SRR1039513/SRR1039513.sralite.1","66":"SRX384350","67":"NA","68":"RNA-Seq","69":"cDNA","70":"TRANSCRIPTOMIC","71":"PAIRED","72":"0","73":"0","74":"ILLUMINA","75":"Illumina HiSeq 2000","76":"SRP033351","77":"PRJNA229998","78":"2","79":"229998","80":"SRS508572","81":"SAMN02422670","82":"simple","83":"9606","84":"Homo sapiens","85":"NA","86":"NA","87":"NA","88":"NA","89":"NA","90":"NA","91":"no","92":"NA","93":"NA","94":"NA","95":"NA","96":"GEO","97":"SRA114259","98":"NA","99":"public","100":"0EB840FF1F4AA22A5017CB754C039225","101":"5A5DD90EDCD5998A26F7F7BC099D4010","102":"N052611","103":"Dexamethasone","104":"SRR1039513","_rn_":"SRR1039513"},{"1":"1","2":"25178998","3":"1.0342572","4":"GSM1275870","5":"N080611_untreated","6":"GSM1275870","7":"Public on Jan 01 2014","8":"Nov 26 2013","9":"May 15 2019","10":"SRA","11":"1","12":"airway smooth muscle cells","13":"Homo sapiens","14":"treatment: Untreated","15":"tissue: human airway smooth muscle cells","16":"ercc_mix: -","17":"cell line: N080611","18":"cell type: airway smooth muscle cells","19":"Cells from each donor were treated with 1 μM dexamethasone,  1 μM albuterol, both dexamethasone and albuterol, or control vehicle for 18 h.","20":"Primary ASM cells were isolated from four white aborted lung transplant donors with no chronic illness. Passages 4 to 7 ASM cells maintained in Ham's F12 medium supplemented with 10% FBS were used in all experiments.","21":"total RNA","22":"Total RNA was extracted using the miRNAeasy mini kit (Qiagen Sciences, Inc., Germantown, MD).","23":"TruSeq RNA Sample Prep Kit v2 (Illumina, Inc., San Diego, CA).","24":"9606","25":"Illumina Casava1.8 software used for basecalling.","26":"Sequenced reads were trimmed by 12bp then mapped to hg19 whole genome using tophat v.2.0.4 with parameters -G [hg19_ERCC_gtf] --no-novel-juncs --transcriptome-only","27":"For each sample, Cufflinks (v.2.0.2) was used to quantify External RNA Controls Consortium (ERCC) Spike-In and hg19 transcripts based on reads that mapped to the provided hg19 and ERCC reference files.","28":"Differential expression of genes and transcripts in samples treated with Dex vs. Untreated samples was obtained using Cuffdiff (v.2.0.2) with the quantified transcripts computed by Cufflinks (v.2.0.2), while applying bias correction. Options: -p 12 --min-outlier-p 0.05 -b [hg19_reference_index] -u [hg19_gtf] -L Dex,Control  [List of accepted_hits.bam for each sample sorted by condition (i.e. Dex,Control)]","29":"CummeRbund R package (v.0.1.3) was used to create FPKM matrix of all samples","30":"Genome_build: hg19","31":"Supplementary_files_format_and_content: tab-delimited text files on Series record include FPKM values for each sample (ALL_Sample_FPKM_Matrix.txt) and gene-based differential expression results for Dex vs. Untreated condition (Dex_vs_Untreated_gene_exp.diff)","32":"GPL11154","33":"Blanca,E,Himes","34":"bhimes@pennmedicine.upenn.edu","35":"402 Blockley Hall","36":"Department of Biostatistics, Epidemiology and Informatics","37":"University of Pennsylvania","38":"423 Guardian Dr","39":"Philadelphia","40":"PA","41":"19104","42":"USA","43":"0","44":"Illumina HiSeq 2000","45":"cDNA","46":"transcriptomic","47":"RNA-Seq","48":"BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN02422682","49":"SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX384353","50":"NONE","51":"N080611","52":"airway smooth muscle cells","53":"-","54":"human airway smooth muscle cells","55":"Untreated","56":"SRR1039516","57":"2014-01-02 09:16:11","58":"2013-11-26 17:03:45","59":"30043024","60":"3612545622","61":"27298970","62":"120","63":"2147","64":"NA","65":"https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos5/sra-pub-zq-11/SRR001/039/SRR1039516/SRR1039516.sralite.1","66":"SRX384353","67":"NA","68":"RNA-Seq","69":"cDNA","70":"TRANSCRIPTOMIC","71":"PAIRED","72":"0","73":"0","74":"ILLUMINA","75":"Illumina HiSeq 2000","76":"SRP033351","77":"PRJNA229998","78":"2","79":"229998","80":"SRS508575","81":"SAMN02422682","82":"simple","83":"9606","84":"Homo sapiens","85":"NA","86":"NA","87":"NA","88":"NA","89":"NA","90":"NA","91":"no","92":"NA","93":"NA","94":"NA","95":"NA","96":"GEO","97":"SRA114259","98":"NA","99":"public","100":"F88DCB56A77C7D4408B19C8B7E03CE3E","101":"87E7B86FEEC66F5FF14D8FB7D9CB5AE3","102":"N080611","103":"Untreated","104":"SRR1039516","_rn_":"SRR1039516"},{"1":"1","2":"31804643","3":"0.9694058","4":"GSM1275871","5":"N080611_Dex","6":"GSM1275871","7":"Public on Jan 01 2014","8":"Nov 26 2013","9":"May 15 2019","10":"SRA","11":"1","12":"airway smooth muscle cells","13":"Homo sapiens","14":"treatment: Dexamethasone","15":"tissue: human airway smooth muscle cells","16":"ercc_mix: -","17":"cell line: N080611","18":"cell type: airway smooth muscle cells","19":"Cells from each donor were treated with 1 μM dexamethasone,  1 μM albuterol, both dexamethasone and albuterol, or control vehicle for 18 h.","20":"Primary ASM cells were isolated from four white aborted lung transplant donors with no chronic illness. Passages 4 to 7 ASM cells maintained in Ham's F12 medium supplemented with 10% FBS were used in all experiments.","21":"total RNA","22":"Total RNA was extracted using the miRNAeasy mini kit (Qiagen Sciences, Inc., Germantown, MD).","23":"TruSeq RNA Sample Prep Kit v2 (Illumina, Inc., San Diego, CA).","24":"9606","25":"Illumina Casava1.8 software used for basecalling.","26":"Sequenced reads were trimmed by 12bp then mapped to hg19 whole genome using tophat v.2.0.4 with parameters -G [hg19_ERCC_gtf] --no-novel-juncs --transcriptome-only","27":"For each sample, Cufflinks (v.2.0.2) was used to quantify External RNA Controls Consortium (ERCC) Spike-In and hg19 transcripts based on reads that mapped to the provided hg19 and ERCC reference files.","28":"Differential expression of genes and transcripts in samples treated with Dex vs. Untreated samples was obtained using Cuffdiff (v.2.0.2) with the quantified transcripts computed by Cufflinks (v.2.0.2), while applying bias correction. Options: -p 12 --min-outlier-p 0.05 -b [hg19_reference_index] -u [hg19_gtf] -L Dex,Control  [List of accepted_hits.bam for each sample sorted by condition (i.e. Dex,Control)]","29":"CummeRbund R package (v.0.1.3) was used to create FPKM matrix of all samples","30":"Genome_build: hg19","31":"Supplementary_files_format_and_content: tab-delimited text files on Series record include FPKM values for each sample (ALL_Sample_FPKM_Matrix.txt) and gene-based differential expression results for Dex vs. Untreated condition (Dex_vs_Untreated_gene_exp.diff)","32":"GPL11154","33":"Blanca,E,Himes","34":"bhimes@pennmedicine.upenn.edu","35":"402 Blockley Hall","36":"Department of Biostatistics, Epidemiology and Informatics","37":"University of Pennsylvania","38":"423 Guardian Dr","39":"Philadelphia","40":"PA","41":"19104","42":"USA","43":"0","44":"Illumina HiSeq 2000","45":"cDNA","46":"transcriptomic","47":"RNA-Seq","48":"BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN02422673","49":"SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX384354","50":"NONE","51":"N080611","52":"airway smooth muscle cells","53":"-","54":"human airway smooth muscle cells","55":"Dexamethasone","56":"SRR1039517","57":"2014-01-02 09:16:11","58":"2013-11-26 16:49:48","59":"34298260","60":"4321580760","61":"34298260","62":"126","63":"2654","64":"NA","65":"https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos5/sra-pub-zq-11/SRR001/039/SRR1039517/SRR1039517.sralite.1","66":"SRX384354","67":"NA","68":"RNA-Seq","69":"cDNA","70":"TRANSCRIPTOMIC","71":"PAIRED","72":"0","73":"0","74":"ILLUMINA","75":"Illumina HiSeq 2000","76":"SRP033351","77":"PRJNA229998","78":"2","79":"229998","80":"SRS508576","81":"SAMN02422673","82":"simple","83":"9606","84":"Homo sapiens","85":"NA","86":"NA","87":"NA","88":"NA","89":"NA","90":"NA","91":"no","92":"NA","93":"NA","94":"NA","95":"NA","96":"GEO","97":"SRA114259","98":"NA","99":"public","100":"87EB19F8B326E4DD8F17A8729295CC8D","101":"1A0159FDA5AF8E3B542666812DE41137","102":"N080611","103":"Dexamethasone","104":"SRR1039517","_rn_":"SRR1039517"},{"1":"1","2":"19619313","3":"1.0308594","4":"GSM1275874","5":"N061011_untreated","6":"GSM1275874","7":"Public on Jan 01 2014","8":"Nov 26 2013","9":"May 15 2019","10":"SRA","11":"1","12":"airway smooth muscle cells","13":"Homo sapiens","14":"treatment: Untreated","15":"tissue: human airway smooth muscle cells","16":"ercc_mix: 1","17":"cell line: N061011","18":"cell type: airway smooth muscle cells","19":"Cells from each donor were treated with 1 μM dexamethasone,  1 μM albuterol, both dexamethasone and albuterol, or control vehicle for 18 h.","20":"Primary ASM cells were isolated from four white aborted lung transplant donors with no chronic illness. Passages 4 to 7 ASM cells maintained in Ham's F12 medium supplemented with 10% FBS were used in all experiments.","21":"total RNA","22":"Total RNA was extracted using the miRNAeasy mini kit (Qiagen Sciences, Inc., Germantown, MD).","23":"TruSeq RNA Sample Prep Kit v2 (Illumina, Inc., San Diego, CA).","24":"9606","25":"Illumina Casava1.8 software used for basecalling.","26":"Sequenced reads were trimmed by 12bp then mapped to hg19 whole genome using tophat v.2.0.4 with parameters -G [hg19_ERCC_gtf] --no-novel-juncs --transcriptome-only","27":"For each sample, Cufflinks (v.2.0.2) was used to quantify External RNA Controls Consortium (ERCC) Spike-In and hg19 transcripts based on reads that mapped to the provided hg19 and ERCC reference files.","28":"Differential expression of genes and transcripts in samples treated with Dex vs. Untreated samples was obtained using Cuffdiff (v.2.0.2) with the quantified transcripts computed by Cufflinks (v.2.0.2), while applying bias correction. Options: -p 12 --min-outlier-p 0.05 -b [hg19_reference_index] -u [hg19_gtf] -L Dex,Control  [List of accepted_hits.bam for each sample sorted by condition (i.e. Dex,Control)]","29":"CummeRbund R package (v.0.1.3) was used to create FPKM matrix of all samples","30":"Genome_build: hg19","31":"Supplementary_files_format_and_content: tab-delimited text files on Series record include FPKM values for each sample (ALL_Sample_FPKM_Matrix.txt) and gene-based differential expression results for Dex vs. Untreated condition (Dex_vs_Untreated_gene_exp.diff)","32":"GPL11154","33":"Blanca,E,Himes","34":"bhimes@pennmedicine.upenn.edu","35":"402 Blockley Hall","36":"Department of Biostatistics, Epidemiology and Informatics","37":"University of Pennsylvania","38":"423 Guardian Dr","39":"Philadelphia","40":"PA","41":"19104","42":"USA","43":"0","44":"Illumina HiSeq 2000","45":"cDNA","46":"transcriptomic","47":"RNA-Seq","48":"BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN02422683","49":"SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX384357","50":"NONE","51":"N061011","52":"airway smooth muscle cells","53":"1","54":"human airway smooth muscle cells","55":"Untreated","56":"SRR1039520","57":"2014-01-02 09:16:11","58":"2013-11-26 17:04:50","59":"34575286","60":"3518623962","61":"21275888","62":"101","63":"2109","64":"NA","65":"https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos5/sra-pub-zq-11/SRR001/039/SRR1039520/SRR1039520.sralite.1","66":"SRX384357","67":"NA","68":"RNA-Seq","69":"cDNA","70":"TRANSCRIPTOMIC","71":"PAIRED","72":"0","73":"0","74":"ILLUMINA","75":"Illumina HiSeq 2000","76":"SRP033351","77":"PRJNA229998","78":"2","79":"229998","80":"SRS508579","81":"SAMN02422683","82":"simple","83":"9606","84":"Homo sapiens","85":"NA","86":"NA","87":"NA","88":"NA","89":"NA","90":"NA","91":"no","92":"NA","93":"NA","94":"NA","95":"NA","96":"GEO","97":"SRA114259","98":"NA","99":"public","100":"3478B4523B6FD56D362B5890F0DBFE8D","101":"0B6E49B16B2296F33C5B250BD1CB93D5","102":"N061011","103":"Untreated","104":"SRR1039520","_rn_":"SRR1039520"},{"1":"1","2":"21761934","3":"0.9533817","4":"GSM1275875","5":"N061011_Dex","6":"GSM1275875","7":"Public on Jan 01 2014","8":"Nov 26 2013","9":"May 15 2019","10":"SRA","11":"1","12":"airway smooth muscle cells","13":"Homo sapiens","14":"treatment: Dexamethasone","15":"tissue: human airway smooth muscle cells","16":"ercc_mix: 1","17":"cell line: N061011","18":"cell type: airway smooth muscle cells","19":"Cells from each donor were treated with 1 μM dexamethasone,  1 μM albuterol, both dexamethasone and albuterol, or control vehicle for 18 h.","20":"Primary ASM cells were isolated from four white aborted lung transplant donors with no chronic illness. Passages 4 to 7 ASM cells maintained in Ham's F12 medium supplemented with 10% FBS were used in all experiments.","21":"total RNA","22":"Total RNA was extracted using the miRNAeasy mini kit (Qiagen Sciences, Inc., Germantown, MD).","23":"TruSeq RNA Sample Prep Kit v2 (Illumina, Inc., San Diego, CA).","24":"9606","25":"Illumina Casava1.8 software used for basecalling.","26":"Sequenced reads were trimmed by 12bp then mapped to hg19 whole genome using tophat v.2.0.4 with parameters -G [hg19_ERCC_gtf] --no-novel-juncs --transcriptome-only","27":"For each sample, Cufflinks (v.2.0.2) was used to quantify External RNA Controls Consortium (ERCC) Spike-In and hg19 transcripts based on reads that mapped to the provided hg19 and ERCC reference files.","28":"Differential expression of genes and transcripts in samples treated with Dex vs. Untreated samples was obtained using Cuffdiff (v.2.0.2) with the quantified transcripts computed by Cufflinks (v.2.0.2), while applying bias correction. Options: -p 12 --min-outlier-p 0.05 -b [hg19_reference_index] -u [hg19_gtf] -L Dex,Control  [List of accepted_hits.bam for each sample sorted by condition (i.e. Dex,Control)]","29":"CummeRbund R package (v.0.1.3) was used to create FPKM matrix of all samples","30":"Genome_build: hg19","31":"Supplementary_files_format_and_content: tab-delimited text files on Series record include FPKM values for each sample (ALL_Sample_FPKM_Matrix.txt) and gene-based differential expression results for Dex vs. Untreated condition (Dex_vs_Untreated_gene_exp.diff)","32":"GPL11154","33":"Blanca,E,Himes","34":"bhimes@pennmedicine.upenn.edu","35":"402 Blockley Hall","36":"Department of Biostatistics, Epidemiology and Informatics","37":"University of Pennsylvania","38":"423 Guardian Dr","39":"Philadelphia","40":"PA","41":"19104","42":"USA","43":"0","44":"Illumina HiSeq 2000","45":"cDNA","46":"transcriptomic","47":"RNA-Seq","48":"BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN02422677","49":"SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX384358","50":"NONE","51":"N061011","52":"airway smooth muscle cells","53":"1","54":"human airway smooth muscle cells","55":"Dexamethasone","56":"SRR1039521","57":"2014-01-02 09:16:11","58":"2013-11-26 17:08:16","59":"41152075","60":"4072315905","61":"23487860","62":"98","63":"2449","64":"NA","65":"https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos5/sra-pub-zq-11/SRR001/039/SRR1039521/SRR1039521.sralite.1","66":"SRX384358","67":"NA","68":"RNA-Seq","69":"cDNA","70":"TRANSCRIPTOMIC","71":"PAIRED","72":"0","73":"0","74":"ILLUMINA","75":"Illumina HiSeq 2000","76":"SRP033351","77":"PRJNA229998","78":"2","79":"229998","80":"SRS508580","81":"SAMN02422677","82":"simple","83":"9606","84":"Homo sapiens","85":"NA","86":"NA","87":"NA","88":"NA","89":"NA","90":"NA","91":"no","92":"NA","93":"NA","94":"NA","95":"NA","96":"GEO","97":"SRA114259","98":"NA","99":"public","100":"1ABC620B261A70743C633D564D0FBA62","101":"28D9F5348982A2FEF14824E13AB8397A","102":"N061011","103":"Dexamethasone","104":"SRR1039521","_rn_":"SRR1039521"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Note, that the recalculation of libsizes and normalisation factors
+are overruled because we already have calculated user defined
+offsets.</p>
+</div>
+<div id="data-exploration" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Data exploration</h2>
+<p>One way to reduce dimensionality is the use of multidimensional
+scaling (MDS). For MDS, we first have to calculate all pairwise
+distances between our objects (samples in this case), and then create a
+(typically) two-dimensional representation where these pre-calculated
+distances are represented as accurately as possible. This means that
+depending on how the pairwise sample distances are defined, the
+two-dimensional plot can be very different, and it is important to
+choose a distance that is suitable for the type of data at hand.</p>
+<p>edgeR contains a function plotMDS, which operates on a DGEList object
+and generates a two-dimensional MDS representation of the samples. The
+default distance between two samples can be interpreted as the “typical”
+log fold change between the two samples, for the genes that are most
+different between them (by default, the top 500 genes, but this can be
+modified). We generate an MDS plot from the DGEList object dge, coloring
+by the treatment and using different plot symbols for different cell
+lines.</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(dge) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="fu">substr</span>(pdata<span class="sc">$</span>cellLine,<span class="dv">1</span>,<span class="dv">3</span>),<span class="st">&quot;_&quot;</span>,<span class="fu">substr</span>(pdata<span class="sc">$</span>treatment,<span class="dv">1</span>,<span class="dv">3</span>))</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMDS</span>(dge, <span class="at">top =</span> <span class="dv">500</span>,<span class="at">col=</span><span class="fu">as.double</span>(<span class="fu">colData</span>(sg)<span class="sc">$</span>cellLine))</span></code></pre></div>
+<p><img src="airway_salmon_edgeR_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+</div>
+<div id="model" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> Model</h2>
+<div id="estimate-the-overdispersion." class="section level3"
+number="3.4.1">
+<h3><span class="header-section-number">3.4.1</span> Estimate the
+overdispersion.</h3>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>dge <span class="ot">&lt;-</span> <span class="fu">estimateDisp</span>(dge, design)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotBCV</span>(dge)</span></code></pre></div>
+<p><img src="airway_salmon_edgeR_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+</div>
+</div>
+<div id="fit-the-genelevel-quasi-nb-model." class="section level2"
+number="3.5">
+<h2><span class="header-section-number">3.5</span> Fit the genelevel
+quasi-NB model.</h2>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">glmQLFit</span>(dge, design)</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>ftest <span class="ot">&lt;-</span> <span class="fu">glmQLFTest</span>(fit, <span class="at">coef =</span> <span class="st">&quot;treatmentDexamethasone&quot;</span>)</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>ttAll <span class="ot">&lt;-</span> <span class="fu">topTags</span>(ftest, <span class="at">n =</span> <span class="fu">nrow</span>(dge)) <span class="co"># all genes</span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(ttAll<span class="sc">$</span>table<span class="sc">$</span>PValue)</span></code></pre></div>
+<p><img src="airway_salmon_edgeR_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>tt <span class="ot">&lt;-</span> <span class="fu">topTags</span>(ftest, <span class="at">n =</span> <span class="fu">nrow</span>(dge), <span class="at">p.value =</span> <span class="fl">0.05</span>) <span class="co"># genes with adj.p&lt;0.05</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tt)</span></code></pre></div>
+<pre><code>## Coefficient:  treatmentDexamethasone 
+##                               gene_id
+## ENSG00000109906.13 ENSG00000109906.13
+## ENSG00000157214.13 ENSG00000157214.13
+## ENSG00000146250.6   ENSG00000146250.6
+## ENSG00000162614.18 ENSG00000162614.18
+## ENSG00000120129.5   ENSG00000120129.5
+## ENSG00000189221.9   ENSG00000189221.9
+##                                                                                                                                                                                                          tx_ids
+## ENSG00000109906.13                    ENST00000335953.8, ENST00000541602.5, ENST00000544220.1, ENST00000535700.1, ENST00000392996.2, ENST00000539918.5, ENST00000545851.5, ENST00000535379.1, ENST00000535509.1
+## ENSG00000157214.13 ENST00000428074.5, ENST00000287908.7, ENST00000394621.6, ENST00000394626.5, ENST00000394622.6, ENST00000394632.5, ENST00000426158.1, ENST00000402625.6, ENST00000394629.2, ENST00000482369.1
+## ENSG00000146250.6                                                                                                                                                                             ENST00000369700.3
+## ENSG00000162614.18                                     ENST00000401035.7, ENST00000330010.12, ENST00000334785.11, ENST00000440324.5, ENST00000342754.5, ENST00000464998.1, ENST00000480732.2, ENST00000470735.1
+## ENSG00000120129.5                                                                                                                                                                             ENST00000239223.3
+## ENSG00000189221.9                                                                                                                    ENST00000542639.5, ENST00000338702.3, ENST00000497485.1, ENST00000490604.1
+##                    SYMBOL     logFC   logCPM        F       PValue          FDR
+## ENSG00000109906.13 ZBTB16  6.452578 4.098198 791.3056 9.751807e-09 5.540934e-05
+## ENSG00000157214.13 STEAP2  2.017335 7.076725 771.1678 1.070975e-08 5.540934e-05
+## ENSG00000146250.6  PRSS35 -2.730888 3.840471 765.3290 1.100971e-08 5.540934e-05
+## ENSG00000162614.18   NEXN  2.028802 7.972003 708.9934 1.453505e-08 5.540934e-05
+## ENSG00000120129.5   DUSP1  2.949646 7.262409 656.5185 1.921586e-08 5.540934e-05
+## ENSG00000189221.9    MAOA  3.392756 6.726966 610.1295 2.506784e-08 5.540934e-05</code></pre>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(tt)</span></code></pre></div>
+<pre><code>## [1] 3585</code></pre>
+</div>
+<div id="plots" class="section level2" number="3.6">
+<h2><span class="header-section-number">3.6</span> Plots</h2>
+<p>We first make a volcanoplot and an MA plot.</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>volcano <span class="ot">&lt;-</span>  <span class="fu">ggplot</span>(ttAll<span class="sc">$</span>table,<span class="fu">aes</span>(<span class="at">x=</span>logFC,<span class="at">y=</span><span class="sc">-</span><span class="fu">log10</span>(PValue),<span class="at">color=</span>FDR<span class="sc">&lt;</span><span class="fl">0.05</span>)) <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">&quot;black&quot;</span>,<span class="st">&quot;red&quot;</span>))</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>volcano</span></code></pre></div>
+<p><img src="airway_salmon_edgeR_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotSmear</span>(ftest, <span class="at">de.tags =</span> <span class="fu">row.names</span>(tt<span class="sc">$</span>table))</span></code></pre></div>
+<p><img src="airway_salmon_edgeR_files/figure-html/unnamed-chunk-14-2.png" width="672" /></p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap</span>(<span class="fu">cpm</span>(dge,<span class="at">log=</span><span class="cn">TRUE</span>)[<span class="fu">rownames</span>(tt<span class="sc">$</span>table)[<span class="dv">1</span><span class="sc">:</span><span class="dv">30</span>],])</span></code></pre></div>
+<p><img src="airway_salmon_edgeR_files/figure-html/unnamed-chunk-14-3.png" width="672" /></p>
+</div>
+</div>
+<div id="transcript-level-analysis" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Transcript level
+analysis</h1>
+<div id="setup-count-table" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Setup count
+table</h2>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>dte <span class="ot">&lt;-</span> <span class="fu">DGEList</span>(<span class="fu">assays</span>(st)<span class="sc">$</span>counts)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>treatment<span class="sc">+</span>cellLine,<span class="at">data=</span><span class="fu">colData</span>(st))</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>keep <span class="ot">&lt;-</span> <span class="fu">filterByExpr</span>(dte, design)</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>dte <span class="ot">&lt;-</span> dte[keep, ,keep.lib.sizes<span class="ot">=</span><span class="cn">FALSE</span>]</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>dte <span class="ot">&lt;-</span> <span class="fu">calcNormFactors</span>(dte)</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>dte<span class="sc">$</span>samples</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["group"],"name":[1],"type":["fct"],"align":["left"]},{"label":["lib.size"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["norm.factors"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"20943439","3":"1.0559833","_rn_":"SRR1039508"},{"1":"1","2":"19151491","3":"1.0309778","_rn_":"SRR1039509"},{"1":"1","2":"25930442","3":"0.9870746","_rn_":"SRR1039512"},{"1":"1","2":"15572569","3":"0.9423692","_rn_":"SRR1039513"},{"1":"1","2":"25050151","3":"1.0305226","_rn_":"SRR1039516"},{"1":"1","2":"31654319","3":"0.9721331","_rn_":"SRR1039517"},{"1":"1","2":"19522193","3":"1.0285140","_rn_":"SRR1039520"},{"1":"1","2":"21663483","3":"0.9583610","_rn_":"SRR1039521"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="data-exploration-1" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Data Exploration</h2>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(dte) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="fu">substr</span>(pdata<span class="sc">$</span>cellLine,<span class="dv">1</span>,<span class="dv">3</span>),<span class="st">&quot;_&quot;</span>,<span class="fu">substr</span>(pdata<span class="sc">$</span>treatment,<span class="dv">1</span>,<span class="dv">3</span>))</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMDS</span>(dte, <span class="at">top =</span> <span class="dv">500</span>,<span class="at">col=</span><span class="fu">as.double</span>(<span class="fu">colData</span>(st)<span class="sc">$</span>cellLine))</span></code></pre></div>
+<p><img src="airway_salmon_edgeR_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+</div>
+<div id="model-1" class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span> Model</h2>
+<div id="estimate-transcript-level-dispersion" class="section level3"
+number="4.3.1">
+<h3><span class="header-section-number">4.3.1</span> Estimate transcript
+level dispersion</h3>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>dte <span class="ot">&lt;-</span> <span class="fu">estimateDisp</span>(dte, design)</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotBCV</span>(dte)</span></code></pre></div>
+<p><img src="airway_salmon_edgeR_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p>Note that we observe problems with respect to the dispersion
+estimation!</p>
+<p>This is probably due to over excess zero’s with respect to the NB
+distribution.</p>
+<p>We have seen similar patterns in the counts of plate based single
+cell RNA-seq data that are not using UMI’s (unique molecular
+identifiers).</p>
+</div>
+<div id="fit-the-transcript-level-quasi-nb-model."
+class="section level3" number="4.3.2">
+<h3><span class="header-section-number">4.3.2</span> Fit the transcript
+level quasi-NB model.</h3>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>fitt <span class="ot">&lt;-</span> <span class="fu">glmQLFit</span>(dte, design)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>ftestt <span class="ot">&lt;-</span> <span class="fu">glmQLFTest</span>(fitt, <span class="at">coef =</span> <span class="st">&quot;treatmentDexamethasone&quot;</span>)</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>tttAll <span class="ot">&lt;-</span> <span class="fu">topTags</span>(ftestt, <span class="at">n =</span> <span class="fu">nrow</span>(dge)) <span class="co"># all genes</span></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(tttAll<span class="sc">$</span>table<span class="sc">$</span>PValue)</span></code></pre></div>
+<p><img src="airway_salmon_edgeR_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>ttt <span class="ot">&lt;-</span> <span class="fu">topTags</span>(ftestt, <span class="at">n =</span> <span class="fu">nrow</span>(dge), <span class="at">p.value =</span> <span class="fl">0.05</span>) <span class="co"># genes with adj.p&lt;0.05</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ttt)</span></code></pre></div>
+<pre><code>## Coefficient:  treatmentDexamethasone 
+##                        logFC   logCPM         F       PValue        FDR
+## ENST00000393080.8   3.300567 4.914459 1292.2893 9.146367e-07 0.02817432
+## ENST00000330010.12  1.884403 7.632112  952.5065 1.827473e-06 0.02817432
+## ENST00000524463.5   1.461677 5.645695  746.7734 3.172184e-06 0.02817432
+## ENST00000370763.5   1.622481 5.894695  707.7796 3.581839e-06 0.02817432
+## ENST00000472484.5   1.602985 6.391438  661.3345 4.176778e-06 0.02817432
+## ENST00000369700.3  -2.747458 3.839607  652.5298 4.305431e-06 0.02817432</code></pre>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(ttt)</span></code></pre></div>
+<pre><code>## [1] 249</code></pre>
+</div>
+</div>
+<div id="plots-1" class="section level2" number="4.4">
+<h2><span class="header-section-number">4.4</span> Plots</h2>
+<p>We first make a volcanoplot and an MA plot.</p>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>volcano <span class="ot">&lt;-</span>  <span class="fu">ggplot</span>(tttAll<span class="sc">$</span>table,<span class="fu">aes</span>(<span class="at">x=</span>logFC,<span class="at">y=</span><span class="sc">-</span><span class="fu">log10</span>(PValue),<span class="at">color=</span>FDR<span class="sc">&lt;</span><span class="fl">0.05</span>)) <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">&quot;black&quot;</span>,<span class="st">&quot;red&quot;</span>))</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>volcano</span></code></pre></div>
+<p><img src="airway_salmon_edgeR_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotSmear</span>(ftestt, <span class="at">de.tags =</span> <span class="fu">row.names</span>(tt<span class="sc">$</span>table))</span></code></pre></div>
+<p><img src="airway_salmon_edgeR_files/figure-html/unnamed-chunk-19-2.png" width="672" /></p>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap</span>(<span class="fu">cpm</span>(dte,<span class="at">log=</span><span class="cn">TRUE</span>)[<span class="fu">rownames</span>(ttt<span class="sc">$</span>table)[<span class="dv">1</span><span class="sc">:</span><span class="dv">30</span>],])</span></code></pre></div>
+<p><img src="airway_salmon_edgeR_files/figure-html/unnamed-chunk-19-3.png" width="672" /></p>
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiQWlyd2F5OiBERSBhbmFseXNpcyBiYXNlZCBvbiB0cmFuc2NyaXB0IGNvdW50cyBhbmQgREVTZXEyIgphdXRob3I6ICJMaWV2ZW4gQ2xlbWVudCIKZGF0ZTogInN0YXRPbWljcywgR2hlbnQgVW5pdmVyc2l0eSAoaHR0cHM6Ly9zdGF0b21pY3MuZ2l0aHViLmlvKSIKb3V0cHV0OgogICAgaHRtbF9kb2N1bWVudDoKICAgICAgY29kZV9kb3dubG9hZDogdHJ1ZQogICAgICB0aGVtZTogY29zbW8KICAgICAgdG9jOiB0cnVlCiAgICAgIHRvY19mbG9hdDogdHJ1ZQogICAgICBoaWdobGlnaHQ6IHRhbmdvCiAgICAgIG51bWJlcl9zZWN0aW9uczogdHJ1ZQotLS0KCiMgQmFja2dyb3VuZApUaGUgZGF0YSB1c2VkIGluIHRoaXMgd29ya2Zsb3cgY29tZXMgZnJvbSBhbiBSTkEtc2VxIGV4cGVyaW1lbnQgd2hlcmUgYWlyd2F5IHNtb290aCBtdXNjbGUgY2VsbHMgd2VyZSB0cmVhdGVkIHdpdGggZGV4YW1ldGhhc29uZSwgYSBzeW50aGV0aWMgZ2x1Y29jb3J0aWNvaWQgc3Rlcm9pZCB3aXRoIGFudGktaW5mbGFtbWF0b3J5IGVmZmVjdHMgKEhpbWVzIGV0IGFsLiAyMDE0KS4gR2x1Y29jb3J0aWNvaWRzIGFyZSB1c2VkLCBmb3IgZXhhbXBsZSwgYnkgcGVvcGxlIHdpdGggYXN0aG1hIHRvIHJlZHVjZSBpbmZsYW1tYXRpb24gb2YgdGhlIGFpcndheXMuIEluIHRoZSBleHBlcmltZW50LCBmb3VyIGh1bWFuIGFpcndheSBzbW9vdGggbXVzY2xlIGNlbGwgbGluZXMgd2VyZSB0cmVhdGVkIHdpdGggMSBtaWNyb21vbGFyIGRleGFtZXRoYXNvbmUgZm9yIDE4IGhvdXJzLiBGb3IgZWFjaCBvZiB0aGUgZm91ciBjZWxsIGxpbmVzLCB3ZSBoYXZlIGEgdHJlYXRlZCBhbmQgYW4gdW50cmVhdGVkIHNhbXBsZS4KRm9yIG1vcmUgZGVzY3JpcHRpb24gb2YgdGhlIGV4cGVyaW1lbnQgc2VlIHRoZSBhcnRpY2xlLCBQdWJNZWQgZW50cnkgMjQ5MjY2NjUsIGFuZCBmb3IgcmF3IGRhdGEgc2VlIHRoZSBHRU8gZW50cnkgR1NFNTI3NzguCgpNYW55IHBhcnRzIG9mIHRoaXMgdHV0b3JpYWwgYXJlIGJhc2VkIG9uIHBhcnRzIG9mIGEgcHVibGlzaGVkIFJOQS1zZXEgd29ya2Zsb3cKYXZhaWxhYmxlIHZpYSBMb3ZlIGV0IGFsLiAyMDE1IFtGMTAwMFJlc2VhcmNoXShodHRwOi8vZjEwMDByZXNlYXJjaC5jb20vYXJ0aWNsZXMvNC0xMDcwKSBhbmQgYXMgYSBbQmlvY29uZHVjdG9yCnBhY2thZ2VdKGh0dHBzOi8vd3d3LmJpb2NvbmR1Y3Rvci5vcmcvcGFja2FnZXMvcmVsZWFzZS93b3JrZmxvd3MvaHRtbC9ybmFzZXFHZW5lLmh0bWwpIGFuZCBvbiBDaGFybG90dGUgU29uZXNvbidzIG1hdGVyaWFsIGZyb20gdGhlIFtic3MyMDE5XShodHRwczovL3VjbG91dmFpbi1jYmlvLmdpdGh1Yi5pby9CU1MyMDE5L3JuYXNlcV9nZW5lX3N1bW1lcnNjaG9vbF9iZWxnaXVtXzIwMTkuaHRtbCkgd29ya3Nob3AuCgojIERhdGEKCldlIHdpbGwgdXNlIHRoZSBzYWxtb24gcXVhbnRpZmljYXRpb24gZmlsZXMgaGVyZS4gVGhpcyBpcyBhIGxpZ2h0d2VpZ2h0IHRyYW5zY3JpcHQgbGV2ZWwgbWFwcGVyLiAKCiMjIE1ldGEgZGF0YQoKQXMgYmVmb3JlLCB3ZSB3aWxsIHJldHJpZXZlIHRoZSBtZXRhIGRhdGEgYnkgbGlua2luZyB0aGUgU1JBIGZpbGVzIHRvIHRoZSBtZXRhIGRhdGEgb24gR0VPLiAKCmBgYHtyfQpsaWJyYXJ5KGVkZ2VSKQpsaWJyYXJ5KHRpZHl2ZXJzZSkKbGlicmFyeShHRU9xdWVyeSkKCmRvd25sb2FkLmZpbGUoImh0dHBzOi8vZ2l0aHViLmNvbS9zdGF0T21pY3MvU0dBL2FyY2hpdmUvYWlyd2F5U2VxRGF0YS56aXAiLCJTR0EtYWlyd2F5U2VxRGF0YS56aXAiKQp1bnppcCgiU0dBLWFpcndheVNlcURhdGEuemlwIiwgZXhkaXIgPSAiLi8iKQpgYGAKCiMjIyBHRU8gZGF0YQoKYGBge3J9CmdzZTwtZ2V0R0VPKCJHU0U1Mjc3OCIpCnBkYXRhPC1wRGF0YShnc2VbWzFdXSkKcGRhdGEkU2FtcGxlTmFtZTwtcm93bmFtZXMocGRhdGEpICU+JSBhcy5mYWN0b3IKaGVhZChwZGF0YSlbMTo2LF0KYGBgCiMjIyBTUkEgaW5mbyAKRG93bmxvYWQgU1JBIGluZm8uIFRvIGxpbmsgc2FtcGxlIGluZm8gdG8gaW5mbyBzZXF1ZW5jaW5nOiBHbyB0byBjb3JyZXNwb25kaW5nIFNSQSBwYWdlIGFuZCBzYXZlIHRoZSBpbmZvcm1hdGlvbiB2aWEgdGhlIOKAnFNlbmQgdG86IEZpbGUgYnV0dG9u4oCdIFRoaXMgZmlsZSBjYW4gYWxzbyBiZSB1c2VkIHRvIG1ha2UgYSBzY3JpcHQgdG8gZG93bmxvYWQgc2VxdWVuY2luZyBmaWxlcyBmcm9tIHRoZSB3ZWIuIE5vdGUgdGhhdCBzcmEgZmlsZXMgY2FuIGJlIGNvbnZlcnRlZCB0byBmYXN0cSBmaWxlcyB2aWEgdGhlIGZhc3RxLWR1bXAgZnVuY3Rpb24gb2YgdGhlIHNyYS10b29scy4KCkZpbGUgaXMgYWxzbyBhdmFpbGFibGUgb24gY291cnNlIHdlYnNpdGUuIAoKYGBge3J9CnNyYUluZm88LXJlYWQuY3N2KCJodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vc3RhdE9taWNzL1NHQS9haXJ3YXlTZXFEYXRhL1NyYVJ1bkluZm8uY3N2IikKc3JhSW5mbyRTYW1wbGVOYW1lIDwtIGFzLmZhY3RvcihzcmFJbmZvJFNhbXBsZU5hbWUpCmxldmVscyhwZGF0YSRTYW1wbGVOYW1lKT09bGV2ZWxzKHNyYUluZm8kU2FtcGxlTmFtZSkKYGBgCgpTYW1wbGVOYW1lcyBhcmUgY2FuIGJlIGxpbmtlZC4KCmBgYHtyfQpwZGF0YTwtbWVyZ2UocGRhdGEsc3JhSW5mbyxieT0iU2FtcGxlTmFtZSIpCnBkYXRhJFJ1bgpgYGAKCgoKV2UgZG8gbm90IGhhdmUgdGhlIEFsYnV0ZXJvbCBzYW1wbGVzCgpgYGB7cn0Kcm93bmFtZXMocGRhdGEpIDwtIHBkYXRhJFJ1bgpwZGF0YSA8LSBwZGF0YVstZ3JlcCgiQWxidXRlcm9sIixwZGF0YVssInRyZWF0bWVudDpjaDEiXSksXQpwZGF0YVssZ3JlcCgiOmNoMSIsY29sbmFtZXMocGRhdGEpKV0KYGBgCgpgYGB7cn0KcGRhdGEkY2VsbExpbmUgPC0gcGRhdGFbLCBncmVwKCJjZWxsIGxpbmU6Y2gxIiwgY29sbmFtZXMocGRhdGEpKV0gJT4lCiAgYXMuZmFjdG9yCnBkYXRhJHRyZWF0bWVudDwtcGRhdGFbLCBncmVwKCJ0cmVhdG1lbnQ6Y2gxIiwgY29sbmFtZXMocGRhdGEpKV0gJT4lCiAgYXMuZmFjdG9yCnBkYXRhJHRyZWF0bWVudDwtcmVsZXZlbChwZGF0YSR0cmVhdG1lbnQsICJVbnRyZWF0ZWQiKQpgYGAKCgoKIyMgQWxpZ25tZW50LWZyZWUgdHJhbnNjcmlwdCBxdWFudGlmaWNhdGlvbgoKU29mdHdhcmUgc3VjaCBhcyAqa2FsbGlzdG8qCltAQnJheTIwMTZOZWFyXSwgKlNhbG1vbiogW0BQYXRybzIwMTdTYWxtb25dIGFuZCAqU2FpbGZpc2gqCltAUGF0cm8yMDE0U2FpbGZpc2hdLCBhcyB3ZWxsIGFzIG90aGVyIHRyYW5zY3JpcHQgcXVhbnRpZmljYXRpb24gbWV0aG9kcyBsaWtlCipDdWZmbGlua3MqIFtAVHJhcG5lbGwyMDEwQ3VmZmxpbmtzOyBAVHJhcG5lbGwyMDEzQ3VmZmxpbmtzMl0gYW5kICpSU0VNKgpbQExpMjAxMVJTRU1dLCBkaWZmZXIgZnJvbSB0aGUgY291bnRpbmcgbWV0aG9kcyBpbnRyb2R1Y2VkIGluIHRoZSBwcmV2aW91cyB0dXRvcmlhbHMgaW4gdGhhdCB0aGV5CnByb3ZpZGUgcXVhbnRpZmljYXRpb25zICh1c3VhbGx5IGJvdGggYXMgY291bnRzIGFuZCBhcyBUUE1zKSBmb3IgZWFjaAoqdHJhbnNjcmlwdCouIFRoZXNlIGNhbiB0aGVuIGJlIHN1bW1hcml6ZWQgb24gdGhlIGdlbmUgbGV2ZWwgYnkgYWRkaW5nIGFsbAp2YWx1ZXMgZm9yIHRyYW5zY3JpcHRzIGZyb20gdGhlIHNhbWUgZ2VuZS4gQSBzaW1wbGUgd2F5IHRvIGltcG9ydCByZXN1bHRzIGZyb20KdGhlc2UgcGFja2FnZXMgaW50byBSIGlzIHByb3ZpZGVkIGJ5IHRoZSBgdHhpbXBvcnRgIGFuZApgdHhpbWV0YWAgcGFja2FnZXMuIEhlcmUsICp0eGltcG9ydCogcmVhZHMgdGhlIHF1YW50aWZpY2F0aW9ucyBpbnRvIGEKbGlzdCBvZiBtYXRyaWNlcywgYW5kICp0eGltZXRhKiBhZ2dyZWdhdGVzIHRoZSBpbmZvcm1hdGlvbiBpbnRvIGEKKlN1bW1hcml6ZWRFeHBlcmltZW50KiBvYmplY3QsIGFuZCBhbHNvIGF1dG9tYXRpY2FsbHkgYWRkcyBhZGRpdGlvbmFsCmFubm90YXRpb25zIGZvciB0aGUgZmVhdHVyZXMuIEJvdGggcGFja2FnZXMgY2FuIHJldHVybiBxdWFudGlmaWNhdGlvbnMgb24gdGhlCnRyYW5zY3JpcHQgbGV2ZWwgb3IgYWdncmVnYXRlIHRoZW0gb24gdGhlIGdlbmUgbGV2ZWwuIFRoZXkgYWxzbyBjYWxjdWxhdGUKYXZlcmFnZSB0cmFuc2NyaXB0IGxlbmd0aHMgZm9yIGVhY2ggZ2VuZSBhbmQgZWFjaCBzYW1wbGUsIHdoaWNoIGNhbiBiZSB1c2VkIGFzCm9mZnNldHMgdG8gaW1wcm92ZSB0aGUgZGlmZmVyZW50aWFsIGV4cHJlc3Npb24gYW5hbHlzaXMgYnkgYWNjb3VudGluZyBmb3IKZGlmZmVyZW50aWFsIGlzb2Zvcm0gdXNhZ2UgYWNyb3NzIHNhbXBsZXMgW0BTb25lc29uMjAxNURpZmZlcmVudGlhbF0uCmF0dXJlY291bnRzIG9iamVjdAoKCiMjIyBMaWJyYXJpZXMKCmBgYHtyfQpzdXBwcmVzc1BhY2thZ2VTdGFydHVwTWVzc2FnZXMoewogIGlmKCEidHhpbWV0YSIgJWluJSBpbnN0YWxsZWQucGFja2FnZXMoKVssMV0pIEJpb2NNYW5hZ2VyOjppbnN0YWxsKCJ0eGltZXRhIikKICBpZighIm9yZy5Icy5lZy5kYiIgJWluJSBpbnN0YWxsZWQucGFja2FnZXMoKVssMV0pIEJpb2NNYW5hZ2VyOjppbnN0YWxsKCJvcmcuSHMuZWcuZGIiKQogIGxpYnJhcnkodHhpbWV0YSkKICBsaWJyYXJ5KG9yZy5Icy5lZy5kYikKICBsaWJyYXJ5KFN1bW1hcml6ZWRFeHBlcmltZW50KQogIGxpYnJhcnkoZ2dwbG90MikKICBsaWJyYXJ5KHRpZHl2ZXJzZSkKfSkKYGBgCgojIyMgSW1wb3J0aW5nIFNhbG1vbiBhYnVuZGFuY2UgcXVhbnRpZmljYXRpb24KClRoZSBjb2RlIGJlbG93IGltcG9ydHMgdGhlICpTYWxtb24qIHF1YW50aWZpY2F0aW9ucyBpbnRvIFIgdXNpbmcgdGhlICp0eGltZXRhKgpwYWNrYWdlLiBOb3RlIGhvdyB0aGUgdHJhbnNjcmlwdG9tZSB0aGF0IHdhcyB1c2VkIGZvciB0aGUgcXVhbnRpZmljYXRpb24gaXMKYXV0b21hdGljYWxseSByZWNvZ25pemVkIGFuZCB1c2VkIHRvIGFubm90YXRlIHRoZSByZXN1bHRpbmcgZGF0YSBvYmplY3QuIEluCm9yZGVyIGZvciB0aGlzIHRvIHdvcmssICp0eGltZXRhKiByZXF1aXJlcyB0aGF0IHRoZSBvdXRwdXQgZm9sZGVyIHN0cnVjdHVyZSBmcm9tClNhbG1vbiBpcyByZXRhaW5lZCwgc2luY2UgaXQgcmVhZHMgaW5mb3JtYXRpb24gZnJvbSB0aGUgYXNzb2NpYXRlZCBsb2cgZmlsZXMgaW4KYWRkaXRpb24gdG8gdGhlIHF1YW50aWZpZWQgYWJ1bmRhbmNlcyB0aGVtc2VsdmVzLiBXaXRoIHRoZSBgYWRkSWRzKClgIGZ1bmN0aW9uLAp3ZSBjYW4gYWRkIGFkZGl0aW9uYWwgYW5ub3RhdGlvbiBjb2x1bW5zLgoKYGBge3J9CgojIyBMaXN0IGFsbCBxdWFudC5zZiBvdXRwdXQgZmlsZXMgZnJvbSBTYWxtb24Kc2FsbW9uZmlsZXMgPC0gcGFzdGUwKCJTR0EtYWlyd2F5U2VxRGF0YS9zYWxtb24vIiwgcGRhdGEkUnVuLCAiL3F1YW50LnNmIikKbmFtZXMoc2FsbW9uZmlsZXMpIDwtIHBkYXRhJFJ1bgpzdG9waWZub3QoYWxsKGZpbGUuZXhpc3RzKHNhbG1vbmZpbGVzKSkpCgojIyBBZGQgYSBjb2x1bW4gImZpbGVzIiB0byB0aGUgbWV0YWRhdGEgdGFibGUuIFRoaXMgdGFibGUgbXVzdCBjb250YWluIGF0IGxlYXN0CiMjIHR3byBjb2x1bW5zOiAibmFtZXMiIGFuZCAiZmlsZXMiCmNvbGRhdGEgPC0gY2JpbmQocGRhdGEsIGZpbGVzID0gc2FsbW9uZmlsZXMsIHN0cmluZ3NBc0ZhY3RvcnMgPSBGQUxTRSkKY29sZGF0YSRuYW1lcyA8LSBjb2xkYXRhJFJ1bgoKIyMgSW1wb3J0IHF1YW50aWZpY2F0aW9ucyBvbiB0aGUgdHJhbnNjcmlwdCBsZXZlbApzdCA8LSB0eGltZXRhOjp0eGltZXRhKGNvbGRhdGEsaW1wb3J0ZXI9cmVhZC5kZWxpbSkKCiMjIFN1bW1hcml6ZSBxdWFudGlmaWNhdGlvbnMgb24gdGhlIGdlbmUgbGV2ZWwKc2cgPC0gdHhpbWV0YTo6c3VtbWFyaXplVG9HZW5lKHN0KQoKIyMgQWRkIGdlbmUgc3ltYm9scwpzZyA8LSB0eGltZXRhOjphZGRJZHMoc2csICJTWU1CT0wiLCBnZW5lID0gVFJVRSkKc2cKYGBgCgpOb3RlIHRoYXQgKlNhbG1vbiogcmV0dXJucyAqZXN0aW1hdGVkKiBjb3VudHMsIHdoaWNoIGFyZSBub3QgbmVjZXNzYXJpbHkKaW50ZWdlcnMuIFRoZXkgbWF5IG5lZWQgdG8gYmUgcm91bmRlZCBiZWZvcmUgdGhleSBhcmUgcGFzc2VkIHRvIGNvdW50LWJhc2VkCnN0YXRpc3RpY2FsIG1ldGhvZHMgKGUuZy4gKkRFU2VxMiopLgpUaGlzIGlzIG5vdCBuZWNlc2FyeSBmb3IgKmVkZ2VSKi4KCgojIERFIGFuYWx5c2lzIGF0IHRoZSBnZW5lIGxldmVsCgojIyBTZXR1cCBjb3VudCBvYmplY3QgaW4gZWRnZVIKCmBgYHtyfQpzdXBwcmVzc1BhY2thZ2VTdGFydHVwTWVzc2FnZXMoewogIGxpYnJhcnkoZWRnZVIpCn0pCmRnZSA8LSBtYWtlREdFTGlzdChzZykKYGBgCgoKIyMgRmlsdGVyaW5nIGFuZCBub3JtYWxpc2F0aW9uCgpgYGB7cn0KZGVzaWduIDwtIG1vZGVsLm1hdHJpeCh+dHJlYXRtZW50K2NlbGxMaW5lLGRhdGE9Y29sRGF0YShzZykpCmtlZXAgPC0gZmlsdGVyQnlFeHByKGRnZSwgZGVzaWduKQpkZ2UgPC0gZGdlW2tlZXAsICxrZWVwLmxpYi5zaXplcz1GQUxTRV0KZGdlIDwtIGNhbGNOb3JtRmFjdG9ycyhkZ2UpCmRnZSRzYW1wbGVzCmBgYAoKTm90ZSwgdGhhdCB0aGUgcmVjYWxjdWxhdGlvbiBvZiBsaWJzaXplcyBhbmQgbm9ybWFsaXNhdGlvbiBmYWN0b3JzIGFyZSBvdmVycnVsZWQgYmVjYXVzZSB3ZSBhbHJlYWR5IGhhdmUgY2FsY3VsYXRlZCB1c2VyIGRlZmluZWQgb2Zmc2V0cy4KCiMjIERhdGEgZXhwbG9yYXRpb24KCk9uZSB3YXkgdG8gcmVkdWNlIGRpbWVuc2lvbmFsaXR5IGlzIHRoZSB1c2Ugb2YgbXVsdGlkaW1lbnNpb25hbCBzY2FsaW5nIChNRFMpLiBGb3IgTURTLCB3ZSBmaXJzdCBoYXZlIHRvIGNhbGN1bGF0ZSBhbGwgcGFpcndpc2UgZGlzdGFuY2VzIGJldHdlZW4gb3VyIG9iamVjdHMgKHNhbXBsZXMgaW4gdGhpcyBjYXNlKSwgYW5kIHRoZW4gY3JlYXRlIGEgKHR5cGljYWxseSkgdHdvLWRpbWVuc2lvbmFsIHJlcHJlc2VudGF0aW9uIHdoZXJlIHRoZXNlIHByZS1jYWxjdWxhdGVkIGRpc3RhbmNlcyBhcmUgcmVwcmVzZW50ZWQgYXMgYWNjdXJhdGVseSBhcyBwb3NzaWJsZS4gVGhpcyBtZWFucyB0aGF0IGRlcGVuZGluZyBvbiBob3cgdGhlIHBhaXJ3aXNlIHNhbXBsZSBkaXN0YW5jZXMgYXJlIGRlZmluZWQsIHRoZSB0d28tZGltZW5zaW9uYWwgcGxvdCBjYW4gYmUgdmVyeSBkaWZmZXJlbnQsIGFuZCBpdCBpcyBpbXBvcnRhbnQgdG8gY2hvb3NlIGEgZGlzdGFuY2UgdGhhdCBpcyBzdWl0YWJsZSBmb3IgdGhlIHR5cGUgb2YgZGF0YSBhdCBoYW5kLgoKZWRnZVIgY29udGFpbnMgYSBmdW5jdGlvbiBwbG90TURTLCB3aGljaCBvcGVyYXRlcyBvbiBhIERHRUxpc3Qgb2JqZWN0IGFuZCBnZW5lcmF0ZXMgYSB0d28tZGltZW5zaW9uYWwgTURTIHJlcHJlc2VudGF0aW9uIG9mIHRoZSBzYW1wbGVzLiBUaGUgZGVmYXVsdCBkaXN0YW5jZSBiZXR3ZWVuIHR3byBzYW1wbGVzIGNhbiBiZSBpbnRlcnByZXRlZCBhcyB0aGUgInR5cGljYWwiIGxvZyBmb2xkIGNoYW5nZSBiZXR3ZWVuIHRoZSB0d28gc2FtcGxlcywgZm9yIHRoZSBnZW5lcyB0aGF0IGFyZSBtb3N0IGRpZmZlcmVudCBiZXR3ZWVuIHRoZW0gKGJ5IGRlZmF1bHQsIHRoZSB0b3AgNTAwIGdlbmVzLCBidXQgdGhpcyBjYW4gYmUgbW9kaWZpZWQpLiBXZSBnZW5lcmF0ZSBhbiBNRFMgcGxvdCBmcm9tIHRoZSBER0VMaXN0IG9iamVjdCBkZ2UsIGNvbG9yaW5nIGJ5IHRoZSB0cmVhdG1lbnQgYW5kIHVzaW5nIGRpZmZlcmVudCBwbG90IHN5bWJvbHMgZm9yIGRpZmZlcmVudCBjZWxsIGxpbmVzLgoKYGBge3J9CmNvbG5hbWVzKGRnZSkgPC0gcGFzdGUwKHN1YnN0cihwZGF0YSRjZWxsTGluZSwxLDMpLCJfIixzdWJzdHIocGRhdGEkdHJlYXRtZW50LDEsMykpCnBsb3RNRFMoZGdlLCB0b3AgPSA1MDAsY29sPWFzLmRvdWJsZShjb2xEYXRhKHNnKSRjZWxsTGluZSkpCmBgYAoKCgojIyBNb2RlbAoKIyMjIEVzdGltYXRlIHRoZSBvdmVyZGlzcGVyc2lvbi4KCmBgYHtyfQpkZ2UgPC0gZXN0aW1hdGVEaXNwKGRnZSwgZGVzaWduKQpwbG90QkNWKGRnZSkKYGBgCgojIyBGaXQgdGhlIGdlbmVsZXZlbCBxdWFzaS1OQiBtb2RlbC4KCmBgYHtyfQpmaXQgPC0gZ2xtUUxGaXQoZGdlLCBkZXNpZ24pCmZ0ZXN0IDwtIGdsbVFMRlRlc3QoZml0LCBjb2VmID0gInRyZWF0bWVudERleGFtZXRoYXNvbmUiKQp0dEFsbCA8LSB0b3BUYWdzKGZ0ZXN0LCBuID0gbnJvdyhkZ2UpKSAjIGFsbCBnZW5lcwpoaXN0KHR0QWxsJHRhYmxlJFBWYWx1ZSkKdHQgPC0gdG9wVGFncyhmdGVzdCwgbiA9IG5yb3coZGdlKSwgcC52YWx1ZSA9IDAuMDUpICMgZ2VuZXMgd2l0aCBhZGoucDwwLjA1CmhlYWQodHQpCm5yb3codHQpCmBgYAoKCiMjIFBsb3RzCgpXZSBmaXJzdCBtYWtlIGEgdm9sY2Fub3Bsb3QgYW5kIGFuIE1BIHBsb3QuCgpgYGB7cn0KbGlicmFyeShnZ3Bsb3QyKQp2b2xjYW5vIDwtICBnZ3Bsb3QodHRBbGwkdGFibGUsYWVzKHg9bG9nRkMseT0tbG9nMTAoUFZhbHVlKSxjb2xvcj1GRFI8MC4wNSkpICsgZ2VvbV9wb2ludCgpICsgc2NhbGVfY29sb3JfbWFudWFsKHZhbHVlcz1jKCJibGFjayIsInJlZCIpKQp2b2xjYW5vCnBsb3RTbWVhcihmdGVzdCwgZGUudGFncyA9IHJvdy5uYW1lcyh0dCR0YWJsZSkpCmhlYXRtYXAoY3BtKGRnZSxsb2c9VFJVRSlbcm93bmFtZXModHQkdGFibGUpWzE6MzBdLF0pCmBgYAoKIyBUcmFuc2NyaXB0IGxldmVsIGFuYWx5c2lzIAoKIyMgU2V0dXAgY291bnQgdGFibGUKCmBgYHtyfQpkdGUgPC0gREdFTGlzdChhc3NheXMoc3QpJGNvdW50cykKZGVzaWduIDwtIG1vZGVsLm1hdHJpeCh+dHJlYXRtZW50K2NlbGxMaW5lLGRhdGE9Y29sRGF0YShzdCkpCmtlZXAgPC0gZmlsdGVyQnlFeHByKGR0ZSwgZGVzaWduKQpkdGUgPC0gZHRlW2tlZXAsICxrZWVwLmxpYi5zaXplcz1GQUxTRV0KZHRlIDwtIGNhbGNOb3JtRmFjdG9ycyhkdGUpCmR0ZSRzYW1wbGVzCmBgYAoKIyMgRGF0YSBFeHBsb3JhdGlvbgoKYGBge3J9CmNvbG5hbWVzKGR0ZSkgPC0gcGFzdGUwKHN1YnN0cihwZGF0YSRjZWxsTGluZSwxLDMpLCJfIixzdWJzdHIocGRhdGEkdHJlYXRtZW50LDEsMykpCnBsb3RNRFMoZHRlLCB0b3AgPSA1MDAsY29sPWFzLmRvdWJsZShjb2xEYXRhKHN0KSRjZWxsTGluZSkpCmBgYAoKIyMgTW9kZWwKCiMjIyBFc3RpbWF0ZSB0cmFuc2NyaXB0IGxldmVsIGRpc3BlcnNpb24KCmBgYHtyfQpkdGUgPC0gZXN0aW1hdGVEaXNwKGR0ZSwgZGVzaWduKQpwbG90QkNWKGR0ZSkKYGBgCgpOb3RlIHRoYXQgd2Ugb2JzZXJ2ZSBwcm9ibGVtcyB3aXRoIHJlc3BlY3QgdG8gdGhlIGRpc3BlcnNpb24gZXN0aW1hdGlvbiEgCgpUaGlzIGlzIHByb2JhYmx5IGR1ZSB0byBvdmVyIGV4Y2VzcyB6ZXJvJ3Mgd2l0aCByZXNwZWN0IHRvIHRoZSBOQiBkaXN0cmlidXRpb24uCgpXZSBoYXZlIHNlZW4gc2ltaWxhciBwYXR0ZXJucyBpbiB0aGUgY291bnRzIG9mIHBsYXRlIGJhc2VkIHNpbmdsZSBjZWxsIFJOQS1zZXEgZGF0YSB0aGF0IGFyZSBub3QgdXNpbmcgVU1JJ3MgKHVuaXF1ZSBtb2xlY3VsYXIgaWRlbnRpZmllcnMpLiAKCiMjIyBGaXQgdGhlIHRyYW5zY3JpcHQgbGV2ZWwgcXVhc2ktTkIgbW9kZWwuCgpgYGB7cn0KZml0dCA8LSBnbG1RTEZpdChkdGUsIGRlc2lnbikKZnRlc3R0IDwtIGdsbVFMRlRlc3QoZml0dCwgY29lZiA9ICJ0cmVhdG1lbnREZXhhbWV0aGFzb25lIikKdHR0QWxsIDwtIHRvcFRhZ3MoZnRlc3R0LCBuID0gbnJvdyhkZ2UpKSAjIGFsbCBnZW5lcwpoaXN0KHR0dEFsbCR0YWJsZSRQVmFsdWUpCnR0dCA8LSB0b3BUYWdzKGZ0ZXN0dCwgbiA9IG5yb3coZGdlKSwgcC52YWx1ZSA9IDAuMDUpICMgZ2VuZXMgd2l0aCBhZGoucDwwLjA1CmhlYWQodHR0KQpucm93KHR0dCkKYGBgCgojIyBQbG90cwoKV2UgZmlyc3QgbWFrZSBhIHZvbGNhbm9wbG90IGFuZCBhbiBNQSBwbG90LgoKYGBge3J9CmxpYnJhcnkoZ2dwbG90MikKdm9sY2FubyA8LSAgZ2dwbG90KHR0dEFsbCR0YWJsZSxhZXMoeD1sb2dGQyx5PS1sb2cxMChQVmFsdWUpLGNvbG9yPUZEUjwwLjA1KSkgKyBnZW9tX3BvaW50KCkgKyBzY2FsZV9jb2xvcl9tYW51YWwodmFsdWVzPWMoImJsYWNrIiwicmVkIikpCnZvbGNhbm8KcGxvdFNtZWFyKGZ0ZXN0dCwgZGUudGFncyA9IHJvdy5uYW1lcyh0dCR0YWJsZSkpCmhlYXRtYXAoY3BtKGR0ZSxsb2c9VFJVRSlbcm93bmFtZXModHR0JHRhYmxlKVsxOjMwXSxdKQpgYGAK</div>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("airway_salmon_edgeR.Rmd");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
