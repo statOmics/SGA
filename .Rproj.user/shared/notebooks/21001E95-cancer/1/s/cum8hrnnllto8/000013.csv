@@ -1,0 +1,7 @@
+"0","pe[[""peptideNorm""]] %>% "
+"0","  assay %>%"
+"0","  as.data.frame() %>%"
+"0","  gather(sample, intensity) %>% "
+"0","  mutate(condition = colData(pe)[sample,""condition""]) %>%"
+"0","  ggplot(aes(x = intensity,group = sample,color = condition)) + "
+"0","    geom_density()"

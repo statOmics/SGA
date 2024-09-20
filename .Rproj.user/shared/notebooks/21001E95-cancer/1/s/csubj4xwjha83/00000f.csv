@@ -1,0 +1,4 @@
+"0","pe <- normalize(pe, "
+"0","                i = ""peptideLog"", "
+"0","                name = ""peptideNorm"", "
+"0","                method = ""center.median"")"

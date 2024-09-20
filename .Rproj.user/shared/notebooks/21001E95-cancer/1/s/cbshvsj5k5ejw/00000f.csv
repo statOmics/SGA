@@ -1,0 +1,4 @@
+"0","pe <- filterFeatures(pe, ~ Proteins %in% smallestUniqueGroups(rowData(pe[[""peptideLog""]])$Proteins))"
+"2","'Proteins' found in 2 out of 2 assay(s)
+
+"

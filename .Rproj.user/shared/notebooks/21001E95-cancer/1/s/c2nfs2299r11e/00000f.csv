@@ -1,0 +1,10 @@
+"0","pe <- aggregateFeatures(pe,"
+"0","  i = ""peptideNorm"","
+"0","  fcol = ""Proteins"","
+"0","  na.rm = TRUE,"
+"0","  name = ""protein"", fun = matrixStats::colMedians)"
+"2","Your quantitative and row data contain missing
+values. Please read the relevant section(s) in the
+aggregateFeatures manual page regarding the
+effects of missing values on data aggregation.
+"

@@ -1,0 +1,128 @@
+---
+title: "Tutorial: Evaluate pyrococcus searches using Swissprot and peptide shaker"
+author: 
+  - name: Lieven Clement
+    affiliation:
+    - Ghent University
+output: 
+    html_document:
+      code_download: true
+      theme: flatly
+      toc: true
+      toc_float: true
+      highlight: tango
+      number_sections: true
+linkcolor: blue
+urlcolor: blue
+citecolor: blue
+---
+
+# Load Libraries 
+
+```{r}
+library(TargetDecoy)
+library(RCurl)
+library(mzID)
+```
+
+# Download data in working directory
+
+```{r}
+download.file( 
+  url = "https://raw.githubusercontent.com/statOmics/PDA22GTPB/data/identification/pyroSwissprot.mzid",
+  destfile = "pyroSwissprot.mzid"
+  )
+```
+
+# Load Data in R
+
+```{r}
+path2File <- "pyroSwissprot.mzid"
+mzidSwissprot <- mzID(path2File)
+```
+
+# Launch the Shiny Gadget 
+
+Explore the results for search eninge scores to find correct names of search engine scores in the mzID.
+
+```{r eval=FALSE}
+evalTargetDecoys(mzidSwissprot)
+```
+
+# Evaluate target decoy assumptions 
+
+## Peptide Shaker
+
+```{r}
+evalTargetDecoys(
+  object = mzidSwissprot, 
+  decoy = "isdecoy", 
+  score = "peptideshaker psm score",
+  log10 = FALSE)
+```
+
+We observe that 
+
+- the histogram shows that Peptide Shaker gives a very good separation between good targets and bad targets. 
+
+- The shape of the decoy peptideshaker PSM scores distribution seems to be similar to that of bad target PSM scores.
+
+- The PP-plot shows that bad PSM hits are more likely to go to target sequences than to decoy sequences! The ratio of decoys on targets is not a good estimate of the expected fraction of bad target hits that are returned.
+
+
+
+## MSGF+
+
+
+```{r}
+evalTargetDecoys(
+  object = mzidSwissprot, 
+  decoy = "isdecoy", 
+  score = "ms-gf:specevalue",
+  log10 = TRUE)
+```
+
+- The plots show that
+the distribution of the MSGF+ PSM scores are nicely bimodal. 
+
+- The separation between good target PSM scores and bad target PSM scores is less pronounced than for peptide shaker. So it is beneficial to include  other engines with peptideshaker. 
+
+- We do not see deviations from the target decoy assumptions. 
+
+## Omssa
+
+```{r}
+evalTargetDecoys(
+  object = mzidSwissprot, 
+  decoy = "isdecoy", 
+  score = "omssa:evalue",
+  log10 = TRUE)
+```
+
+
+- The separation between good target PSM scores and bad target PSM scores is less pronounced for omssa than for peptide shaker. So it is beneficial to include other engines with peptideshaker. 
+
+- We do not see deviations from the target decoy assumptions. 
+
+## X!tandem
+
+```{r}
+evalTargetDecoys(
+  object = mzidSwissprot, 
+  decoy = "isdecoy", 
+  score = "x!tandem:expect",
+  log10 = TRUE)
+```
+
+
+- The total number of decoys does not seem to be a good estimate for the total number of bad target PSM hits. 
+
+- Indeed, it seems to be more likely that a bad PSM match is matching to a target than a decoy sequence! 
+
+- It is recommended to remove X!tandem as a candidate search engine in peptide shaker in the search against Swissprot. 
+
+
+The reason why the search with X!Tandem is problematic is due to the two pass search strategy that is performed by X!tandem. In the first phase a rapid search is performed, which does not allow for modifications nor for miss cleavages. In a second phase, a new search is conducted solely against the identified peptides in the first phase, but now by using a more complex strategy that allows for missed cleavages and post translational modifications. Performing the refined search against the smaller population of candidate peptides from the first phase greatly reduces the computational complexity, however, it comes at the cost that the TDA assumptions are violated. Indeed, in the second pass low scoring PSMs can switch to a modified PSM, which seems to be the case for many decoy hits from the first phase. Many of these switched to modified target PSMs, however, remain to have a relative low score and are likely to be bad target PSMs. The number of decoy matches is no longer representative for the number of bad target matches. This example shows that the use of a second pass strategy can be very detrimental for the FDR estimation using the TDA approach.
+- This is so problematic that combining X!tandem with other engines in peptide shaker results in a break down of the target decoy assumption for peptideshaker.
+
+

@@ -1,0 +1,35 @@
+---
+title: 1. Read mapping and count table. 
+author: "Lieven Clement"
+date: "[statOmics](https://statomics.github.io), Ghent University"
+output:
+    html_document:
+      theme: flatly     
+      code_download: false
+      toc: false
+      toc_float: false
+      number_sections: false
+bibliography: msqrob2.bib
+
+---
+
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
+
+### 1. C. Elegans 
+
+After fertilization but prior to the onset of zygotic transcription, the C. elegans zygote cleaves asymmetrically to create the anterior AB and posterior P1 blastomeres, each of which goes on to generate distinct cell lineages. To understand how patterns of RNA inheritance and abundance arise after this first asymmetric cell division, we pooled hand-dissected AB and P1 blastomeres and performed RNA-seq (Study [GSE59943](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE59943)).
+
+A file is provided with a detailed example on how to map the reads using the Hisat2 read mapper and to generate the count table with QuasR package: [elegans example](./elegansAlignmentCountTable.html)
+
+### 2. Airway example 
+
+The data used in this workflow comes from an RNA-seq experiment where airway smooth muscle cells were treated with dexamethasone, a synthetic glucocorticoid steroid with anti-inflammatory effects (Himes et al. 2014). Glucocorticoids are used, for example, by people with asthma to reduce inflammation of the airways. In the experiment, four human airway smooth muscle cell lines were treated with 1 micromolar dexamethasone for 18 hours. For each of the four cell lines, we have a treated and an untreated sample. For more description of the experiment see the article, PubMed entry [PMID: 24926665](https://pubmed.ncbi.nlm.nih.gov/24926665/), and for raw data see the GEO entry [GSE52778](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE52778).
+
+We will align a small subset of the reads that are stored on the [airwaySeqData.zip]( https://github.com/statOmics/SGA/archive/refs/heads/airwaySeqData.zip). 
+
+Once unzipped the subsetted fastQ files can be found in the fastQ folder. 
+
+1. Download the data
+2. Assess the quality of the reads
+3. Align the reads using Hisat2 via the wrappers in the QuasR package
+4. Construct the count table

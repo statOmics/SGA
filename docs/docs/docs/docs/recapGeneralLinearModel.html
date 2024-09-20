@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Lieven Clement" />
+
+
+<title>Recap general linear model</title>
+
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.10.4/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #204a87; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #8f5902; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #204a87; font-weight: bold; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SGA</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-chalkboard-teacher"></span>
+     
+    Lectures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">---- INTRODUCTION ----</li>
+    <li>
+      <a href="intro.html">1.1 Position</a>
+    </li>
+    <li>
+      <a href="recapGeneralLinearModel.html">1.2 Recap linear model</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-laptop"></span>
+     
+    tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">---- INTRODUCTION ----</li>
+    <li>
+      <a href="multipleRegression_KPNA2.html">1 Intro KPNA2</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Recap general linear model</h1>
+<h4 class="author">Lieven Clement</h4>
+<h4 class="date">statOmics, Ghent University (<a
+href="https://statomics.github.io"
+class="uri">https://statomics.github.io</a>)</h4>
+
+</div>
+
+
+<p><a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a></p>
+<p>This is part of the online course <a
+href="https://statomics.github.io/SGA/">Statistical Genomics 2022
+(SGA)</a></p>
+<div id="breast-cancer-example" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Breast cancer
+example</h1>
+<ul>
+<li>part of study <a href="https://doi.org/10.1093/jnci/djj052"
+class="uri">https://doi.org/10.1093/jnci/djj052</a>)</li>
+<li>Histologic grade in breast cancer clinically prognostic. Association
+of histologic grade on expression of KPNA2 gene that is known to be
+associated with poor BC prognosis.</li>
+<li>Population: all current and future breast cancer patients</li>
+</ul>
+<hr />
+<p><img src="figures/statGenomicsGent201718-1.jpeg" /></p>
+<hr />
+<p><img src="figures/statGenomicsGent201718-2.jpeg" /></p>
+<hr />
+<p><img src="figures/statGenomicsGent201718-3.jpeg" /></p>
+<hr />
+<p><img src="figures/statGenomicsGent201718-4.jpeg" /></p>
+<hr />
+<p><img src="figures/statGenomicsGent201718-5.jpeg" /></p>
+<hr />
+<p><img src="figures/statGenomicsGent201718-6.jpeg" /></p>
+</div>
+<div id="data-exploration" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Data Exploration</h1>
+<div id="import" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Import</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div>
+<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+## ✔ purrr     1.0.2     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>gene <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">&quot;https://raw.githubusercontent.com/statOmics/SGA21/master/data/kpna2.txt&quot;</span>,<span class="at">header=</span><span class="cn">TRUE</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">head</span>(gene)</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["grade"],"name":[1],"type":["int"],"align":["right"]},{"label":["node"],"name":[2],"type":["int"],"align":["right"]},{"label":["gene"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"3","2":"1","3":"367.8179","_rn_":"1"},{"1":"3","2":"1","3":"590.3576","_rn_":"2"},{"1":"1","2":"1","3":"346.6583","_rn_":"3"},{"1":"1","2":"1","3":"258.4455","_rn_":"4"},{"1":"1","2":"0","3":"153.8416","_rn_":"5"},{"1":"3","2":"0","3":"643.6799","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>We will transform the variable grade and node to a factor</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>gene<span class="sc">$</span>grade <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(gene<span class="sc">$</span>grade)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>gene<span class="sc">$</span>node <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(gene<span class="sc">$</span>node)</span></code></pre></div>
+</div>
+<div id="summary-statistics" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Summary
+statistics</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>geneSum <span class="ot">&lt;-</span> gene <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">group_by</span>(grade) <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean =</span> <span class="fu">mean</span>(gene),</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>            <span class="at">sd =</span> <span class="fu">sd</span>(gene),</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>            <span class="at">n=</span><span class="fu">length</span>(gene)</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>            ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">se =</span> sd<span class="sc">/</span><span class="fu">sqrt</span>(n))</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>geneSum</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["grade"],"name":[1],"type":["fct"],"align":["left"]},{"label":["mean"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["sd"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["n"],"name":[4],"type":["int"],"align":["right"]},{"label":["se"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"232.5003","3":"65.45975","4":"12","5":"18.89660"},{"1":"3","2":"561.0487","3":"143.56507","4":"12","5":"41.44367"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="visualisation" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Visualisation</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>gene <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>grade,<span class="at">y=</span>gene)) <span class="sc">+</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.shape=</span><span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="fu">geom_jitter</span>()</span></code></pre></div>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>We can also save the plots as objects for later use!</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> gene <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>grade,<span class="at">y=</span>gene)) <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.shape=</span><span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="fu">geom_jitter</span>()</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> gene <span class="sc">%&gt;%</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">sample=</span>gene)) <span class="sc">+</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  <span class="fu">geom_qq</span>() <span class="sc">+</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  <span class="fu">geom_qq_line</span>() <span class="sc">+</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>grade)</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>p1</span></code></pre></div>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>p2</span></code></pre></div>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+</div>
+<div id="research-questions" class="section level2" number="2.4">
+<h2><span class="header-section-number">2.4</span> Research
+questions</h2>
+<p>Researchers want to assess the association of the histological grade
+on KPNA2 gene expression</p>
+<p><img src="figures/statGenomicsGent201718-6.jpeg" /></p>
+<hr />
+</div>
+<div id="estimation-of-effect-size-and-standard-error"
+class="section level2" number="2.5">
+<h2><span class="header-section-number">2.5</span> Estimation of effect
+size and standard error</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>effectSize <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="at">delta =</span> geneSum<span class="sc">$</span>mean[<span class="dv">2</span>]<span class="sc">-</span> geneSum<span class="sc">$</span>mean[<span class="dv">1</span>],</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">seDelta =</span> geneSum <span class="sc">%&gt;%</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>    <span class="fu">pull</span>(se) <span class="sc">%&gt;%</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>    .<span class="sc">^</span><span class="dv">2</span> <span class="sc">%&gt;%</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>    sum <span class="sc">%&gt;%</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>    sqrt</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>  )</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>effectSize</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["delta"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["seDelta"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"328.5485","2":"45.54842"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<div id="statistical-inference" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Statistical
+Inference</h1>
+<ul>
+<li>Researchers want to assess the association of histological grade on
+KPNA2 gene expression</li>
+<li>Inference?</li>
+</ul>
+<hr />
+<p><img src="figures/statGenomicsGent201718-7.jpeg" /></p>
+<hr />
+<ul>
+<li>Researchers want to assess the association of histological grade on
+KPNA2 gene expression</li>
+<li>Inference?</li>
+<li>testing + CI $ $ Assumptions</li>
+</ul>
+<hr />
+<ul>
+<li><p>In general we start from <strong>alternative hypothese</strong>
+<span class="math inline">\(H_A\)</span>: we want to show an
+association</p></li>
+<li><p>Gene expression of grade 1 and grade 3 patients is on average
+different</p></li>
+<li><p>But, we will assess it by falsifying the opposite:</p></li>
+<li><p>The average KPNA2 gene expression of grade 1 and grade 3 patients
+is equal</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>How likely is it to observe an equal or more extreme association
+than the one observed in the sample when the null hypothesis is
+true?</p></li>
+<li><p>When we make assumptions about the distribution of our test
+statistic we can quantify this probability:
+<strong>p-value</strong>.</p></li>
+<li><p>If the p-value is below a significance threshold <span
+class="math inline">\(\alpha\)</span> we reject the null
+hypothesis</p></li>
+</ul>
+<p><em>We control the probability on a false positive result at the
+<span class="math inline">\(\alpha\)</span>-level (type I
+error)</em></p>
+<ul>
+<li>The p-value will only be calculated correctly if the underlying
+assumptions hold!</li>
+</ul>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span></code></pre></div>
+<pre><code>## 
+## Attaching package: &#39;gridExtra&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     combine</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>p1</span></code></pre></div>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>p2</span></code></pre></div>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">t.test</span>(gene<span class="sc">~</span>grade,<span class="at">data=</span>gene)</span></code></pre></div>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  gene by grade
+## t = -7.2132, df = 15.384, p-value = 2.598e-06
+## alternative hypothesis: true difference in means between group 1 and group 3 is not equal to 0
+## 95 percent confidence interval:
+##  -425.4218 -231.6751
+## sample estimates:
+## mean in group 1 mean in group 3 
+##        232.5003        561.0487</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>effectSize <span class="ot">&lt;-</span> effectSize <span class="sc">%&gt;%</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">t.stat=</span>delta<span class="sc">/</span>seDelta) <span class="sc">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">p.value=</span> <span class="fu">pt</span>(<span class="sc">-</span><span class="fu">abs</span>(t.stat),<span class="fl">21.352</span>)<span class="sc">*</span><span class="dv">2</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>effectSize</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["delta"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["seDelta"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["t.stat"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["p.value"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"328.5485","2":"45.54842","3":"7.213168","4":"3.762894e-07"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<ul>
+<li>Intensities are often not normally distributed and have a mean
+variance relation</li>
+<li>Commonly log2-transformed</li>
+<li>Differences on log scale:</li>
+</ul>
+<p><span class="math display">\[
+\log_2(B) - \log_2(A) = \log_2 \frac{B}{A} = \log_2 FC_{\frac{B}{A}}
+\]</span></p>
+<p><img src="figures/statGenomicsGent201718-8.jpeg" /></p>
+<hr />
+<div id="log-transformation" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Log
+transformation</h2>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>gene <span class="ot">&lt;-</span> gene <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lgene =</span> <span class="fu">log2</span>(gene))</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> gene <span class="sc">%&gt;%</span></span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>grade,<span class="at">y=</span>lgene)) <span class="sc">+</span></span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.shape=</span><span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a>  <span class="fu">geom_jitter</span>()</span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> gene <span class="sc">%&gt;%</span></span>
+<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">sample=</span>lgene)) <span class="sc">+</span></span>
+<span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a>  <span class="fu">geom_qq</span>() <span class="sc">+</span></span>
+<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a>  <span class="fu">geom_qq_line</span>() <span class="sc">+</span></span>
+<span id="cb18-13"><a href="#cb18-13" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>grade)</span>
+<span id="cb18-14"><a href="#cb18-14" tabindex="-1"></a></span>
+<span id="cb18-15"><a href="#cb18-15" tabindex="-1"></a>p1</span></code></pre></div>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>p2</span></code></pre></div>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-9-2.png" width="672" /></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>logtest <span class="ot">&lt;-</span> <span class="fu">t.test</span>(lgene<span class="sc">~</span>grade,<span class="at">data=</span>gene,<span class="at">var.equal=</span><span class="cn">TRUE</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>logtest</span></code></pre></div>
+<pre><code>## 
+##  Two Sample t-test
+## 
+## data:  lgene by grade
+## t = -8.0455, df = 22, p-value = 5.372e-08
+## alternative hypothesis: true difference in means between group 1 and group 3 is not equal to 0
+## 95 percent confidence interval:
+##  -1.610148 -0.950178
+## sample estimates:
+## mean in group 1 mean in group 3 
+##        7.808478        9.088641</code></pre>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a>log2FC <span class="ot">&lt;-</span> logtest<span class="sc">$</span>estimate[<span class="dv">2</span>]<span class="sc">-</span>logtest<span class="sc">$</span>estimate[<span class="dv">1</span>]</span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>log2FC</span></code></pre></div>
+<pre><code>## mean in group 3 
+##        1.280163</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="fu">names</span>(log2FC) <span class="ot">&lt;-</span> <span class="st">&quot;g3-g1&quot;</span></span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a><span class="dv">2</span><span class="sc">^</span>log2FC</span></code></pre></div>
+<pre><code>##    g3-g1 
+## 2.428664</code></pre>
+</div>
+<div id="conclusion" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Conclusion</h2>
+<p>There is a extremely significant association of the histological
+grade on the gene expression in tumor tissue. On average, the gene
+expression for the grade 3 patients is 2.43 times higher than the gene
+expression in grade 1 patients (95% CI [1.93, 3.05], <span
+class="math inline">\(p&lt;&lt;0.001\)</span>).</p>
+<p><img src="figures/statGenomicsGent201718-10.jpeg" /></p>
+<hr />
+<p><img src="figures/statGenomicsGent201718-11.jpeg" /></p>
+<hr />
+<p>The patients also differ in the their lymph node status. Hence, we
+have a two factorial design: grade x lymph node status!!!</p>
+<p>Solution??</p>
+<p><img src="figures/statGenomicsGent201718-12.jpeg" /></p>
+<hr />
+</div>
+</div>
+<div id="general-linear-model" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> General Linear
+Model</h1>
+<p>How can we integrate multiple factors and continuous covariates in
+linear model.</p>
+<p><span class="math display">\[
+y_i= \beta_0 + \beta_1 x_{i,1} + \beta_2 x_{i,2} +
+\beta_{12}x_{i,1}x_{i,2}+\epsilon_i,
+\]</span> with</p>
+<ul>
+<li><span class="math inline">\(x_{i,1}\)</span> a dummy variable for
+histological grade: <span class="math inline">\(x_{i,1}=\begin{cases}
+0&amp; \text{grade 1}\\ 1&amp; \text{grade 3} \end{cases}\)</span></li>
+<li><span class="math inline">\(x_{i,2}\)</span> a dummy variable for :
+<span class="math inline">\(x_{i,2}=\begin{cases} 0&amp; \text{lymph
+nodes were not removed}\\ 1&amp; \text{lymph nodes were removed}
+\end{cases}\)</span></li>
+<li><span class="math inline">\(\epsilon_i\)</span>?</li>
+</ul>
+<hr />
+<div id="implementation-in-r" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Implementation in
+R</h2>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(gene<span class="sc">~</span>grade<span class="sc">*</span>node,<span class="at">data=</span>gene)</span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a><span class="fu">summary</span>(lm1)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = gene ~ grade * node, data = gene)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -201.748  -53.294   -6.308   46.216  277.601 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)    180.51      44.37   4.068   0.0006 ***
+## grade3         401.33      62.75   6.396 3.07e-06 ***
+## node1          103.98      62.75   1.657   0.1131    
+## grade3:node1  -145.57      88.74  -1.640   0.1166    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 108.7 on 20 degrees of freedom
+## Multiple R-squared:  0.7437, Adjusted R-squared:  0.7052 
+## F-statistic: 19.34 on 3 and 20 DF,  p-value: 3.971e-06</code></pre>
+<hr />
+</div>
+<div id="assumptions" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Assumptions</h2>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="fu">plot</span>(lm1)</span></code></pre></div>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-11-1.png" width="672" /><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-11-2.png" width="672" /><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-11-3.png" width="672" /><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-11-4.png" width="672" /></p>
+<hr />
+</div>
+<div id="breast-cancer-example-1" class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span> Breast cancer
+example</h2>
+<ul>
+<li>Paper: <a href="https://doi.org/10.1093/jnci/djj052"
+class="uri">https://doi.org/10.1093/jnci/djj052</a></li>
+<li>Histologic grade in breast cancer provides clinically important
+prognostic information. Two factors have to be concidered: Histologic
+grade (grade 1 and grade 3) and lymph node status (0 vs 1). The
+researchers assessed gene expression of the KPNA2 gene a protein-coding
+gene associated with breast cancer and are mainly interested in the
+association of histological grade. Note, that the gene variable consists
+of background corrected normalized intensities obtained with a
+microarray platform. Upon log-transformation, they are known to be a
+good proxy for the <span class="math inline">\(\log\)</span> transformed
+concentration of gene expression product of the KPNA2 gene.</li>
+<li>Research questions and translate them towards model parameters
+(contrasts)?</li>
+<li>Make an R markdown file to answer the research questions</li>
+</ul>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="fu">library</span>(ExploreModelMatrix)</span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>explMx <span class="ot">&lt;-</span> <span class="fu">VisualizeDesign</span>(gene,<span class="at">designFormula =</span> <span class="sc">~</span>grade<span class="sc">*</span>node)</span>
+<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a>explMx<span class="sc">$</span>plotlist</span></code></pre></div>
+<pre><code>## [[1]]</code></pre>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p>You can also explore the model matrix interactively:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="fu">ExploreModelMatrix</span>(gene,<span class="at">designFormula =</span> <span class="sc">~</span>grade<span class="sc">*</span>node)</span></code></pre></div>
+<hr />
+</div>
+</div>
+<div id="linear-regression-in-matrix-form" class="section level1"
+number="5">
+<h1><span class="header-section-number">5</span> Linear regression in
+matrix form</h1>
+<div id="scalar-form" class="section level2" number="5.1">
+<h2><span class="header-section-number">5.1</span> Scalar form</h2>
+<ul>
+<li>Consider a vector of predictors <span
+class="math inline">\(\mathbf{x}=(x_1,\ldots,x_p)^T\)</span> and</li>
+<li>a real-valued response <span class="math inline">\(Y\)</span></li>
+<li>then the linear regression model can be written as <span
+class="math display">\[
+Y=f(\mathbf{x}) +\epsilon=\beta_0+\sum\limits_{j=1}^p x_j\beta_j +
+\epsilon
+\]</span> with i.i.d. <span class="math inline">\(\epsilon\sim
+N(0,\sigma^2)\)</span></li>
+</ul>
+</div>
+<div id="matrix-form" class="section level2" number="5.2">
+<h2><span class="header-section-number">5.2</span> Matrix form</h2>
+<ul>
+<li><span class="math inline">\(n\)</span> observations <span
+class="math inline">\((\mathbf{x}_1,y_1) \ldots
+(\mathbf{x}_n,y_n)\)</span></li>
+<li>Regression in matrix notation <span
+class="math display">\[\mathbf{Y}=\mathbf{X\beta} +
+\mathbf{\epsilon}\]</span> with <span
+class="math inline">\(\mathbf{Y}=\left[\begin{array}{c}y_1\\
+\vdots\\y_n\end{array}\right]\)</span>, <span
+class="math inline">\(\mathbf{X}=\left[\begin{array}{cccc}
+1&amp;x_{11}&amp;\ldots&amp;x_{1p}\\ \vdots&amp;\vdots&amp;&amp;\vdots\\
+1&amp;x_{n1}&amp;\ldots&amp;x_{np} \end{array}\right]\)</span>, <span
+class="math inline">\(\mathbf{\beta}=\left[\begin{array}{c}\beta_0\\
+\vdots\\ \beta_p\end{array}\right]\)</span> and <span
+class="math inline">\(\mathbf{\epsilon}=\left[\begin{array}{c}
+\epsilon_1 \\ \vdots \\ \epsilon_n\end{array}\right]\)</span></li>
+</ul>
+</div>
+<div id="least-squares-ls" class="section level2" number="5.3">
+<h2><span class="header-section-number">5.3</span> Least Squares
+(LS)</h2>
+<ul>
+<li>Minimize the residual sum of squares <span
+class="math display">\[\begin{eqnarray*}
+RSS(\mathbf{\beta})&amp;=&amp;\sum\limits_{i=1}^n e^2_i\\
+&amp;=&amp;\sum\limits_{i=1}^n \left(y_i-\beta_0-\sum\limits_{j=1}^p
+x_{ij}\beta_j\right)^2
+\end{eqnarray*}\]</span></li>
+<li>or in matrix notation <span class="math display">\[\begin{eqnarray*}
+RSS(\mathbf{\beta})&amp;=&amp;(\mathbf{Y}-\mathbf{X\beta})^T(\mathbf{Y}-\mathbf{X\beta})\\
+&amp;=&amp;\Vert \mathbf{Y}-\mathbf{X\beta}\Vert^2_2
+\end{eqnarray*}\]</span> with the <span
+class="math inline">\(L_2\)</span>-norm of a <span
+class="math inline">\(p\)</span>-dim. vector <span
+class="math inline">\(v\)</span> <span class="math inline">\(\Vert
+\mathbf{v} \Vert=\sqrt{v_1^2+\ldots+v_p^2}\)</span> <span
+class="math inline">\(\rightarrow\)</span> <span
+class="math inline">\(\hat{\mathbf{\beta}}=\text{argmin}_\beta \Vert
+\mathbf{Y}-\mathbf{X\beta}\Vert^2_2\)</span></li>
+</ul>
+<hr />
+<div id="minimize-rss" class="section level3" number="5.3.1">
+<h3><span class="header-section-number">5.3.1</span> Minimize RSS</h3>
+<p><span class="math display">\[
+\begin{array}{ccc}
+\frac{\partial RSS}{\partial \mathbf{\beta}}&amp;=&amp;\mathbf{0}\\\\
+\frac{(\mathbf{Y}-\mathbf{X\beta})^T(\mathbf{Y}-\mathbf{X\beta})}{\partial
+\mathbf{\beta}}&amp;=&amp;\mathbf{0}\\\\
+-2\mathbf{X}^T(\mathbf{Y}-\mathbf{X\beta})&amp;=&amp;\mathbf{0}\\\\
+\mathbf{X}^T\mathbf{X\beta}&amp;=&amp;\mathbf{X}^T\mathbf{Y}\\\\
+\hat{\mathbf{\beta}}&amp;=&amp;(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}
+\end{array}
+\]</span></p>
+<hr />
+</div>
+<div id="geometric-interpretation" class="section level3"
+number="5.3.2">
+<h3><span class="header-section-number">5.3.2</span> Geometric
+Interpretation</h3>
+<div id="toy-dataset" class="section level4" number="5.3.2.1">
+<h4><span class="header-section-number">5.3.2.1</span> Toy dataset</h4>
+<p>We will illustrate this on a toy dataset</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>,<span class="at">y=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">2</span>))</span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a>data</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["x"],"name":[1],"type":["int"],"align":["right"]},{"label":["y"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"1"},{"1":"2","2":"2"},{"1":"3","2":"2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="matrix-form-for-toy-dataset" class="section level4"
+number="5.3.2.2">
+<h4><span class="header-section-number">5.3.2.2</span> Matrix form for
+toy dataset</h4>
+<p>We can also write this in matrix form</p>
+<p><span class="math display">\[
+\mathbf{Y} = \mathbf{X}\boldsymbol{\beta}+\boldsymbol{\epsilon}
+\]</span></p>
+<p>with</p>
+<p><span class="math display">\[
+\mathbf{Y}=\left[
+\begin{array}{c}
+1\\
+2\\
+2\\
+\end{array}\right],
+\quad
+\mathbf{X}= \left[
+\begin{array}{cc}
+1&amp;1\\
+1&amp;2\\
+1&amp;3\\
+\end{array}
+\right],
+\quad \boldsymbol{\beta} = \left[
+\begin{array}{c}
+\beta_0\\
+\beta_1\\
+\end{array}
+\right]
+\quad
+\text{and}
+\quad
+\boldsymbol{\epsilon}=
+\left[
+\begin{array}{c}
+\epsilon_1\\
+\epsilon_2\\
+\epsilon_3
+\end{array}
+\right]
+\]</span></p>
+</div>
+<div id="classical-interpretation" class="section level4"
+number="5.3.2.3">
+<h4><span class="header-section-number">5.3.2.3</span> Classical
+interpretation</h4>
+<p>Model fit and predictions based on the toy dataset</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y<span class="sc">~</span>x,data)</span>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>data<span class="sc">$</span>yhat <span class="ot">&lt;-</span> lm1<span class="sc">$</span>fitted</span>
+<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a>data <span class="sc">%&gt;%</span></span>
+<span id="cb33-5"><a href="#cb33-5" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(x,y)) <span class="sc">+</span></span>
+<span id="cb33-6"><a href="#cb33-6" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb33-7"><a href="#cb33-7" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>,<span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb33-8"><a href="#cb33-8" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>,<span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb33-9"><a href="#cb33-9" tabindex="-1"></a>  <span class="fu">stat_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>, <span class="at">fullrange =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb33-10"><a href="#cb33-10" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y =</span>yhat), <span class="at">pch =</span> <span class="dv">2</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
+<span id="cb33-11"><a href="#cb33-11" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="at">data =</span> data, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">xend =</span> x, <span class="at">y =</span> y, <span class="at">yend =</span> yhat), <span class="at">lty =</span> <span class="dv">2</span> )</span></code></pre></div>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<pre><code>## Warning in max(ids, na.rm = TRUE): no non-missing arguments to max; returning
+## -Inf</code></pre>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+</div>
+</div>
+<div id="projection" class="section level3" number="5.3.3">
+<h3><span class="header-section-number">5.3.3</span> Projection</h3>
+<p>There is also another picture to regression:</p>
+<ul>
+<li><p>Instead of plotting each observation <span
+class="math inline">\(i= 1 \ldots n\)</span> as a data-point in <span
+class="math inline">\(\mathbb{R}^p\)</span> with dimensions <span
+class="math inline">\(1 \ldots p\)</span> for every variable/feature
+that is recorded for each observation</p></li>
+<li><p>We can also plot <span class="math inline">\(\mathbf{Y}\)</span>,
+<span class="math inline">\(\hat{\mathbf{Y}}\)</span> and each column of
+<span class="math inline">\(\mathbf{X}\)</span>: <span
+class="math inline">\(\mathbf{X}_j\)</span> with <span
+class="math inline">\(j=1 \ldots p\)</span> as a vector in <span
+class="math inline">\(\mathbb{R}^n\)</span> with dimensions <span
+class="math inline">\(1 \ldots n\)</span> for every
+observation.</p></li>
+<li><p>In this representation linear regression can be interpreted as a
+projection of the vector <span class="math inline">\(\mathbf{Y}\)</span>
+onto the subspace of <span class="math inline">\(\mathbb{R}^n\)</span>
+that is spanned by the vectors for the predictors <span
+class="math inline">\(\mathbf{X}_1 \ldots
+\mathbf{X}_p\)</span>.</p></li>
+<li><p>The space <span class="math inline">\(\mathbf{X}_1 \ldots
+\mathbf{X}_p\)</span> is also referred to as the column space of <span
+class="math inline">\(\mathbf{X}\)</span>, the space that consists of
+all linear combinations of the vectors of the predictors or columns
+<span class="math inline">\(\mathbf{X}_1 \ldots
+\mathbf{X}_p\)</span>.</p></li>
+</ul>
+<div id="intermezzo-projection-of-vector-on-x-and-y-axis"
+class="section level4" number="5.3.3.1">
+<h4><span class="header-section-number">5.3.3.1</span> Intermezzo:
+Projection of vector on X and Y axis</h4>
+<p><span class="math display">\[
+\mathbf{e}=\left[\begin{array}{c} e_1\\e_2\end{array}\right],
+\mathbf{u}_1 =  \left[\begin{array}{c} 1\\0\end{array}\right],
+\mathbf{u}_2 =  \left[\begin{array}{c} 0\\1\end{array}\right]
+\]</span></p>
+<pre><code>## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+## ℹ Please use `linewidth` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.</code></pre>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<ol style="list-style-type: decimal">
+<li>Projection of error on x-axis</li>
+</ol>
+<p><span class="math display">\[\begin{eqnarray*}
+\mathbf{u}_1^T \mathbf{e} &amp;=&amp; \Vert \mathbf{u}_1\Vert_2  \Vert
+\mathbf{e}_1\Vert_2 \cos &lt;\mathbf{u}_1,\mathbf{e}_1&gt;\\
+&amp;=&amp;\left[\begin{array}{cc} 1&amp;0\end{array}\right]
+\left[\begin{array}{c} e_1\\e_2\end{array}\right]\\ &amp;=&amp; 1\times
+e_1 + 0 \times e_2 \\
+&amp;=&amp; e_1\\
+\end{eqnarray*}\]</span></p>
+<ol start="2" style="list-style-type: decimal">
+<li>Projection of error on y-axis</li>
+</ol>
+<p><span class="math display">\[\begin{eqnarray*}
+\mathbf{u}_2^T \mathbf{e} &amp;=&amp; \left[\begin{array}{cc}
+1&amp;0\end{array}\right] \left[\begin{array}{c}
+e_1\\e_2\end{array}\right]\\ &amp;=&amp; 0\times e_1 + 1 \times e_2 \\
+&amp;=&amp; e_2
+\end{eqnarray*}\]</span></p>
+<ol start="3" style="list-style-type: decimal">
+<li>Projection of error on itself</li>
+</ol>
+<p><span class="math display">\[\begin{eqnarray*}
+\mathbf{e}^T \mathbf{e} &amp;=&amp;\left[\begin{array}{cc}
+e_1&amp;e_2\end{array}\right] \left[\begin{array}{c}
+e_1\\e_2\end{array}\right]\\
+&amp;=&amp;e_1^2+e_2^2\\
+&amp;=&amp;\Vert e \Vert^2_2 \rightarrow \text{ Pythagorean theorem}
+\end{eqnarray*}\]</span></p>
+<hr />
+</div>
+<div id="interpretation-of-least-squares-as-a-projection"
+class="section level4" number="5.3.3.2">
+<h4><span class="header-section-number">5.3.3.2</span> Interpretation of
+least squares as a projection</h4>
+<p>Fitted values:</p>
+<p><span class="math display">\[
+\begin{array}{lcl}
+\hat{\mathbf{Y}} &amp;=&amp; \mathbf{X}\hat{\boldsymbol{\beta}}\\
+&amp;=&amp; \mathbf{X}
+(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}\\
+&amp;=&amp; \mathbf{HY}
+\end{array}
+\]</span> with <span class="math inline">\(\mathbf{H}\)</span> the
+projection matrix also referred to as the hat matrix.</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>x,data)</span>
+<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a>X</span></code></pre></div>
+<pre><code>##   (Intercept) x
+## 1           1 1
+## 2           1 2
+## 3           1 3
+## attr(,&quot;assign&quot;)
+## [1] 0 1</code></pre>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a>XtX <span class="ot">&lt;-</span> <span class="fu">t</span>(X)<span class="sc">%*%</span>X</span>
+<span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a>XtX</span></code></pre></div>
+<pre><code>##             (Intercept)  x
+## (Intercept)           3  6
+## x                     6 14</code></pre>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a>XtXinv <span class="ot">&lt;-</span> <span class="fu">solve</span>(<span class="fu">t</span>(X)<span class="sc">%*%</span>X)</span>
+<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a>XtXinv</span></code></pre></div>
+<pre><code>##             (Intercept)    x
+## (Intercept)    2.333333 -1.0
+## x             -1.000000  0.5</code></pre>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a>H <span class="ot">&lt;-</span> X <span class="sc">%*%</span> XtXinv <span class="sc">%*%</span> <span class="fu">t</span>(X)</span>
+<span id="cb43-2"><a href="#cb43-2" tabindex="-1"></a>H</span></code></pre></div>
+<pre><code>##            1         2          3
+## 1  0.8333333 0.3333333 -0.1666667
+## 2  0.3333333 0.3333333  0.3333333
+## 3 -0.1666667 0.3333333  0.8333333</code></pre>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a>Y <span class="ot">&lt;-</span> data<span class="sc">$</span>y</span>
+<span id="cb45-2"><a href="#cb45-2" tabindex="-1"></a>Yhat <span class="ot">&lt;-</span> H<span class="sc">%*%</span>Y</span>
+<span id="cb45-3"><a href="#cb45-3" tabindex="-1"></a>Yhat</span></code></pre></div>
+<pre><code>##       [,1]
+## 1 1.166667
+## 2 1.666667
+## 3 2.166667</code></pre>
+<ul>
+<li><p>We can also interpret the fit as the projection of the <span
+class="math inline">\(n\times 1\)</span> vector <span
+class="math inline">\(\mathbf{Y}\)</span> on the column space of the
+matrix <span class="math inline">\(\mathbf{X}\)</span>.</p></li>
+<li><p>So each column in <span class="math inline">\(\mathbf{X}\)</span>
+is also an <span class="math inline">\(n\times 1\)</span>
+vector.</p></li>
+<li><p>For the toy example n=3 and p=2. The other picture to linear
+regression is to consider <span class="math inline">\(X_0\)</span>,
+<span class="math inline">\(X_1\)</span> and <span
+class="math inline">\(Y\)</span> as vectors in the space of the data
+<span class="math inline">\(\mathbb{R}^n\)</span>, here <span
+class="math inline">\(\mathbb{R}^3\)</span> because we have three data
+points. So the column space of X is a plane in the three dimensional
+space.</p></li>
+</ul>
+<p><span class="math display">\[
+\hat{\mathbf{Y}} = \mathbf{X} (\mathbf{X}^T\mathbf{X})^{-1} \mathbf{X}^T
+\mathbf{Y}
+\]</span></p>
+<ol style="list-style-type: decimal">
+<li>Plane spanned by column space:</li>
+</ol>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" tabindex="-1"></a>originRn <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">X1=</span><span class="dv">0</span>,<span class="at">X2=</span><span class="dv">0</span>,<span class="at">X3=</span><span class="dv">0</span>)</span>
+<span id="cb47-2"><a href="#cb47-2" tabindex="-1"></a>data<span class="sc">$</span>x0 <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb47-3"><a href="#cb47-3" tabindex="-1"></a>dataRn <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">t</span>(data))</span>
+<span id="cb47-4"><a href="#cb47-4" tabindex="-1"></a></span>
+<span id="cb47-5"><a href="#cb47-5" tabindex="-1"></a><span class="fu">library</span>(plotly)</span></code></pre></div>
+<pre><code>## 
+## Attaching package: &#39;plotly&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     last_plot</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter</code></pre>
+<pre><code>## The following object is masked from &#39;package:graphics&#39;:
+## 
+##     layout</code></pre>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">plot_ly</span>(</span>
+<span id="cb52-2"><a href="#cb52-2" tabindex="-1"></a>    originRn,</span>
+<span id="cb52-3"><a href="#cb52-3" tabindex="-1"></a>    <span class="at">x =</span> <span class="sc">~</span> X1,</span>
+<span id="cb52-4"><a href="#cb52-4" tabindex="-1"></a>    <span class="at">y =</span> <span class="sc">~</span> X2,</span>
+<span id="cb52-5"><a href="#cb52-5" tabindex="-1"></a>    <span class="at">z=</span> <span class="sc">~</span> X3, <span class="at">name=</span><span class="st">&quot;origin&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb52-6"><a href="#cb52-6" tabindex="-1"></a>  <span class="fu">add_markers</span>(<span class="at">type=</span><span class="st">&quot;scatter3d&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb52-7"><a href="#cb52-7" tabindex="-1"></a>  <span class="fu">layout</span>(</span>
+<span id="cb52-8"><a href="#cb52-8" tabindex="-1"></a>    <span class="at">scene =</span> <span class="fu">list</span>(</span>
+<span id="cb52-9"><a href="#cb52-9" tabindex="-1"></a>      <span class="at">aspectmode=</span><span class="st">&quot;cube&quot;</span>,</span>
+<span id="cb52-10"><a href="#cb52-10" tabindex="-1"></a>      <span class="at">xaxis =</span> <span class="fu">list</span>(<span class="at">range=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">4</span>,<span class="dv">4</span>)), <span class="at">yaxis =</span> <span class="fu">list</span>(<span class="at">range=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">4</span>,<span class="dv">4</span>)), <span class="at">zaxis =</span> <span class="fu">list</span>(<span class="at">range=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">4</span>,<span class="dv">4</span>))</span>
+<span id="cb52-11"><a href="#cb52-11" tabindex="-1"></a>      )</span>
+<span id="cb52-12"><a href="#cb52-12" tabindex="-1"></a>    )</span>
+<span id="cb52-13"><a href="#cb52-13" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> p1 <span class="sc">%&gt;%</span></span>
+<span id="cb52-14"><a href="#cb52-14" tabindex="-1"></a>  <span class="fu">add_trace</span>(</span>
+<span id="cb52-15"><a href="#cb52-15" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
+<span id="cb52-16"><a href="#cb52-16" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>),</span>
+<span id="cb52-17"><a href="#cb52-17" tabindex="-1"></a>    <span class="at">z =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>),</span>
+<span id="cb52-18"><a href="#cb52-18" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">&quot;lines&quot;</span>,</span>
+<span id="cb52-19"><a href="#cb52-19" tabindex="-1"></a>    <span class="at">line =</span> <span class="fu">list</span>(<span class="at">width =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;grey&quot;</span>),</span>
+<span id="cb52-20"><a href="#cb52-20" tabindex="-1"></a>    <span class="at">type=</span><span class="st">&quot;scatter3d&quot;</span>,</span>
+<span id="cb52-21"><a href="#cb52-21" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;obs1&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb52-22"><a href="#cb52-22" tabindex="-1"></a>  <span class="fu">add_trace</span>(</span>
+<span id="cb52-23"><a href="#cb52-23" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>),</span>
+<span id="cb52-24"><a href="#cb52-24" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
+<span id="cb52-25"><a href="#cb52-25" tabindex="-1"></a>    <span class="at">z =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>),</span>
+<span id="cb52-26"><a href="#cb52-26" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">&quot;lines&quot;</span>,</span>
+<span id="cb52-27"><a href="#cb52-27" tabindex="-1"></a>    <span class="at">line =</span> <span class="fu">list</span>(<span class="at">width =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;grey&quot;</span>),</span>
+<span id="cb52-28"><a href="#cb52-28" tabindex="-1"></a>    <span class="at">type=</span><span class="st">&quot;scatter3d&quot;</span>,</span>
+<span id="cb52-29"><a href="#cb52-29" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;obs2&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb52-30"><a href="#cb52-30" tabindex="-1"></a>  <span class="fu">add_trace</span>(</span>
+<span id="cb52-31"><a href="#cb52-31" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>),</span>
+<span id="cb52-32"><a href="#cb52-32" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>),</span>
+<span id="cb52-33"><a href="#cb52-33" tabindex="-1"></a>    <span class="at">z =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
+<span id="cb52-34"><a href="#cb52-34" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">&quot;lines&quot;</span>,</span>
+<span id="cb52-35"><a href="#cb52-35" tabindex="-1"></a>    <span class="at">line =</span> <span class="fu">list</span>(<span class="at">width =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;grey&quot;</span>),</span>
+<span id="cb52-36"><a href="#cb52-36" tabindex="-1"></a>    <span class="at">type=</span><span class="st">&quot;scatter3d&quot;</span>,</span>
+<span id="cb52-37"><a href="#cb52-37" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;obs3&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb52-38"><a href="#cb52-38" tabindex="-1"></a>  <span class="fu">add_trace</span>(</span>
+<span id="cb52-39"><a href="#cb52-39" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
+<span id="cb52-40"><a href="#cb52-40" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
+<span id="cb52-41"><a href="#cb52-41" tabindex="-1"></a>    <span class="at">z =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
+<span id="cb52-42"><a href="#cb52-42" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">&quot;lines&quot;</span>,</span>
+<span id="cb52-43"><a href="#cb52-43" tabindex="-1"></a>    <span class="at">line =</span> <span class="fu">list</span>(<span class="at">width =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb52-44"><a href="#cb52-44" tabindex="-1"></a>    <span class="at">type=</span><span class="st">&quot;scatter3d&quot;</span>,</span>
+<span id="cb52-45"><a href="#cb52-45" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;X1&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb52-46"><a href="#cb52-46" tabindex="-1"></a>    <span class="fu">add_trace</span>(</span>
+<span id="cb52-47"><a href="#cb52-47" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
+<span id="cb52-48"><a href="#cb52-48" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">2</span>),</span>
+<span id="cb52-49"><a href="#cb52-49" tabindex="-1"></a>    <span class="at">z =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">3</span>),</span>
+<span id="cb52-50"><a href="#cb52-50" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">&quot;lines&quot;</span>,</span>
+<span id="cb52-51"><a href="#cb52-51" tabindex="-1"></a>    <span class="at">line =</span> <span class="fu">list</span>(<span class="at">width =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb52-52"><a href="#cb52-52" tabindex="-1"></a>    <span class="at">type=</span><span class="st">&quot;scatter3d&quot;</span>,</span>
+<span id="cb52-53"><a href="#cb52-53" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;X2&quot;</span>)</span>
+<span id="cb52-54"><a href="#cb52-54" tabindex="-1"></a>p1</span></code></pre></div>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-44630c43c4738b5cca64" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-44630c43c4738b5cca64">{"x":{"visdat":{"1751b56a0ae71":["function () ","plotlyVisDat"]},"cur_data":"1751b56a0ae71","attrs":{"1751b56a0ae71":{"x":{},"y":{},"z":{},"name":"origin","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","mode":"markers","inherit":true},"1751b56a0ae71.1":{"x":[0,1],"y":[0,0],"z":[0,0],"name":"obs1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.2":{"x":[0,0],"y":[0,1],"z":[0,0],"name":"obs2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.3":{"x":[0,0],"y":[0,0],"z":[0,1],"name":"obs3","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.4":{"x":[0,1],"y":[0,1],"z":[0,1],"name":"X1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"black"},"type":"scatter3d","inherit":true},"1751b56a0ae71.5":{"x":[0,1],"y":[0,2],"z":[0,3],"name":"X2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"black"},"type":"scatter3d","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"aspectmode":"cube","xaxis":{"range":[-4,4],"title":"X1"},"yaxis":{"range":[-4,4],"title":"X2"},"zaxis":{"range":[-4,4],"title":"X3"}},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[0],"y":[0],"z":[0],"name":"origin","type":"scatter3d","mode":"markers","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null},{"x":[0,1],"y":[0,0],"z":[0,0],"name":"obs1","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"frame":null},{"x":[0,0],"y":[0,1],"z":[0,0],"name":"obs2","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"frame":null},{"x":[0,0],"y":[0,0],"z":[0,1],"name":"obs3","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"frame":null},{"x":[0,1],"y":[0,1],"z":[0,1],"name":"X1","mode":"lines","line":{"color":"black","width":5},"type":"scatter3d","marker":{"color":"rgba(148,103,189,1)","line":{"color":"rgba(148,103,189,1)"}},"error_y":{"color":"rgba(148,103,189,1)"},"error_x":{"color":"rgba(148,103,189,1)"},"frame":null},{"x":[0,1],"y":[0,2],"z":[0,3],"name":"X2","mode":"lines","line":{"color":"black","width":5},"type":"scatter3d","marker":{"color":"rgba(140,86,75,1)","line":{"color":"rgba(140,86,75,1)"}},"error_y":{"color":"rgba(140,86,75,1)"},"error_x":{"color":"rgba(140,86,75,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<ol start="2" style="list-style-type: decimal">
+<li>Vector of Y:</li>
+</ol>
+<p>Actual values of <span class="math inline">\(\mathbf{Y}\)</span>:</p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" tabindex="-1"></a>data<span class="sc">$</span>y</span></code></pre></div>
+<pre><code>## [1] 1 2 2</code></pre>
+<p><span class="math display">\[
+\mathbf{Y}=\left[\begin{array}{c}
+1 \\
+2 \\
+2
+\end{array}\right]
+\]</span></p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> p1 <span class="sc">%&gt;%</span></span>
+<span id="cb55-2"><a href="#cb55-2" tabindex="-1"></a>  <span class="fu">add_trace</span>(</span>
+<span id="cb55-3"><a href="#cb55-3" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">0</span>,Y[<span class="dv">1</span>]),</span>
+<span id="cb55-4"><a href="#cb55-4" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>,Y[<span class="dv">2</span>]),</span>
+<span id="cb55-5"><a href="#cb55-5" tabindex="-1"></a>    <span class="at">z =</span> <span class="fu">c</span>(<span class="dv">0</span>,Y[<span class="dv">3</span>]),</span>
+<span id="cb55-6"><a href="#cb55-6" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">&quot;lines&quot;</span>,</span>
+<span id="cb55-7"><a href="#cb55-7" tabindex="-1"></a>    <span class="at">line =</span> <span class="fu">list</span>(<span class="at">width =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>),</span>
+<span id="cb55-8"><a href="#cb55-8" tabindex="-1"></a>    <span class="at">type=</span><span class="st">&quot;scatter3d&quot;</span>,</span>
+<span id="cb55-9"><a href="#cb55-9" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;Y&quot;</span>) </span>
+<span id="cb55-10"><a href="#cb55-10" tabindex="-1"></a>p2</span></code></pre></div>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-ef94099c7f01b549a97e" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-ef94099c7f01b549a97e">{"x":{"visdat":{"1751b56a0ae71":["function () ","plotlyVisDat"]},"cur_data":"1751b56a0ae71","attrs":{"1751b56a0ae71":{"x":{},"y":{},"z":{},"name":"origin","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","mode":"markers","inherit":true},"1751b56a0ae71.1":{"x":[0,1],"y":[0,0],"z":[0,0],"name":"obs1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.2":{"x":[0,0],"y":[0,1],"z":[0,0],"name":"obs2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.3":{"x":[0,0],"y":[0,0],"z":[0,1],"name":"obs3","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.4":{"x":[0,1],"y":[0,1],"z":[0,1],"name":"X1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"black"},"type":"scatter3d","inherit":true},"1751b56a0ae71.5":{"x":[0,1],"y":[0,2],"z":[0,3],"name":"X2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"black"},"type":"scatter3d","inherit":true},"1751b56a0ae71.6":{"x":[0,1],"y":[0,2],"z":[0,2],"name":"Y","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"red"},"type":"scatter3d","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"aspectmode":"cube","xaxis":{"range":[-4,4],"title":"X1"},"yaxis":{"range":[-4,4],"title":"X2"},"zaxis":{"range":[-4,4],"title":"X3"}},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[0],"y":[0],"z":[0],"name":"origin","type":"scatter3d","mode":"markers","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null},{"x":[0,1],"y":[0,0],"z":[0,0],"name":"obs1","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"frame":null},{"x":[0,0],"y":[0,1],"z":[0,0],"name":"obs2","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"frame":null},{"x":[0,0],"y":[0,0],"z":[0,1],"name":"obs3","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"frame":null},{"x":[0,1],"y":[0,1],"z":[0,1],"name":"X1","mode":"lines","line":{"color":"black","width":5},"type":"scatter3d","marker":{"color":"rgba(148,103,189,1)","line":{"color":"rgba(148,103,189,1)"}},"error_y":{"color":"rgba(148,103,189,1)"},"error_x":{"color":"rgba(148,103,189,1)"},"frame":null},{"x":[0,1],"y":[0,2],"z":[0,3],"name":"X2","mode":"lines","line":{"color":"black","width":5},"type":"scatter3d","marker":{"color":"rgba(140,86,75,1)","line":{"color":"rgba(140,86,75,1)"}},"error_y":{"color":"rgba(140,86,75,1)"},"error_x":{"color":"rgba(140,86,75,1)"},"frame":null},{"x":[0,1],"y":[0,2],"z":[0,2],"name":"Y","mode":"lines","line":{"color":"red","width":5},"type":"scatter3d","marker":{"color":"rgba(227,119,194,1)","line":{"color":"rgba(227,119,194,1)"}},"error_y":{"color":"rgba(227,119,194,1)"},"error_x":{"color":"rgba(227,119,194,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<ol start="3" style="list-style-type: decimal">
+<li>Projection of Y onto column space</li>
+</ol>
+<p>Actual values of fitted values <span
+class="math inline">\(\mathbf{\hat{Y}}\)</span>:</p>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" tabindex="-1"></a>data<span class="sc">$</span>yhat</span></code></pre></div>
+<pre><code>## [1] 1.166667 1.666667 2.166667</code></pre>
+<p><span class="math display">\[
+\mathbf{Y}=\left[\begin{array}{c}
+1.1666667 \\
+1.6666667 \\
+2.1666667
+\end{array}\right]
+\]</span></p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> p2 <span class="sc">%&gt;%</span></span>
+<span id="cb58-2"><a href="#cb58-2" tabindex="-1"></a>  <span class="fu">add_trace</span>(</span>
+<span id="cb58-3"><a href="#cb58-3" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">0</span>,Yhat[<span class="dv">1</span>]),</span>
+<span id="cb58-4"><a href="#cb58-4" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>,Yhat[<span class="dv">2</span>]),</span>
+<span id="cb58-5"><a href="#cb58-5" tabindex="-1"></a>    <span class="at">z =</span> <span class="fu">c</span>(<span class="dv">0</span>,Yhat[<span class="dv">3</span>]),</span>
+<span id="cb58-6"><a href="#cb58-6" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">&quot;lines&quot;</span>,</span>
+<span id="cb58-7"><a href="#cb58-7" tabindex="-1"></a>    <span class="at">line =</span> <span class="fu">list</span>(<span class="at">width =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;orange&quot;</span>),</span>
+<span id="cb58-8"><a href="#cb58-8" tabindex="-1"></a>    <span class="at">type=</span><span class="st">&quot;scatter3d&quot;</span>,</span>
+<span id="cb58-9"><a href="#cb58-9" tabindex="-1"></a>    <span class="at">name=</span><span class="st">&quot;Yhat&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb58-10"><a href="#cb58-10" tabindex="-1"></a>    <span class="fu">add_trace</span>(</span>
+<span id="cb58-11"><a href="#cb58-11" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(Y[<span class="dv">1</span>],Yhat[<span class="dv">1</span>]),</span>
+<span id="cb58-12"><a href="#cb58-12" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(Y[<span class="dv">2</span>],Yhat[<span class="dv">2</span>]),</span>
+<span id="cb58-13"><a href="#cb58-13" tabindex="-1"></a>    <span class="at">z =</span> <span class="fu">c</span>(Y[<span class="dv">3</span>],Yhat[<span class="dv">3</span>]),</span>
+<span id="cb58-14"><a href="#cb58-14" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">&quot;lines&quot;</span>,</span>
+<span id="cb58-15"><a href="#cb58-15" tabindex="-1"></a>    <span class="at">line =</span> <span class="fu">list</span>(<span class="at">width =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>, <span class="at">dash=</span><span class="st">&quot;dash&quot;</span>),</span>
+<span id="cb58-16"><a href="#cb58-16" tabindex="-1"></a>    <span class="at">type=</span><span class="st">&quot;scatter3d&quot;</span>,</span>
+<span id="cb58-17"><a href="#cb58-17" tabindex="-1"></a>    <span class="at">name=</span><span class="st">&quot;Y -&gt; Yhat&quot;</span></span>
+<span id="cb58-18"><a href="#cb58-18" tabindex="-1"></a>    )</span>
+<span id="cb58-19"><a href="#cb58-19" tabindex="-1"></a>p2</span></code></pre></div>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-8d8fcd18ec9219732040" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-8d8fcd18ec9219732040">{"x":{"visdat":{"1751b56a0ae71":["function () ","plotlyVisDat"]},"cur_data":"1751b56a0ae71","attrs":{"1751b56a0ae71":{"x":{},"y":{},"z":{},"name":"origin","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","mode":"markers","inherit":true},"1751b56a0ae71.1":{"x":[0,1],"y":[0,0],"z":[0,0],"name":"obs1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.2":{"x":[0,0],"y":[0,1],"z":[0,0],"name":"obs2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.3":{"x":[0,0],"y":[0,0],"z":[0,1],"name":"obs3","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.4":{"x":[0,1],"y":[0,1],"z":[0,1],"name":"X1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"black"},"type":"scatter3d","inherit":true},"1751b56a0ae71.5":{"x":[0,1],"y":[0,2],"z":[0,3],"name":"X2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"black"},"type":"scatter3d","inherit":true},"1751b56a0ae71.6":{"x":[0,1],"y":[0,2],"z":[0,2],"name":"Y","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"red"},"type":"scatter3d","inherit":true},"1751b56a0ae71.7":{"x":[0,1.1666666666666674],"y":[0,1.6666666666666674],"z":[0,2.1666666666666674],"name":"Yhat","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"orange"},"type":"scatter3d","inherit":true},"1751b56a0ae71.8":{"x":[1,1.1666666666666674],"y":[2,1.6666666666666674],"z":[2,2.1666666666666674],"name":"Y -> Yhat","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"red","dash":"dash"},"type":"scatter3d","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"aspectmode":"cube","xaxis":{"range":[-4,4],"title":"X1"},"yaxis":{"range":[-4,4],"title":"X2"},"zaxis":{"range":[-4,4],"title":"X3"}},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[0],"y":[0],"z":[0],"name":"origin","type":"scatter3d","mode":"markers","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null},{"x":[0,1],"y":[0,0],"z":[0,0],"name":"obs1","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"frame":null},{"x":[0,0],"y":[0,1],"z":[0,0],"name":"obs2","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"frame":null},{"x":[0,0],"y":[0,0],"z":[0,1],"name":"obs3","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"frame":null},{"x":[0,1],"y":[0,1],"z":[0,1],"name":"X1","mode":"lines","line":{"color":"black","width":5},"type":"scatter3d","marker":{"color":"rgba(148,103,189,1)","line":{"color":"rgba(148,103,189,1)"}},"error_y":{"color":"rgba(148,103,189,1)"},"error_x":{"color":"rgba(148,103,189,1)"},"frame":null},{"x":[0,1],"y":[0,2],"z":[0,3],"name":"X2","mode":"lines","line":{"color":"black","width":5},"type":"scatter3d","marker":{"color":"rgba(140,86,75,1)","line":{"color":"rgba(140,86,75,1)"}},"error_y":{"color":"rgba(140,86,75,1)"},"error_x":{"color":"rgba(140,86,75,1)"},"frame":null},{"x":[0,1],"y":[0,2],"z":[0,2],"name":"Y","mode":"lines","line":{"color":"red","width":5},"type":"scatter3d","marker":{"color":"rgba(227,119,194,1)","line":{"color":"rgba(227,119,194,1)"}},"error_y":{"color":"rgba(227,119,194,1)"},"error_x":{"color":"rgba(227,119,194,1)"},"frame":null},{"x":[0,1.1666666666666674],"y":[0,1.6666666666666674],"z":[0,2.1666666666666674],"name":"Yhat","mode":"lines","line":{"color":"orange","width":5},"type":"scatter3d","marker":{"color":"rgba(127,127,127,1)","line":{"color":"rgba(127,127,127,1)"}},"error_y":{"color":"rgba(127,127,127,1)"},"error_x":{"color":"rgba(127,127,127,1)"},"frame":null},{"x":[1,1.1666666666666674],"y":[2,1.6666666666666674],"z":[2,2.1666666666666674],"name":"Y -> Yhat","mode":"lines","line":{"color":"red","width":5,"dash":"dash"},"type":"scatter3d","marker":{"color":"rgba(188,189,34,1)","line":{"color":"rgba(188,189,34,1)"}},"error_y":{"color":"rgba(188,189,34,1)"},"error_x":{"color":"rgba(188,189,34,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p><span class="math inline">\(\mathbf{Y}\)</span> is projected in the
+column space of <span class="math inline">\(\mathbf{X}\)</span>! spanned
+by the columns.</p>
+</div>
+<div id="how-does-this-projection-works" class="section level4"
+number="5.3.3.3">
+<h4><span class="header-section-number">5.3.3.3</span> How does this
+projection works?</h4>
+<p><span class="math display">\[
+\begin{array}{lcl}
+\hat{\mathbf{Y}} &amp;=&amp; \mathbf{X}
+(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}\\
+&amp;=&amp;
+\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1/2}(\mathbf{X}^T\mathbf{X})^{-1/2}\mathbf{X}^T\mathbf{Y}\\
+&amp;=&amp; \mathbf{U}\mathbf{U}^T\mathbf{Y}
+\end{array}
+\]</span></p>
+<ul>
+<li><p><span class="math inline">\(\mathbf{U}\)</span> is a new
+orthonormal basis in <span class="math inline">\(\mathbb{R}^2\)</span>,
+a subspace of <span class="math inline">\(\mathbb{R}^3\)</span></p></li>
+<li><p>The space spanned by U and X is the column space of X, e.g. it
+contains all possible linear combinantions of X. <span
+class="math inline">\(\mathbf{U}^t\mathbf{Y}\)</span> is the projection
+of Y on this new orthonormal basis</p></li>
+</ul>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" tabindex="-1"></a>eigenXtX <span class="ot">&lt;-</span> <span class="fu">eigen</span>(XtX)</span>
+<span id="cb59-2"><a href="#cb59-2" tabindex="-1"></a>XtXinvSqrt <span class="ot">&lt;-</span> eigenXtX<span class="sc">$</span>vectors <span class="sc">%*%</span><span class="fu">diag</span>(<span class="dv">1</span><span class="sc">/</span>eigenXtX<span class="sc">$</span>values<span class="sc">^</span>.<span class="dv">5</span>)<span class="sc">%*%</span><span class="fu">t</span>(eigenXtX<span class="sc">$</span>vectors)</span>
+<span id="cb59-3"><a href="#cb59-3" tabindex="-1"></a>U <span class="ot">&lt;-</span> X <span class="sc">%*%</span> XtXinvSqrt</span></code></pre></div>
+<ul>
+<li><span class="math inline">\(\mathbf{U}\)</span> orthonormal
+basis</li>
+</ul>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" tabindex="-1"></a>U</span></code></pre></div>
+<pre><code>##         [,1]        [,2]
+## 1  0.9116067 -0.04802616
+## 2  0.3881706  0.42738380
+## 3 -0.1352655  0.90279376</code></pre>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" tabindex="-1"></a><span class="fu">t</span>(U)<span class="sc">%*%</span>U</span></code></pre></div>
+<pre><code>##              [,1]         [,2]
+## [1,] 1.000000e+00 2.915205e-16
+## [2,] 2.915205e-16 1.000000e+00</code></pre>
+<ul>
+<li><span class="math inline">\(\mathbf{UU}^T\)</span> equals projection
+matrix</li>
+</ul>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" tabindex="-1"></a>U<span class="sc">%*%</span><span class="fu">t</span>(U)</span></code></pre></div>
+<pre><code>##            1         2          3
+## 1  0.8333333 0.3333333 -0.1666667
+## 2  0.3333333 0.3333333  0.3333333
+## 3 -0.1666667 0.3333333  0.8333333</code></pre>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" tabindex="-1"></a>H</span></code></pre></div>
+<pre><code>##            1         2          3
+## 1  0.8333333 0.3333333 -0.1666667
+## 2  0.3333333 0.3333333  0.3333333
+## 3 -0.1666667 0.3333333  0.8333333</code></pre>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> p1 <span class="sc">%&gt;%</span></span>
+<span id="cb68-2"><a href="#cb68-2" tabindex="-1"></a>  <span class="fu">add_trace</span>(</span>
+<span id="cb68-3"><a href="#cb68-3" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">0</span>,U[<span class="dv">1</span>,<span class="dv">1</span>]),</span>
+<span id="cb68-4"><a href="#cb68-4" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>,U[<span class="dv">2</span>,<span class="dv">1</span>]),</span>
+<span id="cb68-5"><a href="#cb68-5" tabindex="-1"></a>    <span class="at">z =</span> <span class="fu">c</span>(<span class="dv">0</span>,U[<span class="dv">3</span>,<span class="dv">1</span>]),</span>
+<span id="cb68-6"><a href="#cb68-6" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">&quot;lines&quot;</span>,</span>
+<span id="cb68-7"><a href="#cb68-7" tabindex="-1"></a>    <span class="at">line =</span> <span class="fu">list</span>(<span class="at">width =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;blue&quot;</span>),</span>
+<span id="cb68-8"><a href="#cb68-8" tabindex="-1"></a>    <span class="at">type=</span><span class="st">&quot;scatter3d&quot;</span>,</span>
+<span id="cb68-9"><a href="#cb68-9" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;U1&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb68-10"><a href="#cb68-10" tabindex="-1"></a>  <span class="fu">add_trace</span>(</span>
+<span id="cb68-11"><a href="#cb68-11" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">0</span>,U[<span class="dv">1</span>,<span class="dv">2</span>]),</span>
+<span id="cb68-12"><a href="#cb68-12" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>,U[<span class="dv">2</span>,<span class="dv">2</span>]),</span>
+<span id="cb68-13"><a href="#cb68-13" tabindex="-1"></a>    <span class="at">z =</span> <span class="fu">c</span>(<span class="dv">0</span>,U[<span class="dv">3</span>,<span class="dv">2</span>]),</span>
+<span id="cb68-14"><a href="#cb68-14" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">&quot;lines&quot;</span>,</span>
+<span id="cb68-15"><a href="#cb68-15" tabindex="-1"></a>    <span class="at">line =</span> <span class="fu">list</span>(<span class="at">width =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;blue&quot;</span>),</span>
+<span id="cb68-16"><a href="#cb68-16" tabindex="-1"></a>    <span class="at">type=</span><span class="st">&quot;scatter3d&quot;</span>,</span>
+<span id="cb68-17"><a href="#cb68-17" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;U2&quot;</span>)</span>
+<span id="cb68-18"><a href="#cb68-18" tabindex="-1"></a></span>
+<span id="cb68-19"><a href="#cb68-19" tabindex="-1"></a>p3</span></code></pre></div>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-99cbfa7f53227f270c6f" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-99cbfa7f53227f270c6f">{"x":{"visdat":{"1751b56a0ae71":["function () ","plotlyVisDat"]},"cur_data":"1751b56a0ae71","attrs":{"1751b56a0ae71":{"x":{},"y":{},"z":{},"name":"origin","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","mode":"markers","inherit":true},"1751b56a0ae71.1":{"x":[0,1],"y":[0,0],"z":[0,0],"name":"obs1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.2":{"x":[0,0],"y":[0,1],"z":[0,0],"name":"obs2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.3":{"x":[0,0],"y":[0,0],"z":[0,1],"name":"obs3","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.4":{"x":[0,1],"y":[0,1],"z":[0,1],"name":"X1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"black"},"type":"scatter3d","inherit":true},"1751b56a0ae71.5":{"x":[0,1],"y":[0,2],"z":[0,3],"name":"X2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"black"},"type":"scatter3d","inherit":true},"1751b56a0ae71.6":{"x":[0,0.91160672519099273],"y":[0,0.38817060670267134],"z":[0,-0.13526551178565005],"name":"U1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"blue"},"type":"scatter3d","inherit":true},"1751b56a0ae71.7":{"x":[0,-0.048026158704263522],"y":[0,0.42738380107979446],"z":[0,0.90279376086385243],"name":"U2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"blue"},"type":"scatter3d","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"aspectmode":"cube","xaxis":{"range":[-4,4],"title":"X1"},"yaxis":{"range":[-4,4],"title":"X2"},"zaxis":{"range":[-4,4],"title":"X3"}},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[0],"y":[0],"z":[0],"name":"origin","type":"scatter3d","mode":"markers","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null},{"x":[0,1],"y":[0,0],"z":[0,0],"name":"obs1","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"frame":null},{"x":[0,0],"y":[0,1],"z":[0,0],"name":"obs2","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"frame":null},{"x":[0,0],"y":[0,0],"z":[0,1],"name":"obs3","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"frame":null},{"x":[0,1],"y":[0,1],"z":[0,1],"name":"X1","mode":"lines","line":{"color":"black","width":5},"type":"scatter3d","marker":{"color":"rgba(148,103,189,1)","line":{"color":"rgba(148,103,189,1)"}},"error_y":{"color":"rgba(148,103,189,1)"},"error_x":{"color":"rgba(148,103,189,1)"},"frame":null},{"x":[0,1],"y":[0,2],"z":[0,3],"name":"X2","mode":"lines","line":{"color":"black","width":5},"type":"scatter3d","marker":{"color":"rgba(140,86,75,1)","line":{"color":"rgba(140,86,75,1)"}},"error_y":{"color":"rgba(140,86,75,1)"},"error_x":{"color":"rgba(140,86,75,1)"},"frame":null},{"x":[0,0.91160672519099273],"y":[0,0.38817060670267134],"z":[0,-0.13526551178565005],"name":"U1","mode":"lines","line":{"color":"blue","width":5},"type":"scatter3d","marker":{"color":"rgba(227,119,194,1)","line":{"color":"rgba(227,119,194,1)"}},"error_y":{"color":"rgba(227,119,194,1)"},"error_x":{"color":"rgba(227,119,194,1)"},"frame":null},{"x":[0,-0.048026158704263522],"y":[0,0.42738380107979446],"z":[0,0.90279376086385243],"name":"U2","mode":"lines","line":{"color":"blue","width":5},"type":"scatter3d","marker":{"color":"rgba(127,127,127,1)","line":{"color":"rgba(127,127,127,1)"}},"error_y":{"color":"rgba(127,127,127,1)"},"error_x":{"color":"rgba(127,127,127,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<ul>
+<li><span class="math inline">\(\mathbf{U}^T\mathbf{Y}\)</span> is the
+projection of <span class="math inline">\(\mathbf{Y}\)</span> in the
+space spanned by <span class="math inline">\(\mathbf{U}\)</span>.</li>
+<li>Indeed <span
+class="math inline">\(\mathbf{U}_1^T\mathbf{Y}\)</span></li>
+</ul>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" tabindex="-1"></a>p4 <span class="ot">&lt;-</span> p3 <span class="sc">%&gt;%</span></span>
+<span id="cb69-2"><a href="#cb69-2" tabindex="-1"></a>  <span class="fu">add_trace</span>(</span>
+<span id="cb69-3"><a href="#cb69-3" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">0</span>,Y[<span class="dv">1</span>]),</span>
+<span id="cb69-4"><a href="#cb69-4" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>,Y[<span class="dv">2</span>]),</span>
+<span id="cb69-5"><a href="#cb69-5" tabindex="-1"></a>    <span class="at">z =</span> <span class="fu">c</span>(<span class="dv">0</span>,Y[<span class="dv">3</span>]),</span>
+<span id="cb69-6"><a href="#cb69-6" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">&quot;lines&quot;</span>,</span>
+<span id="cb69-7"><a href="#cb69-7" tabindex="-1"></a>    <span class="at">line =</span> <span class="fu">list</span>(<span class="at">width =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>),</span>
+<span id="cb69-8"><a href="#cb69-8" tabindex="-1"></a>    <span class="at">type=</span><span class="st">&quot;scatter3d&quot;</span>,</span>
+<span id="cb69-9"><a href="#cb69-9" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;Y&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb69-10"><a href="#cb69-10" tabindex="-1"></a>  <span class="fu">add_trace</span>(</span>
+<span id="cb69-11"><a href="#cb69-11" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">0</span>,U[<span class="dv">1</span>,<span class="dv">1</span>]<span class="sc">*</span>(U[,<span class="dv">1</span>]<span class="sc">%*%</span>Y)),</span>
+<span id="cb69-12"><a href="#cb69-12" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>,U[<span class="dv">2</span>,<span class="dv">1</span>]<span class="sc">*</span>(U[,<span class="dv">1</span>]<span class="sc">%*%</span>Y)),</span>
+<span id="cb69-13"><a href="#cb69-13" tabindex="-1"></a>    <span class="at">z =</span> <span class="fu">c</span>(<span class="dv">0</span>,U[<span class="dv">3</span>,<span class="dv">1</span>]<span class="sc">*</span>(U[,<span class="dv">1</span>]<span class="sc">%*%</span>Y)),</span>
+<span id="cb69-14"><a href="#cb69-14" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">&quot;lines&quot;</span>,</span>
+<span id="cb69-15"><a href="#cb69-15" tabindex="-1"></a>    <span class="at">line =</span> <span class="fu">list</span>(<span class="at">width =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>,<span class="at">dash=</span><span class="st">&quot;dash&quot;</span>),</span>
+<span id="cb69-16"><a href="#cb69-16" tabindex="-1"></a>    <span class="at">type=</span><span class="st">&quot;scatter3d&quot;</span>,</span>
+<span id="cb69-17"><a href="#cb69-17" tabindex="-1"></a>    <span class="at">name=</span><span class="st">&quot;Y -&gt; U1&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">add_trace</span>(</span>
+<span id="cb69-18"><a href="#cb69-18" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(Y[<span class="dv">1</span>],U[<span class="dv">1</span>,<span class="dv">1</span>]<span class="sc">*</span>(U[,<span class="dv">1</span>]<span class="sc">%*%</span>Y)),</span>
+<span id="cb69-19"><a href="#cb69-19" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(Y[<span class="dv">2</span>],U[<span class="dv">2</span>,<span class="dv">1</span>]<span class="sc">*</span>(U[,<span class="dv">1</span>]<span class="sc">%*%</span>Y)),</span>
+<span id="cb69-20"><a href="#cb69-20" tabindex="-1"></a>    <span class="at">z =</span> <span class="fu">c</span>(Y[<span class="dv">3</span>],U[<span class="dv">3</span>,<span class="dv">1</span>]<span class="sc">*</span>(U[,<span class="dv">1</span>]<span class="sc">%*%</span>Y)),</span>
+<span id="cb69-21"><a href="#cb69-21" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">&quot;lines&quot;</span>,</span>
+<span id="cb69-22"><a href="#cb69-22" tabindex="-1"></a>    <span class="at">line =</span> <span class="fu">list</span>(<span class="at">width =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>, <span class="at">dash=</span><span class="st">&quot;dash&quot;</span>),</span>
+<span id="cb69-23"><a href="#cb69-23" tabindex="-1"></a>    <span class="at">type=</span><span class="st">&quot;scatter3d&quot;</span>,</span>
+<span id="cb69-24"><a href="#cb69-24" tabindex="-1"></a>    <span class="at">name=</span><span class="st">&quot;Y -&gt; U1&quot;</span>)</span>
+<span id="cb69-25"><a href="#cb69-25" tabindex="-1"></a>p4</span></code></pre></div>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-701107da9821950e8b1a" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-701107da9821950e8b1a">{"x":{"visdat":{"1751b56a0ae71":["function () ","plotlyVisDat"]},"cur_data":"1751b56a0ae71","attrs":{"1751b56a0ae71":{"x":{},"y":{},"z":{},"name":"origin","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","mode":"markers","inherit":true},"1751b56a0ae71.1":{"x":[0,1],"y":[0,0],"z":[0,0],"name":"obs1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.2":{"x":[0,0],"y":[0,1],"z":[0,0],"name":"obs2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.3":{"x":[0,0],"y":[0,0],"z":[0,1],"name":"obs3","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.4":{"x":[0,1],"y":[0,1],"z":[0,1],"name":"X1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"black"},"type":"scatter3d","inherit":true},"1751b56a0ae71.5":{"x":[0,1],"y":[0,2],"z":[0,3],"name":"X2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"black"},"type":"scatter3d","inherit":true},"1751b56a0ae71.6":{"x":[0,0.91160672519099273],"y":[0,0.38817060670267134],"z":[0,-0.13526551178565005],"name":"U1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"blue"},"type":"scatter3d","inherit":true},"1751b56a0ae71.7":{"x":[0,-0.048026158704263522],"y":[0,0.42738380107979446],"z":[0,0.90279376086385243],"name":"U2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"blue"},"type":"scatter3d","inherit":true},"1751b56a0ae71.8":{"x":[0,1],"y":[0,2],"z":[0,2],"name":"Y","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"red"},"type":"scatter3d","inherit":true},"1751b56a0ae71.9":{"x":[0,1.292126792136292],"y":[0,0.55019958385589673],"z":[0,-0.19172762442449864],"name":"Y -> U1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"red","dash":"dash"},"type":"scatter3d","inherit":true},"1751b56a0ae71.10":{"x":[1,1.292126792136292],"y":[2,0.55019958385589673],"z":[2,-0.19172762442449864],"name":"Y -> U1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"red","dash":"dash"},"type":"scatter3d","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"aspectmode":"cube","xaxis":{"range":[-4,4],"title":"X1"},"yaxis":{"range":[-4,4],"title":"X2"},"zaxis":{"range":[-4,4],"title":"X3"}},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[0],"y":[0],"z":[0],"name":"origin","type":"scatter3d","mode":"markers","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null},{"x":[0,1],"y":[0,0],"z":[0,0],"name":"obs1","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"frame":null},{"x":[0,0],"y":[0,1],"z":[0,0],"name":"obs2","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"frame":null},{"x":[0,0],"y":[0,0],"z":[0,1],"name":"obs3","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"frame":null},{"x":[0,1],"y":[0,1],"z":[0,1],"name":"X1","mode":"lines","line":{"color":"black","width":5},"type":"scatter3d","marker":{"color":"rgba(148,103,189,1)","line":{"color":"rgba(148,103,189,1)"}},"error_y":{"color":"rgba(148,103,189,1)"},"error_x":{"color":"rgba(148,103,189,1)"},"frame":null},{"x":[0,1],"y":[0,2],"z":[0,3],"name":"X2","mode":"lines","line":{"color":"black","width":5},"type":"scatter3d","marker":{"color":"rgba(140,86,75,1)","line":{"color":"rgba(140,86,75,1)"}},"error_y":{"color":"rgba(140,86,75,1)"},"error_x":{"color":"rgba(140,86,75,1)"},"frame":null},{"x":[0,0.91160672519099273],"y":[0,0.38817060670267134],"z":[0,-0.13526551178565005],"name":"U1","mode":"lines","line":{"color":"blue","width":5},"type":"scatter3d","marker":{"color":"rgba(227,119,194,1)","line":{"color":"rgba(227,119,194,1)"}},"error_y":{"color":"rgba(227,119,194,1)"},"error_x":{"color":"rgba(227,119,194,1)"},"frame":null},{"x":[0,-0.048026158704263522],"y":[0,0.42738380107979446],"z":[0,0.90279376086385243],"name":"U2","mode":"lines","line":{"color":"blue","width":5},"type":"scatter3d","marker":{"color":"rgba(127,127,127,1)","line":{"color":"rgba(127,127,127,1)"}},"error_y":{"color":"rgba(127,127,127,1)"},"error_x":{"color":"rgba(127,127,127,1)"},"frame":null},{"x":[0,1],"y":[0,2],"z":[0,2],"name":"Y","mode":"lines","line":{"color":"red","width":5},"type":"scatter3d","marker":{"color":"rgba(188,189,34,1)","line":{"color":"rgba(188,189,34,1)"}},"error_y":{"color":"rgba(188,189,34,1)"},"error_x":{"color":"rgba(188,189,34,1)"},"frame":null},{"x":[0,1.292126792136292],"y":[0,0.55019958385589673],"z":[0,-0.19172762442449864],"name":"Y -> U1","mode":"lines","line":{"color":"red","width":5,"dash":"dash"},"type":"scatter3d","marker":{"color":"rgba(23,190,207,1)","line":{"color":"rgba(23,190,207,1)"}},"error_y":{"color":"rgba(23,190,207,1)"},"error_x":{"color":"rgba(23,190,207,1)"},"frame":null},{"x":[1,1.292126792136292],"y":[2,0.55019958385589673],"z":[2,-0.19172762442449864],"name":"Y -> U1","mode":"lines","line":{"color":"red","width":5,"dash":"dash"},"type":"scatter3d","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<ul>
+<li>and <span
+class="math inline">\(\mathbf{U}_2^T\mathbf{Y}\)</span></li>
+</ul>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" tabindex="-1"></a>p5 <span class="ot">&lt;-</span> p4 <span class="sc">%&gt;%</span></span>
+<span id="cb70-2"><a href="#cb70-2" tabindex="-1"></a>  <span class="fu">add_trace</span>(</span>
+<span id="cb70-3"><a href="#cb70-3" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">0</span>,U[<span class="dv">1</span>,<span class="dv">2</span>]<span class="sc">*</span>(U[,<span class="dv">2</span>]<span class="sc">%*%</span>Y)),</span>
+<span id="cb70-4"><a href="#cb70-4" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>,U[<span class="dv">2</span>,<span class="dv">2</span>]<span class="sc">*</span>(U[,<span class="dv">2</span>]<span class="sc">%*%</span>Y)),</span>
+<span id="cb70-5"><a href="#cb70-5" tabindex="-1"></a>    <span class="at">z =</span> <span class="fu">c</span>(<span class="dv">0</span>,U[<span class="dv">3</span>,<span class="dv">2</span>]<span class="sc">*</span>(U[,<span class="dv">2</span>]<span class="sc">%*%</span>Y)),</span>
+<span id="cb70-6"><a href="#cb70-6" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">&quot;lines&quot;</span>,</span>
+<span id="cb70-7"><a href="#cb70-7" tabindex="-1"></a>    <span class="at">line =</span> <span class="fu">list</span>(<span class="at">width =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>,<span class="at">dash=</span><span class="st">&quot;dash&quot;</span>),</span>
+<span id="cb70-8"><a href="#cb70-8" tabindex="-1"></a>    <span class="at">type=</span><span class="st">&quot;scatter3d&quot;</span>,</span>
+<span id="cb70-9"><a href="#cb70-9" tabindex="-1"></a>    <span class="at">name=</span><span class="st">&quot;Y -&gt; U2&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">add_trace</span>(</span>
+<span id="cb70-10"><a href="#cb70-10" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(Y[<span class="dv">1</span>],U[<span class="dv">1</span>,<span class="dv">2</span>]<span class="sc">*</span>(U[,<span class="dv">2</span>]<span class="sc">%*%</span>Y)),</span>
+<span id="cb70-11"><a href="#cb70-11" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(Y[<span class="dv">2</span>],U[<span class="dv">2</span>,<span class="dv">2</span>]<span class="sc">*</span>(U[,<span class="dv">2</span>]<span class="sc">%*%</span>Y)),</span>
+<span id="cb70-12"><a href="#cb70-12" tabindex="-1"></a>    <span class="at">z =</span> <span class="fu">c</span>(Y[<span class="dv">3</span>],U[<span class="dv">3</span>,<span class="dv">2</span>]<span class="sc">*</span>(U[,<span class="dv">2</span>]<span class="sc">%*%</span>Y)),</span>
+<span id="cb70-13"><a href="#cb70-13" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">&quot;lines&quot;</span>,</span>
+<span id="cb70-14"><a href="#cb70-14" tabindex="-1"></a>    <span class="at">line =</span> <span class="fu">list</span>(<span class="at">width =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>, <span class="at">dash=</span><span class="st">&quot;dash&quot;</span>),</span>
+<span id="cb70-15"><a href="#cb70-15" tabindex="-1"></a>    <span class="at">type=</span><span class="st">&quot;scatter3d&quot;</span>,</span>
+<span id="cb70-16"><a href="#cb70-16" tabindex="-1"></a>    <span class="at">name=</span><span class="st">&quot;Y -&gt; U2&quot;</span>)</span>
+<span id="cb70-17"><a href="#cb70-17" tabindex="-1"></a>p5</span></code></pre></div>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-2989378f6ea5da33a5fd" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-2989378f6ea5da33a5fd">{"x":{"visdat":{"1751b56a0ae71":["function () ","plotlyVisDat"]},"cur_data":"1751b56a0ae71","attrs":{"1751b56a0ae71":{"x":{},"y":{},"z":{},"name":"origin","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","mode":"markers","inherit":true},"1751b56a0ae71.1":{"x":[0,1],"y":[0,0],"z":[0,0],"name":"obs1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.2":{"x":[0,0],"y":[0,1],"z":[0,0],"name":"obs2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.3":{"x":[0,0],"y":[0,0],"z":[0,1],"name":"obs3","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.4":{"x":[0,1],"y":[0,1],"z":[0,1],"name":"X1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"black"},"type":"scatter3d","inherit":true},"1751b56a0ae71.5":{"x":[0,1],"y":[0,2],"z":[0,3],"name":"X2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"black"},"type":"scatter3d","inherit":true},"1751b56a0ae71.6":{"x":[0,0.91160672519099273],"y":[0,0.38817060670267134],"z":[0,-0.13526551178565005],"name":"U1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"blue"},"type":"scatter3d","inherit":true},"1751b56a0ae71.7":{"x":[0,-0.048026158704263522],"y":[0,0.42738380107979446],"z":[0,0.90279376086385243],"name":"U2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"blue"},"type":"scatter3d","inherit":true},"1751b56a0ae71.8":{"x":[0,1],"y":[0,2],"z":[0,2],"name":"Y","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"red"},"type":"scatter3d","inherit":true},"1751b56a0ae71.9":{"x":[0,1.292126792136292],"y":[0,0.55019958385589673],"z":[0,-0.19172762442449864],"name":"Y -> U1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"red","dash":"dash"},"type":"scatter3d","inherit":true},"1751b56a0ae71.10":{"x":[1,1.292126792136292],"y":[2,0.55019958385589673],"z":[2,-0.19172762442449864],"name":"Y -> U1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"red","dash":"dash"},"type":"scatter3d","inherit":true},"1751b56a0ae71.11":{"x":[0,-0.12546012546962471],"y":[0,1.1164670828107695],"z":[0,2.3583942910911637],"name":"Y -> U2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"red","dash":"dash"},"type":"scatter3d","inherit":true},"1751b56a0ae71.12":{"x":[1,-0.12546012546962471],"y":[2,1.1164670828107695],"z":[2,2.3583942910911637],"name":"Y -> U2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"red","dash":"dash"},"type":"scatter3d","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"aspectmode":"cube","xaxis":{"range":[-4,4],"title":"X1"},"yaxis":{"range":[-4,4],"title":"X2"},"zaxis":{"range":[-4,4],"title":"X3"}},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[0],"y":[0],"z":[0],"name":"origin","type":"scatter3d","mode":"markers","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null},{"x":[0,1],"y":[0,0],"z":[0,0],"name":"obs1","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"frame":null},{"x":[0,0],"y":[0,1],"z":[0,0],"name":"obs2","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"frame":null},{"x":[0,0],"y":[0,0],"z":[0,1],"name":"obs3","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"frame":null},{"x":[0,1],"y":[0,1],"z":[0,1],"name":"X1","mode":"lines","line":{"color":"black","width":5},"type":"scatter3d","marker":{"color":"rgba(148,103,189,1)","line":{"color":"rgba(148,103,189,1)"}},"error_y":{"color":"rgba(148,103,189,1)"},"error_x":{"color":"rgba(148,103,189,1)"},"frame":null},{"x":[0,1],"y":[0,2],"z":[0,3],"name":"X2","mode":"lines","line":{"color":"black","width":5},"type":"scatter3d","marker":{"color":"rgba(140,86,75,1)","line":{"color":"rgba(140,86,75,1)"}},"error_y":{"color":"rgba(140,86,75,1)"},"error_x":{"color":"rgba(140,86,75,1)"},"frame":null},{"x":[0,0.91160672519099273],"y":[0,0.38817060670267134],"z":[0,-0.13526551178565005],"name":"U1","mode":"lines","line":{"color":"blue","width":5},"type":"scatter3d","marker":{"color":"rgba(227,119,194,1)","line":{"color":"rgba(227,119,194,1)"}},"error_y":{"color":"rgba(227,119,194,1)"},"error_x":{"color":"rgba(227,119,194,1)"},"frame":null},{"x":[0,-0.048026158704263522],"y":[0,0.42738380107979446],"z":[0,0.90279376086385243],"name":"U2","mode":"lines","line":{"color":"blue","width":5},"type":"scatter3d","marker":{"color":"rgba(127,127,127,1)","line":{"color":"rgba(127,127,127,1)"}},"error_y":{"color":"rgba(127,127,127,1)"},"error_x":{"color":"rgba(127,127,127,1)"},"frame":null},{"x":[0,1],"y":[0,2],"z":[0,2],"name":"Y","mode":"lines","line":{"color":"red","width":5},"type":"scatter3d","marker":{"color":"rgba(188,189,34,1)","line":{"color":"rgba(188,189,34,1)"}},"error_y":{"color":"rgba(188,189,34,1)"},"error_x":{"color":"rgba(188,189,34,1)"},"frame":null},{"x":[0,1.292126792136292],"y":[0,0.55019958385589673],"z":[0,-0.19172762442449864],"name":"Y -> U1","mode":"lines","line":{"color":"red","width":5,"dash":"dash"},"type":"scatter3d","marker":{"color":"rgba(23,190,207,1)","line":{"color":"rgba(23,190,207,1)"}},"error_y":{"color":"rgba(23,190,207,1)"},"error_x":{"color":"rgba(23,190,207,1)"},"frame":null},{"x":[1,1.292126792136292],"y":[2,0.55019958385589673],"z":[2,-0.19172762442449864],"name":"Y -> U1","mode":"lines","line":{"color":"red","width":5,"dash":"dash"},"type":"scatter3d","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"frame":null},{"x":[0,-0.12546012546962471],"y":[0,1.1164670828107695],"z":[0,2.3583942910911637],"name":"Y -> U2","mode":"lines","line":{"color":"red","width":5,"dash":"dash"},"type":"scatter3d","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"frame":null},{"x":[1,-0.12546012546962471],"y":[2,1.1164670828107695],"z":[2,2.3583942910911637],"name":"Y -> U2","mode":"lines","line":{"color":"red","width":5,"dash":"dash"},"type":"scatter3d","marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<ul>
+<li><span class="math inline">\(\hat{\mathbf{Y}}\)</span> is the
+resulting vector that lies in the plane spanned by <span
+class="math inline">\(\mathbf{U}_1\)</span> and <span
+class="math inline">\(\mathbf{U}_2\)</span> and thus also in the column
+space of <span class="math inline">\(\mathbf{X}\)</span>.</li>
+</ul>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" tabindex="-1"></a>p6 <span class="ot">&lt;-</span> p5 <span class="sc">%&gt;%</span></span>
+<span id="cb71-2"><a href="#cb71-2" tabindex="-1"></a>  <span class="fu">add_trace</span>(</span>
+<span id="cb71-3"><a href="#cb71-3" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">0</span>,Yhat[<span class="dv">1</span>]),</span>
+<span id="cb71-4"><a href="#cb71-4" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>,Yhat[<span class="dv">2</span>]),</span>
+<span id="cb71-5"><a href="#cb71-5" tabindex="-1"></a>    <span class="at">z =</span> <span class="fu">c</span>(<span class="dv">0</span>,Yhat[<span class="dv">3</span>]),</span>
+<span id="cb71-6"><a href="#cb71-6" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">&quot;lines&quot;</span>,</span>
+<span id="cb71-7"><a href="#cb71-7" tabindex="-1"></a>    <span class="at">line =</span> <span class="fu">list</span>(<span class="at">width =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;orange&quot;</span>),</span>
+<span id="cb71-8"><a href="#cb71-8" tabindex="-1"></a>    <span class="at">type=</span><span class="st">&quot;scatter3d&quot;</span>,</span>
+<span id="cb71-9"><a href="#cb71-9" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;Yhat&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb71-10"><a href="#cb71-10" tabindex="-1"></a>  <span class="fu">add_trace</span>(</span>
+<span id="cb71-11"><a href="#cb71-11" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(Y[<span class="dv">1</span>],Yhat[<span class="dv">1</span>]),</span>
+<span id="cb71-12"><a href="#cb71-12" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(Y[<span class="dv">2</span>],Yhat[<span class="dv">2</span>]),</span>
+<span id="cb71-13"><a href="#cb71-13" tabindex="-1"></a>    <span class="at">z =</span> <span class="fu">c</span>(Y[<span class="dv">3</span>],Yhat[<span class="dv">3</span>]),</span>
+<span id="cb71-14"><a href="#cb71-14" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">&quot;lines&quot;</span>,</span>
+<span id="cb71-15"><a href="#cb71-15" tabindex="-1"></a>    <span class="at">line =</span> <span class="fu">list</span>(<span class="at">width =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;maroon2&quot;</span>),</span>
+<span id="cb71-16"><a href="#cb71-16" tabindex="-1"></a>    <span class="at">type=</span><span class="st">&quot;scatter3d&quot;</span>,</span>
+<span id="cb71-17"><a href="#cb71-17" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;e&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb71-18"><a href="#cb71-18" tabindex="-1"></a>  <span class="fu">add_trace</span>(</span>
+<span id="cb71-19"><a href="#cb71-19" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(U[<span class="dv">1</span>,<span class="dv">1</span>]<span class="sc">*</span>(U[,<span class="dv">1</span>]<span class="sc">%*%</span>Y),Yhat[<span class="dv">1</span>]),</span>
+<span id="cb71-20"><a href="#cb71-20" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(U[<span class="dv">2</span>,<span class="dv">1</span>]<span class="sc">*</span>(U[,<span class="dv">1</span>]<span class="sc">%*%</span>Y),Yhat[<span class="dv">2</span>]),</span>
+<span id="cb71-21"><a href="#cb71-21" tabindex="-1"></a>    <span class="at">z =</span> <span class="fu">c</span>(U[<span class="dv">3</span>,<span class="dv">1</span>]<span class="sc">*</span>(U[,<span class="dv">1</span>]<span class="sc">%*%</span>Y),Yhat[<span class="dv">3</span>]),</span>
+<span id="cb71-22"><a href="#cb71-22" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">&quot;lines&quot;</span>,</span>
+<span id="cb71-23"><a href="#cb71-23" tabindex="-1"></a>    <span class="at">line =</span> <span class="fu">list</span>(<span class="at">width =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;orange&quot;</span>, <span class="at">dash=</span><span class="st">&quot;dash&quot;</span>),</span>
+<span id="cb71-24"><a href="#cb71-24" tabindex="-1"></a>    <span class="at">type=</span><span class="st">&quot;scatter3d&quot;</span>,</span>
+<span id="cb71-25"><a href="#cb71-25" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;Y -&gt; U&quot;</span>)  <span class="sc">%&gt;%</span></span>
+<span id="cb71-26"><a href="#cb71-26" tabindex="-1"></a>  <span class="fu">add_trace</span>(</span>
+<span id="cb71-27"><a href="#cb71-27" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(U[<span class="dv">1</span>,<span class="dv">2</span>]<span class="sc">*</span>(U[,<span class="dv">2</span>]<span class="sc">%*%</span>Y),Yhat[<span class="dv">1</span>]),</span>
+<span id="cb71-28"><a href="#cb71-28" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(U[<span class="dv">2</span>,<span class="dv">2</span>]<span class="sc">*</span>(U[,<span class="dv">2</span>]<span class="sc">%*%</span>Y),Yhat[<span class="dv">2</span>]),</span>
+<span id="cb71-29"><a href="#cb71-29" tabindex="-1"></a>    <span class="at">z =</span> <span class="fu">c</span>(U[<span class="dv">3</span>,<span class="dv">2</span>]<span class="sc">*</span>(U[,<span class="dv">2</span>]<span class="sc">%*%</span>Y),Yhat[<span class="dv">3</span>]),</span>
+<span id="cb71-30"><a href="#cb71-30" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">&quot;lines&quot;</span>,</span>
+<span id="cb71-31"><a href="#cb71-31" tabindex="-1"></a>    <span class="at">line =</span> <span class="fu">list</span>(<span class="at">width =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;orange&quot;</span>, <span class="at">dash=</span><span class="st">&quot;dash&quot;</span>),</span>
+<span id="cb71-32"><a href="#cb71-32" tabindex="-1"></a>    <span class="at">type=</span><span class="st">&quot;scatter3d&quot;</span>,</span>
+<span id="cb71-33"><a href="#cb71-33" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;Y -&gt; U&quot;</span>)</span>
+<span id="cb71-34"><a href="#cb71-34" tabindex="-1"></a>p6</span></code></pre></div>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-a6ffd5344e3d5a6ea429" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-a6ffd5344e3d5a6ea429">{"x":{"visdat":{"1751b56a0ae71":["function () ","plotlyVisDat"]},"cur_data":"1751b56a0ae71","attrs":{"1751b56a0ae71":{"x":{},"y":{},"z":{},"name":"origin","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","mode":"markers","inherit":true},"1751b56a0ae71.1":{"x":[0,1],"y":[0,0],"z":[0,0],"name":"obs1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.2":{"x":[0,0],"y":[0,1],"z":[0,0],"name":"obs2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.3":{"x":[0,0],"y":[0,0],"z":[0,1],"name":"obs3","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"grey"},"type":"scatter3d","inherit":true},"1751b56a0ae71.4":{"x":[0,1],"y":[0,1],"z":[0,1],"name":"X1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"black"},"type":"scatter3d","inherit":true},"1751b56a0ae71.5":{"x":[0,1],"y":[0,2],"z":[0,3],"name":"X2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"black"},"type":"scatter3d","inherit":true},"1751b56a0ae71.6":{"x":[0,0.91160672519099273],"y":[0,0.38817060670267134],"z":[0,-0.13526551178565005],"name":"U1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"blue"},"type":"scatter3d","inherit":true},"1751b56a0ae71.7":{"x":[0,-0.048026158704263522],"y":[0,0.42738380107979446],"z":[0,0.90279376086385243],"name":"U2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"blue"},"type":"scatter3d","inherit":true},"1751b56a0ae71.8":{"x":[0,1],"y":[0,2],"z":[0,2],"name":"Y","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"red"},"type":"scatter3d","inherit":true},"1751b56a0ae71.9":{"x":[0,1.292126792136292],"y":[0,0.55019958385589673],"z":[0,-0.19172762442449864],"name":"Y -> U1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"red","dash":"dash"},"type":"scatter3d","inherit":true},"1751b56a0ae71.10":{"x":[1,1.292126792136292],"y":[2,0.55019958385589673],"z":[2,-0.19172762442449864],"name":"Y -> U1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"red","dash":"dash"},"type":"scatter3d","inherit":true},"1751b56a0ae71.11":{"x":[0,-0.12546012546962471],"y":[0,1.1164670828107695],"z":[0,2.3583942910911637],"name":"Y -> U2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"red","dash":"dash"},"type":"scatter3d","inherit":true},"1751b56a0ae71.12":{"x":[1,-0.12546012546962471],"y":[2,1.1164670828107695],"z":[2,2.3583942910911637],"name":"Y -> U2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"red","dash":"dash"},"type":"scatter3d","inherit":true},"1751b56a0ae71.13":{"x":[0,1.1666666666666674],"y":[0,1.6666666666666674],"z":[0,2.1666666666666674],"name":"Yhat","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"orange"},"type":"scatter3d","inherit":true},"1751b56a0ae71.14":{"x":[1,1.1666666666666674],"y":[2,1.6666666666666674],"z":[2,2.1666666666666674],"name":"e","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"maroon2"},"type":"scatter3d","inherit":true},"1751b56a0ae71.15":{"x":[1.292126792136292,1.1666666666666674],"y":[0.55019958385589673,1.6666666666666674],"z":[-0.19172762442449864,2.1666666666666674],"name":"Y -> U","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"orange","dash":"dash"},"type":"scatter3d","inherit":true},"1751b56a0ae71.16":{"x":[-0.12546012546962471,1.1666666666666674],"y":[1.1164670828107695,1.6666666666666674],"z":[2.3583942910911637,2.1666666666666674],"name":"Y -> U","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"mode":"lines","line":{"width":5,"color":"orange","dash":"dash"},"type":"scatter3d","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"aspectmode":"cube","xaxis":{"range":[-4,4],"title":"X1"},"yaxis":{"range":[-4,4],"title":"X2"},"zaxis":{"range":[-4,4],"title":"X3"}},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[0],"y":[0],"z":[0],"name":"origin","type":"scatter3d","mode":"markers","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null},{"x":[0,1],"y":[0,0],"z":[0,0],"name":"obs1","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"frame":null},{"x":[0,0],"y":[0,1],"z":[0,0],"name":"obs2","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"frame":null},{"x":[0,0],"y":[0,0],"z":[0,1],"name":"obs3","mode":"lines","line":{"color":"grey","width":5},"type":"scatter3d","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"frame":null},{"x":[0,1],"y":[0,1],"z":[0,1],"name":"X1","mode":"lines","line":{"color":"black","width":5},"type":"scatter3d","marker":{"color":"rgba(148,103,189,1)","line":{"color":"rgba(148,103,189,1)"}},"error_y":{"color":"rgba(148,103,189,1)"},"error_x":{"color":"rgba(148,103,189,1)"},"frame":null},{"x":[0,1],"y":[0,2],"z":[0,3],"name":"X2","mode":"lines","line":{"color":"black","width":5},"type":"scatter3d","marker":{"color":"rgba(140,86,75,1)","line":{"color":"rgba(140,86,75,1)"}},"error_y":{"color":"rgba(140,86,75,1)"},"error_x":{"color":"rgba(140,86,75,1)"},"frame":null},{"x":[0,0.91160672519099273],"y":[0,0.38817060670267134],"z":[0,-0.13526551178565005],"name":"U1","mode":"lines","line":{"color":"blue","width":5},"type":"scatter3d","marker":{"color":"rgba(227,119,194,1)","line":{"color":"rgba(227,119,194,1)"}},"error_y":{"color":"rgba(227,119,194,1)"},"error_x":{"color":"rgba(227,119,194,1)"},"frame":null},{"x":[0,-0.048026158704263522],"y":[0,0.42738380107979446],"z":[0,0.90279376086385243],"name":"U2","mode":"lines","line":{"color":"blue","width":5},"type":"scatter3d","marker":{"color":"rgba(127,127,127,1)","line":{"color":"rgba(127,127,127,1)"}},"error_y":{"color":"rgba(127,127,127,1)"},"error_x":{"color":"rgba(127,127,127,1)"},"frame":null},{"x":[0,1],"y":[0,2],"z":[0,2],"name":"Y","mode":"lines","line":{"color":"red","width":5},"type":"scatter3d","marker":{"color":"rgba(188,189,34,1)","line":{"color":"rgba(188,189,34,1)"}},"error_y":{"color":"rgba(188,189,34,1)"},"error_x":{"color":"rgba(188,189,34,1)"},"frame":null},{"x":[0,1.292126792136292],"y":[0,0.55019958385589673],"z":[0,-0.19172762442449864],"name":"Y -> U1","mode":"lines","line":{"color":"red","width":5,"dash":"dash"},"type":"scatter3d","marker":{"color":"rgba(23,190,207,1)","line":{"color":"rgba(23,190,207,1)"}},"error_y":{"color":"rgba(23,190,207,1)"},"error_x":{"color":"rgba(23,190,207,1)"},"frame":null},{"x":[1,1.292126792136292],"y":[2,0.55019958385589673],"z":[2,-0.19172762442449864],"name":"Y -> U1","mode":"lines","line":{"color":"red","width":5,"dash":"dash"},"type":"scatter3d","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"frame":null},{"x":[0,-0.12546012546962471],"y":[0,1.1164670828107695],"z":[0,2.3583942910911637],"name":"Y -> U2","mode":"lines","line":{"color":"red","width":5,"dash":"dash"},"type":"scatter3d","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"frame":null},{"x":[1,-0.12546012546962471],"y":[2,1.1164670828107695],"z":[2,2.3583942910911637],"name":"Y -> U2","mode":"lines","line":{"color":"red","width":5,"dash":"dash"},"type":"scatter3d","marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"frame":null},{"x":[0,1.1666666666666674],"y":[0,1.6666666666666674],"z":[0,2.1666666666666674],"name":"Yhat","mode":"lines","line":{"color":"orange","width":5},"type":"scatter3d","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"frame":null},{"x":[1,1.1666666666666674],"y":[2,1.6666666666666674],"z":[2,2.1666666666666674],"name":"e","mode":"lines","line":{"color":"maroon2","width":5},"type":"scatter3d","marker":{"color":"rgba(148,103,189,1)","line":{"color":"rgba(148,103,189,1)"}},"error_y":{"color":"rgba(148,103,189,1)"},"error_x":{"color":"rgba(148,103,189,1)"},"frame":null},{"x":[1.292126792136292,1.1666666666666674],"y":[0.55019958385589673,1.6666666666666674],"z":[-0.19172762442449864,2.1666666666666674],"name":"Y -> U","mode":"lines","line":{"color":"orange","width":5,"dash":"dash"},"type":"scatter3d","marker":{"color":"rgba(140,86,75,1)","line":{"color":"rgba(140,86,75,1)"}},"error_y":{"color":"rgba(140,86,75,1)"},"error_x":{"color":"rgba(140,86,75,1)"},"frame":null},{"x":[-0.12546012546962471,1.1666666666666674],"y":[1.1164670828107695,1.6666666666666674],"z":[2.3583942910911637,2.1666666666666674],"name":"Y -> U","mode":"lines","line":{"color":"orange","width":5,"dash":"dash"},"type":"scatter3d","marker":{"color":"rgba(227,119,194,1)","line":{"color":"rgba(227,119,194,1)"}},"error_y":{"color":"rgba(227,119,194,1)"},"error_x":{"color":"rgba(227,119,194,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div id="error" class="section level3" number="5.3.4">
+<h3><span class="header-section-number">5.3.4</span> Error</h3>
+<p>Note, that it is also clear from the equation in the derivation of
+the least squares solution that the residual is orthogonal on the column
+space:</p>
+<p><span class="math display">\[
+-2 \mathbf{X}^T(\mathbf{Y}-\mathbf{X}\boldsymbol{\beta}) = 0
+\]</span></p>
+<hr />
+</div>
+</div>
+<div id="variance-estimator" class="section level2" number="5.4">
+<h2><span class="header-section-number">5.4</span> Variance
+Estimator?</h2>
+<p><span class="math display">\[
+\begin{array}{ccl}
+\hat{\boldsymbol{\Sigma}}_{\hat{\mathbf{\beta}}}
+&amp;=&amp;\text{var}\left[(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}\right]\\\\
+&amp;=&amp;(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\text{var}\left[\mathbf{Y}\right]\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\\\\
+&amp;=&amp;(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T(\mathbf{I}\sigma^2)\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}
+\\\\
+&amp;=&amp;(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{I}\quad\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\sigma^2\\\\
+%\hat{\boldmath{\Sigma}}_{\hat{\mathbf{\beta}}}&amp;=&amp;(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\var\left[\mathbf{Y}\right](\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}\\
+&amp;=&amp;(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\sigma^2\\\\
+&amp;=&amp;(\mathbf{X}^T\mathbf{X})^{-1}\sigma^2
+\end{array}
+\]</span></p>
+<hr />
+</div>
+<div id="contrasts" class="section level2" number="5.5">
+<h2><span class="header-section-number">5.5</span> Contrasts</h2>
+<p>Hypotheses often involve linear combinations of the model
+parameters!</p>
+<p>e.g.</p>
+<ul>
+<li><p><span class="math inline">\(H_0: \log_2{FC}_{g3n1-g1n1}=
+\beta_{g3} + \hat\beta_{g3n1}=0\)</span> <span
+class="math inline">\(\rightarrow\)</span> “grade3+grade3:node1 =
+0”</p></li>
+<li><p>Let <span class="math display">\[
+\boldsymbol{\beta} = \left[
+\begin{array}{c}
+\beta_{0}\\
+\beta_{g3}\\
+\beta_{n1}\\
+\beta_{g3:n1}
+\end{array}
+\right]\]</span></p></li>
+<li><p>we can write that contrast using a contrast matrix: <span
+class="math display">\[
+\mathbf{L}=\left[\begin{array}{c}0\\1\\0\\1\end{array}\right]
+\rightarrow \mathbf{L}^T\boldsymbol{\beta} \]</span></p></li>
+<li><p>Then the variance becomes: <span class="math display">\[
+\text{var}_{\mathbf{L}^T\boldsymbol{\hat\beta}}= \mathbf{L}^T
+\boldsymbol{\Sigma}_{\boldsymbol{\hat\beta}}\mathbf{L}
+\]</span></p></li>
+</ul>
+<hr />
+</div>
+</div>
+<div id="homework-adopt-the-gene-analysis-on-log-scale-in-matrix-form"
+class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Homework: Adopt the
+gene analysis on log scale in matrix form!</h1>
+<ol style="list-style-type: decimal">
+<li><p>Study the solution of the exercise to understand the analysis in
+R</p></li>
+<li><p>Calculate</p></li>
+</ol>
+<ul>
+<li>model parameters and contrasts of interest</li>
+<li>standard errors, standard errors on contrasts</li>
+<li>t-test statistics on the model parameters and contrasts of
+interest</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li>Compare your results with the output of the lm(.) function</li>
+</ol>
+<hr />
+<div id="inspiration" class="section level2" number="6.1">
+<h2><span class="header-section-number">6.1</span> Inspiration</h2>
+<p>Tip: details on the implementation can be found in the book of
+Faraway (chapter 2). <a href="https://people.bath.ac.uk/jjf23/book/"
+class="uri">https://people.bath.ac.uk/jjf23/book/</a></p>
+<ul>
+<li>Design matrix</li>
+</ul>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>grade<span class="sc">*</span>node,<span class="at">data=</span>gene)</span></code></pre></div>
+<ul>
+<li>Transpose of a matrix: use function t(.)</li>
+</ul>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" tabindex="-1"></a><span class="fu">t</span>(X)</span></code></pre></div>
+<pre><code>##              1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
+## (Intercept)  1 1 1 1 1 1 1 1 1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+## grade3       1 1 0 0 0 1 1 0 1  1  0  1  0  0  0  1  0  1  0  1  0  1  1  0
+## node1        1 1 1 1 0 0 1 1 0  0  0  0  0  0  0  1  1  0  1  1  1  0  1  0
+## grade3:node1 1 1 0 0 0 0 1 0 0  0  0  0  0  0  0  1  0  0  0  1  0  0  1  0
+## attr(,&quot;assign&quot;)
+## [1] 0 1 2 3
+## attr(,&quot;contrasts&quot;)
+## attr(,&quot;contrasts&quot;)$grade
+## [1] &quot;contr.treatment&quot;
+## 
+## attr(,&quot;contrasts&quot;)$node
+## [1] &quot;contr.treatment&quot;</code></pre>
+<ul>
+<li>Matrix product %*% operator</li>
+</ul>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" tabindex="-1"></a><span class="fu">t</span>(X)<span class="sc">%*%</span>X</span></code></pre></div>
+<pre><code>##              (Intercept) grade3 node1 grade3:node1
+## (Intercept)           24     12    12            6
+## grade3                12     12     6            6
+## node1                 12      6    12            6
+## grade3:node1           6      6     6            6</code></pre>
+<ul>
+<li>Degrees of freedom of a model?</li>
+</ul>
+<p><span class="math display">\[ df =  n-p\]</span></p>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" tabindex="-1"></a><span class="fu">summary</span>(lm1)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ x, data = data)
+## 
+## Residuals:
+##       1       2       3 
+## -0.1667  0.3333 -0.1667 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)   0.6667     0.6236   1.069    0.479
+## x             0.5000     0.2887   1.732    0.333
+## 
+## Residual standard error: 0.4082 on 1 degrees of freedom
+## Multiple R-squared:   0.75,  Adjusted R-squared:    0.5 
+## F-statistic:     3 on 1 and 1 DF,  p-value: 0.3333</code></pre>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" tabindex="-1"></a>dfRes <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(X)<span class="sc">-</span><span class="fu">ncol</span>(X))</span>
+<span id="cb79-2"><a href="#cb79-2" tabindex="-1"></a>dfRes</span></code></pre></div>
+<pre><code>## [1] 20</code></pre>
+<ul>
+<li>Variance estimator: MSE</li>
+</ul>
+<p><span class="math display">\[
+\hat \sigma^2 = \frac{\sum\limits_{i=1}^n\epsilon_i^2}{n-p}
+\]</span></p>
+<ul>
+<li><p>Invert matrix: use function solve(.)</p></li>
+<li><p>Diagonal elements of a matrix: use function diag(.)</p></li>
+</ul>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" tabindex="-1"></a><span class="fu">t</span>(X)<span class="sc">%*%</span>X</span></code></pre></div>
+<pre><code>##              (Intercept) grade3 node1 grade3:node1
+## (Intercept)           24     12    12            6
+## grade3                12     12     6            6
+## node1                 12      6    12            6
+## grade3:node1           6      6     6            6</code></pre>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" tabindex="-1"></a><span class="fu">diag</span>(<span class="fu">t</span>(X)<span class="sc">%*%</span>X)</span></code></pre></div>
+<pre><code>##  (Intercept)       grade3        node1 grade3:node1 
+##           24           12           12            6</code></pre>
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUmVjYXAgZ2VuZXJhbCBsaW5lYXIgbW9kZWwiCmF1dGhvcjogIkxpZXZlbiBDbGVtZW50IgpkYXRlOiAic3RhdE9taWNzLCBHaGVudCBVbml2ZXJzaXR5IChodHRwczovL3N0YXRvbWljcy5naXRodWIuaW8pIgpvdXRwdXQ6CiAgICBodG1sX2RvY3VtZW50OgogICAgICBjb2RlX2Rvd25sb2FkOiB0cnVlCiAgICAgIHRoZW1lOiBjb3NtbwogICAgICB0b2M6IHRydWUKICAgICAgdG9jX2Zsb2F0OiB0cnVlCiAgICAgIGhpZ2hsaWdodDogdGFuZ28KICAgICAgbnVtYmVyX3NlY3Rpb25zOiB0cnVlCiAgICBib29rZG93bjo6cGRmX2RvY3VtZW50MjoKICAgICAgdG9jOiB0cnVlCiAgICAgIG51bWJlcl9zZWN0aW9uczogdHJ1ZQogICAgICBsYXRleF9lbmdpbmU6IHhlbGF0ZXgKYWx3YXlzX2FsbG93X2h0bWw6IHRydWUKLS0tCgoKPGEgcmVsPSJsaWNlbnNlIiBocmVmPSJodHRwczovL2NyZWF0aXZlY29tbW9ucy5vcmcvbGljZW5zZXMvYnktbmMtc2EvNC4wIj48aW1nIGFsdD0iQ3JlYXRpdmUgQ29tbW9ucyBMaWNlbnNlIiBzdHlsZT0iYm9yZGVyLXdpZHRoOjAiIHNyYz0iaHR0cHM6Ly9pLmNyZWF0aXZlY29tbW9ucy5vcmcvbC9ieS1uYy1zYS80LjAvODh4MzEucG5nIiAvPjwvYT4KClRoaXMgaXMgcGFydCBvZiB0aGUgb25saW5lIGNvdXJzZSBbU3RhdGlzdGljYWwgR2Vub21pY3MgMjAyMiAoU0dBKV0oaHR0cHM6Ly9zdGF0b21pY3MuZ2l0aHViLmlvL1NHQS8pCgojIEJyZWFzdCBjYW5jZXIgZXhhbXBsZQoKLSBwYXJ0IG9mIHN0dWR5IGh0dHBzOi8vZG9pLm9yZy8xMC4xMDkzL2puY2kvZGpqMDUyKQotIEhpc3RvbG9naWMgZ3JhZGUgaW4gYnJlYXN0IGNhbmNlciBjbGluaWNhbGx5IHByb2dub3N0aWMuCkFzc29jaWF0aW9uIG9mIGhpc3RvbG9naWMgZ3JhZGUgb24gZXhwcmVzc2lvbiBvZiBLUE5BMiBnZW5lIHRoYXQgaXMga25vd24gdG8gYmUgYXNzb2NpYXRlZCB3aXRoIHBvb3IgQkMgcHJvZ25vc2lzLgotIFBvcHVsYXRpb246IGFsbCBjdXJyZW50IGFuZCBmdXR1cmUgYnJlYXN0IGNhbmNlciBwYXRpZW50cwoKLS0tCgoKIVtdKC4vZmlndXJlcy9zdGF0R2Vub21pY3NHZW50MjAxNzE4LTEuanBlZykKCi0tLQoKIVtdKC4vZmlndXJlcy9zdGF0R2Vub21pY3NHZW50MjAxNzE4LTIuanBlZykKCi0tLQoKIVtdKC4vZmlndXJlcy9zdGF0R2Vub21pY3NHZW50MjAxNzE4LTMuanBlZykKCi0tLQoKCiFbXSguL2ZpZ3VyZXMvc3RhdEdlbm9taWNzR2VudDIwMTcxOC00LmpwZWcpCgotLS0KCgohW10oLi9maWd1cmVzL3N0YXRHZW5vbWljc0dlbnQyMDE3MTgtNS5qcGVnKQoKLS0tCgoKIVtdKC4vZmlndXJlcy9zdGF0R2Vub21pY3NHZW50MjAxNzE4LTYuanBlZykKCgojIERhdGEgRXhwbG9yYXRpb24KCiMjIEltcG9ydAoKYGBge3J9CmxpYnJhcnkodGlkeXZlcnNlKQpnZW5lIDwtIHJlYWQudGFibGUoImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9zdGF0T21pY3MvU0dBMjEvbWFzdGVyL2RhdGEva3BuYTIudHh0IixoZWFkZXI9VFJVRSkKaGVhZChnZW5lKQpgYGAKCldlIHdpbGwgdHJhbnNmb3JtIHRoZSB2YXJpYWJsZSBncmFkZSBhbmQgbm9kZSB0byBhIGZhY3RvcgoKYGBge3J9CmdlbmUkZ3JhZGUgPC0gYXMuZmFjdG9yKGdlbmUkZ3JhZGUpCmdlbmUkbm9kZSA8LSBhcy5mYWN0b3IoZ2VuZSRub2RlKQpgYGAKCiMjIFN1bW1hcnkgc3RhdGlzdGljcwoKYGBge3J9CmdlbmVTdW0gPC0gZ2VuZSAlPiUKICBncm91cF9ieShncmFkZSkgJT4lCiAgc3VtbWFyaXplKG1lYW4gPSBtZWFuKGdlbmUpLAogICAgICAgICAgICBzZCA9IHNkKGdlbmUpLAogICAgICAgICAgICBuPWxlbmd0aChnZW5lKQogICAgICAgICAgICApICU+JQogIG11dGF0ZShzZSA9IHNkL3NxcnQobikpCmdlbmVTdW0KYGBgCgojIyBWaXN1YWxpc2F0aW9uCgpgYGB7cn0KZ2VuZSAlPiUKICBnZ3Bsb3QoYWVzKHg9Z3JhZGUseT1nZW5lKSkgKwogIGdlb21fYm94cGxvdChvdXRsaWVyLnNoYXBlPU5BKSArCiAgZ2VvbV9qaXR0ZXIoKQpgYGAKCldlIGNhbiBhbHNvIHNhdmUgdGhlIHBsb3RzIGFzIG9iamVjdHMgZm9yIGxhdGVyIHVzZSEKCmBgYHtyfQpwMSA8LSBnZW5lICU+JQogIGdncGxvdChhZXMoeD1ncmFkZSx5PWdlbmUpKSArCiAgZ2VvbV9ib3hwbG90KG91dGxpZXIuc2hhcGU9TkEpICsKICBnZW9tX2ppdHRlcigpCgpwMiA8LSBnZW5lICU+JQogIGdncGxvdChhZXMoc2FtcGxlPWdlbmUpKSArCiAgZ2VvbV9xcSgpICsKICBnZW9tX3FxX2xpbmUoKSArCiAgZmFjZXRfd3JhcCh+Z3JhZGUpCgpwMQpwMgpgYGAKCgojIyBSZXNlYXJjaCBxdWVzdGlvbnMKClJlc2VhcmNoZXJzIHdhbnQgdG8gYXNzZXNzIHRoZSBhc3NvY2lhdGlvbiBvZiB0aGUgaGlzdG9sb2dpY2FsIGdyYWRlIG9uIEtQTkEyIGdlbmUgZXhwcmVzc2lvbgoKCgoKIVtdKC4vZmlndXJlcy9zdGF0R2Vub21pY3NHZW50MjAxNzE4LTYuanBlZykKCi0tLQoKIyMgRXN0aW1hdGlvbiBvZiBlZmZlY3Qgc2l6ZSBhbmQgc3RhbmRhcmQgZXJyb3IKCmBgYHtyfQplZmZlY3RTaXplIDwtIHRpYmJsZSgKICBkZWx0YSA9IGdlbmVTdW0kbWVhblsyXS0gZ2VuZVN1bSRtZWFuWzFdLAogIHNlRGVsdGEgPSBnZW5lU3VtICU+JQogICAgcHVsbChzZSkgJT4lCiAgICAuXjIgJT4lCiAgICBzdW0gJT4lCiAgICBzcXJ0CiAgKQplZmZlY3RTaXplCmBgYAoKIyBTdGF0aXN0aWNhbCBJbmZlcmVuY2UKCi0gUmVzZWFyY2hlcnMgd2FudCB0byBhc3Nlc3MgdGhlIGFzc29jaWF0aW9uIG9mIGhpc3RvbG9naWNhbCBncmFkZSBvbiBLUE5BMiBnZW5lIGV4cHJlc3Npb24KLSBJbmZlcmVuY2U/CgotLS0KCiFbXSguL2ZpZ3VyZXMvc3RhdEdlbm9taWNzR2VudDIwMTcxOC03LmpwZWcpCgoKLS0tCgoKLSBSZXNlYXJjaGVycyB3YW50IHRvIGFzc2VzcyB0aGUgYXNzb2NpYXRpb24gb2YgaGlzdG9sb2dpY2FsIGdyYWRlIG9uIEtQTkEyIGdlbmUgZXhwcmVzc2lvbgotIEluZmVyZW5jZT8KLSB0ZXN0aW5nICsgQ0kgJCBccmlnaHRhcnJvdyAkIEFzc3VtcHRpb25zCgotLS0KCi0gSW4gZ2VuZXJhbCB3ZSBzdGFydCBmcm9tICoqYWx0ZXJuYXRpdmUgaHlwb3RoZXNlKiogJEhfQSQ6IHdlIHdhbnQgdG8gc2hvdyBhbiBhc3NvY2lhdGlvbgotIEdlbmUgZXhwcmVzc2lvbiBvZiBncmFkZSAxIGFuZCBncmFkZSAzIHBhdGllbnRzIGlzIG9uIGF2ZXJhZ2UgZGlmZmVyZW50CgotIEJ1dCwgd2Ugd2lsbCBhc3Nlc3MgaXQgYnkgZmFsc2lmeWluZyB0aGUgb3Bwb3NpdGU6CgotIFRoZSBhdmVyYWdlIEtQTkEyIGdlbmUgZXhwcmVzc2lvbiBvZiAgZ3JhZGUgMSBhbmQgZ3JhZGUgMyBwYXRpZW50cyBpcyBlcXVhbAoKLS0tCgotIEhvdyBsaWtlbHkgaXMgaXQgdG8gb2JzZXJ2ZSBhbiBlcXVhbCBvciBtb3JlIGV4dHJlbWUgYXNzb2NpYXRpb24gdGhhbiB0aGUgb25lIG9ic2VydmVkIGluIHRoZSBzYW1wbGUgd2hlbiB0aGUgbnVsbCBoeXBvdGhlc2lzIGlzIHRydWU/CgotIFdoZW4gd2UgbWFrZSBhc3N1bXB0aW9ucyBhYm91dCB0aGUgZGlzdHJpYnV0aW9uIG9mIG91ciB0ZXN0IHN0YXRpc3RpYyB3ZSBjYW4gcXVhbnRpZnkgdGhpcyBwcm9iYWJpbGl0eTogKipwLXZhbHVlKiouCi0gSWYgdGhlIHAtdmFsdWUgaXMgYmVsb3cgYSBzaWduaWZpY2FuY2UgdGhyZXNob2xkICRcYWxwaGEkIHdlIHJlamVjdCB0aGUgbnVsbCBoeXBvdGhlc2lzCgoqV2UgY29udHJvbCB0aGUgcHJvYmFiaWxpdHkgb24gYSBmYWxzZSBwb3NpdGl2ZSByZXN1bHQgYXQgdGhlICRcYWxwaGEkLWxldmVsICh0eXBlIEkgZXJyb3IpKgoKLSBUaGUgcC12YWx1ZSB3aWxsIG9ubHkgYmUgY2FsY3VsYXRlZCBjb3JyZWN0bHkgaWYgdGhlIHVuZGVybHlpbmcgYXNzdW1wdGlvbnMgaG9sZCEKCmBgYHtyfQpsaWJyYXJ5KGdyaWRFeHRyYSkKcDEKcDIKYGBgCgpgYGB7cn0KdC50ZXN0KGdlbmV+Z3JhZGUsZGF0YT1nZW5lKQoKZWZmZWN0U2l6ZSA8LSBlZmZlY3RTaXplICU+JQogIG11dGF0ZSh0LnN0YXQ9ZGVsdGEvc2VEZWx0YSkgJT4lCiAgbXV0YXRlKHAudmFsdWU9IHB0KC1hYnModC5zdGF0KSwyMS4zNTIpKjIpCgplZmZlY3RTaXplCmBgYAoKLSBJbnRlbnNpdGllcyBhcmUgb2Z0ZW4gbm90IG5vcm1hbGx5IGRpc3RyaWJ1dGVkIGFuZCBoYXZlIGEgbWVhbiB2YXJpYW5jZSByZWxhdGlvbgotIENvbW1vbmx5IGxvZzItdHJhbnNmb3JtZWQKLSBEaWZmZXJlbmNlcyBvbiBsb2cgc2NhbGU6CgokJApcbG9nXzIoQikgLSBcbG9nXzIoQSkgPSBcbG9nXzIgXGZyYWN7Qn17QX0gPSBcbG9nXzIgRkNfe1xmcmFje0J9e0F9fQokJAoKCgohW10oLi9maWd1cmVzL3N0YXRHZW5vbWljc0dlbnQyMDE3MTgtOC5qcGVnKQoKLS0tCgojIyBMb2cgdHJhbnNmb3JtYXRpb24KCmBgYHtyfQpnZW5lIDwtIGdlbmUgJT4lCiAgbXV0YXRlKGxnZW5lID0gbG9nMihnZW5lKSkKCnAxIDwtIGdlbmUgJT4lCiAgZ2dwbG90KGFlcyh4PWdyYWRlLHk9bGdlbmUpKSArCiAgZ2VvbV9ib3hwbG90KG91dGxpZXIuc2hhcGU9TkEpICsKICBnZW9tX2ppdHRlcigpCgpwMiA8LSBnZW5lICU+JQogIGdncGxvdChhZXMoc2FtcGxlPWxnZW5lKSkgKwogIGdlb21fcXEoKSArCiAgZ2VvbV9xcV9saW5lKCkgKwogIGZhY2V0X3dyYXAofmdyYWRlKQoKcDEKcDIKCmxvZ3Rlc3QgPC0gdC50ZXN0KGxnZW5lfmdyYWRlLGRhdGE9Z2VuZSx2YXIuZXF1YWw9VFJVRSkKbG9ndGVzdAoKbG9nMkZDIDwtIGxvZ3Rlc3QkZXN0aW1hdGVbMl0tbG9ndGVzdCRlc3RpbWF0ZVsxXQpsb2cyRkMKbmFtZXMobG9nMkZDKSA8LSAiZzMtZzEiCjJebG9nMkZDCmBgYAoKIyMgQ29uY2x1c2lvbgoKVGhlcmUgaXMgYSBleHRyZW1lbHkgc2lnbmlmaWNhbnQgYXNzb2NpYXRpb24gb2YgdGhlIGhpc3RvbG9naWNhbCBncmFkZSBvbiB0aGUgZ2VuZSBleHByZXNzaW9uIGluIHR1bW9yIHRpc3N1ZS4gIE9uIGF2ZXJhZ2UsIHRoZSBnZW5lIGV4cHJlc3Npb24gZm9yIHRoZSBncmFkZSAzIHBhdGllbnRzIGlzIGByIHJvdW5kKDJebG9nMkZDLDIpYCB0aW1lcyBoaWdoZXIgdGhhbiB0aGUgZ2VuZSBleHByZXNzaW9uIGluIGdyYWRlIDEgcGF0aWVudHMgKDk1XCUgQ0kgIFtgciBwYXN0ZShyb3VuZCgyXi1sb2d0ZXN0JGNvbmYuaW50WzI6MV0sMiksY29sbGFwc2U9IiwgIilgXSwgJHA8PDAuMDAxJCkuCgoKCgohW10oLi9maWd1cmVzL3N0YXRHZW5vbWljc0dlbnQyMDE3MTgtMTAuanBlZykgCgotLS0KCgohW10oLi9maWd1cmVzL3N0YXRHZW5vbWljc0dlbnQyMDE3MTgtMTEuanBlZykKCi0tLQoKVGhlIHBhdGllbnRzIGFsc28gZGlmZmVyIGluIHRoZSB0aGVpciBseW1waCBub2RlIHN0YXR1cy4gSGVuY2UsIHdlIGhhdmUgYSB0d28gZmFjdG9yaWFsIGRlc2lnbjogZ3JhZGUgeCBseW1waCBub2RlIHN0YXR1cyEhIQoKU29sdXRpb24/PwoKIVtdKC4vZmlndXJlcy9zdGF0R2Vub21pY3NHZW50MjAxNzE4LTEyLmpwZWcpCgotLS0KCiMgR2VuZXJhbCBMaW5lYXIgTW9kZWwKCkhvdyBjYW4gd2UgaW50ZWdyYXRlIG11bHRpcGxlIGZhY3RvcnMgYW5kIGNvbnRpbnVvdXMgY292YXJpYXRlcyBpbiBsaW5lYXIgbW9kZWwuCgpcWwp5X2k9IFxiZXRhXzAgKyBcYmV0YV8xIHhfe2ksMX0gKyBcYmV0YV8yIHhfe2ksMn0gKyBcYmV0YV97MTJ9eF97aSwxfXhfe2ksMn0rXGVwc2lsb25faSwKXF0Kd2l0aAoKLSAkeF97aSwxfSQgYSBkdW1teSB2YXJpYWJsZSBmb3IgaGlzdG9sb2dpY2FsIGdyYWRlOiAkeF97aSwxfT1cYmVnaW57Y2FzZXN9CjAmIFx0ZXh0e2dyYWRlIDF9XFwKMSYgXHRleHR7Z3JhZGUgM30KXGVuZHtjYXNlc30kCi0gJHhfe2ksMn0kIGEgZHVtbXkgdmFyaWFibGUgZm9yIDogJHhfe2ksMn09XGJlZ2lue2Nhc2VzfQowJiBcdGV4dHtseW1waCBub2RlcyB3ZXJlIG5vdCByZW1vdmVkfVxcCjEmIFx0ZXh0e2x5bXBoIG5vZGVzIHdlcmUgcmVtb3ZlZH0KXGVuZHtjYXNlc30kCi0gJFxlcHNpbG9uX2kkPwoKLS0tCgojIyBJbXBsZW1lbnRhdGlvbiBpbiBSCgpgYGB7cn0KbG0xIDwtIGxtKGdlbmV+Z3JhZGUqbm9kZSxkYXRhPWdlbmUpCnN1bW1hcnkobG0xKQpgYGAKCi0tLQoKIyMgQXNzdW1wdGlvbnMKCmBgYHtyfQpwbG90KGxtMSkKYGBgCgotLS0KCiMjIEJyZWFzdCBjYW5jZXIgZXhhbXBsZQoKLSAgUGFwZXI6IGh0dHBzOi8vZG9pLm9yZy8xMC4xMDkzL2puY2kvZGpqMDUyCi0gSGlzdG9sb2dpYyBncmFkZSBpbiBicmVhc3QgY2FuY2VyIHByb3ZpZGVzIGNsaW5pY2FsbHkgaW1wb3J0YW50IHByb2dub3N0aWMgaW5mb3JtYXRpb24uIFR3byBmYWN0b3JzIGhhdmUgdG8gYmUgY29uY2lkZXJlZDogSGlzdG9sb2dpYyBncmFkZSAoZ3JhZGUgMSBhbmQgZ3JhZGUgMykgYW5kIGx5bXBoIG5vZGUgc3RhdHVzICgwIHZzIDEpLiBUaGUgcmVzZWFyY2hlcnMgYXNzZXNzZWQgZ2VuZSBleHByZXNzaW9uIG9mIHRoZSBLUE5BMiBnZW5lIGEgcHJvdGVpbi1jb2RpbmcgZ2VuZSBhc3NvY2lhdGVkIHdpdGggYnJlYXN0IGNhbmNlciBhbmQgYXJlIG1haW5seSBpbnRlcmVzdGVkIGluIHRoZSBhc3NvY2lhdGlvbiBvZiBoaXN0b2xvZ2ljYWwgZ3JhZGUuIE5vdGUsIHRoYXQgdGhlIGdlbmUgdmFyaWFibGUgY29uc2lzdHMgb2YgYmFja2dyb3VuZCBjb3JyZWN0ZWQgbm9ybWFsaXplZCBpbnRlbnNpdGllcyBvYnRhaW5lZCB3aXRoIGEgbWljcm9hcnJheSBwbGF0Zm9ybS4gVXBvbiBsb2ctdHJhbnNmb3JtYXRpb24sIHRoZXkgYXJlIGtub3duIHRvIGJlIGEgZ29vZCBwcm94eSBmb3IgdGhlICRcbG9nJCB0cmFuc2Zvcm1lZCBjb25jZW50cmF0aW9uIG9mIGdlbmUgZXhwcmVzc2lvbiBwcm9kdWN0IG9mIHRoZSBLUE5BMiBnZW5lLgotIFJlc2VhcmNoIHF1ZXN0aW9ucyBhbmQgdHJhbnNsYXRlIHRoZW0gdG93YXJkcyBtb2RlbCBwYXJhbWV0ZXJzIChjb250cmFzdHMpPwotIE1ha2UgYW4gUiBtYXJrZG93biBmaWxlIHRvIGFuc3dlciB0aGUgcmVzZWFyY2ggcXVlc3Rpb25zCgoKYGBge3J9CmxpYnJhcnkoRXhwbG9yZU1vZGVsTWF0cml4KQpleHBsTXggPC0gVmlzdWFsaXplRGVzaWduKGdlbmUsZGVzaWduRm9ybXVsYSA9IH5ncmFkZSpub2RlKQpleHBsTXgkcGxvdGxpc3QKYGBgCgpZb3UgY2FuIGFsc28gZXhwbG9yZSB0aGUgbW9kZWwgbWF0cml4IGludGVyYWN0aXZlbHk6CgpgYGB7ciBldmFsPUZBTFNFfQpFeHBsb3JlTW9kZWxNYXRyaXgoZ2VuZSxkZXNpZ25Gb3JtdWxhID0gfmdyYWRlKm5vZGUpCmBgYAotLS0KCiMgTGluZWFyIHJlZ3Jlc3Npb24gaW4gbWF0cml4IGZvcm0KCiMjIFNjYWxhciBmb3JtCgotIENvbnNpZGVyIGEgdmVjdG9yIG9mIHByZWRpY3RvcnMgJFxtYXRoYmZ7eH09KHhfMSxcbGRvdHMseF9wKV5UJCBhbmQKLSBhIHJlYWwtdmFsdWVkIHJlc3BvbnNlICRZJAotIHRoZW4gdGhlIGxpbmVhciByZWdyZXNzaW9uIG1vZGVsIGNhbiBiZSB3cml0dGVuIGFzClxbClk9ZihcbWF0aGJme3h9KSArXGVwc2lsb249XGJldGFfMCtcc3VtXGxpbWl0c197aj0xfV5wIHhfalxiZXRhX2ogKyBcZXBzaWxvbgpcXQp3aXRoIGkuaS5kLiAkXGVwc2lsb25cc2ltIE4oMCxcc2lnbWFeMikkCgojIyBNYXRyaXggZm9ybQoKLSAkbiQgb2JzZXJ2YXRpb25zICQoXG1hdGhiZnt4fV8xLHlfMSkgXGxkb3RzIChcbWF0aGJme3h9X24seV9uKSQKLSBSZWdyZXNzaW9uIGluIG1hdHJpeCBub3RhdGlvbgpcW1xtYXRoYmZ7WX09XG1hdGhiZntYXGJldGF9ICsgXG1hdGhiZntcZXBzaWxvbn1cXQp3aXRoICRcbWF0aGJme1l9PVxsZWZ0W1xiZWdpbnthcnJheX17Y315XzFcXCBcdmRvdHNcXHlfblxlbmR7YXJyYXl9XHJpZ2h0XSQsCiRcbWF0aGJme1h9PVxsZWZ0W1xiZWdpbnthcnJheX17Y2NjY30gMSZ4X3sxMX0mXGxkb3RzJnhfezFwfVxcClx2ZG90cyZcdmRvdHMmJlx2ZG90c1xcCjEmeF97bjF9JlxsZG90cyZ4X3tucH0KXGVuZHthcnJheX1ccmlnaHRdJCwKJFxtYXRoYmZ7XGJldGF9PVxsZWZ0W1xiZWdpbnthcnJheX17Y31cYmV0YV8wXFwgXHZkb3RzXFwgXGJldGFfcFxlbmR7YXJyYXl9XHJpZ2h0XSQgYW5kCiRcbWF0aGJme1xlcHNpbG9ufT1cbGVmdFtcYmVnaW57YXJyYXl9e2N9IFxlcHNpbG9uXzEgXFwgXHZkb3RzIFxcIFxlcHNpbG9uX25cZW5ke2FycmF5fVxyaWdodF0kCgojIyBMZWFzdCBTcXVhcmVzIChMUykKLSBNaW5pbWl6ZSB0aGUgcmVzaWR1YWwgc3VtIG9mIHNxdWFyZXMKXGJlZ2lue2VxbmFycmF5Kn0KUlNTKFxtYXRoYmZ7XGJldGF9KSY9JlxzdW1cbGltaXRzX3tpPTF9Xm4gZV4yX2lcXAomPSZcc3VtXGxpbWl0c197aT0xfV5uIFxsZWZ0KHlfaS1cYmV0YV8wLVxzdW1cbGltaXRzX3tqPTF9XnAgeF97aWp9XGJldGFfalxyaWdodCleMgpcZW5ke2VxbmFycmF5Kn0KLSBvciBpbiBtYXRyaXggbm90YXRpb24KXGJlZ2lue2VxbmFycmF5Kn0KUlNTKFxtYXRoYmZ7XGJldGF9KSY9JihcbWF0aGJme1l9LVxtYXRoYmZ7WFxiZXRhfSleVChcbWF0aGJme1l9LVxtYXRoYmZ7WFxiZXRhfSlcXAomPSZcVmVydCBcbWF0aGJme1l9LVxtYXRoYmZ7WFxiZXRhfVxWZXJ0XjJfMgpcZW5ke2VxbmFycmF5Kn0Kd2l0aCB0aGUgJExfMiQtbm9ybSBvZiBhICRwJC1kaW0uIHZlY3RvciAkdiQgJFxWZXJ0IFxtYXRoYmZ7dn0gXFZlcnQ9XHNxcnR7dl8xXjIrXGxkb3RzK3ZfcF4yfSQKJFxyaWdodGFycm93JCAkXGhhdHtcbWF0aGJme1xiZXRhfX09XHRleHR7YXJnbWlufV9cYmV0YSBcVmVydCBcbWF0aGJme1l9LVxtYXRoYmZ7WFxiZXRhfVxWZXJ0XjJfMiQKCi0tLQoKIyMjIE1pbmltaXplIFJTUwpcWwpcYmVnaW57YXJyYXl9e2NjY30KXGZyYWN7XHBhcnRpYWwgUlNTfXtccGFydGlhbCBcbWF0aGJme1xiZXRhfX0mPSZcbWF0aGJmezB9XFxcXApcZnJhY3soXG1hdGhiZntZfS1cbWF0aGJme1hcYmV0YX0pXlQoXG1hdGhiZntZfS1cbWF0aGJme1hcYmV0YX0pfXtccGFydGlhbCBcbWF0aGJme1xiZXRhfX0mPSZcbWF0aGJmezB9XFxcXAotMlxtYXRoYmZ7WH1eVChcbWF0aGJme1l9LVxtYXRoYmZ7WFxiZXRhfSkmPSZcbWF0aGJmezB9XFxcXApcbWF0aGJme1h9XlRcbWF0aGJme1hcYmV0YX0mPSZcbWF0aGJme1h9XlRcbWF0aGJme1l9XFxcXApcaGF0e1xtYXRoYmZ7XGJldGF9fSY9JihcbWF0aGJme1h9XlRcbWF0aGJme1h9KV57LTF9XG1hdGhiZntYfV5UXG1hdGhiZntZfQpcZW5ke2FycmF5fQpcXQoKLS0tCgojIyMgR2VvbWV0cmljIEludGVycHJldGF0aW9uCgojIyMjIFRveSBkYXRhc2V0CgpXZSB3aWxsIGlsbHVzdHJhdGUgdGhpcyBvbiBhIHRveSBkYXRhc2V0CgpgYGB7cn0KbGlicmFyeSh0aWR5dmVyc2UpCmRhdGEgPC0gZGF0YS5mcmFtZSh4PTE6Myx5PWMoMSwyLDIpKQpkYXRhCmBgYAoKIyMjIyBNYXRyaXggZm9ybSBmb3IgdG95IGRhdGFzZXQgCgpXZSBjYW4gYWxzbyB3cml0ZSB0aGlzIGluIG1hdHJpeCBmb3JtCgokJApcbWF0aGJme1l9ID0gXG1hdGhiZntYfVxib2xkc3ltYm9se1xiZXRhfStcYm9sZHN5bWJvbHtcZXBzaWxvbn0KJCQKCndpdGgKCiQkClxtYXRoYmZ7WX09XGxlZnRbClxiZWdpbnthcnJheX17Y30KMVxcCjJcXAoyXFwKXGVuZHthcnJheX1ccmlnaHRdLApccXVhZApcbWF0aGJme1h9PSBcbGVmdFsKXGJlZ2lue2FycmF5fXtjY30KMSYxXFwKMSYyXFwKMSYzXFwKXGVuZHthcnJheX0KXHJpZ2h0XSwKXHF1YWQgXGJvbGRzeW1ib2x7XGJldGF9ID0gXGxlZnRbClxiZWdpbnthcnJheX17Y30KXGJldGFfMFxcClxiZXRhXzFcXApcZW5ke2FycmF5fQpccmlnaHRdClxxdWFkClx0ZXh0e2FuZH0KXHF1YWQKXGJvbGRzeW1ib2x7XGVwc2lsb259PQpcbGVmdFsKXGJlZ2lue2FycmF5fXtjfQpcZXBzaWxvbl8xXFwKXGVwc2lsb25fMlxcClxlcHNpbG9uXzMKXGVuZHthcnJheX0KXHJpZ2h0XQokJAoKIyMjIyBDbGFzc2ljYWwgaW50ZXJwcmV0YXRpb24KCgpNb2RlbCBmaXQgYW5kIHByZWRpY3Rpb25zIGJhc2VkIG9uIHRoZSB0b3kgZGF0YXNldCAKCmBgYHtyfQpsbTEgPC0gbG0oeX54LGRhdGEpCmRhdGEkeWhhdCA8LSBsbTEkZml0dGVkCgpkYXRhICU+JQogIGdncGxvdChhZXMoeCx5KSkgKwogIGdlb21fcG9pbnQoKSArCiAgeWxpbSgwLDQpICsKICB4bGltKDAsNCkgKwogIHN0YXRfc21vb3RoKG1ldGhvZCA9ICJsbSIsIGNvbG9yID0gInJlZCIsIGZ1bGxyYW5nZSA9IFRSVUUpICsKICBnZW9tX3BvaW50KGFlcyh4PXgsIHkgPXloYXQpLCBwY2ggPSAyLCBzaXplID0gMywgY29sb3IgPSAicmVkIikgKwogIGdlb21fc2VnbWVudChkYXRhID0gZGF0YSwgYWVzKHggPSB4LCB4ZW5kID0geCwgeSA9IHksIHllbmQgPSB5aGF0KSwgbHR5ID0gMiApCmBgYAoKCgojIyMgUHJvamVjdGlvbgoKVGhlcmUgaXMgYWxzbyBhbm90aGVyIHBpY3R1cmUgdG8gcmVncmVzc2lvbjoKCi0gSW5zdGVhZCBvZiBwbG90dGluZyBlYWNoIG9ic2VydmF0aW9uICRpPSAxIFxsZG90cyBuJCBhcyBhIGRhdGEtcG9pbnQgaW4gJFxtYXRoYmJ7Un1ecCQgd2l0aCBkaW1lbnNpb25zICQxIFxsZG90cyBwJCBmb3IgZXZlcnkgdmFyaWFibGUvZmVhdHVyZSB0aGF0IGlzIHJlY29yZGVkIGZvciBlYWNoIG9ic2VydmF0aW9uICAKCi0gV2UgY2FuIGFsc28gcGxvdCAkXG1hdGhiZntZfSQsICRcaGF0e1xtYXRoYmZ7WX19JCBhbmQgZWFjaCBjb2x1bW4gb2YgJFxtYXRoYmZ7WH0kOiAkXG1hdGhiZntYfV9qJCB3aXRoICRqPTEgXGxkb3RzIHAkIGFzIGEgdmVjdG9yIGluICRcbWF0aGJie1J9Xm4kIHdpdGggZGltZW5zaW9ucyAkMSBcbGRvdHMgbiQgZm9yIGV2ZXJ5IG9ic2VydmF0aW9uLiAgCgotIEluIHRoaXMgcmVwcmVzZW50YXRpb24gbGluZWFyIHJlZ3Jlc3Npb24gY2FuIGJlIGludGVycHJldGVkIGFzIGEgcHJvamVjdGlvbiBvZiB0aGUgdmVjdG9yICRcbWF0aGJme1l9JCBvbnRvIHRoZSBzdWJzcGFjZSBvZiAkXG1hdGhiYntSfV5uJCB0aGF0IGlzIHNwYW5uZWQgYnkgdGhlIHZlY3RvcnMgZm9yIHRoZSBwcmVkaWN0b3JzICRcbWF0aGJme1h9XzEgXGxkb3RzIFxtYXRoYmZ7WH1fcCQuICAKCi0gVGhlIHNwYWNlICRcbWF0aGJme1h9XzEgXGxkb3RzIFxtYXRoYmZ7WH1fcCQgaXMgYWxzbyByZWZlcnJlZCB0byBhcyB0aGUgY29sdW1uIHNwYWNlIG9mICRcbWF0aGJme1h9JCwgdGhlIHNwYWNlIHRoYXQgY29uc2lzdHMgb2YgYWxsIGxpbmVhciBjb21iaW5hdGlvbnMgb2YgdGhlIHZlY3RvcnMgb2YgdGhlIHByZWRpY3RvcnMgb3IgY29sdW1ucyAkXG1hdGhiZntYfV8xIFxsZG90cyBcbWF0aGJme1h9X3AkLiAgCgojIyMjIEludGVybWV6em86IFByb2plY3Rpb24gb2YgdmVjdG9yIG9uIFggIGFuZCBZIGF4aXMKCiQkClxtYXRoYmZ7ZX09XGxlZnRbXGJlZ2lue2FycmF5fXtjfSBlXzFcXGVfMlxlbmR7YXJyYXl9XHJpZ2h0XSwgXG1hdGhiZnt1fV8xID0gIFxsZWZ0W1xiZWdpbnthcnJheX17Y30gMVxcMFxlbmR7YXJyYXl9XHJpZ2h0XSwgXG1hdGhiZnt1fV8yID0gIFxsZWZ0W1xiZWdpbnthcnJheX17Y30gMFxcMVxlbmR7YXJyYXl9XHJpZ2h0XQokJAoKCmBgYHtyIGVjaG89RkFMU0V9CnBsb3RkYXRhIDwtIGRhdGEuZnJhbWUoZTE9MyxlMj0yKQpwbG90ZGF0YSAlPiUgZ2dwbG90KGFlcyh4PWUxLHk9ZTIpKSArCiAgZ2VvbV9wb2ludCgpICsgCiAgZ2VvbV9zZWdtZW50KGFlcyh4ID0gMywgeSA9IDIsIHhlbmQgPSAzLCB5ZW5kID0gMCksY29sb3I9Im9yYW5nZSIsbGluZXR5cGU9MixzaXplPTIpICsKZ2VvbV9zZWdtZW50KGFlcyh4ID0gMywgeSA9IDIsIHhlbmQgPSAwLCB5ZW5kID0gMiksY29sb3I9Im9yYW5nZSIsbGluZXR5cGU9MixzaXplPTIpICsKIGdlb21fc2VnbWVudChhZXMoeCA9IDAsIHkgPSAwLCB4ZW5kID0gMywgeWVuZCA9IDIpLAogICAgICAgICAgICAgICAgICBhcnJvdyA9IGFycm93KGxlbmd0aCA9IHVuaXQoMC41LCAiY20iKSksY29sb3I9InJlZCIsc2l6ZT0yKSArCiBnZW9tX3NlZ21lbnQoYWVzKHggPSAwLCB5ID0gMCwgeGVuZCA9IDMsIHllbmQgPSAwKSwKICAgICAgICAgICAgICAgICAgYXJyb3cgPSBhcnJvdyhsZW5ndGggPSB1bml0KDAuNSwgImNtIikpLGNvbG9yPSJvcmFuZ2UiLHNpemU9MikgKwogZ2VvbV9zZWdtZW50KGFlcyh4ID0gMCwgeSA9IDAsIHhlbmQgPSAwLCB5ZW5kID0gMiksCiAgICAgICAgICAgICAgICAgIGFycm93ID0gYXJyb3cobGVuZ3RoID0gdW5pdCgwLjUsICJjbSIpKSxjb2xvcj0ib3JhbmdlIixzaXplPTIpICArCiBnZW9tX3NlZ21lbnQoYWVzKHggPSAwLCB5ID0gMCwgeGVuZCA9IDAsIHllbmQgPSAxKSwKICAgICAgICAgICAgICAgICAgYXJyb3cgPSBhcnJvdyhsZW5ndGggPSB1bml0KDAuNSwgImNtIikpLHNpemU9MikgKwpnZW9tX3NlZ21lbnQoYWVzKHggPSAwLCB5ID0gMCwgeGVuZCA9IDEsIHllbmQgPSAwKSwKICAgICAgICAgICAgICAgICAgYXJyb3cgPSBhcnJvdyhsZW5ndGggPSB1bml0KDAuNSwgImNtIikpLHNpemU9MikgKwogZ2VvbV90ZXh0KGFlcyh4PTMuMDUseT0yLjIsbGFiZWw9ImU9KGUxLGUyKSIpLGNvbG9yPSJyZWQiLHNpemUgPSA3LGhqdXN0PSJsZWZ0IikgKyAKIGdlb21fdGV4dChhZXMoeD0zLjA1LHk9MCxsYWJlbD0iKGUxLDApIiksY29sb3I9Im9yYW5nZSIsc2l6ZSA9IDcsaGp1c3Q9ImxlZnQiLHZqdXN0PSJ0b3AiKSArCiBnZW9tX3RleHQoYWVzKHg9MCx5PTIuMixsYWJlbD0iKDAsZTIpIiksY29sb3I9Im9yYW5nZSIsc2l6ZSA9IDcsaGp1c3Q9ImxlZnQiKSArCiBnZW9tX3RleHQoYWVzKHg9MC4wNSx5PTEuMixsYWJlbD0idTI9KDAsMSkiKSxzaXplID0gNyxoanVzdD0ibGVmdCIpICsgCiAgIGdlb21fdGV4dChhZXMoeD0xLjA1LHk9MC4yLGxhYmVsPSJ1MT0oMSwwKSIpLHNpemUgPSA3LGhqdXN0PSJsZWZ0IikgICsKICAgY29vcmRfZml4ZWQoKSArCiAgeGxpbSgtLjUsNCkgKwogIHlsaW0oLS41LDIuNSkKYGBgCgoKCjEuIFByb2plY3Rpb24gb2YgZXJyb3Igb24geC1heGlzIAoKXGJlZ2lue2VxbmFycmF5Kn0KXG1hdGhiZnt1fV8xXlQgXG1hdGhiZntlfSAmPSYgXFZlcnQgXG1hdGhiZnt1fV8xXFZlcnRfMiAgXFZlcnQgXG1hdGhiZntlfV8xXFZlcnRfMiBcY29zIDxcbWF0aGJme3V9XzEsXG1hdGhiZntlfV8xPlxcCiY9JlxsZWZ0W1xiZWdpbnthcnJheX17Y2N9IDEmMFxlbmR7YXJyYXl9XHJpZ2h0XSBcbGVmdFtcYmVnaW57YXJyYXl9e2N9IGVfMVxcZV8yXGVuZHthcnJheX1ccmlnaHRdXFwgJj0mIDFcdGltZXMgZV8xICsgMCBcdGltZXMgZV8yIFxcCiY9JiBlXzFcXApcZW5ke2VxbmFycmF5Kn0KCjIuIFByb2plY3Rpb24gb2YgZXJyb3Igb24geS1heGlzIAoKXGJlZ2lue2VxbmFycmF5Kn0KXG1hdGhiZnt1fV8yXlQgXG1hdGhiZntlfSAmPSYgXGxlZnRbXGJlZ2lue2FycmF5fXtjY30gMSYwXGVuZHthcnJheX1ccmlnaHRdIFxsZWZ0W1xiZWdpbnthcnJheX17Y30gZV8xXFxlXzJcZW5ke2FycmF5fVxyaWdodF1cXCAmPSYgMFx0aW1lcyBlXzEgKyAxIFx0aW1lcyBlXzIgXFwKJj0mIGVfMgpcZW5ke2VxbmFycmF5Kn0KCjMuIFByb2plY3Rpb24gb2YgZXJyb3Igb24gaXRzZWxmIAoKClxiZWdpbntlcW5hcnJheSp9ClxtYXRoYmZ7ZX1eVCBcbWF0aGJme2V9ICY9JlxsZWZ0W1xiZWdpbnthcnJheX17Y2N9IGVfMSZlXzJcZW5ke2FycmF5fVxyaWdodF0gXGxlZnRbXGJlZ2lue2FycmF5fXtjfSBlXzFcXGVfMlxlbmR7YXJyYXl9XHJpZ2h0XVxcCiY9JmVfMV4yK2VfMl4yXFwKJj0mXFZlcnQgZSBcVmVydF4yXzIgXHJpZ2h0YXJyb3cgXHRleHR7IFB5dGhhZ29yZWFuIHRoZW9yZW19ClxlbmR7ZXFuYXJyYXkqfSAKCi0tLQoKIyMjIyBJbnRlcnByZXRhdGlvbiBvZiBsZWFzdCBzcXVhcmVzIGFzIGEgcHJvamVjdGlvbgoKRml0dGVkIHZhbHVlczoKCiQkClxiZWdpbnthcnJheX17bGNsfQpcaGF0e1xtYXRoYmZ7WX19ICY9JiBcbWF0aGJme1h9XGhhdHtcYm9sZHN5bWJvbHtcYmV0YX19XFwKJj0mIFxtYXRoYmZ7WH0gKFxtYXRoYmZ7WH1eVFxtYXRoYmZ7WH0pXnstMX1cbWF0aGJme1h9XlRcbWF0aGJme1l9XFwKJj0mIFxtYXRoYmZ7SFl9ClxlbmR7YXJyYXl9CiQkCndpdGggJFxtYXRoYmZ7SH0kIHRoZSBwcm9qZWN0aW9uIG1hdHJpeCBhbHNvIHJlZmVycmVkIHRvIGFzIHRoZSBoYXQgbWF0cml4LgoKCmBgYHtyfQpYIDwtIG1vZGVsLm1hdHJpeCh+eCxkYXRhKQpYCmBgYAoKYGBge3J9Clh0WCA8LSB0KFgpJSolWApYdFgKYGBgCgpgYGB7cn0KWHRYaW52IDwtIHNvbHZlKHQoWCklKiVYKQpYdFhpbnYKYGBgCgpgYGB7cn0KSCA8LSBYICUqJSBYdFhpbnYgJSolIHQoWCkKSApgYGAKCgpgYGB7cn0KWSA8LSBkYXRhJHkKWWhhdCA8LSBIJSolWQpZaGF0CmBgYAoKCi0gV2UgY2FuIGFsc28gaW50ZXJwcmV0IHRoZSBmaXQgYXMgdGhlIHByb2plY3Rpb24gb2YgdGhlICRuXHRpbWVzIDEkIHZlY3RvciAkXG1hdGhiZntZfSQgb24gdGhlIGNvbHVtbiBzcGFjZSBvZiB0aGUgbWF0cml4ICRcbWF0aGJme1h9JC4KCi0gU28gZWFjaCBjb2x1bW4gaW4gJFxtYXRoYmZ7WH0kIGlzIGFsc28gYW4gJG5cdGltZXMgMSQgdmVjdG9yLgoKLSBGb3IgdGhlIHRveSBleGFtcGxlIG49MyBhbmQgcD0yLgogIFRoZSBvdGhlciBwaWN0dXJlIHRvIGxpbmVhciByZWdyZXNzaW9uIGlzIHRvIGNvbnNpZGVyICRYXzAkLCAkWF8xJCBhbmQgJFkkIGFzIHZlY3RvcnMgaW4gdGhlIHNwYWNlIG9mIHRoZSBkYXRhICRcbWF0aGJie1J9Xm4kLCBoZXJlICRcbWF0aGJie1J9XjMkIGJlY2F1c2Ugd2UgaGF2ZSB0aHJlZSBkYXRhIHBvaW50cy4KU28gdGhlIGNvbHVtbiBzcGFjZSBvZiBYIGlzIGEgcGxhbmUgaW4gdGhlIHRocmVlIGRpbWVuc2lvbmFsIHNwYWNlLgoKXFsKXGhhdHtcbWF0aGJme1l9fSA9IFxtYXRoYmZ7WH0gKFxtYXRoYmZ7WH1eVFxtYXRoYmZ7WH0pXnstMX0gXG1hdGhiZntYfV5UIFxtYXRoYmZ7WX0KXF0KCjEuIFBsYW5lIHNwYW5uZWQgYnkgY29sdW1uIHNwYWNlOgoKCmBgYHtyfQpvcmlnaW5SbiA8LSBkYXRhLmZyYW1lKFgxPTAsWDI9MCxYMz0wKQpkYXRhJHgwIDwtIDEKZGF0YVJuIDwtIGRhdGEuZnJhbWUodChkYXRhKSkKCmxpYnJhcnkocGxvdGx5KQoKcDEgPC0gcGxvdF9seSgKICAgIG9yaWdpblJuLAogICAgeCA9IH4gWDEsCiAgICB5ID0gfiBYMiwKICAgIHo9IH4gWDMsIG5hbWU9Im9yaWdpbiIpICU+JQogIGFkZF9tYXJrZXJzKHR5cGU9InNjYXR0ZXIzZCIpICU+JQogIGxheW91dCgKICAgIHNjZW5lID0gbGlzdCgKICAgICAgYXNwZWN0bW9kZT0iY3ViZSIsCiAgICAgIHhheGlzID0gbGlzdChyYW5nZT1jKC00LDQpKSwgeWF4aXMgPSBsaXN0KHJhbmdlPWMoLTQsNCkpLCB6YXhpcyA9IGxpc3QocmFuZ2U9YygtNCw0KSkKICAgICAgKQogICAgKQpwMSA8LSBwMSAlPiUKICBhZGRfdHJhY2UoCiAgICB4ID0gYygwLDEpLAogICAgeSA9IGMoMCwwKSwKICAgIHogPSBjKDAsMCksCiAgICBtb2RlID0gImxpbmVzIiwKICAgIGxpbmUgPSBsaXN0KHdpZHRoID0gNSwgY29sb3IgPSAiZ3JleSIpLAogICAgdHlwZT0ic2NhdHRlcjNkIiwKICAgIG5hbWUgPSAib2JzMSIpICU+JQogIGFkZF90cmFjZSgKICAgIHggPSBjKDAsMCksCiAgICB5ID0gYygwLDEpLAogICAgeiA9IGMoMCwwKSwKICAgIG1vZGUgPSAibGluZXMiLAogICAgbGluZSA9IGxpc3Qod2lkdGggPSA1LCBjb2xvciA9ICJncmV5IiksCiAgICB0eXBlPSJzY2F0dGVyM2QiLAogICAgbmFtZSA9ICJvYnMyIikgJT4lCiAgYWRkX3RyYWNlKAogICAgeCA9IGMoMCwwKSwKICAgIHkgPSBjKDAsMCksCiAgICB6ID0gYygwLDEpLAogICAgbW9kZSA9ICJsaW5lcyIsCiAgICBsaW5lID0gbGlzdCh3aWR0aCA9IDUsIGNvbG9yID0gImdyZXkiKSwKICAgIHR5cGU9InNjYXR0ZXIzZCIsCiAgICBuYW1lID0gIm9iczMiKSAlPiUKICBhZGRfdHJhY2UoCiAgICB4ID0gYygwLDEpLAogICAgeSA9IGMoMCwxKSwKICAgIHogPSBjKDAsMSksCiAgICBtb2RlID0gImxpbmVzIiwKICAgIGxpbmUgPSBsaXN0KHdpZHRoID0gNSwgY29sb3IgPSAiYmxhY2siKSwKICAgIHR5cGU9InNjYXR0ZXIzZCIsCiAgICBuYW1lID0gIlgxIikgJT4lCiAgICBhZGRfdHJhY2UoCiAgICB4ID0gYygwLDEpLAogICAgeSA9IGMoMCwyKSwKICAgIHogPSBjKDAsMyksCiAgICBtb2RlID0gImxpbmVzIiwKICAgIGxpbmUgPSBsaXN0KHdpZHRoID0gNSwgY29sb3IgPSAiYmxhY2siKSwKICAgIHR5cGU9InNjYXR0ZXIzZCIsCiAgICBuYW1lID0gIlgyIikKcDEKYGBgCgoKMi4gVmVjdG9yIG9mIFk6CgpBY3R1YWwgdmFsdWVzIG9mICRcbWF0aGJme1l9JDoKCmBgYHtyfQpkYXRhJHkKYGBgCgpcWwpcbWF0aGJme1l9PVxsZWZ0W1xiZWdpbnthcnJheX17Y30KYHIgZGF0YSR5WzFdYCBcXApgciBkYXRhJHlbMl1gIFxcCmByIGRhdGEkeVszXWAKXGVuZHthcnJheX1ccmlnaHRdClxdCgpgYGB7cn0KcDIgPC0gcDEgJT4lCiAgYWRkX3RyYWNlKAogICAgeCA9IGMoMCxZWzFdKSwKICAgIHkgPSBjKDAsWVsyXSksCiAgICB6ID0gYygwLFlbM10pLAogICAgbW9kZSA9ICJsaW5lcyIsCiAgICBsaW5lID0gbGlzdCh3aWR0aCA9IDUsIGNvbG9yID0gInJlZCIpLAogICAgdHlwZT0ic2NhdHRlcjNkIiwKICAgIG5hbWUgPSAiWSIpIApwMgpgYGAKCjMuIFByb2plY3Rpb24gb2YgWSBvbnRvIGNvbHVtbiBzcGFjZQoKQWN0dWFsIHZhbHVlcyBvZiBmaXR0ZWQgdmFsdWVzICRcbWF0aGJme1xoYXR7WX19JDoKCmBgYHtyfQpkYXRhJHloYXQKYGBgCgpcWwpcbWF0aGJme1l9PVxsZWZ0W1xiZWdpbnthcnJheX17Y30KYHIgZGF0YSR5aGF0WzFdYCBcXApgciBkYXRhJHloYXRbMl1gIFxcCmByIGRhdGEkeWhhdFszXWAKXGVuZHthcnJheX1ccmlnaHRdClxdCgpgYGB7cn0KcDIgPC0gcDIgJT4lCiAgYWRkX3RyYWNlKAogICAgeCA9IGMoMCxZaGF0WzFdKSwKICAgIHkgPSBjKDAsWWhhdFsyXSksCiAgICB6ID0gYygwLFloYXRbM10pLAogICAgbW9kZSA9ICJsaW5lcyIsCiAgICBsaW5lID0gbGlzdCh3aWR0aCA9IDUsIGNvbG9yID0gIm9yYW5nZSIpLAogICAgdHlwZT0ic2NhdHRlcjNkIiwKICAgIG5hbWU9IlloYXQiKSAlPiUgCiAgICBhZGRfdHJhY2UoCiAgICB4ID0gYyhZWzFdLFloYXRbMV0pLAogICAgeSA9IGMoWVsyXSxZaGF0WzJdKSwKICAgIHogPSBjKFlbM10sWWhhdFszXSksCiAgICBtb2RlID0gImxpbmVzIiwKICAgIGxpbmUgPSBsaXN0KHdpZHRoID0gNSwgY29sb3IgPSAicmVkIiwgZGFzaD0iZGFzaCIpLAogICAgdHlwZT0ic2NhdHRlcjNkIiwKICAgIG5hbWU9IlkgLT4gWWhhdCIKICAgICkKcDIKYGBgCgokXG1hdGhiZntZfSQgaXMgcHJvamVjdGVkIGluIHRoZSBjb2x1bW4gc3BhY2Ugb2YgJFxtYXRoYmZ7WH0kISBzcGFubmVkIGJ5IHRoZSBjb2x1bW5zLgoKIyMjIyBIb3cgZG9lcyB0aGlzIHByb2plY3Rpb24gd29ya3M/IAoKJCQKXGJlZ2lue2FycmF5fXtsY2x9ClxoYXR7XG1hdGhiZntZfX0gJj0mIFxtYXRoYmZ7WH0gKFxtYXRoYmZ7WH1eVFxtYXRoYmZ7WH0pXnstMX1cbWF0aGJme1h9XlRcbWF0aGJme1l9XFwKJj0mIFxtYXRoYmZ7WH0oXG1hdGhiZntYfV5UXG1hdGhiZntYfSleey0xLzJ9KFxtYXRoYmZ7WH1eVFxtYXRoYmZ7WH0pXnstMS8yfVxtYXRoYmZ7WH1eVFxtYXRoYmZ7WX1cXAomPSYgXG1hdGhiZntVfVxtYXRoYmZ7VX1eVFxtYXRoYmZ7WX0KXGVuZHthcnJheX0KJCQKCgotICRcbWF0aGJme1V9JCBpcyBhIG5ldyBvcnRob25vcm1hbCBiYXNpcyBpbiAkXG1hdGhiYntSfV4yJCwgYSBzdWJzcGFjZSBvZiAkXG1hdGhiYntSfV4zJAoKLSBUaGUgc3BhY2Ugc3Bhbm5lZCBieSBVIGFuZCBYIGlzIHRoZSBjb2x1bW4gc3BhY2Ugb2YgWCwgZS5nLiBpdCBjb250YWlucyBhbGwgcG9zc2libGUgbGluZWFyIGNvbWJpbmFudGlvbnMgb2YgWC4KJFxtYXRoYmZ7VX1edFxtYXRoYmZ7WX0kIGlzIHRoZSBwcm9qZWN0aW9uIG9mIFkgb24gdGhpcyBuZXcgb3J0aG9ub3JtYWwgYmFzaXMKCmBgYHtyfQplaWdlblh0WCA8LSBlaWdlbihYdFgpClh0WGludlNxcnQgPC0gZWlnZW5YdFgkdmVjdG9ycyAlKiVkaWFnKDEvZWlnZW5YdFgkdmFsdWVzXi41KSUqJXQoZWlnZW5YdFgkdmVjdG9ycykKVSA8LSBYICUqJSBYdFhpbnZTcXJ0CmBgYAoKCi0gJFxtYXRoYmZ7VX0kIG9ydGhvbm9ybWFsIGJhc2lzCgpgYGB7cn0KVQp0KFUpJSolVQpgYGAKCi0gJFxtYXRoYmZ7VVV9XlQkIGVxdWFscyBwcm9qZWN0aW9uIG1hdHJpeCAKCmBgYHtyfQpVJSoldChVKQpICmBgYAoKCmBgYHtyfQpwMyA8LSBwMSAlPiUKICBhZGRfdHJhY2UoCiAgICB4ID0gYygwLFVbMSwxXSksCiAgICB5ID0gYygwLFVbMiwxXSksCiAgICB6ID0gYygwLFVbMywxXSksCiAgICBtb2RlID0gImxpbmVzIiwKICAgIGxpbmUgPSBsaXN0KHdpZHRoID0gNSwgY29sb3IgPSAiYmx1ZSIpLAogICAgdHlwZT0ic2NhdHRlcjNkIiwKICAgIG5hbWUgPSAiVTEiKSAlPiUKICBhZGRfdHJhY2UoCiAgICB4ID0gYygwLFVbMSwyXSksCiAgICB5ID0gYygwLFVbMiwyXSksCiAgICB6ID0gYygwLFVbMywyXSksCiAgICBtb2RlID0gImxpbmVzIiwKICAgIGxpbmUgPSBsaXN0KHdpZHRoID0gNSwgY29sb3IgPSAiYmx1ZSIpLAogICAgdHlwZT0ic2NhdHRlcjNkIiwKICAgIG5hbWUgPSAiVTIiKQoKcDMKYGBgCgoKLSAkXG1hdGhiZntVfV5UXG1hdGhiZntZfSQgaXMgdGhlIHByb2plY3Rpb24gb2YgJFxtYXRoYmZ7WX0kIGluIHRoZSBzcGFjZSBzcGFubmVkIGJ5ICRcbWF0aGJme1V9JC4KLSBJbmRlZWQgJFxtYXRoYmZ7VX1fMV5UXG1hdGhiZntZfSQKCmBgYHtyfQpwNCA8LSBwMyAlPiUKICBhZGRfdHJhY2UoCiAgICB4ID0gYygwLFlbMV0pLAogICAgeSA9IGMoMCxZWzJdKSwKICAgIHogPSBjKDAsWVszXSksCiAgICBtb2RlID0gImxpbmVzIiwKICAgIGxpbmUgPSBsaXN0KHdpZHRoID0gNSwgY29sb3IgPSAicmVkIiksCiAgICB0eXBlPSJzY2F0dGVyM2QiLAogICAgbmFtZSA9ICJZIikgJT4lCiAgYWRkX3RyYWNlKAogICAgeCA9IGMoMCxVWzEsMV0qKFVbLDFdJSolWSkpLAogICAgeSA9IGMoMCxVWzIsMV0qKFVbLDFdJSolWSkpLAogICAgeiA9IGMoMCxVWzMsMV0qKFVbLDFdJSolWSkpLAogICAgbW9kZSA9ICJsaW5lcyIsCiAgICBsaW5lID0gbGlzdCh3aWR0aCA9IDUsIGNvbG9yID0gInJlZCIsZGFzaD0iZGFzaCIpLAogICAgdHlwZT0ic2NhdHRlcjNkIiwKICAgIG5hbWU9IlkgLT4gVTEiKSAlPiUgYWRkX3RyYWNlKAogICAgeCA9IGMoWVsxXSxVWzEsMV0qKFVbLDFdJSolWSkpLAogICAgeSA9IGMoWVsyXSxVWzIsMV0qKFVbLDFdJSolWSkpLAogICAgeiA9IGMoWVszXSxVWzMsMV0qKFVbLDFdJSolWSkpLAogICAgbW9kZSA9ICJsaW5lcyIsCiAgICBsaW5lID0gbGlzdCh3aWR0aCA9IDUsIGNvbG9yID0gInJlZCIsIGRhc2g9ImRhc2giKSwKICAgIHR5cGU9InNjYXR0ZXIzZCIsCiAgICBuYW1lPSJZIC0+IFUxIikKcDQKYGBgCgotIGFuZCAkXG1hdGhiZntVfV8yXlRcbWF0aGJme1l9JApgYGB7cn0KcDUgPC0gcDQgJT4lCiAgYWRkX3RyYWNlKAogICAgeCA9IGMoMCxVWzEsMl0qKFVbLDJdJSolWSkpLAogICAgeSA9IGMoMCxVWzIsMl0qKFVbLDJdJSolWSkpLAogICAgeiA9IGMoMCxVWzMsMl0qKFVbLDJdJSolWSkpLAogICAgbW9kZSA9ICJsaW5lcyIsCiAgICBsaW5lID0gbGlzdCh3aWR0aCA9IDUsIGNvbG9yID0gInJlZCIsZGFzaD0iZGFzaCIpLAogICAgdHlwZT0ic2NhdHRlcjNkIiwKICAgIG5hbWU9IlkgLT4gVTIiKSAlPiUgYWRkX3RyYWNlKAogICAgeCA9IGMoWVsxXSxVWzEsMl0qKFVbLDJdJSolWSkpLAogICAgeSA9IGMoWVsyXSxVWzIsMl0qKFVbLDJdJSolWSkpLAogICAgeiA9IGMoWVszXSxVWzMsMl0qKFVbLDJdJSolWSkpLAogICAgbW9kZSA9ICJsaW5lcyIsCiAgICBsaW5lID0gbGlzdCh3aWR0aCA9IDUsIGNvbG9yID0gInJlZCIsIGRhc2g9ImRhc2giKSwKICAgIHR5cGU9InNjYXR0ZXIzZCIsCiAgICBuYW1lPSJZIC0+IFUyIikKcDUKYGBgCgotICRcaGF0e1xtYXRoYmZ7WX19JCBpcyB0aGUgcmVzdWx0aW5nIHZlY3RvciB0aGF0IGxpZXMgaW4gdGhlIHBsYW5lIHNwYW5uZWQgYnkgJFxtYXRoYmZ7VX1fMSQgYW5kICRcbWF0aGJme1V9XzIkIGFuZCB0aHVzIGFsc28gaW4gdGhlIGNvbHVtbiBzcGFjZSBvZiAkXG1hdGhiZntYfSQuCgpgYGB7cn0KcDYgPC0gcDUgJT4lCiAgYWRkX3RyYWNlKAogICAgeCA9IGMoMCxZaGF0WzFdKSwKICAgIHkgPSBjKDAsWWhhdFsyXSksCiAgICB6ID0gYygwLFloYXRbM10pLAogICAgbW9kZSA9ICJsaW5lcyIsCiAgICBsaW5lID0gbGlzdCh3aWR0aCA9IDUsIGNvbG9yID0gIm9yYW5nZSIpLAogICAgdHlwZT0ic2NhdHRlcjNkIiwKICAgIG5hbWUgPSAiWWhhdCIpICU+JQogIGFkZF90cmFjZSgKICAgIHggPSBjKFlbMV0sWWhhdFsxXSksCiAgICB5ID0gYyhZWzJdLFloYXRbMl0pLAogICAgeiA9IGMoWVszXSxZaGF0WzNdKSwKICAgIG1vZGUgPSAibGluZXMiLAogICAgbGluZSA9IGxpc3Qod2lkdGggPSA1LCBjb2xvciA9ICJtYXJvb24yIiksCiAgICB0eXBlPSJzY2F0dGVyM2QiLAogICAgbmFtZSA9ICJlIikgJT4lCiAgYWRkX3RyYWNlKAogICAgeCA9IGMoVVsxLDFdKihVWywxXSUqJVkpLFloYXRbMV0pLAogICAgeSA9IGMoVVsyLDFdKihVWywxXSUqJVkpLFloYXRbMl0pLAogICAgeiA9IGMoVVszLDFdKihVWywxXSUqJVkpLFloYXRbM10pLAogICAgbW9kZSA9ICJsaW5lcyIsCiAgICBsaW5lID0gbGlzdCh3aWR0aCA9IDUsIGNvbG9yID0gIm9yYW5nZSIsIGRhc2g9ImRhc2giKSwKICAgIHR5cGU9InNjYXR0ZXIzZCIsCiAgICBuYW1lID0gIlkgLT4gVSIpICAlPiUKICBhZGRfdHJhY2UoCiAgICB4ID0gYyhVWzEsMl0qKFVbLDJdJSolWSksWWhhdFsxXSksCiAgICB5ID0gYyhVWzIsMl0qKFVbLDJdJSolWSksWWhhdFsyXSksCiAgICB6ID0gYyhVWzMsMl0qKFVbLDJdJSolWSksWWhhdFszXSksCiAgICBtb2RlID0gImxpbmVzIiwKICAgIGxpbmUgPSBsaXN0KHdpZHRoID0gNSwgY29sb3IgPSAib3JhbmdlIiwgZGFzaD0iZGFzaCIpLAogICAgdHlwZT0ic2NhdHRlcjNkIiwKICAgIG5hbWUgPSAiWSAtPiBVIikKcDYKYGBgCgojIyMgRXJyb3IgCgpOb3RlLCB0aGF0IGl0IGlzIGFsc28gY2xlYXIgZnJvbSB0aGUgZXF1YXRpb24gaW4gdGhlIGRlcml2YXRpb24gb2YgdGhlIGxlYXN0IHNxdWFyZXMgc29sdXRpb24gdGhhdCB0aGUgcmVzaWR1YWwgaXMgb3J0aG9nb25hbCBvbiB0aGUgY29sdW1uIHNwYWNlOgoKXFsKIC0yIFxtYXRoYmZ7WH1eVChcbWF0aGJme1l9LVxtYXRoYmZ7WH1cYm9sZHN5bWJvbHtcYmV0YX0pID0gMApcXQoKCi0tLQoKIyMgVmFyaWFuY2UgRXN0aW1hdG9yPwpcWwpcYmVnaW57YXJyYXl9e2NjbH0KXGhhdHtcYm9sZHN5bWJvbHtcU2lnbWF9fV97XGhhdHtcbWF0aGJme1xiZXRhfX19CiY9Jlx0ZXh0e3Zhcn1cbGVmdFsoXG1hdGhiZntYfV5UXG1hdGhiZntYfSleey0xfVxtYXRoYmZ7WH1eVFxtYXRoYmZ7WX1ccmlnaHRdXFxcXAomPSYoXG1hdGhiZntYfV5UXG1hdGhiZntYfSleey0xfVxtYXRoYmZ7WH1eVFx0ZXh0e3Zhcn1cbGVmdFtcbWF0aGJme1l9XHJpZ2h0XVxtYXRoYmZ7WH0oXG1hdGhiZntYfV5UXG1hdGhiZntYfSleey0xfVxcXFwKJj0mKFxtYXRoYmZ7WH1eVFxtYXRoYmZ7WH0pXnstMX1cbWF0aGJme1h9XlQoXG1hdGhiZntJfVxzaWdtYV4yKVxtYXRoYmZ7WH0oXG1hdGhiZntYfV5UXG1hdGhiZntYfSleey0xfQpcXFxcCiY9JihcbWF0aGJme1h9XlRcbWF0aGJme1h9KV57LTF9XG1hdGhiZntYfV5UXG1hdGhiZntJfVxxdWFkXG1hdGhiZntYfShcbWF0aGJme1h9XlRcbWF0aGJme1h9KV57LTF9XHNpZ21hXjJcXFxcCiVcaGF0e1xib2xkbWF0aHtcU2lnbWF9fV97XGhhdHtcbWF0aGJme1xiZXRhfX19Jj0mKFxtYXRoYmZ7WH1eVFxtYXRoYmZ7WH0pXnstMX1cbWF0aGJme1h9XlRcdmFyXGxlZnRbXG1hdGhiZntZfVxyaWdodF0oXG1hdGhiZntYfV5UXG1hdGhiZntYfSleey0xfVxtYXRoYmZ7WH1cXAomPSYoXG1hdGhiZntYfV5UXG1hdGhiZntYfSleey0xfVxtYXRoYmZ7WH1eVFxtYXRoYmZ7WH0oXG1hdGhiZntYfV5UXG1hdGhiZntYfSleey0xfVxzaWdtYV4yXFxcXAomPSYoXG1hdGhiZntYfV5UXG1hdGhiZntYfSleey0xfVxzaWdtYV4yClxlbmR7YXJyYXl9ClxdCgotLS0KCiMjIENvbnRyYXN0cwoKSHlwb3RoZXNlcyBvZnRlbiBpbnZvbHZlIGxpbmVhciBjb21iaW5hdGlvbnMgb2YgdGhlIG1vZGVsIHBhcmFtZXRlcnMhCgplLmcuCgotICRIXzA6IFxsb2dfMntGQ31fe2czbjEtZzFuMX09IFxiZXRhX3tnM30gKyBcaGF0XGJldGFfe2czbjF9PTAkICRccmlnaHRhcnJvdyQgImdyYWRlMytncmFkZTM6bm9kZTEgPSAwIgoKLSBMZXQgXFsKXGJvbGRzeW1ib2x7XGJldGF9ID0gXGxlZnRbClxiZWdpbnthcnJheX17Y30KXGJldGFfezB9XFwKXGJldGFfe2czfVxcClxiZXRhX3tuMX1cXApcYmV0YV97ZzM6bjF9ClxlbmR7YXJyYXl9ClxyaWdodF1cXQotIHdlIGNhbiB3cml0ZSB0aGF0IGNvbnRyYXN0IHVzaW5nIGEgY29udHJhc3QgbWF0cml4OgpcWwpcbWF0aGJme0x9PVxsZWZ0W1xiZWdpbnthcnJheX17Y30wXFwxXFwwXFwxXGVuZHthcnJheX1ccmlnaHRdIFxyaWdodGFycm93IFxtYXRoYmZ7TH1eVFxib2xkc3ltYm9se1xiZXRhfSBcXQoKLSBUaGVuIHRoZSB2YXJpYW5jZSBiZWNvbWVzOgpcWwpcdGV4dHt2YXJ9X3tcbWF0aGJme0x9XlRcYm9sZHN5bWJvbHtcaGF0XGJldGF9fT0gXG1hdGhiZntMfV5UIFxib2xkc3ltYm9se1xTaWdtYX1fe1xib2xkc3ltYm9se1xoYXRcYmV0YX19XG1hdGhiZntMfQpcXQoKCi0tLQoKIyBIb21ld29yazogQWRvcHQgdGhlIGdlbmUgYW5hbHlzaXMgb24gbG9nIHNjYWxlIGluIG1hdHJpeCBmb3JtIQoKMS4gU3R1ZHkgdGhlIHNvbHV0aW9uIG9mIHRoZSBleGVyY2lzZSB0byB1bmRlcnN0YW5kIHRoZSBhbmFseXNpcyBpbiBSCgoKMi4gQ2FsY3VsYXRlCi0gbW9kZWwgcGFyYW1ldGVycyBhbmQgY29udHJhc3RzIG9mIGludGVyZXN0Ci0gc3RhbmRhcmQgZXJyb3JzLCBzdGFuZGFyZCBlcnJvcnMgb24gY29udHJhc3RzCi0gdC10ZXN0IHN0YXRpc3RpY3Mgb24gdGhlIG1vZGVsIHBhcmFtZXRlcnMgYW5kIGNvbnRyYXN0cyBvZiBpbnRlcmVzdAoKMy4gQ29tcGFyZSB5b3VyIHJlc3VsdHMgd2l0aCB0aGUgb3V0cHV0IG9mIHRoZSBsbSguKSBmdW5jdGlvbgoKCi0tLQoKIyMgSW5zcGlyYXRpb24KClRpcDogZGV0YWlscyBvbiB0aGUgaW1wbGVtZW50YXRpb24gY2FuIGJlIGZvdW5kIGluIHRoZSBib29rIG9mIEZhcmF3YXkgKGNoYXB0ZXIgMikuIGh0dHBzOi8vcGVvcGxlLmJhdGguYWMudWsvampmMjMvYm9vay8KCi0gRGVzaWduIG1hdHJpeAoKYGBge3J9ClggPC0gbW9kZWwubWF0cml4KH5ncmFkZSpub2RlLGRhdGE9Z2VuZSkKYGBgCgotIFRyYW5zcG9zZSBvZiBhIG1hdHJpeDogdXNlIGZ1bmN0aW9uIHQoLikKCmBgYHtyfQp0KFgpCmBgYAoKLSBNYXRyaXggcHJvZHVjdCAlXColIG9wZXJhdG9yCgpgYGB7cn0KdChYKSUqJVgKYGBgCgotIERlZ3JlZXMgb2YgZnJlZWRvbSBvZiBhIG1vZGVsPwoKJCQgZGYgPSAgbi1wJCQKCmBgYHtyfQpzdW1tYXJ5KGxtMSkKZGZSZXMgPC0gKG5yb3coWCktbmNvbChYKSkKZGZSZXMKYGBgCgotIFZhcmlhbmNlIGVzdGltYXRvcjogTVNFCgokJApcaGF0IFxzaWdtYV4yID0gXGZyYWN7XHN1bVxsaW1pdHNfe2k9MX1eblxlcHNpbG9uX2leMn17bi1wfQokJAoKCi0gSW52ZXJ0IG1hdHJpeDogdXNlIGZ1bmN0aW9uIHNvbHZlKC4pCgotIERpYWdvbmFsIGVsZW1lbnRzIG9mIGEgbWF0cml4OiB1c2UgZnVuY3Rpb24gZGlhZyguKQoKYGBge3J9CnQoWCklKiVYCmRpYWcodChYKSUqJVgpCmBgYAo=</div>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("recapGeneralLinearModel.Rmd");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

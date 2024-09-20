@@ -1,0 +1,124 @@
+---
+title: "Tutorial: Evaluate pyrococcus searches using uniprot and peptide shaker"
+author: 
+  - name: Lieven Clement
+    affiliation:
+    - Ghent University
+output: 
+    html_document:
+      code_download: true
+      theme: flatly
+      toc: true
+      toc_float: true
+      highlight: tango
+      number_sections: true
+linkcolor: blue
+urlcolor: blue
+citecolor: blue
+---
+
+# Load Libraries 
+
+```{r}
+library(TargetDecoy)
+library(RCurl)
+library(mzID)
+```
+
+# Download data in working directory
+
+```{r}
+download.file( 
+  url = "https://raw.githubusercontent.com/statOmics/PDA22GTPB/data/identification/pyroUniprot.mzid",
+  destfile = "pyroUniprot.mzid"
+  )
+```
+
+# Load Data in R
+
+```{r}
+path2File <- "pyroUniprot.mzid"
+mzidUniprot <- mzID(path2File)
+```
+
+# Launch the Shiny Gadget 
+
+Explore the results for search eninge scores to find correct names of search engine scores in the mzID.
+
+```{r eval=FALSE}
+evalTargetDecoys(mzidUniprot)
+```
+
+# Evaluate target decoy assumptions 
+
+## Peptide Shaker
+
+```{r}
+evalTargetDecoys(
+  object = mzidUniprot, 
+  decoy = "isdecoy", 
+  score = "peptideshaker psm score",
+  log10 = FALSE)
+```
+
+We observe that 
+
+- the histogram shows that Peptide Shaker gives a very good separation between good targets and bad targets. 
+
+- the histogram and PP show that the distribution of bad target peptideshaker PSM scores have the same distribution of decoy peptideshaker PSM scores.
+
+- The PP-plot shows that the ratio of decoys on targets is a good estimate of the expected fraction of bad target hits that are returned ($\hat\pi_b=\frac{\# \text{decoys}}{\#\text{targets}}$ is a good estimate of the fraction of bad target hits). We can thus assume that it is equaly likely that a bad PSM hit will match to a target sequence or a decoy sequence.  
+
+- It is not really required to assess the assumptions of the search engines used by peptide shaker because there are no problems. 
+
+- For completeness we still evaluate the different search engines used by peptide shaker. 
+
+## MSGF+
+
+
+```{r}
+evalTargetDecoys(
+  object = mzidUniprot, 
+  decoy = "isdecoy", 
+  score = "ms-gf:specevalue",
+  log10 = TRUE)
+```
+
+- The plots show that
+the distribution of the MSGF+ PSM scores are nicely bimodal. 
+
+- The separation between good target PSM scores and bad target PSM scores is less pronounced than for peptide shaker. So it is beneficial to include the other engines with peptideshaker. 
+
+- We do not see deviations from the target decoy assumptions. 
+
+## Omssa
+
+```{r}
+evalTargetDecoys(
+  object = mzidUniprot, 
+  decoy = "isdecoy", 
+  score = "omssa:evalue",
+  log10 = TRUE)
+```
+
+
+- The separation between good target PSM scores and bad target PSM scores is less pronounced for omssa than for peptide shaker. So it is beneficial to include the other engines with peptideshaker. 
+
+- We do not see deviations from the target decoy assumptions. 
+
+## X!Tandem
+
+```{r}
+evalTargetDecoys(
+  object = mzidUniprot, 
+  decoy = "isdecoy", 
+  score = "x!tandem:expect",
+  log10 = TRUE)
+```
+
+
+- The separation between good target PSM scores and bad target PSM scores is less pronounced for X!Tandem than for peptide shaker. So it is beneficial to include the other engines with peptideshaker. 
+
+- The decoy PSM score distribution has the same shape as the PSM score distribution of bad targets. 
+
+- There seems to be some evidence that bad PSM hits are more likely to go to target than to decoy sequences. However, this does not lead to problems when combining X!tandem with other engines in peptide shaker. 

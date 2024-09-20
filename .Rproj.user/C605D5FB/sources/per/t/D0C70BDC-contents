@@ -1,0 +1,121 @@
+---
+title: "Statistical Genomics Analysis"
+output:
+    html_document:
+        code_download: false
+        toc: false
+        number_sections: false
+        code_folding: "none"
+---
+
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+knitr::include_graphics("./figures/wpGraph.jpeg")
+```
+
+
+# Course Description
+
+High-throughput 'omics studies generate ever larger datasets and, as a consequence, complex data interpretation challenges. This course focusses on statistical concepts involved in preprocessing, quantification and differential analysis of high-throughput 'omics data. The core focus will be on shotgun proteomics and (bulk and single-cell) RNA-sequencing. Experimental design is essential to allow for correct interpretation in all 'omics studies, and we will cover how to design a statistically efficient experiment, as well as discuss the impact experimental design has on how we model 'omics data, introducing concepts such as blocking. The course will rely exclusively on free and user-friendly open-source tools in R/Bioconductor. We hope that this will provide a solid basis for beginners, but will also bring new perspectives to those already familiar with standard data analysis workflows for proteomics and next-generation sequencing applications.
+
+# Target Audience
+
+This course is oriented towards biologists and bioinformaticians with a particular interest in differential analysis for quantitative 'omics data.
+
+# Prerequisites
+
+The prerequisites for the Statistical Genomics Analysis course are the successful completion of a basic course of statistics that covers topics on data exploration and descriptive statistics, statistical modeling, and inference: linear models, confidence intervals, t-tests, F-tests, anova, chi-squared test.
+The basis concepts may be revisited in the online course at https://statomics.github.io/PSLS/ (English) and in https://statomics.github.io/sbc/ (Dutch).
+
+In addition, knowledge of programming in `R` is preferred. A primer to `R` and Data visualization in `R` can be found at:
+
+ - `R` Basics: https://dodona.ugent.be/nl/courses/335/
+ - `R` Data Exploration: https://dodona.ugent.be/nl/courses/345/
+
+
+# Software 
+
+- Participants are required to bring their own laptop with [R](https://www.r-project.org/) version 4.2 or greater. 
+
+- We also recommend to also install the latest version of [RStudio](https://www.rstudio.com/products/rstudio/download/).
+
+- Installation script: to install all required packages, please copy and paste this line of code in your R console.
+
+```
+source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
+```
+
+
+
+# Detailed Program
+
+## 1. Introduction
+
+1.1. Position of the course: [HTML](./intro.html) 
+
+1.2. Recap Linear Models (Week 1)
+
+   - Lecture: [HTML](./recapGeneralLinearModel.html), [PDF](./recapGeneralLinearModel.pdf)
+   - Tutorial KPNA2: [HTML](./multipleRegression_KPNA2.html),  [PDF](./multipleRegression_KPNA2.pdf)
+   - link to a compressed figures directory: [download figures](https://raw.githubusercontent.com/statOmics/SGA/master/figures.tar.gz)
+
+
+
+## Module I: Proteomics Data Analysis (Week 1-5)
+
+### 1. Bioinformatics for proteomics
+   
+   - Lecture: [PDF](./docs/martens_proteomics_bioinformatics.pdf), [youtube](https://www.youtube.com/watch?v=ZgwNWRul98o)
+   - Tutorials: [identification](https://www.compomics.com/bioinformatics-for-proteomics/)
+
+### 2. Statistics for Proteomics Data Analysis
+   
+#### 2.1. Identification
+
+- [Target Decoy QC](TargetDecoy.html)
+- [Tutorial](TargetDecoyTutorial.html), [example](mzIDMsgfSwissprotExample.html)
+- Solution: [Uniprot search](mzIDuniprotTutorial.html), [Swissprot search](mzIDswissprotTutorial.html)
+
+#### 2.2. Preprocessing & Analysis of Label Free Quantitative Proteomics Experiments with Simple Designs
+  - Lecture: [html](./pda_quantification_preprocessing.html), [pdf](./pda_quantification_preprocessing.pdf)
+  - Tutorial: [preprocessing](./pda_tutorialPreprocessing.html)
+  - Wrap-up Peptide-based Models: [html](./pda_robustSummarisation_peptideModels.html), [pdf](./pda_robustSummarisation_peptideModels.pdf)
+  
+  - Solutions: [cancer3x3](cancer3x3.html), [cancer6x6](cancer6x6.html), [cancer9x9](cancer9x9.html)
+
+
+#### 2.3. Statistical Inference & Analysis of Experiments with Factorial Designs
+  - Lecture Differential Abundance Analysis: [html](./pda_quantification_inference.html), [pdf](./pda_quantification_inference.pdf)
+  - Tutorial: [Design](pda_tutorialDesign.html)
+  - Wrap-up Blocking: [html](./pda_blocking_wrapup.html), [pdf](./pda_blocking_wrapup.pdf)
+  
+<!--
+  - Solution: [Heart Example](heartMainInteraction.html)
+  - Technical Details: [Technical Details](technicalDetailsProteomics.html)
+  
+## Module II: Next-generation Sequencing (Week 6-12)
+  
+### 1. Introduction to sequencing technology, QC, read mapping and count table
+
+- Lecture Introduction to Sequencing: [html](./sequencing_intro.html),[pdf](./sequencing_intro.pdf)
+- Tutorial: [handout](./sequencingTutorial1_mapping.html), [C. elegans Example](./docs/elegansAlignmentCountTable.html)
+
+### 2. Introduction to count data and GLMs
+
+- Lecture Working with count data and GLMs: [html](./sequencing_countData.html), [pdf](./sequencing_countData.pdf)
+- Tutorial: [handout](sequencingTutorial2_DE.html), [C. elegans example](./elegansDE.html)
+
+### 3. Technical details on RNA-seq DE analysis
+
+- Lecture: [html](./sequencing_technicalDE.html), [pdf](./sequencing_technicalDE.pdf)
+
+### 4. Solutions Bulk RNA-seq Data Analysis
+
+- Parathyroid Example: [html](./parathyroid.html), [pdf](./parathyroid.pdf)
+
+### 5. Introduction to Single Cell Transcriptomics (scRNA-seq) 
+
+- Lecture Intro to scRNA-seq: [html](./sequencing_singleCell.html), [pdf](./sequencing_singleCell.pdf)
+- Tutorial on scRNA-seq: [handout](./scRNA-seq-Tutorial.html)
+
+-->

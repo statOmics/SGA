@@ -1,0 +1,3 @@
+"0","pe[[""peptideNorm""]] %>% "
+"0","  assay %>%"
+"0","  limma::plotMDS(col = as.numeric(colData(pe)$condition))"

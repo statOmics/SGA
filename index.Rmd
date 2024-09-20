@@ -49,11 +49,11 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
 
 # Detailed Program
 
-## 1. Introduction
+## 1. Introduction (Week 1)
 
 1.1. Position of the course: [HTML](./intro.html) 
 
-1.2. Recap Linear Models (Week 1)
+1.2. Recap Linear Models
 
    - Lecture: [HTML](./recapGeneralLinearModel.html), [PDF](./recapGeneralLinearModel.pdf)
    - Tutorial KPNA2: [HTML](./multipleRegression_KPNA2.html),  [PDF](./multipleRegression_KPNA2.pdf)
@@ -61,13 +61,17 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
 
 
 
-## Module I: Proteomics Data Analysis (Week 1-5)
+## Module I: Proteomics Data Analysis (Week 2-5)
 
+<!--
 ### 1. Bioinformatics for proteomics
    
    - Lecture: [PDF](./docs/martens_proteomics_bioinformatics.pdf), [youtube](https://www.youtube.com/watch?v=ZgwNWRul98o)
    - Tutorials: [identification](https://www.compomics.com/bioinformatics-for-proteomics/)
 
+-->
+
+<!--
 ### 2. Statistics for Proteomics Data Analysis
    
 #### 2.1. Identification
@@ -88,17 +92,22 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
   - Lecture Differential Abundance Analysis: [html](./pda_quantification_inference.html), [pdf](./pda_quantification_inference.pdf)
   - Tutorial: [Design](pda_tutorialDesign.html)
   - Wrap-up Blocking: [html](./pda_blocking_wrapup.html), [pdf](./pda_blocking_wrapup.pdf)
-  
 
+-->
+
+<!--
   - Solution: [Heart Example](heartMainInteraction.html)
   - Technical Details: [Technical Details](technicalDetailsProteomics.html)
-  
+-->
+
+<!--
 ## Module II: Next-generation Sequencing (Week 6-12)
   
 ### 1. Introduction to sequencing technology, QC, read mapping and count table
 
 - Lecture Introduction to Sequencing: [html](./sequencing_intro.html),[pdf](./sequencing_intro.pdf)
 - Tutorial: [handout](./sequencingTutorial1_mapping.html), [C. elegans Example](./docs/elegansAlignmentCountTable.html)
+
 
 ### 2. Introduction to count data and GLMs
 
@@ -128,3 +137,4 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
 - Tutorial on scRNA-seq: [handout](./scRNA-seq-Tutorial.html)
 - Tutorial on differential transcript usage: [handout](./dtuTutorial.html)
 
+-->

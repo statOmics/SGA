@@ -14,6 +14,7 @@ bibliography: bibliography.bib
 # Setting the scene
 
 Bioinformatics is an interdisciplinary field of science that develops methods and software tools for understanding biological data, especially when the data sets are large and complex. 
+
 However, before we focus on methods to build knowledge on biological processes, it is important to ask ourselves the question what life is. 
 
 When thinking about science it is crucial, as @bohm1980 nicely formulates, to acknowledge that scientific theories are not "true knowledge" corresponding to "the reality as is", but rather ever-changing insights that are giving shape and form to how we view and experience the world. 
@@ -23,7 +24,9 @@ When thinking about science it is crucial, as @bohm1980 nicely formulates, to ac
 We will start this introduction with Bohm's example of a sunflower seed from which an entire plant is growing. 
 <div><div style="position:relative; padding-top: 56.25%">
 <iframe src="https://www.youtube.com/embed/_owPRdbaMdY?si=Hpee5spcKofhWsEo" frameborder="0" allowfullscreen
-      style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe>
+      style=" position:absolute;top: 0;left: 0;width: 100%;height: 100%;"
+allow="autoplay; encrypted-media" allowfullscreen data-external="1" start=25></iframe>
+</div>
 </div></div>
 *Timelapse of a growing sunflower (Source: https://www.youtube.com/watch?v=_owPRdbaMdY)*
 
@@ -68,6 +71,8 @@ We intuitively know the latter: our body is typically at a higher energy state t
 Prigogine discovered that complex self-organising systems can spontaneously arise if they are open and can exchange lots of energy and matter with their surroundings. 
 Key for it is a chaos of matter and a flow of energy through the system.
 
+
+
 Convection currents are for instance an example of a simple physical process generating massive structures. They can be observed when simply heating a shallow layer of fluid or gas from below, which establishes a temperature gradient that lets the fluids rest state to become unstable. Indeed, the warmer fluid at the bottom is lighter and starts to float to the top where it cools down again, whereas the colder fluid at the top is more heavy and sinks to the bottom, where it is heated. Large ensembles of molecules therefore start to exhibit coherent patterns of motion (see Figure \@ref(fig:convectionCells)).
 
 ```{r convectionCells, fig.cap='Convection cells in a gravitational field. A fluid layer is heated from the bottom. The warmer fluid at the bottom becomes lighter and floats to the top where it cools down again, whereas the more heavy colder liquid sinks to the bottom where it is heated. This organizes the fluid layer in hexagonal convection cells (Source: Wikipedia - users Eyrian and Con-struct)', out.width='80%', fig.asp=.8, fig.align='center', echo=FALSE}
@@ -76,11 +81,21 @@ knitr::include_graphics("./figs/convection_cells.png")
 
 The convection motion leads to a spontaneous complex spatial organisation, almost a dance, of billions of molecules moving coherently and forming hexagonal convection cells. Such convection cells can be observed in a small dish of a fluid in a lab, up to the level of the earth's atmosphere and the solar photosphere (see movie below). 
 
+<div><div style="position:relative; padding-top: 56.25%">
+<iframe
+src="figs/BernardIkShort.mp4"
+frameborder="0"
+style=" position:absolute;top: 0;left: 0;width: 100%;height: 100%;"
+allow="autoplay; encrypted-media" allowfullscreen data-external="1" start=25></iframe>
+</div>
+
+</br>
 
 <div><div style="position:relative; padding-top: 56.25%">
 <iframe src="figs/granulation_sun.mp4" frameborder="0" allowfullscreen
-      style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe>
-</div></div>
+style=" position:absolute;top: 0;left: 0;width: 100%;height: 100%;"
+allow="autoplay; encrypted-media" allowfullscreen data-external="1" start=25></iframe>
+</div>
 *Movie of the solar photosphere observed with the Swedish 1-m Solar Telescope (SST) on La Palma, Spain. The movie shows solar granulation which is a result of convective motions of bubbles of hot gas that rise from the solar interior. When these bubbles reach the surface, the gas cools and flows down again in the darker lanes between the bright cells. In these so-called intergranular lanes, we can also see small bright points and more extended bright elongated structures. These are regions with strong magnetic fields. (Source: Wikipedia, user Luc.rouppe, link: https://en.wikipedia.org/wiki/File:Granulation_Quiet_Sun_SST_25May2017.webm)*
 
 Prigogine showed that spontaneous self-organisation also occurs in chemical systems that are operated far from equilibrium by continuously pushing matter and energy through it. These self-organising processes are largely unpredictable and spontaneously arise in our universe.
@@ -202,7 +217,7 @@ knitr::include_graphics("./figs/ATP-ADP.png")
 
 \pagebreak 
 
-###3 Building Blocks of Life 
+### Building Blocks of Life 
 
 "Life is One" because all living organisms are composed of the same basic bio-molecules and we all know more than we think about them because we are what we eat!  
 
@@ -221,7 +236,7 @@ Almost all molecules of living organisms are composed of
 knitr::include_graphics("./figs/Cell_membrane_detailed_diagram_4.svg")
 ```
 
-Lipids, fats and oils, are used for storage. However, an important class of lipids, the phospholipids, make up membranes of cells and unicellular compartments called organelles see Figure \@ref(fig:lipids). Indeed phospholipids have a polar head that likes to be in water and a long apolar tail that does not mix with water. Therefore bilayers of phospholipid molecules are spontaneously formed in aqueous solutions. 
+Lipids, fats and oils, are used for storage of energy, regulation of hormones, transmission of nerve impulses, cushion vital organs and transport of fat-soluble nutrients. Moreover, an important class of lipids, the phospholipids, make up membranes of cells and unicellular compartments called organelles see Figure \@ref(fig:lipids). Indeed phospholipids have a polar head that likes to be in water and a long apolar tail that does not mix with water. Therefore bilayers of phospholipid molecules are spontaneously formed in aqueous solutions. 
 
 \pagebreak 
 
@@ -352,30 +367,6 @@ knitr::include_graphics("./figs/Citric_acid_cycle_with_aconitate_2.svg")
 ```
 
 We can end this section with a quote of @deDuve2002: "Any living organism is a reflection of its enzyme arsenal".
- 
-\pagebreak 
-
-#### Self-Organisation
-
-Life is also characterized by its ability for self-organisation. Some proteins are also important to give structure to a cell and they can spontaneously form structure. 
-An intriguing illustration of self-organisation is provided by @Cheng2019 who 
-homogenized Xenopus laevis egg cell cytoplasma extracts, i.e. the liquid with structures from the cell, and showed that the homogeneous extract spontaneously reorganized itself in cell like structures in a matter of minutes (see Figure \@ref(fig:selforganisation) and you tube movie https://www.youtube.com/embed/prq1Occu22s). 
-
-(ref:selforganisationCaption) Homogenized Xenopus laevis egg cytoplasmic extracts spontaneously organized into cell-like compartments [@Cheng2019]
-
-```{r selforganisation, fig.cap='(ref:selforganisationCaption)', out.width='100%', fig.asp=.8, fig.align='center', echo=FALSE}
-knitr::include_graphics("./figs/selforganisation.jpg")
-```
-
-
-</br> 
-@Cheng2019 found that ATP, the energy currency of a cell; microtubuli, a kind of filamentous proteins; and dynein, a kind of motor protein, were required and driving this process of self-organisation.
-
-```{r dynein, fig.cap='Microtubulus (long filamentous protein) with Dynein "motor" protein attached (Source:  Wikipedia)', out.width='30%', fig.asp=.8, fig.align='center', echo=FALSE}
-knitr::include_graphics("./figs/DyneinHeavyChainOnMT.png")
-```
-
-Note, that proteins thus play a central role in life. They are key for catalysis and giving structure. Hence, a cell thus not only inherits genetic information, but, also its spatial organisation from a mother cell! 
 
 \newpage 
 
@@ -530,14 +521,7 @@ The insights of Maturana and Varela have the compelling implication that we no l
 As such, we can also view our cognitive awareness as an emerging property of the network of our neurons in our brain in response to the history of our interactions with our environment. 
 Similar to other species, the unique novel functions and processes that do arise when human entities are forming networks are astounding. 
 
-Indeed, at the next level, the network of people, our rich psycho-socio-emotional realm emerges. As human beings, our lives do not only take place in the physical domain, but also in the symbolic social domain, which is also very important for our development [@capraLuisi2014]. 
-
-Similar to the biochemical system of a cell, the social system is an open system with social feedback loops. Indeed, each social system needs to sustain itself in a stable but dynamic way, by letting new members, materials and ideas to enter the system, which will in turn be transformed by the internal rules or organisation of the system [@capraLuisi2014], leading to a kind of "social homeostasis".  Sometimes, these novel ideas can be so powerful that they transform the social system by itself, i.e. switching it towards a novel attractor. At the individual level, however, the transformation implied by the social system sometimes are a bliss, but they also can cause trauma. The observation that the "bio-logic" or pattern of organisation of a simple cell is similar to that of an entire social structure has large implications. 
-
-Indeed, as @Kimmerer2013 points out so convincingly in her book Braiding Sweetgrass, these insights also invites us to learn from all forms of life that are surrounding us. 
-The lichen example can teach us on our relationships and society. Indeed, in the lab environment when resources were plentiful both the fungus and green algae did not interact, only when the environment became harsh for both of them, they join forces and take their unique lichen form where there are intimately intertwined. A similar disruption of our social function can be seen in our modern western society that is flooded by resources, which cultivates individualism and loneliness. 
-
-So this shared bio-logic from cells up to our symbolic realm, suggests a fundamental unity of life [@capraLuisi2014] and has large implications for our weltanschauung. 
+Indeed, at the next level, the network of people, our rich psycho-socio-emotional realm emerges. As human beings, our lives do not only take place in the physical domain, but also in the symbolic social domain, which is also very important for our development. Hence, our behavior in the physical domain is shaped by the “laws of nature”, while our behavior in the social domain is governed by rules that are generated by the social system itself [@capraLuisi2014]. Moreover, research in the social sciences has pointed out that social networks exhibit the same general principles as biological networks. So, as human beings we develop ourselves in an organised ensemble with internal rules that are generated by the networks and their boundaries, i.e. the physical boundary in our biological networks and the cultural boundary in our social networks [@capraLuisi2014].
 
 # Genesis of life, phylogenesis and evolution?
 
@@ -552,7 +536,7 @@ knitr::include_graphics("./figs/originKosmos.jpg")
 The most common theory is that our cosmos started with the Big Bang. 
 A very energy-rich state.  
 
-By expanding the universe quickly cooled down enough for energy to be converted into mass, i.e. the majority in hydrogen and a fraction in more heavy helium nuclei. 
+By expanding the universe quickly cooled down enough for energy to be converted into mass, i.e. 75% in hydrogen and 25% in more heavy helium nuclei. 
 
 
 
@@ -594,6 +578,11 @@ A supernova gives rise to new nebula and these will eventually lead to new stars
 
 Hence, through nuclear fusion in the stars the more heavy atoms have been generated of which the bio-molecules of life are eventually built. So as often mentioned in a catchphrase: we are built out of cosmic dust. 
 
+<img src="./figs/Nucleosynthesis_periodic_table_wikipedia.png" width="100%"/> 
+<img src="./figs/essentialElementsHuman.png" width="100%"/> 
+(image courtesey wikipedia)
+
+
 ### Carbohydrates in Interstellar Space
 
 Upon nuclear fusion in the stars many different elements are formed. For life, hydrogen, carbon, oxygen, sulfur, phosphorous and nitrogen atoms, among others, are key to compose organic matter. 
@@ -604,7 +593,7 @@ In interstellar space, carbon reacts spontaneously with other elements to form p
 knitr::include_graphics("./figs/orionWithPAH.jpeg")
 ```    
 
-PAHs were already be generated shortly after the Big Bang.  Once they are produced, they are further transformed in interstellar space upon reaction with hydrogen and oxygen <!-- via hydrogenation (reaction with hydrogen), oxygenation (reaction with oxygen) --> among others to form precursor molecules ("forerunners") for amino acids and nucleotides, which are the building blocks of proteins, and, of RNA and DNA, respectively. So these simple building blocks that are essential for the chemistry of life are already omnipresent in space. 
+PAHs were already be generated shortly after the Big Bang.  Once they are produced, they are further transformed in interstellar space upon reaction with hydrogen and oxygen <!-- via hydrogenation (reaction with hydrogen), oxygenation (reaction with oxygen) --> among others to form precursor molecules ("forerunners") for amino acids and nucleotides, which are the building blocks of proteins, and, of RNA and DNA, respectively. So these simple building blocks that are essential for the chemistry of life are already present in space. 
 
 
 ## Genesis of Life 
@@ -643,13 +632,16 @@ LUCA was anaerobic, living without oxygen, and maintained its hereditary materia
 
 All species evolved from the same ancestral population of cells. 
 This is also referred to as the same Last Universal Common Ancestor (LUCA). 
-In the tree of life the evolutionary relations are summarized between different organisms (and groups of organisms). All living beings eventually can be traced back to the last universal common ancestor who is located at the root of the tree, see Figure \@ref(fig:treeOfLifeBis).
+In the tree of life the evolutionary relations are summarized between different organisms (and groups of organisms). All living beings eventually can be traced back to the last universal common ancestor who is located at the root of the tree, see Figure \@ref(fig:treeOfLifeBis). So all cells that currently exist are without discontinuity chemically connected to LUCA. So they have an impressive metabolic memory of 3.5 - 3.8 billion years, which predates many ancient rocks!
 
 ```{r treeOfLifeBis, fig.cap='The tree of life is one of the most important organizing principles in biology. It shows the evolutionary relationships among different organisms and that all living beings eventually can be traced back to the last universal common ancestor who is located at the root of the tree (Source: wikipedia)', out.width='100%', fig.asp=.8, fig.align='center', echo=FALSE}
 knitr::include_graphics("./figs/Phylogenetic_tree.svg")
 ```
 
+
 Phylogenesis is the process of the origin of all species from the tree of life from LUCA. 
+
+
 
 
 ### Timescale
@@ -675,56 +667,16 @@ Again leading to a mass extinction due to the cold. However,  volcanic activity 
 
 In less than 20 million years (MY) Earth radically changed again and turned into Green Earth (520 MYA). There was an explosion of life, and life suddenly evolved from being mainly unicellular to complex multicellular forms. 
 
-### Change Point: Eukaryotic Cells and Increase of Oxygen {#endosymbiosis}
-
-There are two archetypes of cells: 
-
-- Prokaryota, simple cells of a size of  0.1 to 5.0 $\mu m$ with DNA that is lying freely in the cell cytosol (the fluid in the cell), see Figure \@ref(fig:prokaryotaCell) and 
-
-```{r prokaryotaCell, fig.cap='Diagram of a typical prokaryotic cell. The cell is simple, the DNA is lying free in the cell (Source: Ali Zifan, Wikipedia)', out.width='50%', fig.asp=.8, fig.align='center', echo=FALSE}
-knitr::include_graphics("./figs/prokaryoteCell.svg")
-```
-
-- Eukaryota are larger and more complex cells, 10-100 $\mu m$ in size. They have a variety of internal membrane-bound structures, called organelles, and a cytoskeleton, which play an important role in defining the cell's organization and shape. Eukaryotic DNA is stored in chromosomes. A chromosome is a long DNA molecule that is stored in a compact form. A chromosome contains a part or all of the genetic material of an organism. Human cells have 46 chromosomes, i.e. 23 chromosome pairs. Each pair consists of one copy from our biological mother and one from our biological father. The chromosomes are located in the cell nucleus, which is the organelle maintaining the integrity of chromosomes and thus of our genes, and plays an important role in the regulation of gene expression and of the activities of the cell. See Figures \@ref(fig:animalCell) and \@ref(fig:plantCell).
-
-
-
-```{r animalCell, fig.cap='Diagram of a typical animal cell. Animal cells are eukaryotic cells. They are typically much larger than those of prokaryotas. They have a variety of internal membrane-bound structures, called organelles, and a cytoskeleton, which play an important role in defining the cell\'s organization and shape. Eukaryotic DNA is divided into chromosomes, that are located in the cell nucleus, which is the organelle maintaining the integrity of genes, and plays an important role in the regulation of gene expression and of the activities of the cell. (Source: Mariana Ruiz Villarreal, Wikipedia)', out.width='50%', fig.asp=.8, fig.align='center', echo=FALSE}
-knitr::include_graphics("./figs/animalCell.svg")
-```
-
-```{r plantCell, fig.cap='Diagram of a typical plant cell. Animal cells are eukaryotic cells. They are typically much larger than those of prokaryotas. They have a variety of internal membrane-bound structures, called organelles, and a cytoskeleton, which play an important role in defining the cell\'s organization and shape. Eukaryotic DNA is divided into chromosomes, that are located in the cell nucleus, which is the organelle maintaining the integrity of genes, and plays an important role in the regulation of gene expression and of the activities of the cell. Plant cells also have a cell wall and chloroplasts that can perform photosynthesis. (Source: Mariana Ruiz Villarreal, Wikipedia)', out.width='50%', fig.asp=.8, fig.align='center', echo=FALSE}
-knitr::include_graphics("./figs/plantCell.svg")
-```
-
-
-From 3.5 BYA - 540 MYA we find mainly prokaryotic and some simple eukaryotic organisms in fossils and life was mainly unicellular. 
-
-Eukaryotic cells are believed to be generated by endosymbiosis, i.e. a symbiotic relationship where one organism lives inside the other, which is beneficial for both organisms.
-
-The process of endosymbiosis that led to eukaryotic cells is displayed in Figure \@ref(fig:endosymbiosis). 
-
-```{r endosymbiosis, fig.cap='Genesis of eukaryotic cells (Source: wikipedia)', out.width='80%', fig.asp=.8, fig.align='center', echo=FALSE}
-knitr::include_graphics("./figs/endosymbiosis.svg")
-```
-
-First an anaerobic^[Anaerobic: living in the absence of oxygen] prokaryotic cell was assumed to have grown and to have developed membrane systems inside the cell, which gave rise to the formation of the nucleus. At a certain point of time this large prokaryotic cell with internal membrane systems must have ingested an aerobic^[Aerobic: oxygen using and respiration with oxygen provides more energy] proteobacterium, which managed to avoid digestion. The two cells started with an endosymbiotic relation. 
-
-The proteobacterium provided the host cell with additional energy through the synthesis of ATP by metabolizing carbohydrates and lipids using oxygen and the host cell fed the proteobacterium with these bio-molecules. This gave the endosymbiotic pair the ability to grow further in size and to thrive in the oxygen rich environment of planet Earth that was established during the Cambrian era that started 540 million years ago. The increase of oxygen is believed to be one of the major triggers that gave rise to the "biological big bang" that led to an explosion of novel species and the emergence of all large groups^[Large groups of a kingdom are more formally referred to as *phyla*] in the animal kingdom [@he2019].  
-
-During their endosymbiotic evolution the proteobacterium gradually handed over many genes to the cell nucleus, and became under regulation of the nucleus.  It eventually evolved to mitochondria, the organelles that are the energy plants of a cell. So, we inherit more from mother than father: we inherit our cell structure as well as our energy system, i.e. our mitochondria and their remaining DNA, from mother side through her egg cell.
-
-For plant cells, a second endosymbiotic event must have occurred with eukaryotic cells and cyanobacteria. The ingested cyanobacteria has evolved in a similar way into chloroplasts, which give plants the ability for photosynthesis and led them become the most successful life form of the globe. Fossil evidence of land plants dates back to 485 MYA - 420 MYA, however, phylogenetic analysis also suggests an earlier origin in the Cambrian [@StrotherFoster2021].    
-
-Other key differences between Prokaryota and Eukaryota are in terms of their reproduction. 
-For Prokaryota that only takes place by cell division. A mutation in the DNA is thus fixed in all daughter cells. While nearly all Eukaryota have a phase of sexual reproduction. They are diploid organisms, i.e. they have two copies of each gene, one from fathers' and mothers' side. This enables successive mutations to be made in one copy because another functional copy of the gene is available. Moreover during sexual reproduction recombination of chromosomes occurs, i.e. reshuffling of paternal and maternal genes, which leads to much more variation. 
-  
-The Eukaryota further evolved in protists, which are unicellular organisms, fungae, plants and animals.
 
 ## Evolution
 
 How does the evolution of LUCA to all species of the tree of life occurred? 
-Evolution is largely driven by variability and selection. 
+
+Lamarck was one of the first proponents of biological evolution and proposed the theory that organisms altered their behavior in response to environmental change and that their changed behavior, in turn, modified their organs, and their offspring inherited those “improved” structures. A theory that has been abandoned in favor of Darwin and Wallace’s theory of evolution by natural selection. For them, the mechanisms of reproductive heritability and the origin of new traits, however, remained a mystery. Upon the rediscovery of the work of Mendel natural selection and population genetics were combined in the neo-darwinian theory or the synthetic evolution theory. Key principles in this theory are variability and selection.
+
+The groundbreaking work of Margulis, however, shed new light on evolution. According to her theory, symbiosis is another important driver of evolution. Symbiosis is a close, prolonged association between two or more different biological species where the involved species all benefit from their interaction. Particularly, her theory of sequential endosymbiosis, where different types of bacteria fused together to form larger and more complex cells, can explain the sudden explosion of life forms that was observed from 540 MYA - 520 MYA.
+
+In this section we first focus on the principles of variation and selection. We will then continue with endosymbiosis and symbiogenesis. We conclude this section with elaborating on the concept of teleonomy.
 
 ### Variability and Selection
 
@@ -785,32 +737,75 @@ This is very common between Prokaryota, i.e. eubacteria and archaea bacteria, th
 
 ### Endosymbiosis
 
-Endosymbiosis is also a very important driver of evolution. Niles Eldredge and Stephen Jay Gould have shown that the fossil record indicates that evolution happens in bursts: it is slow most of the time until suddenly rapid changes occur over a brief time [@margulis1999]. According to Lynn Margulis this can be explained due to endosymbiosis, where one species starts to live within another species, which is a source of evolutionary novelty that can give rise to an explosion of novel life forms. We already touched in more detail upon an important endosymbiosis event in section \@ref(endosymbiosis).
+Endosymbiosis is also a very important driver of evolution. Niles Eldredge and Stephen Jay Gould have shown that the fossil record indicates that evolution happens in bursts: it is slow most of the time until suddenly rapid changes occur over a brief time [@margulis1999]. According to Lynn Margulis this can be explained due to endosymbiosis, where one species starts to live within another species, which is a source of evolutionary novelty that can give rise to an explosion of novel life forms. 
+
+
+There exist two archetypes of cells: 
+
+- Prokaryota, bacteria and archae-bacteria, are unicellular. They have simple cells of a size of  0.1 to 5.0 $\mu m$ with DNA that is lying freely in the cell cytosol (the fluid in the cell), see Figure \@ref(fig:prokaryotaCell) and 
+
+```{r prokaryotaCell, fig.cap='Diagram of a typical prokaryotic cell. The cell is simple, the DNA is lying free in the cell (Source: Ali Zifan, Wikipedia)', out.width='50%', fig.asp=.8, fig.align='center', echo=FALSE}
+knitr::include_graphics("./figs/prokaryoteCell.svg")
+```
+
+- Eukaryota, protists, fungi, plants and animals, are unicellular or multicellular. Their cells are larger and more complex. Their size ranges from 10-100 $\mu m$. They have a variety of internal membrane-bound structures, called organelles, and a cytoskeleton, which play an important role in defining the cell's organization and shape. Eukaryotic DNA is stored in chromosomes. A chromosome is a long DNA molecule that is stored in a compact form. A chromosome contains a part or all of the genetic material of an organism. Human cells have 46 chromosomes, i.e. 23 chromosome pairs. Each pair consists of one copy from our biological mother and one from our biological father. The chromosomes are located in the cell nucleus, which is the organelle maintaining the integrity of chromosomes and thus of our genes, and plays an important role in the regulation of gene expression and of the activities of the cell. See Figures \@ref(fig:animalCell) and \@ref(fig:plantCell).
+
+
+```{r animalCell, fig.cap='Diagram of a typical animal cell. Animal cells are eukaryotic cells. They are typically much larger than those of prokaryotas. They have a variety of internal membrane-bound structures, called organelles, and a cytoskeleton, which play an important role in defining the cell\'s organization and shape. Eukaryotic DNA is divided into chromosomes, that are located in the cell nucleus, which is the organelle maintaining the integrity of genes, and plays an important role in the regulation of gene expression and of the activities of the cell. (Source: Mariana Ruiz Villarreal, Wikipedia)', out.width='50%', fig.asp=.8, fig.align='center', echo=FALSE}
+knitr::include_graphics("./figs/animalCell.svg")
+```
+
+```{r plantCell, fig.cap='Diagram of a typical plant cell. Plant cells are eukaryotic cells. They are typically much larger than those of prokaryotas. They have a variety of internal membrane-bound structures, called organelles, and a cytoskeleton, which play an important role in defining the cell\'s organization and shape. Eukaryotic DNA is divided into chromosomes, that are located in the cell nucleus, which is the organelle maintaining the integrity of genes, and plays an important role in the regulation of gene expression and of the activities of the cell. Plant cells also have a cell wall and chloroplasts that can perform photosynthesis. (Source: Mariana Ruiz Villarreal, Wikipedia)', out.width='50%', fig.asp=.8, fig.align='center', echo=FALSE}
+knitr::include_graphics("./figs/plantCell.svg")
+```
+
+
+From 3.5 BYA - 540 MYA we find mainly prokaryotic and some simple eukaryotic organisms in fossils and life was mainly unicellular. 
+
+Margulis sequential endosymbiosis theory (SET) postulates that eukaryotic cells are generated by endosymbiosis, i.e. a symbiotic relationship where one organism started to live inside the other, which is beneficial for both organisms. The process of sequential endosymbiosis that led to eukaryotic cells is displayed in Figure \@ref(fig:endosymbiosis). 
+
+```{r endosymbiosis, fig.cap='Genesis of eukaryotic cells (Source: wikipedia)', out.width='80%', fig.asp=.8, fig.align='center', echo=FALSE}
+knitr::include_graphics("./figs/endosymbiosis.svg")
+```
+
+First an anaerobic^[Anaerobic: living in the absence of oxygen] prokaryotic cell was assumed to have grown and to have developed membrane systems inside the cell, which gave rise to the formation of the nucleus^[Note, that according to Margulis the large anaerobic cell with a nucleus, the first eukaryote, was already the result of an earlier endosymbiotic event. However, there is no scientific consensus on this hypothesis, yet.]. 
+ At a certain point of time this large prokaryotic cell with internal membrane systems must have ingested an aerobic^[Aerobic: oxygen using and respiration with oxygen provides more energy] proteobacterium, which managed to avoid digestion. The two cells started with an endosymbiotic relation. 
+
+The ingested proteobacterium provided the host cell with additional energy through the synthesis of ATP by metabolizing carbohydrates and lipids using oxygen and the host cell fed the proteobacterium with these bio-molecules. This gave the endosymbiotic pair the ability to grow further in size and to thrive in the oxygen rich environment of planet Earth that was established during the Cambrian era that started 540 million years ago. The increase of oxygen is believed to be one of the major triggers that gave rise to the "biological big bang" that led to an explosion of novel species and the emergence of all large groups^[Large groups of a kingdom are more formally referred to as *phyla*] in the animal kingdom [@he2019].  
+
+During their endosymbiotic evolution the proteobacterium gradually handed over many genes to the cell nucleus, and became under regulation of the nucleus.  It eventually evolved to mitochondria, the organelles that are the energy factories of a cell. So, we inherit more from mother than father: we inherit our cell structure as well as our energy system, i.e. our mitochondria and their remaining DNA, from mother side through her egg cell.
+
+For plant cells, a second endosymbiotic event must have occurred with eukaryotic cells and cyanobacteria. The ingested cyanobacteria has evolved in a similar way into chloroplasts, which give plants the ability for photosynthesis and led them become the most successful life form of the globe. Fossil evidence of land plants dates back to 485 MYA - 420 MYA, however, phylogenetic analysis also suggests an earlier origin in the Cambrian [@StrotherFoster2021].    
+
+Other key differences between Prokaryota and Eukaryota are in terms of their reproduction. 
+For Prokaryota that only takes place by cell division. A mutation in the DNA is thus fixed in all daughter cells. While nearly all Eukaryota have a phase of sexual reproduction. They are diploid organisms, i.e. they have two copies of each gene, one from fathers' and mothers' side. This enables successive mutations to be made in one copy because another functional copy of the gene is available. Moreover during sexual reproduction recombination of chromosomes occurs, i.e. reshuffling of paternal and maternal genes, which leads to much more variation. 
+  
+The Eukaryota further evolved in protists, which are unicellular organisms, fungae, plants and animals. 
+
 
 ### Teleonomy
 
-The term teleonomy means that evolution only has the primitive goal to maintain and reproduce the species, and, that it thus has no other purpose and thus also no direction. 
+Teleonomy is the quality of apparent purposefulness and of goal-directedness of structures and functions in living organisms brought about by evolutionary adaptation. So throughout evolutionary history, there was never a purpose to develop a particular trait other than the primitive goal to maintain and reproduce the species. 
 
-When complex organs and organisms originate it might seem as if there is a direction or purpose, but, that is not the case! A good example is the development of an eye, see Figure \@ref(fig:evolutionEye). 
+When complex organs and organisms originate it might seem as if there is a direction or purpose, but, that is not the case! 
 
-```{r evolutionEye,  fig.cap='The evolution of an eye (Source: Wikipedia)', out.width='45%', fig.asp=.8, fig.align='center', echo=FALSE}
-knitr::include_graphics("./figs/evolutionEye.png")
+As @rosenberg2008 nicely introduce in their book Phylosophy of Biology^[Section Misunderstandings about natural selection p20]: "For some, Darwin’s theory presents puzzles having to do with complexity, randomness, and directionality. They ask how complex functional designs can arise by a random process such as natural selection. For example, the evolution of a complex structure like a wing capable of sustained flight (as in a bird) from a fin (as in a primitive fish) might seem to be impossible, given the randomness of the process of natural selection and the enormous number of modifications necessary."
+
+"The first part of the answer is that natural selection is not random. It is a process that requires some randomness in its *input*. Variations arising are not targeted toward solving problems posed by the environment. But the *output* of natural selection is decidedly nonrandom, the differential survival and reproduction of the variants that are better adapted."
+
+"The second part of the answer is that natural selection can act cumulatively, and that is what makes complex adaptations possible. Selection first transformed a fin into a walking limb, strong enough to support a large animal on land, and then later transformed a walking limb into a wing, capable of producing sustained powered flight. Complexity is possible because later adaptations build on earlier adaptations. In other words, complex adaptations are not produced in big leaps but in smaller steps, each one of which is adaptive, and function can change from one step to the next. A wing is not a better fin or even a better leg. It is something entirely different, serving a different function. Looking only at the endpoints, the gap covered might seem impossibly large, and the reason is that natural selection to some extent covers its tracks. Looking at a fin or wing, the intermediate walking limb stage is not evident, at least not superficially evident. Though natural selection covers its tracks, a great deal of biology has been devoted to uncovering them. One of Darwin’s earliest arguments for natural selection was based on the close similarity in parts, their numbers, and spatial relations to one another (their *homology*) of the bones in fins, legs, and wings. Two hundred years later, molecular biologists can trace the genealogy of the bird’s wing back through the reptile’s leg to the fish’s fin in the similarities and differences of the gene sequences that control the development of each. They can show how the DNA sequence differences and similarities between the genes involved in limb development in birds, reptiles, and fish enable us to date their common ancestors and say something about how the homologies and the differences among the bones of their different limbs are due to differences in DNA sequences."
+
+
+```{r flyEye,  fig.cap='A small mutation can sometimes induce large phenotypic changes. Here, the mutation of the Antp gene is shown to lead to antenna-to-leg deformation in flies [@flyMut]. Panel A: Fly head with an antenna-to-leg deformation. Panel B: Fly head with a normal antenna formation.', out.width='45%', fig.asp=.8, fig.align='center', echo=FALSE}
+knitr::include_graphics("./figs/pone.0205905.g006_flyAntennaLegMutation2.png")
 ```
 
-Indeed, 
+Moreover, large phenotypic changes often involve very small genomic changes.  @rosenberg2008 continue that "In the fruit fly Drosophila, it is known that a small mutation in the right gene is all it takes to turn its antennae into a pair of legs. Increasingly, molecular biology is able to uncover the tracks evolution has hidden, so that adaptations begin to look expectable instead of miraculous. What about directionality? The notion of cumulative change might seem to suggest a kind of directedness to the process of adaptation, a drive toward greater complexity. In fact, however, it is an open question whether there is in evolution any preferred tendency for complexity to build up. What is clear, however, is that nothing in the current understanding of natural selection predicts a drive toward greater complexity. Increases occur, but in our fascination with them we tend to forget the frequent decreases. Winged animals become flightless, as in the evolution of penguins. Animals with walking limbs lose them when they return to the water, as in the evolution of whales (from a common ancestor with hippopotamuses!). Complexity is reversible, and selection is expected to favor decreases whenever opportunities for adaptive simplicity arise . . . which could be often!"
 
-- The eye is not developed by evolution with the purpose to see. 
 
-- The eye only has the function to see.
-
-- It is the result of a gradual process where each adaptation gave a reproductive advantage in a particular environment. 
-
-- In another environment it can be no longer functional and than it might disappear or might become dysfunctional, e.g. moles eyes.
-    
 Hence, the origin of a species is the result of evolution, but, not the purpose of evolution.  Evolution is thus adaptation with as sole goal maintenance and reproduction. 
 
-From the distribution of the complexity of species in Figure \@ref(fig:distributionComplexity), it is clear that the most abundant species in number always has been bacteria. 
-Indeed, evolution has no direction.
+Moreover, from the distribution of the complexity of species in Figure \@ref(fig:distributionComplexity), it is clear that the most abundant species in number always has been bacteria. 
 The distribution of complexity at present, however, has a tail to the right.
 This mainly stems from the fact that there is lower bound of complexity of living organisms. Hence, evolution could not generate organisms with a complexity below this lower bound and it therefore only seems as if it slightly favors increasing complexity. 
 
@@ -839,9 +834,14 @@ Note, that
 
 - Animals represent a relative small fraction. Among animals, cattle and humans are over represented. 
 
-Other compelling evidence that there is no direction to evolution stems from the number of bacterial cells in our body. @Sender2016 showed that the ratio of the number of bacterial cells to the number of human cells is close to 1. A human with a weight of 70kg has $\pm$ 38 trillion bacterial cells and 30 trillion humane cells. Note, that trillion is a thousand billion or 10$^{12}$!
+Other compelling evidence that there is no direction to evolution stems from the number of bacterial cells in our body. @Sender2016 showed that the ratio of the number of bacterial cells to the number of human cells is close to 1. A human with a weight of 70kg has $\pm$ 38 trillion bacterial cells and 30 trillion humane cells. Note, that trillion is a thousand billion or 10$^{12}$! 
 
-So, all these examples make clear that evolution has no direction. For every organism with a higher complexity there also emerge many organisms with lower complexity! However, we can view evolution as a creative process that is generating novel life forms that are well adapted to their environment. 
+Margulis' take on this is nicely summarised in the following quote: "more complex multicellular organisms such as fungi, plants and animals can be seen as a massive colony of differentiated fused and mutating symbiotic microorganisms" [@margulis1999].
+
+So, all these arguments make clear that evolution has no direction. 
+<!--For every organism with a higher complexity there also emerge many organisms with lower complexity!-->
+Instead, we can view evolution as a wonderful creative process that is generating novel life forms that are well adapted to their ever changing environment. So this insight on evolution invites us to deeply embrace the wealth of diversity, instead.
+
 
 # Onthogenesis
 
@@ -859,21 +859,31 @@ This is due to epigenetics!
 
 ## Epigenetics
 
-Epigenetics is the study of how development, behavior and environment can cause changes that affect the way we use our genes. Unlike genetic changes, epigenetic changes are reversible and do not change your DNA sequence, but they can change how our body can (or cannot) read a DNA sequence, see Figure \@ref(fig:epigenetics). 
+Epigenetics is the study of how development, behavior and environment can cause changes that affect the way we use our genes. Unlike genetic changes, epigenetic changes do not change our DNA sequence, but they can change how our body can (or cannot) read our genes.
 
-```{r epigenetics, fig.cap='Principes of epigenetics. Small molecules, epigenetic markers, interact with the DNA and histones. They can cause a gene to be accessible or inaccessible for RNA transcription (Source: NIH, Wikipedia)', out.width='100%', fig.asp=.8, fig.align='center', echo=FALSE}
-knitr::include_graphics("./figs/Epigenetic_mechanisms.png")
+Epi means "on top of" and genetics, our genes. And that is literally what it means: a set of instructions that sits on top of our genes.  Epigenetics acts through epigenetic markers, small molecules that interact with our DNA. These markers can make genes accessible or inaccessible for the cell.
+
+Epigenetics has a large impact on our biology. Our brain and muscle cells for instance have the same DNA, but they are completely different in shape and function (see Figure \@ref(fig:brainMuscle)). This is because they use an entirely different set of genes. The difference in the genes they express are determined to a large extent by differences in their epigenome, i.e. the entire collection of epigenetics marks across their entire genome^[all the genetic information or DNA of a cell or an organism]. Remarkably these epigenetic markers are also copied when a cell divides, so brain cells therefore remain brain cells and muscle cells remain muscle cells upon cell division.  
+
+```{r brainMuscle, fig.cap='Brain (left) and muscle cells (right) (Wikipedia: BrainsRusDC, left and Nephron, right).', out.width='90%', fig.asp=.8, fig.align='center', echo=FALSE ,fig.show='hold'}
+knitr::include_graphics(c("./figs/brainMuscleCells.png"))
 ```
 
+The major epigenetic changes occur during embryonic development. In a fertilized egg cell all our genes are more or less accessible. However, as the embryo develops, cells differentiate into brain cells, muscle cells, nerve cells, liver cells etc. This differentiation happens through the addition or removal of epigenetic marks, and this is triggered by differences in the hormone concentration throughout the embryo and by the signals that a cell receives from its neighboring cells.
 
-Epigenetic markers, however, are copied during cell division to the two new cells that are formed. This causes a liver cell to remain a liver cell and a brain cell to remain a brain cell upon cell division.  
+This brings us to a very important point of epigenetics: it is largely influenced by the environment. Not only the neighboring cells have an impact on the developing embryo, but also mother's food, smoking behavior and stress levels among others, that are passed through her bloodstream to the developing fetus and have an epigenetic impact that will determine how the fetus will use their genes in their adult life. Moreover, the epigenetic process continuous after birth. This is particularly so for our brains that keep on growing and developing throughout our lives, and again the interaction with our environment is key.
 
-Epigenetic markers are small molecules that interact either directly with the DNA or with histones, which are specific proteins that act as spools that wind the long DNA molecule in a more compact/condense form. 
+## Epigenetic markers
+
+Epigenetic markers are small molecules that interact either directly with the DNA or with histones, which are specific proteins that act as spools that wind the long DNA molecule in a more compact/condense form (see Figure \@ref(fig:epigenetics)). 
 They can make genes accessible or inaccessible for RNA transcription and thus eventually for the production of proteins. Two common types are 
 
 - DNA methylation: binding a methyl group directly to DNA^[A methyl group (-CH$_3$) consists of one carbon and three hydrogen atoms].
 - Histone acetylation: binding an acetyl group to histone proteins^[An acetyl group (-CO-CH$_3$) consists of two carbon, one oxygen and three hydrogen atoms].
 
+```{r epigenetics, fig.cap='Principes of epigenetics. Small molecules, epigenetic markers, interact with the DNA and histones. They can cause a gene to be accessible or inaccessible for RNA transcription (Source: NIH, Wikipedia)', out.width='100%', fig.asp=.8, fig.align='center', echo=FALSE}
+knitr::include_graphics("./figs/Epigenetic_mechanisms.png")
+```
 <!-- Note, that binding a molecule on a protein after translation is also referred to as post translational modification (PTM). --> 
 
 Both types can impact the activity of genes.
@@ -890,8 +900,7 @@ Epigenetics plays an important role in embryonic development (see Figure \@ref(f
 knitr::include_graphics("./figs/DNA_methylation_reprogramming.png")
 ```
 
-CpG islands are regions in our DNA that can be heavily methylated. They are major regulatory units and around 70% of our genes have CpG islands in their promotor regions^[A promoter is a sequence of DNA to which proteins bind to initiate transcription of the gene downstream of the promotor]. Methylation of the promotor region is typically associated with a reduction of gene expression. In Figure \@ref(fig:epiEmbryo) we observe that the CpG islands of a sperm cell are almost fully methylated, which indicates that many genes are likely to be silenced. Indeed, a sperm cell has one main function and that is to swim forward and fertilize the egg cell.   The CpG islands of an egg cell are methylated around 50%. Upon fertilization the methylation drops in the blastocyst (an early stage of embryonic development, about five days upon fertilization). This is required for the cells to regain the property that they can divide and differentiate to all cell-types of the developing organism. As differentiation of the cells starts and as they evolve into tissues, methylation increases again so that the cells have access to less genes and get more specific functions. Note, that the methylation status is also passed upon cell division, which leads to invariance of differentiated cells: indeed, a liver cell remains a liver cell upon division and a brain cell a brain cell, etc.   
-
+CpG islands are regions in our DNA that can be heavily methylated. They are major regulatory units and around 70% of our genes have CpG islands in their promotor regions^[A promoter is a sequence of DNA to which proteins bind to initiate transcription of the gene downstream of the promotor]. Methylation of the promotor region is typically associated with a reduction of gene expression. In Figure \@ref(fig:epiEmbryo) we observe that the CpG islands of a sperm cell are almost fully methylated, which indicates that many genes are likely to be silenced. The CpG islands of an egg cell are methylated around 50%. Upon fertilization the methylation drops in the blastocyst (an early stage of embryonic development, about five days upon fertilization). This is required for the cells to regain the property that they can divide and differentiate to all cell-types of the developing organism. As differentiation of the cells starts and as they evolve into tissues, methylation increases again so that the cells have access to less genes and get more specific functions. Note, that the methylation status is also passed upon cell division, which leads to invariance of differentiated cells: indeed, a muscle cell remains a muscle cell upon division and a brain cell a brain cell, etc.   
 
 ## Epigenetics and Aging
 
@@ -922,7 +931,6 @@ Learning typically happens in waves. Genes activated shortly after learning retu
 In the second wave, genes are included that encode for epigenetic regulators. 
 So, the first wave within 6 hours upon learning is known to up regulate transcription factors important to initiate the second wave of transcription, which is needed to establish long-lasting memories. 
 
-Understanding memory consolidation gets even more complex due to the reorganization of neural networks associated with recent memory storage and later memory phases ($>7$ days).
 
 ### DNA Methylation and Memory
 

@@ -1,0 +1,51 @@
+---
+title: II. Tutorial Single Cell Data Analysis 
+author: "Lieven Clement"
+date: "[statOmics](https://statomics.github.io), Ghent University"
+output:
+    html_document:
+      theme: flatly     
+      code_download: false
+      toc: false
+      toc_float: false
+      number_sections: false
+bibliography: msqrob2.bib
+
+---
+
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
+
+### Macosko et al. dataset
+
+Perform 
+
+- QC
+- Feature selection
+- Dimension reduction 
+- Clustering
+
+on the Macosko dataset. A script with the steps can be found on
+[Macosko](./singleCell_MacoskoWorkflow_blank.html). 
+
+The data can also be downloaded on the UFORA course website (content > scRNAseq Data). 
+
+### Differential expression analysis 
+
+Follow [chapter 4](http://bioconductor.org/books/3.16/OSCA.multisample/multi-sample-comparisons.html) of the OSCA book on multi-sample.
+
+You can generate the input sce object using the [OSCA book chapter](http://bioconductor.org/books/3.16/OSCA.multisample/chimeric-mouse-embryo-10x-genomics.html#chimeric-mouse-embryo-10x-genomics) or you can download it from the UFORA course website (content > scRNAseq Data). 
+
+### Kang et al. dataset
+
+1. Do the filtering and QC on the Kang dataset 
+2. Perform DE analysis for the stimulus effect in each cell type
+
+Data can be loaded via 
+
+```
+library(ExperimentHub)
+eh <- ExperimentHub()
+sce <- eh[["EH2259"]]
+```
+
+or on the UFORA course website (content > scRNAseq Data). 

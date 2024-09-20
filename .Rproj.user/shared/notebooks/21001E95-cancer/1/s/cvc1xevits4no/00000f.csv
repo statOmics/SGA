@@ -1,0 +1,9 @@
+"0","pe <- filterFeatures(pe,~ nNonZero >=2)"
+"2","'nNonZero' found in 2 out of 2 assay(s)
+
+"
+"0","nrow(pe[[""peptideLog""]])"
+"1","[1]"
+"1"," 26696"
+"1","
+"

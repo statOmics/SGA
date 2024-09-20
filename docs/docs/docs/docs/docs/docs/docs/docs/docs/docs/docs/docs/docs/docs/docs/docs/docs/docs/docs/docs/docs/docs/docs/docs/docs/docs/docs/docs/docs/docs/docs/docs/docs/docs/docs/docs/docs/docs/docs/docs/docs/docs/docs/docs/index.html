@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Statistical Genomics Analysis</title>
+
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SGA</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-chalkboard-teacher"></span>
+     
+    Lectures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">---- INTRODUCTION ----</li>
+    <li>
+      <a href="intro.html">1.1 Position</a>
+    </li>
+    <li>
+      <a href="recapGeneralLinearModel.html">1.2 Recap linear model</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-laptop"></span>
+     
+    tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">---- INTRODUCTION ----</li>
+    <li>
+      <a href="multipleRegression_KPNA2.html">1 Intro KPNA2</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Statistical Genomics Analysis</h1>
+
+</div>
+
+
+<p><img src="figures/wpGraph.jpeg" width="986" /></p>
+<div id="course-description" class="section level1">
+<h1>Course Description</h1>
+<p>High-throughput ’omics studies generate ever larger datasets and, as
+a consequence, complex data interpretation challenges. This course
+focusses on statistical concepts involved in preprocessing,
+quantification and differential analysis of high-throughput ’omics data.
+The core focus will be on shotgun proteomics and (bulk and single-cell)
+RNA-sequencing. Experimental design is essential to allow for correct
+interpretation in all ’omics studies, and we will cover how to design a
+statistically efficient experiment, as well as discuss the impact
+experimental design has on how we model ’omics data, introducing
+concepts such as blocking. The course will rely exclusively on free and
+user-friendly open-source tools in R/Bioconductor. We hope that this
+will provide a solid basis for beginners, but will also bring new
+perspectives to those already familiar with standard data analysis
+workflows for proteomics and next-generation sequencing
+applications.</p>
+</div>
+<div id="target-audience" class="section level1">
+<h1>Target Audience</h1>
+<p>This course is oriented towards biologists and bioinformaticians with
+a particular interest in differential analysis for quantitative ’omics
+data.</p>
+</div>
+<div id="prerequisites" class="section level1">
+<h1>Prerequisites</h1>
+<p>The prerequisites for the Statistical Genomics Analysis course are
+the successful completion of a basic course of statistics that covers
+topics on data exploration and descriptive statistics, statistical
+modeling, and inference: linear models, confidence intervals, t-tests,
+F-tests, anova, chi-squared test. The basis concepts may be revisited in
+the online course at <a href="https://statomics.github.io/PSLS/"
+class="uri">https://statomics.github.io/PSLS/</a> (English) and in <a
+href="https://statomics.github.io/sbc/"
+class="uri">https://statomics.github.io/sbc/</a> (Dutch).</p>
+<p>In addition, knowledge of programming in <code>R</code> is preferred.
+A primer to <code>R</code> and Data visualization in <code>R</code> can
+be found at:</p>
+<ul>
+<li><code>R</code> Basics: <a
+href="https://dodona.ugent.be/nl/courses/335/"
+class="uri">https://dodona.ugent.be/nl/courses/335/</a></li>
+<li><code>R</code> Data Exploration: <a
+href="https://dodona.ugent.be/nl/courses/345/"
+class="uri">https://dodona.ugent.be/nl/courses/345/</a></li>
+</ul>
+</div>
+<div id="software" class="section level1">
+<h1>Software</h1>
+<ul>
+<li><p>Participants are required to bring their own laptop with <a
+href="https://www.r-project.org/">R</a> version 4.2 or greater.</p></li>
+<li><p>We also recommend to also install the latest version of <a
+href="https://www.rstudio.com/products/rstudio/download/">RStudio</a>.</p></li>
+<li><p>Installation script: to install all required packages, please
+copy and paste this line of code in your R console.</p></li>
+</ul>
+<pre><code>source(&quot;https://raw.githubusercontent.com/statOmics/SGA/master/install.R&quot;)</code></pre>
+</div>
+<div id="detailed-program" class="section level1">
+<h1>Detailed Program</h1>
+<div id="introduction-week-1" class="section level2">
+<h2>1. Introduction (Week 1)</h2>
+<p>1.1. Position of the course: <a href="./intro.html">HTML</a></p>
+<p>1.2. Recap Linear Models</p>
+<ul>
+<li>Lecture: <a href="./recapGeneralLinearModel.html">HTML</a>, <a
+href="./recapGeneralLinearModel.pdf">PDF</a></li>
+<li>Tutorial KPNA2: <a href="./multipleRegression_KPNA2.html">HTML</a>,
+<a href="./multipleRegression_KPNA2.pdf">PDF</a></li>
+<li>link to a compressed figures directory: <a
+href="https://raw.githubusercontent.com/statOmics/SGA/master/figures.tar.gz">download
+figures</a></li>
+</ul>
+</div>
+<div id="module-i-proteomics-data-analysis-week-2-5"
+class="section level2">
+<h2>Module I: Proteomics Data Analysis (Week 2-5)</h2>
+<!--
+### 1. Bioinformatics for proteomics
+   
+   - Lecture: [PDF](./docs/martens_proteomics_bioinformatics.pdf), [youtube](https://www.youtube.com/watch?v=ZgwNWRul98o)
+   - Tutorials: [identification](https://www.compomics.com/bioinformatics-for-proteomics/)
+
+-->
+<!--
+### 2. Statistics for Proteomics Data Analysis
+   
+#### 2.1. Identification
+
+- [Target Decoy QC](TargetDecoy.html)
+- [Tutorial](TargetDecoyTutorial.html), [example](mzIDMsgfSwissprotExample.html)
+- Solution: [Uniprot search](mzIDuniprotTutorial.html), [Swissprot search](mzIDswissprotTutorial.html)
+
+#### 2.2. Preprocessing & Analysis of Label Free Quantitative Proteomics Experiments with Simple Designs
+  - Lecture: [html](./pda_quantification_preprocessing.html), [pdf](./pda_quantification_preprocessing.pdf)
+  - Tutorial: [preprocessing](./pda_tutorialPreprocessing.html)
+  - Wrap-up Peptide-based Models: [html](./pda_robustSummarisation_peptideModels.html), [pdf](./pda_robustSummarisation_peptideModels.pdf)
+  
+  - Solutions: [cancer3x3](cancer3x3.html), [cancer6x6](cancer6x6.html), [cancer9x9](cancer9x9.html)
+
+
+#### 2.3. Statistical Inference & Analysis of Experiments with Factorial Designs
+  - Lecture Differential Abundance Analysis: [html](./pda_quantification_inference.html), [pdf](./pda_quantification_inference.pdf)
+  - Tutorial: [Design](pda_tutorialDesign.html)
+  - Wrap-up Blocking: [html](./pda_blocking_wrapup.html), [pdf](./pda_blocking_wrapup.pdf)
+
+-->
+<!--
+  - Solution: [Heart Example](heartMainInteraction.html)
+  - Technical Details: [Technical Details](technicalDetailsProteomics.html)
+-->
+<!--
+## Module II: Next-generation Sequencing (Week 6-12)
+  
+### 1. Introduction to sequencing technology, QC, read mapping and count table
+
+- Lecture Introduction to Sequencing: [html](./sequencing_intro.html),[pdf](./sequencing_intro.pdf)
+- Tutorial: [handout](./sequencingTutorial1_mapping.html), [C. elegans Example](./docs/elegansAlignmentCountTable.html)
+
+
+### 2. Introduction to count data and GLMs
+
+- Lecture Working with count data and GLMs: [html](./sequencing_countData.html), [pdf](./sequencing_countData.pdf)
+- Tutorial: [handout](sequencingTutorial2_DE.html), [C. elegans example](./elegansDE.html)
+
+### 3. Technical details on RNA-seq DE analysis
+
+- Lecture: [html](./sequencing_technicalDE.html), [pdf](./sequencing_technicalDE.pdf)
+
+### 4. DE analysis starting from transcript level counts
+
+- [Soneson et al. 2016](https://f1000research.com/articles/4-1521/v2)
+- Tutorial: [handout](./sequencingTutorial3_DE.html)
+
+### 5. Solutions Bulk RNA-seq Data Analysis
+
+- airway example: [html](./airway.html)
+- Parathyroid Example (quasi-edgeR): [html](./parathyroid.html), [pdf](./parathyroid.pdf)
+- airway transcript quantification: [html](./airway_salmon_edgeR.html)
+
+
+### 6. Introduction to Single Cell Transcriptomics (scRNA-seq) 
+
+- Lecture Intro to scRNA-seq: [html](./sequencing_singleCell.html), [pdf](./sequencing_singleCell.pdf)
+- Advanced topics: Inference for multi-cell-multi-patient experiments & transcript usage [pdf](./docs/statgen_presentation_Jeroen.pdf)
+- Tutorial on scRNA-seq: [handout](./scRNA-seq-Tutorial.html)
+- Tutorial on differential transcript usage: [handout](./dtuTutorial.html)
+
+-->
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

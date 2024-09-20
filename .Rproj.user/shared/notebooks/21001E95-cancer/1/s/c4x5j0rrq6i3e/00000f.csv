@@ -1,0 +1,1 @@
+"0","rowData(pe[[""peptideRaw""]])$nNonZero <- rowSums(assay(pe[[""peptideRaw""]]) > 0)"

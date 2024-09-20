@@ -1,0 +1,2 @@
+"0","L <- makeContrast(""conditionPD=0"", parameterNames = c(""conditionPD""))"
+"0","pe <- hypothesisTest(object = pe, i = ""protein"", contrast = L)"

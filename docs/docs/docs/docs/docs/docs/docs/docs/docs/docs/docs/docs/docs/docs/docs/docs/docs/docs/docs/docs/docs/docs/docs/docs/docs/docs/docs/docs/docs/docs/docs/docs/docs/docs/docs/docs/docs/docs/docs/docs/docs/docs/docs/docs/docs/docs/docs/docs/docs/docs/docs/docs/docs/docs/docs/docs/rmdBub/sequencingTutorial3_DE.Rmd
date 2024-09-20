@@ -1,0 +1,43 @@
+---
+title: III. Differential analysis at the gene level and transcript level 
+author: "Lieven Clement"
+date: "[statOmics](https://statomics.github.io), Ghent University"
+output:
+    html_document:
+      theme: flatly     
+      code_download: false
+      toc: false
+      toc_float: false
+      number_sections: false
+bibliography: msqrob2.bib
+
+---
+
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
+
+### Airway example 
+
+The data used in this workflow comes from an RNA-seq experiment where airway smooth muscle cells were treated with dexamethasone, a synthetic glucocorticoid steroid with anti-inflammatory effects (Himes et al. 2014). Glucocorticoids are used, for example, by people with asthma to reduce inflammation of the airways. In the experiment, four human airway smooth muscle cell lines were treated with 1 micromolar dexamethasone for 18 hours. For each of the four cell lines, we have a treated and an untreated sample. For more description of the experiment see the article, PubMed entry [PMID: 24926665](https://pubmed.ncbi.nlm.nih.gov/24926665/), and for raw data see the GEO entry [GSE52778](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE52778).
+
+We will conduct an analysis at the gene and transcript level by starting from quantification using the fast alignment-free transcript mapper Salmon. 
+
+This can be done as follows: 
+
+- Building index with salmon
+```
+salmon index --gencode -t gencode.v32.transcripts.fa -i gencode.v32_salmon_index
+```
+
+- Mapping one sample with salmon:
+```
+salmon quant -i gencode.v32_salmon_index -l A --gcBias -1 SRR1039508_subset_1.fastq -2 SRR1039508_subset_2.fastq --validateMappings -o quant/SRR1039508_subset_quant
+```
+
+More details can be found in [Intro to salmon](https://combine-lab.github.io/salmon/getting_started/). 
+The mapped output from Salmon can be found at:  [data](https://github.com/statOmics/SGA/archive/airwaySeqData.zip).
+
+1. Import the data with tximeta package: see [tximeta](https://bioconductor.org/packages/release/bioc/vignettes/tximeta/inst/doc/tximeta.html#Running_tximeta) vignette on bioconductor
+2. Run a DE analysis on the gene-level counts with quasi-likelihood workflow of edgeR
+3. Run a DE analysis on the transcript level counts with quasi-likelihood workflow of edgeR
+
+Tip: I had to use the argument `importer=read.delim` in the tximeta function because the default function to read the files returned an error on my laptop. 

@@ -1,0 +1,65 @@
+---
+title: "Example: MSGF+ search on Swiss-Prot"
+author: 
+  - name: Lieven Clement
+    affiliation:
+    - Ghent University
+output: 
+    html_document:
+      code_download: true
+      theme: flatly
+      toc: true
+      toc_float: true
+      highlight: tango
+      number_sections: true
+linkcolor: blue
+urlcolor: blue
+citecolor: blue
+---
+
+# Load Libraries 
+
+```{r}
+library(TargetDecoy)
+library(RCurl)
+library(mzID)
+```
+
+# Download data in working directory
+
+```{r}
+download.file( 
+  url = "https://raw.githubusercontent.com/statOmics/PDA22GTPB/data/identification/pyrococcusMSGF%2B.mzid",
+  destfile = "pyrococcusMSGF+.mzid"
+  )
+```
+
+# Load Data in R
+
+```{r}
+path2File <- "pyrococcusMSGF+.mzid"
+msgf <- mzID(path2File)
+```
+
+# Launch the Shiny Gadget 
+
+Explore the results for search eninge scores to find correct names of search engine scores in the mzID.
+
+```{r eval=FALSE}
+evalTargetDecoys(msgf)
+```
+
+# Evaluate target decoy assumptions 
+
+
+```{r}
+evalTargetDecoys(msgf,"isdecoy","ms-gf:evalue")
+```
+
+- The plots show that
+the distribution of the MSGF+ PSM scores are nicely bimodal. 
+
+- The separation between good target PSM scores and bad target PSM scores is less pronounced than for peptide shaker. So it is beneficial to include the other engines with peptideshaker. 
+
+- We do not see deviations from the target decoy assumptions. 
+

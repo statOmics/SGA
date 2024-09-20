@@ -1,0 +1,5 @@
+"0","pe <- readQFeatures("
+"0","  table = peptidesFile,"
+"0","  fnames = 1,"
+"0","  ecol = ecols,"
+"0","  name = ""peptideRaw"", sep=""\t"")"

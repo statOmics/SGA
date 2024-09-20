@@ -1,0 +1,5 @@
+"0","volcano <- ggplot(rowData(pe[[""protein""]])$conditionPD,"
+"0","                  aes(x = logFC, y = -log10(pval), color = adjPval < 0.05)) +"
+"0","  geom_point(cex = 2.5) +"
+"0","  scale_color_manual(values = alpha(c(""black"", ""red""), 0.5)) + theme_minimal()"
+"0","volcano"

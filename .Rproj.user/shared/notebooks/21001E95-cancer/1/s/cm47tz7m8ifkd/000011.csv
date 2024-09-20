@@ -1,0 +1,5 @@
+"0","sigNames <- rowData(pe[[""protein""]])$conditionPD %>%"
+"0","  rownames_to_column(""protein"") %>%"
+"0","  filter(adjPval<0.05) %>%"
+"0","  pull(protein)"
+"0","heatmap(assay(pe[[""protein""]])[sigNames, ])"
