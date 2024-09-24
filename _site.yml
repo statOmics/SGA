@@ -29,7 +29,7 @@ right:
     - text: "statOmics"
       href: http://statomics.github.io/
       
-output_dir: "docs/"
+output_dir: "docs"
 
 output:
     html_document:
