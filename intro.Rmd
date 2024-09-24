@@ -133,13 +133,41 @@ Our whole globe can be seen as a large dissipative structure located in our sola
 
 1. There is an energy source, the sun that is radiating concentrated energy in photons.
 
+<center>
+<img src="./figs/sun.png" height="150px">
+</center>
+  
+  
 2. Life forms are organising structure from the chaos of molecules on Earth by dissipating energy from the solar photons, light and UV, to heat through their organic pigments, e.g. chlorophyll. 
+
+
+<center>
+<img src="./figs/Prochlorococcus_marinus.jpg" width="150px">
+<img src="./figs/sunPlants.jpeg" height="150px"> 
+</center>
 
 3. Animals, bacteria and fungi are secondary dissipative structures that are feeding on the concentrated chemical energy in the form of sugar, starch, proteins and fats that are produced by plants and cyanobacteria. They again dissipate energy in the form of heat through respiration. 
 
+<center> 
+<img src="./figs/etendHert.jpeg" height="150px">
+<img src="./figs/fungusOnTree.jpeg" height="150px"> 
+</center>
+
 4. The heat produced by life is dissipated to water and air and this  induces tertiary dissipative processes like the water cycle, wind and sea currents etc. 
 
+<center>
+<img src="./figs/waterCycle.jpeg" height="150px">
+</center>
+
 5. Eventually heat is radiated to space, which acts as an energy sink. 
+
+<center>
+<img src="./figs/heatRadiationSpace.jpeg" height="150px">
+</center>
+  
+    
+
+
 
 Because the temperature of Earth remains roughly stable, more or less a similar amount of energy is radiated to space under the form of heat as what comes in under the form of photons from the sun. As the energy content of heat is lower and more disperse it has a higher entropy than that of the incoming sunlight.
 Because almost no mass is exchanged between Earth and space, mass has to be recycled and life is inherently cyclic. 
@@ -217,7 +245,7 @@ knitr::include_graphics("./figs/ATP-ADP.png")
 
 \pagebreak 
 
-### Building Blocks of Life 
+#### Building Blocks of Life 
 
 "Life is One" because all living organisms are composed of the same basic bio-molecules and we all know more than we think about them because we are what we eat!  
 
@@ -468,6 +496,12 @@ It can organize itself, maintain itself, can make copies of itself and this with
 An organism or a biological system can therefore not be broken down or reduced to its parts to provide a complete understanding of it. A complete understanding is only possible when it is viewed as a whole.
 Indeed, new functions emerge at a higher level from the network that has been formed between its lower-level parts. Varela refers to these properties with the term *emergent properties*. 
 
+
+```{r multiCellular2, fig.cap='Multicellular organisms and biological organisation (Source: mrssmithsbiology)', out.width='30%', fig.asp=.8, fig.align='center', echo=FALSE}
+#knitr::include_graphics("https://mrssmithsbiology.files.wordpress.com/2019/10/picture4.jpg")
+knitr::include_graphics("./figs/organisationMulticellular.jpeg")
+```
+
 ### Emergent properties 
 
 Emergent properties can be found at each level. At the chemical level, where the protein hemoglobin for instance has the unique property that it can transport oxygen. This property emerges from its unique 3D structure (see Figure \@ref(fig:hemoglobin)). We could never have derived its biological function at the protein-level by breaking it down to its constituting amino acids and only studying the individual properties of each of these amino acids (see section \@ref(sectionAminoAcids) for more details on amino acids). 
@@ -501,8 +535,11 @@ So life itself is an emergent property, it is not present in the parts it origin
 
 For Maturana and Varela cognition is also inseparable from autopoiesis [@capraLuisi2014]. Each living organism is an open system that interacts with its environment through its sensory arsenal. It senses its environment, it feeds on its environment, releases  products in it, it changes its environment, and, actualizes itself to its environment. The fact that an organism is changing its environment is often overlooked. However, life has dramatically transformed Earth. Indeed, think of photosynthesis for instance that radically changed Earth by the release of the highly reactive molecule oxygen.
 
+<img src="./figs/life-au-cognition-environment.png" height="250px" style="float: right;">
+
 An organism at any time in its development is a record of its previous interactions with its environment and that determines its future interactions.
 Hence, cognition is a natural product of its evolution.
+
 
 Varela sees life as a gestalt of three domains [@capraLuisi2014]: 
 
@@ -511,6 +548,8 @@ Varela sees life as a gestalt of three domains [@capraLuisi2014]:
 - The autopoietic unit. 
 
 Life is the synergy of these three domains. 
+
+
 
 \pagebreak 
 
@@ -843,7 +882,7 @@ So, all these arguments make clear that evolution has no direction.
 Instead, we can view evolution as a wonderful creative process that is generating novel life forms that are well adapted to their ever changing environment. So this insight on evolution invites us to deeply embrace the wealth of diversity, instead.
 
 
-# Onthogenesis
+# Ontogenesis
 
 The ontogenesis is the development of an organism from a fertilized egg cell up to the adult stage until we eventually die. 
 
