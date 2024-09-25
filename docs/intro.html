@@ -388,8 +388,63 @@ div.tocify {
 </div>
 
 
-<div id="setting-the-scene" class="section level1" number="1">
-<h1><span class="header-section-number">1</span> Setting the scene</h1>
+<div id="organization-of-the-course" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Organization of the
+course</h1>
+<div id="module-i-quantitative-proteomics" class="section level2"
+number="1.1">
+<h2><span class="header-section-number">1.1</span> Module I:
+Quantitative Proteomics</h2>
+<ol style="list-style-type: decimal">
+<li><p>Identification and quantification of peptides and
+proteins</p></li>
+<li><p>Data exploration and quality control using plots</p></li>
+<li><p>Preprocessing: log-transformation, Filtering, Normalization,
+Summarization</p></li>
+<li><p>Dealing with batch effects and other confounders</p></li>
+<li><p>Statistical Concepts</p>
+<ol style="list-style-type: decimal">
+<li>Linear models/Linear mixed models</li>
+<li>Trade-off between biological relevance/effect size vs statistical
+significance</li>
+<li>Empirical Bayes Methods</li>
+<li>Multiple testing</li>
+</ol></li>
+</ol>
+</div>
+<div id="module-ii-next-generation-sequencing-ngs-transcriptomics"
+class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> Module II: Next
+generation sequencing (NGS, Transcriptomics)</h2>
+<ol style="list-style-type: decimal">
+<li><p>NGS Data exploration</p></li>
+<li><p>Preprocessing/normalization</p></li>
+<li><p>Additional Statistical Concepts</p>
+<ol style="list-style-type: decimal">
+<li>Generalized linear models (GLM) for binary data</li>
+<li>GLM for count data</li>
+<li>Overdispersion</li>
+</ol></li>
+</ol>
+</div>
+<div id="details" class="section level2" number="1.3">
+<h2><span class="header-section-number">1.3</span> Details</h2>
+<ol style="list-style-type: decimal">
+<li><p>Theory and Tutorials are blended</p>
+<ul>
+<li>Module I: week 1-5</li>
+<li>Module II: week 6-10</li>
+<li>Project: week 1-10 via small assignments + week 11-12</li>
+</ul></li>
+<li><p>Communication and submission of projects via Ufora</p></li>
+<li><p>All tutorials from week 2 onwards are based on R/Bioconductor via
+R-studio Scripts are made in R/markdown: a file format to combine text,
+R code and R output.</p></li>
+</ol>
+</div>
+</div>
+<div id="setting-the-scene" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Setting the scene</h1>
 <p>Bioinformatics is an interdisciplinary field of science that develops
 methods and software tools for understanding biological data, especially
 when the data sets are large and complex.</p>
@@ -402,8 +457,8 @@ that scientific theories are not “true knowledge” corresponding to “the
 reality as is”, but rather ever-changing insights that are giving shape
 and form to how we view and experience the world.</p>
 </div>
-<div id="what-is-life" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> What is life?</h1>
+<div id="what-is-life" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> What is life?</h1>
 We will start this introduction with Bohm’s example of a sunflower seed
 from which an entire plant is growing.
 <div>
@@ -456,8 +511,8 @@ autopoiesis and emerging properties.</li>
 </ul>
 <div style="page-break-after: always;"></div>
 <div id="schrödinger-and-prigogine-a-thermodynamic-view-of-life"
-class="section level2" number="2.1">
-<h2><span class="header-section-number">2.1</span> Schrödinger and
+class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Schrödinger and
 Prigogine: a Thermodynamic View of Life</h2>
 <p>In his seminal lecture series: “What Is Life? The Physical Aspect of
 the Living Cell” <span class="citation">Schrödinger (1944)</span>
@@ -504,8 +559,8 @@ a corpse. To maintain our higher energy state, to concentrate chemicals
 in our cells, and, to build complex molecules, cells and tissues from
 it, we have to keep on eating and breathing.</p>
 <div style="page-break-after: always;"></div>
-<div id="dissipative-structures" class="section level3" number="2.1.1">
-<h3><span class="header-section-number">2.1.1</span> Dissipative
+<div id="dissipative-structures" class="section level3" number="3.1.1">
+<h3><span class="header-section-number">3.1.1</span> Dissipative
 structures</h3>
 <p>Prigogine discovered that complex self-organising systems can
 spontaneously arise if they are open and can exchange lots of energy and
@@ -580,8 +635,8 @@ not violating the second law because of the rise in entropy by the
 dissipation of heat. Prigogine therefore coined the novel term
 dissipative structures for such systems.</p>
 </div>
-<div id="attractors" class="section level3" number="2.1.2">
-<h3><span class="header-section-number">2.1.2</span> Attractors</h3>
+<div id="attractors" class="section level3" number="3.1.2">
+<h3><span class="header-section-number">3.1.2</span> Attractors</h3>
 <p>Dissipative structures typically have multiple attractors,
 i.e. states, regimes, forms, shapes or structures to which they
 spontaneously evolve. The specific attractor to which the system is
@@ -629,8 +684,8 @@ an agar plate. (F) Slugs moving on an agar plate. (G) Culmination stage.
 </div>
 <div style="page-break-after: always;"></div>
 </div>
-<div id="dissipative-zones" class="section level3" number="2.1.3">
-<h3><span class="header-section-number">2.1.3</span> Dissipative
+<div id="dissipative-zones" class="section level3" number="3.1.3">
+<h3><span class="header-section-number">3.1.3</span> Dissipative
 zones</h3>
 <p>Our whole globe can be seen as a large dissipative structure located
 in our solar system, which is a dissipative zone.</p>
@@ -687,8 +742,8 @@ cyclic.</p>
 </div>
 </div>
 <div id="de-duve-a-biochemical-view-of-life" class="section level2"
-number="2.2">
-<h2><span class="header-section-number">2.2</span> de Duve: a
+number="3.2">
+<h2><span class="header-section-number">3.2</span> de Duve: a
 Biochemical View of Life</h2>
 <p>In his Book “Life Evolving - Molecules, Mind and Meaning”, <span
 class="citation">De Duve (2002)</span> gave a very simple but brilliant
@@ -701,8 +756,8 @@ definition of life:</p>
 </ol>
 <p>In the following sections we will explore what de Duve meant with
 each component in his definition.</p>
-<div id="lifeOne" class="section level3" number="2.2.1">
-<h3><span class="header-section-number">2.2.1</span> Life is One</h3>
+<div id="lifeOne" class="section level3" number="3.2.1">
+<h3><span class="header-section-number">3.2.1</span> Life is One</h3>
 <p>Life is one because all living organisms on earth</p>
 <ul>
 <li>are built of cells</li>
@@ -713,8 +768,8 @@ ancestor</li>
 for proteins and nucleic acids (DNA and RNA).</li>
 </ul>
 <div id="all-living-organisms-are-built-of-cells" class="section level4"
-number="2.2.1.1">
-<h4><span class="header-section-number">2.2.1.1</span> All Living
+number="3.2.1.1">
+<h4><span class="header-section-number">3.2.1.1</span> All Living
 Organisms are Built of Cells</h4>
 <p>“Life is One” because all organisms are composed of cells. Green
 algae that can perform photosynthesis are a beautiful example of
@@ -750,8 +805,8 @@ mrssmithsbiology)
 <div style="page-break-after: always;"></div>
 </div>
 <div id="last-universal-common-ancestor" class="section level4"
-number="2.2.1.2">
-<h4><span class="header-section-number">2.2.1.2</span> Last Universal
+number="3.2.1.2">
+<h4><span class="header-section-number">3.2.1.2</span> Last Universal
 Common Ancestor</h4>
 <p>“Life is One” because all species evolved from the same ancestral
 population of cells. This is also referred to as the Last Universal
@@ -773,8 +828,8 @@ of the tree (Source: Wikipedia)
 </p>
 </div>
 </div>
-<div id="sectionEnergyCoin" class="section level4" number="2.2.1.3">
-<h4><span class="header-section-number">2.2.1.3</span> Energy coin</h4>
+<div id="sectionEnergyCoin" class="section level4" number="3.2.1.3">
+<h4><span class="header-section-number">3.2.1.3</span> Energy coin</h4>
 <p>“Life is One” because all living organisms use the same “energy
 coin”, the ATP-ADP system, to store and reuse energy.
 Adinosine-triphosphate (ATP) consists of a ribose sugar with 3 phosphate
@@ -806,8 +861,8 @@ binding a phosphate group to ADP (Source: Adapted from Wikipedia)</p>
 <div style="page-break-after: always;"></div>
 </div>
 <div id="building-blocks-of-life" class="section level4"
-number="2.2.1.4">
-<h4><span class="header-section-number">2.2.1.4</span> Building Blocks
+number="3.2.1.4">
+<h4><span class="header-section-number">3.2.1.4</span> Building Blocks
 of Life</h4>
 <p>“Life is One” because all living organisms are composed of the same
 basic bio-molecules and we all know more than we think about them
@@ -824,8 +879,22 @@ reactions, and</li>
 <li>Nucleic Acids, building blocks of RNA and DNA, which are used to
 store and use the genetic information we inherit from our parents.</li>
 </ol>
-<div id="lipids" class="section level5" number="2.2.1.4.1">
-<h5><span class="header-section-number">2.2.1.4.1</span> Lipids</h5>
+<div id="lipids" class="section level5" number="3.2.1.4.1">
+<h5><span class="header-section-number">3.2.1.4.1</span> Lipids</h5>
+<p>Lipids, fats and oils, are used for</p>
+<ul>
+<li>storage of energy,</li>
+<li>regulation of hormones,</li>
+<li>transmission of nerve impulses,</li>
+<li>cushion vital organs and</li>
+<li>transport of fat-soluble nutrients.</li>
+</ul>
+<p>Moreover, an important class of lipids, the phospholipids, make up
+membranes of cells and unicellular compartments called organelles see
+Figure @ref(fig:lipids). Indeed phospholipids have a polar head that
+likes to be in water and a long apolar tail that does not mix with
+water. Therefore bilayers of phospholipid molecules are spontaneously
+formed in aqueous solutions.</p>
 <div class="figure" style="text-align: center">
 <img src="figs/Cell_membrane_detailed_diagram_4.svg" alt="Phospho-lipids have a very important role in life as they form membranes. Phospholipids have a hydrophilic head that likes to mix with water and long hydrophobic tails that do not mix with water. They sponteneously gives rise to bilayers in aqueous solutions similar to the structure seen in membranes. Membranes are the boundaries of the cell and they allow passivie diffusion of small molecules through their bilayer. Larger molecules can be actively exchanged with the environment through membrane proteins (Source: Doug Hatfield, Wikipedia)" width="80%" />
 <p class="caption">
@@ -839,15 +908,6 @@ bilayer. Larger molecules can be actively exchanged with the environment
 through membrane proteins (Source: Doug Hatfield, Wikipedia)
 </p>
 </div>
-<p>Lipids, fats and oils, are used for storage of energy, regulation of
-hormones, transmission of nerve impulses, cushion vital organs and
-transport of fat-soluble nutrients. Moreover, an important class of
-lipids, the phospholipids, make up membranes of cells and unicellular
-compartments called organelles see Figure @ref(fig:lipids). Indeed
-phospholipids have a polar head that likes to be in water and a long
-apolar tail that does not mix with water. Therefore bilayers of
-phospholipid molecules are spontaneously formed in aqueous
-solutions.</p>
 <div style="page-break-after: always;"></div>
 <p>Membranes provide the basis for concentrating specific molecules in
 (compartments of) living cells. This enable cells to build up a
@@ -856,11 +916,15 @@ concentration gradient spontaneously dissipates toward its equilibrium
 value. So phospholipids are key for creating the boundary conditions
 necessary for cellular organization.</p>
 </div>
-<div id="carbohydrates" class="section level5" number="2.2.1.4.2">
-<h5><span class="header-section-number">2.2.1.4.2</span>
+<div id="carbohydrates" class="section level5" number="3.2.1.4.2">
+<h5><span class="header-section-number">3.2.1.4.2</span>
 Carbohydrates</h5>
-<p>Carbohydrates are important bio-molecules that are used for storage,
-energy and structure (Figure @ref(fig:carbohydrates)).</p>
+<p>Carbohydrates are important bio-molecules that are used for</p>
+<ul>
+<li>storage,</li>
+<li>energy and</li>
+<li>structure (Figure @ref(fig:carbohydrates)).</li>
+</ul>
 <div class="figure" style="text-align: center">
 <img src="figs/Carbohydrates-definition-classification-with-structure-and-functions.jpeg" alt="Carbohydrates perform the important functions of storage, energy source and structure. They can be organised in biopolymers, long chains of carbohydrate molecules that are bound together. The polysaccharides starch and glycogen for instance are used to store energy by plant and animal cells, respectively. Cellulose, on the other hand, is a polysaccharide that gives plants structure. Deoxyribose and ribose are important carbohydrates that form the backbone of the biopolymers DNA and RNA, respectively. (Source: thebiologynotes.com)" width="100%" />
 <p class="caption">
@@ -888,9 +952,19 @@ cellulose, which give plants structure.</li>
 <p></br></p>
 <div style="page-break-after: always;"></div>
 </div>
-<div id="sectionAminoAcids" class="section level5" number="2.2.1.4.3">
-<h5><span class="header-section-number">2.2.1.4.3</span> Amino
+<div id="sectionAminoAcids" class="section level5" number="3.2.1.4.3">
+<h5><span class="header-section-number">3.2.1.4.3</span> Amino
 Acids</h5>
+<p>Amino Acids are the building blocks of proteins. Proteins are the
+main workhorses of the cell and they are important for</p>
+<ul>
+<li>moving food,</li>
+<li>digesting food,</li>
+<li>copying DNA,</li>
+<li>for giving the cell structure,</li>
+<li>affecting the rates at which other proteins work,</li>
+<li>etc…</li>
+</ul>
 <p>Amino acids by themselves are simple molecules (Figure
 @ref(fig:aminoAcids)). Although hundreds of amino acids exist in nature,
 life is using only 20 of them and it is combining them in long
@@ -925,12 +999,9 @@ catalysis are called enzymes, see Figure @ref(fig:enzyme).</p>
 Diagram of a protein performing an enzyme action (Source: Wikipedia)
 </p>
 </div>
-<p>Proteins are the main workhorses of the cell and they are important
-for moving food, digesting food, copying DNA, for giving the cell
-structure, affecting the rates at which other proteins work, etc…</p>
 </div>
-<div id="sectionNucleicAcids" class="section level5" number="2.2.1.4.4">
-<h5><span class="header-section-number">2.2.1.4.4</span> Nucleic
+<div id="sectionNucleicAcids" class="section level5" number="3.2.1.4.4">
+<h5><span class="header-section-number">3.2.1.4.4</span> Nucleic
 Acids</h5>
 <p>Nucleic acids are build of nucleotides. Each nucleotide is composed
 of one of four nitrogen-containing nucleobases, which carry the
@@ -1001,8 +1072,8 @@ and thymine to assemble single stranded DNA in double stranded DNA.
 </div>
 </div>
 </div>
-<div id="lifeChemistry" class="section level3" number="2.2.2">
-<h3><span class="header-section-number">2.2.2</span> Life is
+<div id="lifeChemistry" class="section level3" number="3.2.2">
+<h3><span class="header-section-number">3.2.2</span> Life is
 Chemistry</h3>
 <p>“Life is Chemistry” because a cell consists of a complex network of
 chemical reactions that are connected to each other. Many feedback loops
@@ -1023,14 +1094,14 @@ Dr. Gerhard Michal, Roche)
 <p>In the remainder of this section we will introduce energy and
 catalysis in more detail, and we also give an intriguing example of how
 proteins play a role in the self-organisation of a cell.</p>
-<div id="energy" class="section level4" number="2.2.2.1">
-<h4><span class="header-section-number">2.2.2.1</span> Energy</h4>
+<div id="energy" class="section level4" number="3.2.2.1">
+<h4><span class="header-section-number">3.2.2.1</span> Energy</h4>
 <p>“Life is Chemistry” because it uses chemical reactions to store and
 use energy. See the ATP-ADP system in Section
 @ref(sectionEnergyCoin)</p>
 </div>
-<div id="catalysis" class="section level4" number="2.2.2.2">
-<h4><span class="header-section-number">2.2.2.2</span> Catalysis</h4>
+<div id="catalysis" class="section level4" number="3.2.2.2">
+<h4><span class="header-section-number">3.2.2.2</span> Catalysis</h4>
 <p>“Life is Chemistry” because most chemical reactions are catalyzed,
 i.e. initiated, promoted and made faster by proteins. The proteins
 facilitate the reaction without being used. The reactions would never
@@ -1085,8 +1156,8 @@ arsenal”.</p>
 <div style="page-break-after: always;"></div>
 </div>
 </div>
-<div id="lifeInformation" class="section level3" number="2.2.3">
-<h3><span class="header-section-number">2.2.3</span> Life is
+<div id="lifeInformation" class="section level3" number="3.2.3">
+<h3><span class="header-section-number">3.2.3</span> Life is
 Information</h3>
 <p>Our genetic information to build all our bio-molecules, which we
 inherit from our parents, is stored in our DNA. DNA is a hetero-polymer
@@ -1104,8 +1175,8 @@ species, and, even more so between different life forms.</p>
 <p>In the reminder of this section we will focus on the flow of
 information in a cell in more detail.</p>
 <div id="the-central-paradigm-of-molecular-biology"
-class="section level4" number="2.2.3.1">
-<h4><span class="header-section-number">2.2.3.1</span> The central
+class="section level4" number="3.2.3.1">
+<h4><span class="header-section-number">3.2.3.1</span> The central
 paradigm” of molecular biology</h4>
 <p>The “central paradigm” of molecular biology states that the sequence
 of nucleotides in DNA are first <em>transcribed</em> into RNA and then
@@ -1221,8 +1292,8 @@ virus.</li>
 </div>
 </div>
 </div>
-<div id="maturanaVarela" class="section level2" number="2.3">
-<h2><span class="header-section-number">2.3</span> Maturana and Varela:
+<div id="maturanaVarela" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Maturana and Varela:
 a Systems View of Life</h2>
 <p><span class="citation">Capra and Luisi (2014)</span> write in their
 book “The Systems View of Life”, that the “term
@@ -1263,8 +1334,8 @@ Multicellular organisms and biological organisation (Source:
 mrssmithsbiology)
 </p>
 </div>
-<div id="emergent-properties" class="section level3" number="2.3.1">
-<h3><span class="header-section-number">2.3.1</span> Emergent
+<div id="emergent-properties" class="section level3" number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> Emergent
 properties</h3>
 <p>Emergent properties can be found at each level. At the chemical
 level, where the protein hemoglobin for instance has the unique property
@@ -1322,8 +1393,8 @@ gained their unique transformative power of turning rocks into fertile
 environments <span class="citation">(Kimmerer 2013)</span>.</p>
 </div>
 <div id="life-as-an-emergent-property" class="section level3"
-number="2.3.2">
-<h3><span class="header-section-number">2.3.2</span> Life as an emergent
+number="3.3.2">
+<h3><span class="header-section-number">3.3.2</span> Life as an emergent
 property</h3>
 <p><span class="citation">Capra and Luisi (2014)</span> convincingly
 argue that the same holds at any level and for life itself. Indeed the
@@ -1342,8 +1413,8 @@ parts it originates from, and only emerges when its parts are assembled
 together correctly.</p>
 </div>
 <div id="life-as-a-gestalt-of-autopoetic-unit-cognition-and-environment"
-class="section level3" number="2.3.3">
-<h3><span class="header-section-number">2.3.3</span> Life as a gestalt
+class="section level3" number="3.3.3">
+<h3><span class="header-section-number">3.3.3</span> Life as a gestalt
 of autopoetic unit, cognition and environment</h3>
 <p>For Maturana and Varela cognition is also inseparable from
 autopoiesis <span class="citation">(Capra and Luisi 2014)</span>. Each
@@ -1371,8 +1442,8 @@ class="citation">(Capra and Luisi 2014)</span>:</p>
 <div style="page-break-after: always;"></div>
 </div>
 <div id="our-social-system-as-an-emergent-property"
-class="section level3" number="2.3.4">
-<h3><span class="header-section-number">2.3.4</span> Our social system
+class="section level3" number="3.3.4">
+<h3><span class="header-section-number">3.3.4</span> Our social system
 as an emergent property</h3>
 <p>The insights of Maturana and Varela have the compelling implication
 that we no longer need the duality of matter and mind when trying to
@@ -1404,11 +1475,11 @@ biological networks and the cultural boundary in our social networks
 </div>
 </div>
 <div id="genesis-of-life-phylogenesis-and-evolution"
-class="section level1" number="3">
-<h1><span class="header-section-number">3</span> Genesis of life,
+class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Genesis of life,
 phylogenesis and evolution?</h1>
-<div id="genesis-of-universe" class="section level2" number="3.1">
-<h2><span class="header-section-number">3.1</span> Genesis of
+<div id="genesis-of-universe" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Genesis of
 Universe</h2>
 <p>An overview of the evolution of our universe is given in Figure
 @ref(fig:evolutionUniverse).</p>
@@ -1424,8 +1495,8 @@ A very energy-rich state.</p>
 <p>By expanding the universe quickly cooled down enough for energy to be
 converted into mass, i.e. 75% in hydrogen and 25% in more heavy helium
 nuclei.</p>
-<div id="genesis-of-stars" class="section level3" number="3.1.1">
-<h3><span class="header-section-number">3.1.1</span> Genesis of
+<div id="genesis-of-stars" class="section level3" number="4.1.1">
+<h3><span class="header-section-number">4.1.1</span> Genesis of
 Stars</h3>
 <p>Under the influence of the gravitational force, matter then started
 to cluster in nebula, gaseous clouds essentially consisting of hydrogen
@@ -1487,8 +1558,8 @@ dust.</p>
 courtesey wikipedia)</p>
 </div>
 <div id="carbohydrates-in-interstellar-space" class="section level3"
-number="3.1.2">
-<h3><span class="header-section-number">3.1.2</span> Carbohydrates in
+number="4.1.2">
+<h3><span class="header-section-number">4.1.2</span> Carbohydrates in
 Interstellar Space</h3>
 <p>Upon nuclear fusion in the stars many different elements are formed.
 For life, hydrogen, carbon, oxygen, sulfur, phosphorous and nitrogen
@@ -1515,8 +1586,8 @@ and DNA, respectively. So these simple building blocks that are
 essential for the chemistry of life are already present in space.</p>
 </div>
 </div>
-<div id="genesis-of-life" class="section level2" number="3.2">
-<h2><span class="header-section-number">3.2</span> Genesis of Life</h2>
+<div id="genesis-of-life" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Genesis of Life</h2>
 <p>In a remote corner of our milky way, which is an average galaxy, an
 average planet was formed, which we know as our planet Earth. After the
 Earth cooled down liquid water was formed. The unique features of liquid
@@ -1572,8 +1643,8 @@ seawater interacting with magma erupting through the ocean floor. And
 eventually LUCA evolved into all species that currently live on
 Earth.</p>
 </div>
-<div id="phylogenesis" class="section level2" number="3.3">
-<h2><span class="header-section-number">3.3</span> Phylogenesis</h2>
+<div id="phylogenesis" class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span> Phylogenesis</h2>
 <p>All species evolved from the same ancestral population of cells. This
 is also referred to as the same Last Universal Common Ancestor (LUCA).
 In the tree of life the evolutionary relations are summarized between
@@ -1595,8 +1666,8 @@ tree (Source: wikipedia)
 </div>
 <p>Phylogenesis is the process of the origin of all species from the
 tree of life from LUCA.</p>
-<div id="timescale" class="section level3" number="3.3.1">
-<h3><span class="header-section-number">3.3.1</span> Timescale</h3>
+<div id="timescale" class="section level3" number="4.3.1">
+<h3><span class="header-section-number">4.3.1</span> Timescale</h3>
 <!-- ![](https://naturedocumentaries.org/wp-content/uploads/2017/12/liferockystartstrip.jpg) -->
 <p><img src="figs/liferockystartstrip.jpeg" /></p>
 <table>
@@ -1646,8 +1717,8 @@ life suddenly evolved from being mainly unicellular to complex
 multicellular forms.</p>
 </div>
 </div>
-<div id="evolution" class="section level2" number="3.4">
-<h2><span class="header-section-number">3.4</span> Evolution</h2>
+<div id="evolution" class="section level2" number="4.4">
+<h2><span class="header-section-number">4.4</span> Evolution</h2>
 <p>How does the evolution of LUCA to all species of the tree of life
 occurred?</p>
 <p>Lamarck was one of the first proponents of biological evolution and
@@ -1674,8 +1745,8 @@ selection. We will then continue with endosymbiosis and symbiogenesis.
 We conclude this section with elaborating on the concept of
 teleonomy.</p>
 <div id="variability-and-selection" class="section level3"
-number="3.4.1">
-<h3><span class="header-section-number">3.4.1</span> Variability and
+number="4.4.1">
+<h3><span class="header-section-number">4.4.1</span> Variability and
 Selection</h3>
 <p>Variation occurs, among others, through errors in the copying of DNA
 for cell division of prokaryotic cells and gamete<a href="#fn1"
@@ -1744,8 +1815,8 @@ fixation of the mutation thus depends on the reproductive success.</p>
 <p>The process of genetic variation and selection can eventually lead to
 evolution of new species upon many generations.</p>
 </div>
-<div id="genetic-drift" class="section level3" number="3.4.2">
-<h3><span class="header-section-number">3.4.2</span> Genetic Drift</h3>
+<div id="genetic-drift" class="section level3" number="4.4.2">
+<h3><span class="header-section-number">4.4.2</span> Genetic Drift</h3>
 <p>Another important process for the origin of species is genetic drift.
 This are random fluctuations of alleles, which are particular sequence
 variants of a gene. Genetic drift is particularly strong in small
@@ -1754,8 +1825,8 @@ populations. As opposed to selection it is not adaptive.</p>
 the population gets isolated in a new environment.</p>
 </div>
 <div id="horizontal-gene-transfer" class="section level3"
-number="3.4.3">
-<h3><span class="header-section-number">3.4.3</span> Horizontal Gene
+number="4.4.3">
+<h3><span class="header-section-number">4.4.3</span> Horizontal Gene
 Transfer</h3>
 <p>Horizontal gene transfer, which is non-sexual transfer of genetic
 information between two distinct organisms, is also important for the
@@ -1766,8 +1837,8 @@ to multiple antibiotics. It also occurs between Eukaryota. Mainly in
 protists, which are unicellular organisms with a nucleus. As well as
 between Prokaryota on the one hand and Eukaryota on the other hand.</p>
 </div>
-<div id="endosymbiosis" class="section level3" number="3.4.4">
-<h3><span class="header-section-number">3.4.4</span> Endosymbiosis</h3>
+<div id="endosymbiosis" class="section level3" number="4.4.4">
+<h3><span class="header-section-number">4.4.4</span> Endosymbiosis</h3>
 <p>Endosymbiosis is also a very important driver of evolution. Niles
 Eldredge and Stephen Jay Gould have shown that the fossil record
 indicates that evolution happens in bursts: it is slow most of the time
@@ -1898,8 +1969,8 @@ more variation.</p>
 <p>The Eukaryota further evolved in protists, which are unicellular
 organisms, fungae, plants and animals.</p>
 </div>
-<div id="teleonomy" class="section level3" number="3.4.5">
-<h3><span class="header-section-number">3.4.5</span> Teleonomy</h3>
+<div id="teleonomy" class="section level3" number="4.4.5">
+<h3><span class="header-section-number">4.4.5</span> Teleonomy</h3>
 <p>Teleonomy is the quality of apparent purposefulness and of
 goal-directedness of structures and functions in living organisms
 brought about by evolutionary adaptation. So throughout evolutionary
@@ -2043,8 +2114,8 @@ the wealth of diversity, instead.</p>
 </div>
 </div>
 </div>
-<div id="ontogenesis" class="section level1" number="4">
-<h1><span class="header-section-number">4</span> Ontogenesis</h1>
+<div id="ontogenesis" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Ontogenesis</h1>
 <p>The ontogenesis is the development of an organism from a fertilized
 egg cell up to the adult stage until we eventually die.</p>
 <p>Our ontogenesis starts from the genetic potential we inherit from our
@@ -2061,8 +2132,8 @@ tissues of the same organism that share the same genetic code can be
 morphologically so distinct, and how the environment and changes in our
 environment can impact our phenotype?</p>
 <p>This is due to epigenetics!</p>
-<div id="epigenetics" class="section level2" number="4.1">
-<h2><span class="header-section-number">4.1</span> Epigenetics</h2>
+<div id="epigenetics" class="section level2" number="5.1">
+<h2><span class="header-section-number">5.1</span> Epigenetics</h2>
 <p>Epigenetics is the study of how development, behavior and environment
 can cause changes that affect the way we use our genes. Unlike genetic
 changes, epigenetic changes do not change our DNA sequence, but they can
@@ -2108,8 +2179,8 @@ particularly so for our brains that keep on growing and developing
 throughout our lives, and again the interaction with our environment is
 key.</p>
 </div>
-<div id="epigenetic-markers" class="section level2" number="4.2">
-<h2><span class="header-section-number">4.2</span> Epigenetic
+<div id="epigenetic-markers" class="section level2" number="5.2">
+<h2><span class="header-section-number">5.2</span> Epigenetic
 markers</h2>
 <p>Epigenetic markers are small molecules that interact either directly
 with the DNA or with histones, which are specific proteins that act as
@@ -2140,8 +2211,8 @@ more accessible for transcription of the genes in that region, while
 de-acetylation has the opposite effect.</p>
 </div>
 <div id="epigenetics-during-embryonal-development"
-class="section level2" number="4.3">
-<h2><span class="header-section-number">4.3</span> Epigenetics during
+class="section level2" number="5.3">
+<h2><span class="header-section-number">5.3</span> Epigenetics during
 Embryonal Development</h2>
 <p>Epigenetics plays an important role in embryonic development (see
 Figure @ref(fig:epiEmbryo)).</p>
@@ -2177,8 +2248,8 @@ also passed upon cell division, which leads to invariance of
 differentiated cells: indeed, a muscle cell remains a muscle cell upon
 division and a brain cell a brain cell, etc.</p>
 </div>
-<div id="epigenetics-and-aging" class="section level2" number="4.4">
-<h2><span class="header-section-number">4.4</span> Epigenetics and
+<div id="epigenetics-and-aging" class="section level2" number="5.4">
+<h2><span class="header-section-number">5.4</span> Epigenetics and
 Aging</h2>
 <p>Epigenetics are also largely driven by ecofactors. This can be nicely
 illustrated with identical twins who have almost the same genome. It
@@ -2208,8 +2279,8 @@ predictors of chronological age. Aging has been shown to be associated
 with profound changes in the epigenetic landscape, that give rise to
 alterations of gene expression and genome architecture.</p>
 </div>
-<div id="epigenetics-and-learning" class="section level2" number="4.5">
-<h2><span class="header-section-number">4.5</span> Epigenetics and
+<div id="epigenetics-and-learning" class="section level2" number="5.5">
+<h2><span class="header-section-number">5.5</span> Epigenetics and
 Learning</h2>
 <p>Epigenetics is plays also an important rol in learning <span
 class="citation">(Creighton et al. 2020)</span>.</p>
@@ -2230,8 +2301,8 @@ within 6 hours upon learning is known to up regulate transcription
 factors important to initiate the second wave of transcription, which is
 needed to establish long-lasting memories.</p>
 <div id="dna-methylation-and-memory" class="section level3"
-number="4.5.1">
-<h3><span class="header-section-number">4.5.1</span> DNA Methylation and
+number="5.5.1">
+<h3><span class="header-section-number">5.5.1</span> DNA Methylation and
 Memory</h3>
 <p>In a large number of studies, DNA methylation has been shown to play
 an important role in multiple stages of memory formation.</p>
@@ -2266,8 +2337,8 @@ Brain regions involved in memory formation. (Source: Wikipedia)
 </div>
 </div>
 <div id="histone-modifications-and-memory" class="section level3"
-number="4.5.2">
-<h3><span class="header-section-number">4.5.2</span> Histone
+number="5.5.2">
+<h3><span class="header-section-number">5.5.2</span> Histone
 Modifications and Memory</h3>
 <p>Another type of epigenetic regulation is through the modification of
 histones, i.e. the proteins that act as spools around which the long DNA
@@ -2289,61 +2360,6 @@ for brain development and learning, however, the field of
 neuro-epigenetics is still in its infancy and many open questions
 remain.</p>
 </div>
-</div>
-</div>
-<div id="organization-of-the-course" class="section level1" number="5">
-<h1><span class="header-section-number">5</span> Organization of the
-course</h1>
-<div id="module-i-quantitative-proteomics" class="section level2"
-number="5.1">
-<h2><span class="header-section-number">5.1</span> Module I:
-Quantitative Proteomics</h2>
-<ol style="list-style-type: decimal">
-<li><p>Identification and quantification of peptides and
-proteins</p></li>
-<li><p>Data exploration and quality control using plots</p></li>
-<li><p>Preprocessing: log-transformation, Filtering, Normalization,
-Summarization</p></li>
-<li><p>Dealing with batch effects and other confounders</p></li>
-<li><p>Statistical Concepts</p>
-<ol style="list-style-type: decimal">
-<li>Linear models/Linear mixed models</li>
-<li>Trade-off between biological relevance/effect size vs statistical
-significance</li>
-<li>Empirical Bayes Methods</li>
-<li>Multiple testing</li>
-</ol></li>
-</ol>
-</div>
-<div id="module-ii-next-generation-sequencing-ngs-transcriptomics"
-class="section level2" number="5.2">
-<h2><span class="header-section-number">5.2</span> Module II: Next
-generation sequencing (NGS, Transcriptomics)</h2>
-<ol style="list-style-type: decimal">
-<li><p>NGS Data exploration</p></li>
-<li><p>Preprocessing/normalization</p></li>
-<li><p>Additional Statistical Concepts</p>
-<ol style="list-style-type: decimal">
-<li>Generalized linear models (GLM) for binary data</li>
-<li>GLM for count data</li>
-<li>Overdispersion</li>
-</ol></li>
-</ol>
-</div>
-<div id="details" class="section level2" number="5.3">
-<h2><span class="header-section-number">5.3</span> Details</h2>
-<ol style="list-style-type: decimal">
-<li><p>Theory and Tutorials are blended</p>
-<ul>
-<li>Module I: week 1-5</li>
-<li>Module II: week 6-10</li>
-<li>Project: week 1-10 via small assignments + week 11-12</li>
-</ul></li>
-<li><p>Communication and submission of projects via Ufora</p></li>
-<li><p>All tutorials from week 2 onwards are based on R/Bioconductor via
-R-studio Scripts are made in R/markdown: a file format to combine text,
-R code and R output.</p></li>
-</ol>
 </div>
 </div>
 <div id="references" class="section level1 unnumbered">

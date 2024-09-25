@@ -11,6 +11,48 @@ bibliography: bibliography.bib
 
 ---
 
+
+# Organization of the course
+
+## Module I: Quantitative Proteomics
+
+  1. Identification and quantification of peptides and proteins
+  2. Data exploration and quality control using plots
+  3. Preprocessing: log-transformation, Filtering, Normalization,
+Summarization
+  4. Dealing with batch effects and other confounders
+  5. Statistical Concepts
+  
+      1. Linear models/Linear mixed models
+      2. Trade-off between biological relevance/effect size vs statistical
+significance
+      3. Empirical Bayes Methods
+      4. Multiple testing
+    
+## Module II: Next generation sequencing (NGS, Transcriptomics)
+
+  1. NGS Data exploration
+  2. Preprocessing/normalization
+  3. Additional Statistical Concepts
+    
+      1. Generalized linear models (GLM) for binary data
+      2. GLM for count data
+      3. Overdispersion
+
+## Details
+
+  1. Theory and Tutorials are blended
+    
+      - Module I: week 1-5
+      - Module II: week 6-10
+      - Project: week 1-10 via small assignments + week 11-12
+  
+  2.  Communication and submission of projects via Ufora
+  3. All tutorials from week 2 onwards are based on
+R/Bioconductor via R-studio
+Scripts are made in R/markdown: a file format to combine
+text, R code and R output.
+
 # Setting the scene
 
 Bioinformatics is an interdisciplinary field of science that develops methods and software tools for understanding biological data, especially when the data sets are large and complex. 
@@ -259,12 +301,19 @@ Almost all molecules of living organisms are composed of
 
 ##### Lipids 
 
+Lipids, fats and oils, are used for 
+
+- storage of energy, 
+- regulation of hormones, 
+- transmission of nerve impulses,
+- cushion vital organs and 
+- transport of fat-soluble nutrients. 
+
+Moreover, an important class of lipids, the phospholipids, make up membranes of cells and unicellular compartments called organelles see Figure \@ref(fig:lipids). Indeed phospholipids have a polar head that likes to be in water and a long apolar tail that does not mix with water. Therefore bilayers of phospholipid molecules are spontaneously formed in aqueous solutions. 
 
 ```{r lipids, fig.cap='Phospho-lipids have a very important role in life as they form membranes. Phospholipids have a hydrophilic head that likes to mix with water and long hydrophobic tails that do not mix with water. They sponteneously gives rise to bilayers in aqueous solutions similar to the structure seen in membranes. Membranes are the boundaries of the cell and they allow passivie diffusion of small molecules through their bilayer. Larger molecules can be actively exchanged with the environment through membrane proteins (Source: Doug Hatfield, Wikipedia)', out.width='80%', fig.asp=.8, fig.align='center', echo=FALSE}
 knitr::include_graphics("./figs/Cell_membrane_detailed_diagram_4.svg")
 ```
-
-Lipids, fats and oils, are used for storage of energy, regulation of hormones, transmission of nerve impulses, cushion vital organs and transport of fat-soluble nutrients. Moreover, an important class of lipids, the phospholipids, make up membranes of cells and unicellular compartments called organelles see Figure \@ref(fig:lipids). Indeed phospholipids have a polar head that likes to be in water and a long apolar tail that does not mix with water. Therefore bilayers of phospholipid molecules are spontaneously formed in aqueous solutions. 
 
 \pagebreak 
 
@@ -272,7 +321,11 @@ Membranes provide the basis for concentrating specific molecules in (compartment
 
 ##### Carbohydrates 
 
-Carbohydrates are important bio-molecules that are used for storage, energy and structure (Figure \@ref(fig:carbohydrates)).
+Carbohydrates are important bio-molecules that are used for 
+
+- storage, 
+- energy and 
+- structure (Figure \@ref(fig:carbohydrates)).
 
 ```{r carbohydrates, fig.cap='Carbohydrates perform the important functions of storage, energy source and structure. They can be organised in biopolymers, long chains of carbohydrate molecules that are bound together. The polysaccharides starch and glycogen for instance are used to store energy by plant and animal cells, respectively. Cellulose, on the other hand, is a polysaccharide that gives plants structure. Deoxyribose and ribose are important carbohydrates that form the backbone of the biopolymers DNA and RNA, respectively. (Source: thebiologynotes.com)', out.width='100%', fig.asp=.8, fig.align='center', echo=FALSE}
 #knitr::include_graphics("https://thebiologynotes.com/wp-content/uploads/2020/11/Carbohydrates-definition-classification-with-structure-and-functions.jpeg")
@@ -289,6 +342,15 @@ knitr::include_graphics("./figs/Carbohydrates-definition-classification-with-str
 \pagebreak 
 
 ##### Amino Acids {#sectionAminoAcids}
+
+Amino Acids are the building blocks of proteins. Proteins are the main workhorses of the cell and they are important for 
+
+- moving food, 
+- digesting food, 
+- copying DNA, 
+- for giving the cell structure, 
+- affecting the rates at which other proteins work, 
+- etc... 
 
 Amino acids by themselves are simple molecules (Figure \@ref(fig:aminoAcids)).
 Although hundreds of amino acids exist in nature, life is using only 20 of them and it is combining them in long molecules, polymers, which are referred to as proteins.
@@ -310,7 +372,6 @@ Indeed, many proteins work as a "lock" in which specific (bio)molecules fit as a
 knitr::include_graphics("./figs/EnzymePadlockKey.png")
 ```
 
-Proteins are the main workhorses of the cell and they are important for moving food, digesting food, copying DNA, for giving the cell structure, affecting the rates at which other proteins work, etc... 
 
 ##### Nucleic Acids {#sectionNucleicAcids}
 
@@ -1002,46 +1063,5 @@ Histone modifications with epigenetic markers have been shown to be mainly impor
 Histone epigenetic markers seem to regulate the transcriptional sensitivity towards external stimuli. Histone acetylation that makes the DNA more accessible, for instance, has been shown to increase learning induced gene expression and seem to be particularly important for regulating memory strength. 
 
 So recent progress has shown the tremendous importance of epigenetics for brain development and learning, however, the field of neuro-epigenetics is still in its infancy and many open questions remain.
-
-# Organization of the course
-
-## Module I: Quantitative Proteomics
-
-  1. Identification and quantification of peptides and proteins
-  2. Data exploration and quality control using plots
-  3. Preprocessing: log-transformation, Filtering, Normalization,
-Summarization
-  4. Dealing with batch effects and other confounders
-  5. Statistical Concepts
-  
-      1. Linear models/Linear mixed models
-      2. Trade-off between biological relevance/effect size vs statistical
-significance
-      3. Empirical Bayes Methods
-      4. Multiple testing
-    
-## Module II: Next generation sequencing (NGS, Transcriptomics)
-
-  1. NGS Data exploration
-  2. Preprocessing/normalization
-  3. Additional Statistical Concepts
-    
-      1. Generalized linear models (GLM) for binary data
-      2. GLM for count data
-      3. Overdispersion
-
-## Details
-
-  1. Theory and Tutorials are blended
-    
-      - Module I: week 1-5
-      - Module II: week 6-10
-      - Project: week 1-10 via small assignments + week 11-12
-  
-  2.  Communication and submission of projects via Ufora
-  3. All tutorials from week 2 onwards are based on
-R/Bioconductor via R-studio
-Scripts are made in R/markdown: a file format to combine
-text, R code and R output.
 
 # References {-}
