@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Lieven Clement" />
+
+
+<title>Statistical Methods for Quantitative MS-based Proteomics: Blocking - Wrap-up</title>
+
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #204a87; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #8f5902; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #204a87; font-weight: bold; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SGA</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-chalkboard-teacher"></span>
+     
+    Lectures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">---- INTRODUCTION ----</li>
+    <li>
+      <a href="intro.html">1.1 Position</a>
+    </li>
+    <li>
+      <a href="recapGeneralLinearModel.html">1.2 Recap linear model</a>
+    </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="./figs/part1_ms_basics.pdf">1.1 MS Basics</a>
+    </li>
+    <li>
+      <a href="./figs/part1_ms_basics.pdf">1.2 Identification</a>
+    </li>
+    <li>
+      <a href="TargetDecoy.html">2.1 Identification - FDR - QC</a>
+    </li>
+    <li>
+      <a href="pda_quantification_preprocessing.html">2.2.1 Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_robustSummarisation_peptideModels.html">2.2.2 Wrap-up Preprocessing - Peptide-Level-Models</a>
+    </li>
+    <li>
+      <a href="pda_quantification_inference.html">2.3.1 Quantification - Differential Abundance Analysis</a>
+    </li>
+    <li>
+      <a href="pda_blocking_wrapup.html">2.3.2. Wrap-up DA - Blocking</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-laptop"></span>
+     
+    tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">---- INTRODUCTION ----</li>
+    <li>
+      <a href="multipleRegression_KPNA2.html">1 Intro KPNA2</a>
+    </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">1. Bioinformatics for Proteomics</a>
+    </li>
+    <li>
+      <a href="TargetDecoyTutorial.html">2.1. Target Decoy QC</a>
+    </li>
+    <li>
+      <a href="pda_tutorialPreprocessing.html">2.2. Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_tutorialDesign.html">2.3. Quantification - Design</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Statistical Methods for Quantitative
+MS-based Proteomics: Blocking - Wrap-up</h1>
+<h4 class="author">Lieven Clement</h4>
+<h4 class="date"><a href="https://statomics.github.io">statOmics</a>,
+Ghent University</h4>
+
+</div>
+
+
+<p><a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a></p>
+<p>This is part of the online course <a
+href="https://statomics.github.io/PDA22GTPB/">Proteomics Data Analysis
+(PDA)</a></p>
+<div id="import-data-and-preprocessing" class="section level1"
+number="1">
+<h1><span class="header-section-number">1</span> Import Data and
+Preprocessing</h1>
+<div id="data" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Data</h2>
+<details>
+<summary>
+Click to see code
+</summary>
+<p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(limma)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(QFeatures)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(msqrob2)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>peptidesFile <span class="ot">&lt;-</span> <span class="st">&quot;https://raw.githubusercontent.com/statOmics/PDA22GTPB/data/quantification/mouseTcell/peptidesRCB.txt&quot;</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>peptidesFile2 <span class="ot">&lt;-</span> <span class="st">&quot;https://raw.githubusercontent.com/statOmics/PDA22GTPB/data/quantification/mouseTcell/peptidesCRD.txt&quot;</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>peptidesFile3 <span class="ot">&lt;-</span> <span class="st">&quot;https://raw.githubusercontent.com/statOmics/PDA22GTPB/data/quantification/mouseTcell/peptides.txt&quot;</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>ecols <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">&quot;Intensity</span><span class="sc">\\</span><span class="st">.&quot;</span>, <span class="fu">names</span>(<span class="fu">read.delim</span>(peptidesFile)))</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">readQFeatures</span>(</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>  <span class="at">assayData =</span> <span class="fu">read.delim</span>(peptidesFile),</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>  <span class="at">fnames =</span> <span class="dv">1</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>  <span class="at">quantCols =</span> ecols,</span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">&quot;peptideRaw&quot;</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>ecols2 <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">&quot;Intensity</span><span class="sc">\\</span><span class="st">.&quot;</span>, <span class="fu">names</span>(<span class="fu">read.delim</span>(peptidesFile2)))</span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>pe2 <span class="ot">&lt;-</span> <span class="fu">readQFeatures</span>(</span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>  <span class="at">assayData =</span> <span class="fu">read.delim</span>(peptidesFile2),</span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a>  <span class="at">fnames =</span> <span class="dv">1</span>,</span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a>  <span class="at">quantCols =</span> ecols2,</span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">&quot;peptideRaw&quot;</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a>ecols3 <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">&quot;Intensity</span><span class="sc">\\</span><span class="st">.&quot;</span>, <span class="fu">names</span>(<span class="fu">read.delim</span>(peptidesFile3)))</span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a>pe3 <span class="ot">&lt;-</span> <span class="fu">readQFeatures</span>(</span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a>  <span class="at">assayData =</span> <span class="fu">read.delim</span>(peptidesFile3),</span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a>  <span class="at">fnames =</span> <span class="dv">1</span>,</span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a>  <span class="at">quantCols =</span> ecols3,</span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">&quot;peptideRaw&quot;</span>)</span>
+<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a><span class="do">### Design</span></span>
+<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a><span class="fu">colData</span>(pe)<span class="sc">$</span>celltype <span class="ot">&lt;-</span> <span class="fu">substr</span>(</span>
+<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a>  <span class="fu">colnames</span>(pe[[<span class="st">&quot;peptideRaw&quot;</span>]]),</span>
+<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a>  <span class="dv">11</span>,</span>
+<span id="cb1-37"><a href="#cb1-37" tabindex="-1"></a>  <span class="dv">14</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-38"><a href="#cb1-38" tabindex="-1"></a>  unlist <span class="sc">%&gt;%</span>  </span>
+<span id="cb1-39"><a href="#cb1-39" tabindex="-1"></a>  as.factor</span>
+<span id="cb1-40"><a href="#cb1-40" tabindex="-1"></a></span>
+<span id="cb1-41"><a href="#cb1-41" tabindex="-1"></a><span class="fu">colData</span>(pe)<span class="sc">$</span>mouse <span class="ot">&lt;-</span> pe[[<span class="dv">1</span>]] <span class="sc">%&gt;%</span></span>
+<span id="cb1-42"><a href="#cb1-42" tabindex="-1"></a>  colnames <span class="sc">%&gt;%</span></span>
+<span id="cb1-43"><a href="#cb1-43" tabindex="-1"></a>  <span class="fu">strsplit</span>(<span class="at">split=</span><span class="st">&quot;[.]&quot;</span>)  <span class="sc">%&gt;%</span></span>
+<span id="cb1-44"><a href="#cb1-44" tabindex="-1"></a>  <span class="fu">sapply</span>(<span class="cf">function</span>(x) x[<span class="dv">3</span>]) <span class="sc">%&gt;%</span></span>
+<span id="cb1-45"><a href="#cb1-45" tabindex="-1"></a>  as.factor</span>
+<span id="cb1-46"><a href="#cb1-46" tabindex="-1"></a></span>
+<span id="cb1-47"><a href="#cb1-47" tabindex="-1"></a><span class="fu">colData</span>(pe2)<span class="sc">$</span>celltype <span class="ot">&lt;-</span> <span class="fu">substr</span>(</span>
+<span id="cb1-48"><a href="#cb1-48" tabindex="-1"></a>  <span class="fu">colnames</span>(pe2[[<span class="st">&quot;peptideRaw&quot;</span>]]),</span>
+<span id="cb1-49"><a href="#cb1-49" tabindex="-1"></a>  <span class="dv">11</span>,</span>
+<span id="cb1-50"><a href="#cb1-50" tabindex="-1"></a>  <span class="dv">14</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-51"><a href="#cb1-51" tabindex="-1"></a>  unlist <span class="sc">%&gt;%</span>  </span>
+<span id="cb1-52"><a href="#cb1-52" tabindex="-1"></a>  as.factor</span>
+<span id="cb1-53"><a href="#cb1-53" tabindex="-1"></a></span>
+<span id="cb1-54"><a href="#cb1-54" tabindex="-1"></a><span class="fu">colData</span>(pe2)<span class="sc">$</span>mouse <span class="ot">&lt;-</span> pe2[[<span class="dv">1</span>]] <span class="sc">%&gt;%</span></span>
+<span id="cb1-55"><a href="#cb1-55" tabindex="-1"></a>  colnames <span class="sc">%&gt;%</span></span>
+<span id="cb1-56"><a href="#cb1-56" tabindex="-1"></a>  <span class="fu">strsplit</span>(<span class="at">split=</span><span class="st">&quot;[.]&quot;</span>)  <span class="sc">%&gt;%</span></span>
+<span id="cb1-57"><a href="#cb1-57" tabindex="-1"></a>  <span class="fu">sapply</span>(<span class="cf">function</span>(x) x[<span class="dv">3</span>]) <span class="sc">%&gt;%</span></span>
+<span id="cb1-58"><a href="#cb1-58" tabindex="-1"></a>  as.factor</span>
+<span id="cb1-59"><a href="#cb1-59" tabindex="-1"></a></span>
+<span id="cb1-60"><a href="#cb1-60" tabindex="-1"></a><span class="fu">colData</span>(pe3)<span class="sc">$</span>celltype <span class="ot">&lt;-</span> <span class="fu">substr</span>(</span>
+<span id="cb1-61"><a href="#cb1-61" tabindex="-1"></a>  <span class="fu">colnames</span>(pe3[[<span class="st">&quot;peptideRaw&quot;</span>]]),</span>
+<span id="cb1-62"><a href="#cb1-62" tabindex="-1"></a>  <span class="dv">11</span>,</span>
+<span id="cb1-63"><a href="#cb1-63" tabindex="-1"></a>  <span class="dv">14</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-64"><a href="#cb1-64" tabindex="-1"></a>  unlist <span class="sc">%&gt;%</span>  </span>
+<span id="cb1-65"><a href="#cb1-65" tabindex="-1"></a>  as.factor</span>
+<span id="cb1-66"><a href="#cb1-66" tabindex="-1"></a></span>
+<span id="cb1-67"><a href="#cb1-67" tabindex="-1"></a><span class="fu">colData</span>(pe3)<span class="sc">$</span>mouse <span class="ot">&lt;-</span> pe3[[<span class="dv">1</span>]] <span class="sc">%&gt;%</span></span>
+<span id="cb1-68"><a href="#cb1-68" tabindex="-1"></a>  colnames <span class="sc">%&gt;%</span></span>
+<span id="cb1-69"><a href="#cb1-69" tabindex="-1"></a>  <span class="fu">strsplit</span>(<span class="at">split=</span><span class="st">&quot;[.]&quot;</span>)  <span class="sc">%&gt;%</span></span>
+<span id="cb1-70"><a href="#cb1-70" tabindex="-1"></a>  <span class="fu">sapply</span>(<span class="cf">function</span>(x) x[<span class="dv">3</span>]) <span class="sc">%&gt;%</span></span>
+<span id="cb1-71"><a href="#cb1-71" tabindex="-1"></a>  as.factor</span></code></pre></div>
+</p>
+<p></design></p>
+</div>
+<div id="preprocessing" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> Preprocessing</h2>
+<div id="log-transform" class="section level3" number="1.2.1">
+<h3><span class="header-section-number">1.2.1</span> Log-transform</h3>
+<details>
+<summary>
+Click to see code to log-transfrom the data
+</summary>
+<p>
+<ul>
+<li>We calculate how many non zero intensities we have for each peptide
+and this can be useful for filtering.</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">rowData</span>(pe[[<span class="st">&quot;peptideRaw&quot;</span>]])<span class="sc">$</span>nNonZero <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(<span class="fu">assay</span>(pe[[<span class="st">&quot;peptideRaw&quot;</span>]]) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">rowData</span>(pe2[[<span class="st">&quot;peptideRaw&quot;</span>]])<span class="sc">$</span>nNonZero <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(<span class="fu">assay</span>(pe2[[<span class="st">&quot;peptideRaw&quot;</span>]]) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="fu">rowData</span>(pe3[[<span class="st">&quot;peptideRaw&quot;</span>]])<span class="sc">$</span>nNonZero <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(<span class="fu">assay</span>(pe3[[<span class="st">&quot;peptideRaw&quot;</span>]]) <span class="sc">&gt;</span> <span class="dv">0</span>)</span></code></pre></div>
+<ul>
+<li>Peptides with zero intensities are missing peptides and should be
+represent with a <code>NA</code> value rather than <code>0</code>.</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">zeroIsNA</span>(pe, <span class="st">&quot;peptideRaw&quot;</span>) <span class="co"># convert 0 to NA</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>pe2 <span class="ot">&lt;-</span> <span class="fu">zeroIsNA</span>(pe2, <span class="st">&quot;peptideRaw&quot;</span>) <span class="co"># convert 0 to NA</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>pe3 <span class="ot">&lt;-</span> <span class="fu">zeroIsNA</span>(pe3, <span class="st">&quot;peptideRaw&quot;</span>) <span class="co"># convert 0 to NA</span></span></code></pre></div>
+<ul>
+<li>Logtransform data with base 2</li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">logTransform</span>(pe, <span class="at">base =</span> <span class="dv">2</span>, <span class="at">i =</span> <span class="st">&quot;peptideRaw&quot;</span>, <span class="at">name =</span> <span class="st">&quot;peptideLog&quot;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>pe2 <span class="ot">&lt;-</span> <span class="fu">logTransform</span>(pe2, <span class="at">base =</span> <span class="dv">2</span>, <span class="at">i =</span> <span class="st">&quot;peptideRaw&quot;</span>, <span class="at">name =</span> <span class="st">&quot;peptideLog&quot;</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>pe3 <span class="ot">&lt;-</span> <span class="fu">logTransform</span>(pe3, <span class="at">base =</span> <span class="dv">2</span>, <span class="at">i =</span> <span class="st">&quot;peptideRaw&quot;</span>, <span class="at">name =</span> <span class="st">&quot;peptideLog&quot;</span>)</span></code></pre></div>
+</p>
+</details>
+</div>
+<div id="filtering" class="section level3" number="1.2.2">
+<h3><span class="header-section-number">1.2.2</span> Filtering</h3>
+<details>
+<summary>
+Click to see details on filtering
+</summary>
+<p>
+<ol style="list-style-type: decimal">
+<li>Handling overlapping protein groups</li>
+</ol>
+<p>In our approach a peptide can map to multiple proteins, as long as
+there is none of these proteins present in a smaller subgroup.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe, <span class="sc">~</span> Proteins <span class="sc">%in%</span> <span class="fu">smallestUniqueGroups</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;peptideLog&quot;</span>]])<span class="sc">$</span>Proteins))</span></code></pre></div>
+<pre><code>## &#39;Proteins&#39; found in 2 out of 2 assay(s)</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>pe2 <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe2, <span class="sc">~</span> Proteins <span class="sc">%in%</span> <span class="fu">smallestUniqueGroups</span>(<span class="fu">rowData</span>(pe2[[<span class="st">&quot;peptideLog&quot;</span>]])<span class="sc">$</span>Proteins))</span></code></pre></div>
+<pre><code>## &#39;Proteins&#39; found in 2 out of 2 assay(s)</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>pe3 <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe3, <span class="sc">~</span> Proteins <span class="sc">%in%</span> <span class="fu">smallestUniqueGroups</span>(<span class="fu">rowData</span>(pe3[[<span class="st">&quot;peptideLog&quot;</span>]])<span class="sc">$</span>Proteins))</span></code></pre></div>
+<pre><code>## &#39;Proteins&#39; found in 2 out of 2 assay(s)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Remove reverse sequences (decoys) and contaminants</li>
+</ol>
+<p>We now remove the contaminants, peptides that map to decoy sequences,
+and proteins which were only identified by peptides with
+modifications.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe,<span class="sc">~</span>Reverse <span class="sc">!=</span> <span class="st">&quot;+&quot;</span>)</span></code></pre></div>
+<pre><code>## &#39;Reverse&#39; found in 2 out of 2 assay(s)</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe,<span class="sc">~</span> Potential.contaminant <span class="sc">!=</span> <span class="st">&quot;+&quot;</span>)</span></code></pre></div>
+<pre><code>## &#39;Potential.contaminant&#39; found in 2 out of 2 assay(s)</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>pe2 <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe2,<span class="sc">~</span>Reverse <span class="sc">!=</span> <span class="st">&quot;+&quot;</span>)</span></code></pre></div>
+<pre><code>## &#39;Reverse&#39; found in 2 out of 2 assay(s)</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>pe2 <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe2,<span class="sc">~</span> Potential.contaminant <span class="sc">!=</span> <span class="st">&quot;+&quot;</span>)</span></code></pre></div>
+<pre><code>## &#39;Potential.contaminant&#39; found in 2 out of 2 assay(s)</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>pe3 <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe3,<span class="sc">~</span>Reverse <span class="sc">!=</span> <span class="st">&quot;+&quot;</span>)</span></code></pre></div>
+<pre><code>## &#39;Reverse&#39; found in 2 out of 2 assay(s)</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>pe3 <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe3,<span class="sc">~</span> Potential.contaminant <span class="sc">!=</span> <span class="st">&quot;+&quot;</span>)</span></code></pre></div>
+<pre><code>## &#39;Potential.contaminant&#39; found in 2 out of 2 assay(s)</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Drop peptides that were only identified in one sample</li>
+</ol>
+<p>We keep peptides that were observed at last twice.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe,<span class="sc">~</span> nNonZero <span class="sc">&gt;=</span><span class="dv">2</span>)</span></code></pre></div>
+<pre><code>## &#39;nNonZero&#39; found in 2 out of 2 assay(s)</code></pre>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>pe2 <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe2,<span class="sc">~</span> nNonZero <span class="sc">&gt;=</span><span class="dv">2</span>)</span></code></pre></div>
+<pre><code>## &#39;nNonZero&#39; found in 2 out of 2 assay(s)</code></pre>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a>pe3 <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe3,<span class="sc">~</span> nNonZero <span class="sc">&gt;=</span><span class="dv">2</span>)</span></code></pre></div>
+<pre><code>## &#39;nNonZero&#39; found in 2 out of 2 assay(s)</code></pre>
+</p>
+</details>
+</div>
+</div>
+<div id="normalization" class="section level2" number="1.3">
+<h2><span class="header-section-number">1.3</span> Normalization</h2>
+<details>
+<summary>
+Click to see code to normalize the data
+</summary>
+<p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">normalize</span>(pe, </span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>                <span class="at">i =</span> <span class="st">&quot;peptideLog&quot;</span>, </span>
+<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a>                <span class="at">name =</span> <span class="st">&quot;peptideNorm&quot;</span>, </span>
+<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a>                <span class="at">method =</span> <span class="st">&quot;center.median&quot;</span>)</span>
+<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a></span>
+<span id="cb29-6"><a href="#cb29-6" tabindex="-1"></a>pe2 <span class="ot">&lt;-</span> <span class="fu">normalize</span>(pe2, </span>
+<span id="cb29-7"><a href="#cb29-7" tabindex="-1"></a>                <span class="at">i =</span> <span class="st">&quot;peptideLog&quot;</span>, </span>
+<span id="cb29-8"><a href="#cb29-8" tabindex="-1"></a>                <span class="at">name =</span> <span class="st">&quot;peptideNorm&quot;</span>, </span>
+<span id="cb29-9"><a href="#cb29-9" tabindex="-1"></a>                <span class="at">method =</span> <span class="st">&quot;center.median&quot;</span>)</span>
+<span id="cb29-10"><a href="#cb29-10" tabindex="-1"></a></span>
+<span id="cb29-11"><a href="#cb29-11" tabindex="-1"></a></span>
+<span id="cb29-12"><a href="#cb29-12" tabindex="-1"></a>pe3 <span class="ot">&lt;-</span> <span class="fu">normalize</span>(pe3, </span>
+<span id="cb29-13"><a href="#cb29-13" tabindex="-1"></a>                <span class="at">i =</span> <span class="st">&quot;peptideLog&quot;</span>, </span>
+<span id="cb29-14"><a href="#cb29-14" tabindex="-1"></a>                <span class="at">name =</span> <span class="st">&quot;peptideNorm&quot;</span>, </span>
+<span id="cb29-15"><a href="#cb29-15" tabindex="-1"></a>                <span class="at">method =</span> <span class="st">&quot;center.median&quot;</span>)</span></code></pre></div>
+</p>
+</details>
+</div>
+<div id="summarization" class="section level2" number="1.4">
+<h2><span class="header-section-number">1.4</span> Summarization</h2>
+<details>
+<summary>
+Click to see code to summarize the data
+</summary>
+<p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">aggregateFeatures</span>(pe,</span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a> <span class="at">i =</span> <span class="st">&quot;peptideNorm&quot;</span>,</span>
+<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a> <span class="at">fcol =</span> <span class="st">&quot;Proteins&quot;</span>,</span>
+<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a> <span class="at">na.rm =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a> <span class="at">name =</span> <span class="st">&quot;protein&quot;</span>)</span></code></pre></div>
+<pre><code>## Your quantitative and row data contain missing values. Please read the
+## relevant section(s) in the aggregateFeatures manual page regarding the
+## effects of missing values on data aggregation.</code></pre>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a>pe2 <span class="ot">&lt;-</span> <span class="fu">aggregateFeatures</span>(pe2,</span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a> <span class="at">i =</span> <span class="st">&quot;peptideNorm&quot;</span>,</span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a> <span class="at">fcol =</span> <span class="st">&quot;Proteins&quot;</span>,</span>
+<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a> <span class="at">na.rm =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a> <span class="at">name =</span> <span class="st">&quot;protein&quot;</span>)</span></code></pre></div>
+<pre><code>## Your quantitative and row data contain missing values. Please read the
+## relevant section(s) in the aggregateFeatures manual page regarding the
+## effects of missing values on data aggregation.</code></pre>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a>pe3 <span class="ot">&lt;-</span> <span class="fu">aggregateFeatures</span>(pe3,</span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a> <span class="at">i =</span> <span class="st">&quot;peptideNorm&quot;</span>,</span>
+<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a> <span class="at">fcol =</span> <span class="st">&quot;Proteins&quot;</span>,</span>
+<span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a> <span class="at">na.rm =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a> <span class="at">name =</span> <span class="st">&quot;protein&quot;</span>)</span></code></pre></div>
+<pre><code>## Your quantitative and row data contain missing values. Please read the
+## relevant section(s) in the aggregateFeatures manual page regarding the
+## effects of missing values on data aggregation.</code></pre>
+</p>
+</details>
+</div>
+<div id="data-exploration-what-is-impact-of-blocking"
+class="section level2" number="1.5">
+<h2><span class="header-section-number">1.5</span> Data Exploration:
+what is impact of blocking?</h2>
+<details>
+<summary>
+Click to see code
+</summary>
+<p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="fu">levels</span>(<span class="fu">colData</span>(pe3)<span class="sc">$</span>mouse) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;m&quot;</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>)</span>
+<span id="cb36-2"><a href="#cb36-2" tabindex="-1"></a>mdsObj3 <span class="ot">&lt;-</span> <span class="fu">plotMDS</span>(<span class="fu">assay</span>(pe3[[<span class="st">&quot;protein&quot;</span>]]), <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb36-3"><a href="#cb36-3" tabindex="-1"></a>mdsOrig <span class="ot">&lt;-</span> <span class="fu">colData</span>(pe3) <span class="sc">%&gt;%</span></span>
+<span id="cb36-4"><a href="#cb36-4" tabindex="-1"></a>  as.data.frame <span class="sc">%&gt;%</span></span>
+<span id="cb36-5"><a href="#cb36-5" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">mds1 =</span> mdsObj3<span class="sc">$</span>x,</span>
+<span id="cb36-6"><a href="#cb36-6" tabindex="-1"></a>         <span class="at">mds2 =</span> mdsObj3<span class="sc">$</span>y,</span>
+<span id="cb36-7"><a href="#cb36-7" tabindex="-1"></a>         <span class="at">lab =</span> <span class="fu">paste</span>(mouse,celltype,<span class="at">sep=</span><span class="st">&quot;_&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb36-8"><a href="#cb36-8" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> mds1, <span class="at">y =</span> mds2, <span class="at">label =</span> lab, <span class="at">color =</span> celltype, <span class="at">group =</span> mouse)) <span class="sc">+</span></span>
+<span id="cb36-9"><a href="#cb36-9" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb36-10"><a href="#cb36-10" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">21</span>) <span class="sc">+</span></span>
+<span id="cb36-11"><a href="#cb36-11" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>) <span class="sc">+</span></span>
+<span id="cb36-12"><a href="#cb36-12" tabindex="-1"></a>  <span class="fu">xlab</span>(</span>
+<span id="cb36-13"><a href="#cb36-13" tabindex="-1"></a>    <span class="fu">paste0</span>(</span>
+<span id="cb36-14"><a href="#cb36-14" tabindex="-1"></a>      mdsObj3<span class="sc">$</span>axislabel,</span>
+<span id="cb36-15"><a href="#cb36-15" tabindex="-1"></a>      <span class="st">&quot; &quot;</span>,</span>
+<span id="cb36-16"><a href="#cb36-16" tabindex="-1"></a>      <span class="dv">1</span>, </span>
+<span id="cb36-17"><a href="#cb36-17" tabindex="-1"></a>      <span class="st">&quot; (&quot;</span>,</span>
+<span id="cb36-18"><a href="#cb36-18" tabindex="-1"></a>      <span class="fu">paste0</span>(</span>
+<span id="cb36-19"><a href="#cb36-19" tabindex="-1"></a>        <span class="fu">round</span>(mdsObj3<span class="sc">$</span>var.explained[<span class="dv">1</span>] <span class="sc">*</span><span class="dv">100</span>,<span class="dv">0</span>),</span>
+<span id="cb36-20"><a href="#cb36-20" tabindex="-1"></a>        <span class="st">&quot;%&quot;</span></span>
+<span id="cb36-21"><a href="#cb36-21" tabindex="-1"></a>        ),</span>
+<span id="cb36-22"><a href="#cb36-22" tabindex="-1"></a>      <span class="st">&quot;)&quot;</span></span>
+<span id="cb36-23"><a href="#cb36-23" tabindex="-1"></a>      )</span>
+<span id="cb36-24"><a href="#cb36-24" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb36-25"><a href="#cb36-25" tabindex="-1"></a>  <span class="fu">ylab</span>(</span>
+<span id="cb36-26"><a href="#cb36-26" tabindex="-1"></a>    <span class="fu">paste0</span>(</span>
+<span id="cb36-27"><a href="#cb36-27" tabindex="-1"></a>      mdsObj3<span class="sc">$</span>axislabel,</span>
+<span id="cb36-28"><a href="#cb36-28" tabindex="-1"></a>      <span class="st">&quot; &quot;</span>,</span>
+<span id="cb36-29"><a href="#cb36-29" tabindex="-1"></a>      <span class="dv">2</span>, </span>
+<span id="cb36-30"><a href="#cb36-30" tabindex="-1"></a>      <span class="st">&quot; (&quot;</span>,</span>
+<span id="cb36-31"><a href="#cb36-31" tabindex="-1"></a>      <span class="fu">paste0</span>(</span>
+<span id="cb36-32"><a href="#cb36-32" tabindex="-1"></a>        <span class="fu">round</span>(mdsObj3<span class="sc">$</span>var.explained[<span class="dv">2</span>] <span class="sc">*</span><span class="dv">100</span>,<span class="dv">0</span>),</span>
+<span id="cb36-33"><a href="#cb36-33" tabindex="-1"></a>        <span class="st">&quot;%&quot;</span></span>
+<span id="cb36-34"><a href="#cb36-34" tabindex="-1"></a>        ),</span>
+<span id="cb36-35"><a href="#cb36-35" tabindex="-1"></a>      <span class="st">&quot;)&quot;</span></span>
+<span id="cb36-36"><a href="#cb36-36" tabindex="-1"></a>      )</span>
+<span id="cb36-37"><a href="#cb36-37" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb36-38"><a href="#cb36-38" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Original (RCB)&quot;</span>)</span>
+<span id="cb36-39"><a href="#cb36-39" tabindex="-1"></a></span>
+<span id="cb36-40"><a href="#cb36-40" tabindex="-1"></a><span class="fu">levels</span>(<span class="fu">colData</span>(pe)<span class="sc">$</span>mouse) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;m&quot;</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>)</span>
+<span id="cb36-41"><a href="#cb36-41" tabindex="-1"></a>mdsObj <span class="ot">&lt;-</span> <span class="fu">plotMDS</span>(<span class="fu">assay</span>(pe[[<span class="st">&quot;protein&quot;</span>]]), <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb36-42"><a href="#cb36-42" tabindex="-1"></a>mdsRCB <span class="ot">&lt;-</span> <span class="fu">colData</span>(pe) <span class="sc">%&gt;%</span></span>
+<span id="cb36-43"><a href="#cb36-43" tabindex="-1"></a>  as.data.frame <span class="sc">%&gt;%</span></span>
+<span id="cb36-44"><a href="#cb36-44" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">mds1 =</span> mdsObj<span class="sc">$</span>x,</span>
+<span id="cb36-45"><a href="#cb36-45" tabindex="-1"></a>         <span class="at">mds2 =</span> mdsObj<span class="sc">$</span>y,</span>
+<span id="cb36-46"><a href="#cb36-46" tabindex="-1"></a>         <span class="at">lab =</span> <span class="fu">paste</span>(mouse,celltype,<span class="at">sep=</span><span class="st">&quot;_&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb36-47"><a href="#cb36-47" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> mds1, <span class="at">y =</span> mds2, <span class="at">label =</span> lab, <span class="at">color =</span> celltype, <span class="at">group =</span> mouse)) <span class="sc">+</span></span>
+<span id="cb36-48"><a href="#cb36-48" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb36-49"><a href="#cb36-49" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">21</span>) <span class="sc">+</span></span>
+<span id="cb36-50"><a href="#cb36-50" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>) <span class="sc">+</span></span>
+<span id="cb36-51"><a href="#cb36-51" tabindex="-1"></a>  <span class="fu">xlab</span>(</span>
+<span id="cb36-52"><a href="#cb36-52" tabindex="-1"></a>    <span class="fu">paste0</span>(</span>
+<span id="cb36-53"><a href="#cb36-53" tabindex="-1"></a>      mdsObj<span class="sc">$</span>axislabel,</span>
+<span id="cb36-54"><a href="#cb36-54" tabindex="-1"></a>      <span class="st">&quot; &quot;</span>,</span>
+<span id="cb36-55"><a href="#cb36-55" tabindex="-1"></a>      <span class="dv">1</span>, </span>
+<span id="cb36-56"><a href="#cb36-56" tabindex="-1"></a>      <span class="st">&quot; (&quot;</span>,</span>
+<span id="cb36-57"><a href="#cb36-57" tabindex="-1"></a>      <span class="fu">paste0</span>(</span>
+<span id="cb36-58"><a href="#cb36-58" tabindex="-1"></a>        <span class="fu">round</span>(mdsObj<span class="sc">$</span>var.explained[<span class="dv">1</span>] <span class="sc">*</span><span class="dv">100</span>,<span class="dv">0</span>),</span>
+<span id="cb36-59"><a href="#cb36-59" tabindex="-1"></a>        <span class="st">&quot;%&quot;</span></span>
+<span id="cb36-60"><a href="#cb36-60" tabindex="-1"></a>        ),</span>
+<span id="cb36-61"><a href="#cb36-61" tabindex="-1"></a>      <span class="st">&quot;)&quot;</span></span>
+<span id="cb36-62"><a href="#cb36-62" tabindex="-1"></a>      )</span>
+<span id="cb36-63"><a href="#cb36-63" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb36-64"><a href="#cb36-64" tabindex="-1"></a>  <span class="fu">ylab</span>(</span>
+<span id="cb36-65"><a href="#cb36-65" tabindex="-1"></a>    <span class="fu">paste0</span>(</span>
+<span id="cb36-66"><a href="#cb36-66" tabindex="-1"></a>      mdsObj<span class="sc">$</span>axislabel,</span>
+<span id="cb36-67"><a href="#cb36-67" tabindex="-1"></a>      <span class="st">&quot; &quot;</span>,</span>
+<span id="cb36-68"><a href="#cb36-68" tabindex="-1"></a>      <span class="dv">2</span>, </span>
+<span id="cb36-69"><a href="#cb36-69" tabindex="-1"></a>      <span class="st">&quot; (&quot;</span>,</span>
+<span id="cb36-70"><a href="#cb36-70" tabindex="-1"></a>      <span class="fu">paste0</span>(</span>
+<span id="cb36-71"><a href="#cb36-71" tabindex="-1"></a>        <span class="fu">round</span>(mdsObj<span class="sc">$</span>var.explained[<span class="dv">2</span>] <span class="sc">*</span><span class="dv">100</span>,<span class="dv">0</span>),</span>
+<span id="cb36-72"><a href="#cb36-72" tabindex="-1"></a>        <span class="st">&quot;%&quot;</span></span>
+<span id="cb36-73"><a href="#cb36-73" tabindex="-1"></a>        ),</span>
+<span id="cb36-74"><a href="#cb36-74" tabindex="-1"></a>      <span class="st">&quot;)&quot;</span></span>
+<span id="cb36-75"><a href="#cb36-75" tabindex="-1"></a>      )</span>
+<span id="cb36-76"><a href="#cb36-76" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb36-77"><a href="#cb36-77" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Randomized Complete Block (RCB)&quot;</span>)</span>
+<span id="cb36-78"><a href="#cb36-78" tabindex="-1"></a></span>
+<span id="cb36-79"><a href="#cb36-79" tabindex="-1"></a></span>
+<span id="cb36-80"><a href="#cb36-80" tabindex="-1"></a><span class="fu">levels</span>(<span class="fu">colData</span>(pe2)<span class="sc">$</span>mouse) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;m&quot;</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>)</span>
+<span id="cb36-81"><a href="#cb36-81" tabindex="-1"></a>mdsObj2 <span class="ot">&lt;-</span> <span class="fu">plotMDS</span>(<span class="fu">assay</span>(pe2[[<span class="st">&quot;protein&quot;</span>]]), <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb36-82"><a href="#cb36-82" tabindex="-1"></a>mdsCRD <span class="ot">&lt;-</span> <span class="fu">colData</span>(pe2) <span class="sc">%&gt;%</span></span>
+<span id="cb36-83"><a href="#cb36-83" tabindex="-1"></a>  as.data.frame <span class="sc">%&gt;%</span></span>
+<span id="cb36-84"><a href="#cb36-84" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">mds1 =</span> mdsObj2<span class="sc">$</span>x,</span>
+<span id="cb36-85"><a href="#cb36-85" tabindex="-1"></a>         <span class="at">mds2 =</span> mdsObj2<span class="sc">$</span>y,</span>
+<span id="cb36-86"><a href="#cb36-86" tabindex="-1"></a>         <span class="at">lab =</span> <span class="fu">paste</span>(mouse,celltype,<span class="at">sep=</span><span class="st">&quot;_&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb36-87"><a href="#cb36-87" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> mds1, <span class="at">y =</span> mds2, <span class="at">label =</span> lab, <span class="at">color =</span> celltype, <span class="at">group =</span> mouse)) <span class="sc">+</span></span>
+<span id="cb36-88"><a href="#cb36-88" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb36-89"><a href="#cb36-89" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">21</span>) <span class="sc">+</span></span>
+<span id="cb36-90"><a href="#cb36-90" tabindex="-1"></a>  <span class="fu">xlab</span>(</span>
+<span id="cb36-91"><a href="#cb36-91" tabindex="-1"></a>    <span class="fu">paste0</span>(</span>
+<span id="cb36-92"><a href="#cb36-92" tabindex="-1"></a>      mdsObj<span class="sc">$</span>axislabel,</span>
+<span id="cb36-93"><a href="#cb36-93" tabindex="-1"></a>      <span class="st">&quot; &quot;</span>,</span>
+<span id="cb36-94"><a href="#cb36-94" tabindex="-1"></a>      <span class="dv">1</span>, </span>
+<span id="cb36-95"><a href="#cb36-95" tabindex="-1"></a>      <span class="st">&quot; (&quot;</span>,</span>
+<span id="cb36-96"><a href="#cb36-96" tabindex="-1"></a>      <span class="fu">paste0</span>(</span>
+<span id="cb36-97"><a href="#cb36-97" tabindex="-1"></a>        <span class="fu">round</span>(mdsObj2<span class="sc">$</span>var.explained[<span class="dv">1</span>] <span class="sc">*</span><span class="dv">100</span>,<span class="dv">0</span>),</span>
+<span id="cb36-98"><a href="#cb36-98" tabindex="-1"></a>        <span class="st">&quot;%&quot;</span></span>
+<span id="cb36-99"><a href="#cb36-99" tabindex="-1"></a>        ),</span>
+<span id="cb36-100"><a href="#cb36-100" tabindex="-1"></a>      <span class="st">&quot;)&quot;</span></span>
+<span id="cb36-101"><a href="#cb36-101" tabindex="-1"></a>      )</span>
+<span id="cb36-102"><a href="#cb36-102" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb36-103"><a href="#cb36-103" tabindex="-1"></a>  <span class="fu">ylab</span>(</span>
+<span id="cb36-104"><a href="#cb36-104" tabindex="-1"></a>    <span class="fu">paste0</span>(</span>
+<span id="cb36-105"><a href="#cb36-105" tabindex="-1"></a>      mdsObj<span class="sc">$</span>axislabel,</span>
+<span id="cb36-106"><a href="#cb36-106" tabindex="-1"></a>      <span class="st">&quot; &quot;</span>,</span>
+<span id="cb36-107"><a href="#cb36-107" tabindex="-1"></a>      <span class="dv">2</span>, </span>
+<span id="cb36-108"><a href="#cb36-108" tabindex="-1"></a>      <span class="st">&quot; (&quot;</span>,</span>
+<span id="cb36-109"><a href="#cb36-109" tabindex="-1"></a>      <span class="fu">paste0</span>(</span>
+<span id="cb36-110"><a href="#cb36-110" tabindex="-1"></a>        <span class="fu">round</span>(mdsObj2<span class="sc">$</span>var.explained[<span class="dv">2</span>] <span class="sc">*</span><span class="dv">100</span>,<span class="dv">0</span>),</span>
+<span id="cb36-111"><a href="#cb36-111" tabindex="-1"></a>        <span class="st">&quot;%&quot;</span></span>
+<span id="cb36-112"><a href="#cb36-112" tabindex="-1"></a>        ),</span>
+<span id="cb36-113"><a href="#cb36-113" tabindex="-1"></a>      <span class="st">&quot;)&quot;</span></span>
+<span id="cb36-114"><a href="#cb36-114" tabindex="-1"></a>      )</span>
+<span id="cb36-115"><a href="#cb36-115" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb36-116"><a href="#cb36-116" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Completely Randomized Design (CRD)&quot;</span>)</span></code></pre></div>
+</p>
+</details>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a>mdsOrig</span></code></pre></div>
+<p><img src="pda_blocking_wrapup_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a>mdsRCB</span></code></pre></div>
+<p><img src="pda_blocking_wrapup_files/figure-html/unnamed-chunk-11-2.png" width="672" /></p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a>mdsCRD</span></code></pre></div>
+<p><img src="pda_blocking_wrapup_files/figure-html/unnamed-chunk-11-3.png" width="672" /></p>
+<ul>
+<li>We observe that the leading fold change is according to mouse</li>
+<li>In the second dimension we see a separation according to
+cell-type</li>
+<li>With the Randomized Complete Block design (RCB) we can remove the
+mouse effect from the analysis!</li>
+</ul>
+</div>
+<div id="modeling-and-inference" class="section level2" number="1.6">
+<h2><span class="header-section-number">1.6</span> Modeling and
+inference</h2>
+<div id="rcb-analysis" class="section level3" number="1.6.1">
+<h3><span class="header-section-number">1.6.1</span> RCB analysis</h3>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">msqrob</span>(</span>
+<span id="cb40-2"><a href="#cb40-2" tabindex="-1"></a>  <span class="at">object =</span> pe,</span>
+<span id="cb40-3"><a href="#cb40-3" tabindex="-1"></a>  <span class="at">i =</span> <span class="st">&quot;protein&quot;</span>,</span>
+<span id="cb40-4"><a href="#cb40-4" tabindex="-1"></a>  <span class="at">formula =</span> <span class="sc">~</span> celltype <span class="sc">+</span> mouse)</span></code></pre></div>
+</div>
+<div id="rcb-wrong-analysis" class="section level3" number="1.6.2">
+<h3><span class="header-section-number">1.6.2</span> RCB wrong
+analysis</h3>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">msqrob</span>(</span>
+<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a>  <span class="at">object =</span> pe,</span>
+<span id="cb41-3"><a href="#cb41-3" tabindex="-1"></a>  <span class="at">i =</span> <span class="st">&quot;protein&quot;</span>,</span>
+<span id="cb41-4"><a href="#cb41-4" tabindex="-1"></a>  <span class="at">formula =</span> <span class="sc">~</span> celltype, <span class="at">modelColumnName =</span> <span class="st">&quot;wrongModel&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="crd-analysis" class="section level2" number="1.7">
+<h2><span class="header-section-number">1.7</span> CRD analysis</h2>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" tabindex="-1"></a>pe2 <span class="ot">&lt;-</span> <span class="fu">msqrob</span>(</span>
+<span id="cb42-2"><a href="#cb42-2" tabindex="-1"></a>  <span class="at">object =</span> pe2,</span>
+<span id="cb42-3"><a href="#cb42-3" tabindex="-1"></a>  <span class="at">i =</span> <span class="st">&quot;protein&quot;</span>,</span>
+<span id="cb42-4"><a href="#cb42-4" tabindex="-1"></a>  <span class="at">formula =</span> <span class="sc">~</span> celltype)</span></code></pre></div>
+<div id="inference" class="section level3" number="1.7.1">
+<h3><span class="header-section-number">1.7.1</span> Inference</h3>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a><span class="fu">library</span>(ExploreModelMatrix)</span>
+<span id="cb43-2"><a href="#cb43-2" tabindex="-1"></a><span class="fu">VisualizeDesign</span>(<span class="fu">colData</span>(pe),<span class="sc">~</span> celltype <span class="sc">+</span> mouse)<span class="sc">$</span>plotlist</span></code></pre></div>
+<pre><code>## [[1]]</code></pre>
+<p><img src="pda_blocking_wrapup_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a><span class="fu">VisualizeDesign</span>(<span class="fu">colData</span>(pe2),<span class="sc">~</span> celltype)<span class="sc">$</span>plotlist</span></code></pre></div>
+<pre><code>## [[1]]</code></pre>
+<p><img src="pda_blocking_wrapup_files/figure-html/unnamed-chunk-15-2.png" width="672" /></p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="fu">makeContrast</span>(<span class="st">&quot;celltypeTreg = 0&quot;</span>, <span class="at">parameterNames =</span> <span class="fu">c</span>(<span class="st">&quot;celltypeTreg&quot;</span>))</span>
+<span id="cb47-2"><a href="#cb47-2" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">hypothesisTest</span>(<span class="at">object =</span> pe, <span class="at">i =</span> <span class="st">&quot;protein&quot;</span>, <span class="at">contrast =</span> L)</span>
+<span id="cb47-3"><a href="#cb47-3" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">hypothesisTest</span>(<span class="at">object =</span> pe, <span class="at">i =</span> <span class="st">&quot;protein&quot;</span>, <span class="at">contrast =</span> L, <span class="at">modelColumn =</span> <span class="st">&quot;wrongModel&quot;</span>, <span class="at">resultsColumnNamePrefix=</span><span class="st">&quot;wrong&quot;</span>)</span>
+<span id="cb47-4"><a href="#cb47-4" tabindex="-1"></a>pe2 <span class="ot">&lt;-</span> <span class="fu">hypothesisTest</span>(<span class="at">object =</span> pe2, <span class="at">i =</span> <span class="st">&quot;protein&quot;</span>, <span class="at">contrast =</span> L)</span></code></pre></div>
+</div>
+</div>
+</div>
+<div id="advantage-of-blocking-comparison-between-designs"
+class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Advantage of Blocking:
+comparison between designs</h1>
+<div id="volcano-plots" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Volcano plots</h2>
+<details>
+<summary>
+Click to see code
+</summary>
+<p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" tabindex="-1"></a>volcanoRCB <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
+<span id="cb48-2"><a href="#cb48-2" tabindex="-1"></a>    <span class="fu">rowData</span>(pe[[<span class="st">&quot;protein&quot;</span>]])<span class="sc">$</span>celltypeTreg,</span>
+<span id="cb48-3"><a href="#cb48-3" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x =</span> logFC, <span class="at">y =</span> <span class="sc">-</span><span class="fu">log10</span>(pval), <span class="at">color =</span> adjPval <span class="sc">&lt;</span> <span class="fl">0.05</span>)</span>
+<span id="cb48-4"><a href="#cb48-4" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb48-5"><a href="#cb48-5" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">cex =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
+<span id="cb48-6"><a href="#cb48-6" tabindex="-1"></a>    <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">alpha</span>(<span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb48-7"><a href="#cb48-7" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb48-8"><a href="#cb48-8" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="st">&quot;RCB: </span><span class="sc">\n</span><span class="st">&quot;</span>, </span>
+<span id="cb48-9"><a href="#cb48-9" tabindex="-1"></a>                <span class="fu">sum</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;protein&quot;</span>]])<span class="sc">$</span>celltypeTreg<span class="sc">$</span>adjPval<span class="sc">&lt;</span><span class="fl">0.05</span>,<span class="at">na.rm=</span><span class="cn">TRUE</span>),</span>
+<span id="cb48-10"><a href="#cb48-10" tabindex="-1"></a>            <span class="st">&quot; significant&quot;</span>))</span>
+<span id="cb48-11"><a href="#cb48-11" tabindex="-1"></a></span>
+<span id="cb48-12"><a href="#cb48-12" tabindex="-1"></a>volcanoRCBwrong <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
+<span id="cb48-13"><a href="#cb48-13" tabindex="-1"></a>    <span class="fu">rowData</span>(pe[[<span class="st">&quot;protein&quot;</span>]])<span class="sc">$</span>wrongcelltypeTreg,</span>
+<span id="cb48-14"><a href="#cb48-14" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x =</span> logFC, <span class="at">y =</span> <span class="sc">-</span><span class="fu">log10</span>(pval), <span class="at">color =</span> adjPval <span class="sc">&lt;</span> <span class="fl">0.05</span>)</span>
+<span id="cb48-15"><a href="#cb48-15" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb48-16"><a href="#cb48-16" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">cex =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
+<span id="cb48-17"><a href="#cb48-17" tabindex="-1"></a>    <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">alpha</span>(<span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb48-18"><a href="#cb48-18" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb48-19"><a href="#cb48-19" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="st">&quot;RCB wrong: </span><span class="sc">\n</span><span class="st">&quot;</span>, </span>
+<span id="cb48-20"><a href="#cb48-20" tabindex="-1"></a>                <span class="fu">sum</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;protein&quot;</span>]])<span class="sc">$</span>wrongcelltypeTreg<span class="sc">$</span>adjPval<span class="sc">&lt;</span><span class="fl">0.05</span>,<span class="at">na.rm=</span><span class="cn">TRUE</span>),</span>
+<span id="cb48-21"><a href="#cb48-21" tabindex="-1"></a>            <span class="st">&quot; significant&quot;</span>))</span>
+<span id="cb48-22"><a href="#cb48-22" tabindex="-1"></a></span>
+<span id="cb48-23"><a href="#cb48-23" tabindex="-1"></a>volcanoCRD <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
+<span id="cb48-24"><a href="#cb48-24" tabindex="-1"></a>    <span class="fu">rowData</span>(pe2[[<span class="st">&quot;protein&quot;</span>]])<span class="sc">$</span>celltypeTreg,</span>
+<span id="cb48-25"><a href="#cb48-25" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x =</span> logFC, <span class="at">y =</span> <span class="sc">-</span><span class="fu">log10</span>(pval), <span class="at">color =</span> adjPval <span class="sc">&lt;</span> <span class="fl">0.05</span>)</span>
+<span id="cb48-26"><a href="#cb48-26" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb48-27"><a href="#cb48-27" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">cex =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
+<span id="cb48-28"><a href="#cb48-28" tabindex="-1"></a>    <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">alpha</span>(<span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb48-29"><a href="#cb48-29" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb48-30"><a href="#cb48-30" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="st">&quot;CRD: </span><span class="sc">\n</span><span class="st">&quot;</span>, </span>
+<span id="cb48-31"><a href="#cb48-31" tabindex="-1"></a>                <span class="fu">sum</span>(<span class="fu">rowData</span>(pe2[[<span class="st">&quot;protein&quot;</span>]])<span class="sc">$</span>celltypeTreg<span class="sc">$</span>adjPval<span class="sc">&lt;</span><span class="fl">0.05</span>,<span class="at">na.rm=</span><span class="cn">TRUE</span>),</span>
+<span id="cb48-32"><a href="#cb48-32" tabindex="-1"></a>            <span class="st">&quot; significant&quot;</span>))</span></code></pre></div>
+</p>
+</details>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" tabindex="-1"></a><span class="fu">grid.arrange</span>(volcanoRCB,volcanoCRD, volcanoRCBwrong,<span class="at">ncol=</span><span class="dv">2</span>)</span></code></pre></div>
+<pre><code>## Warning: Removed 666 rows containing missing values or values outside the scale range
+## (`geom_point()`).</code></pre>
+<pre><code>## Warning: Removed 382 rows containing missing values or values outside the scale range
+## (`geom_point()`).</code></pre>
+<pre><code>## Warning: Removed 262 rows containing missing values or values outside the scale range
+## (`geom_point()`).</code></pre>
+<p><img src="pda_blocking_wrapup_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+</div>
+<div id="anova-table-q7tpr4-alpha-actinin-1" class="section level2"
+number="2.2">
+<h2><span class="header-section-number">2.2</span> Anova table: Q7TPR4,
+Alpha-actinin-1</h2>
+<p>Disclaimer: the Anova analysis is only for didactical purposes. In
+practice we assess the hypotheses using msqrob2.</p>
+<ul>
+<li><p>We illustrate the power gain of blocking using an Anova analysis
+on 1 protein.</p></li>
+<li><p>Note, that msqrob2 will perform a similar analysis, but, it uses
+robust regression and it uses an empirical Bayes estimator for the
+variance.</p></li>
+</ul>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" tabindex="-1"></a>prot <span class="ot">&lt;-</span> <span class="st">&quot;Q7TPR4&quot;</span></span>
+<span id="cb53-2"><a href="#cb53-2" tabindex="-1"></a>dataHlp <span class="ot">&lt;-</span> <span class="fu">colData</span>(pe) <span class="sc">%&gt;%</span> </span>
+<span id="cb53-3"><a href="#cb53-3" tabindex="-1"></a>  as.data.frame <span class="sc">%&gt;%</span></span>
+<span id="cb53-4"><a href="#cb53-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">intensity=</span><span class="fu">assay</span>(pe[[<span class="st">&quot;protein&quot;</span>]])[prot,],</span>
+<span id="cb53-5"><a href="#cb53-5" tabindex="-1"></a>         <span class="at">intensityCRD=</span><span class="fu">assay</span>(pe2[[<span class="st">&quot;protein&quot;</span>]])[prot,])</span>
+<span id="cb53-6"><a href="#cb53-6" tabindex="-1"></a></span>
+<span id="cb53-7"><a href="#cb53-7" tabindex="-1"></a>  <span class="fu">anova</span>(<span class="fu">lm</span>(intensity<span class="sc">~</span> celltype <span class="sc">+</span> mouse, dataHlp)) </span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Df"],"name":[1],"type":["int"],"align":["right"]},{"label":["Sum Sq"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Mean Sq"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["F value"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Pr(>F)"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"5.33887147","3":"5.338871472","4":"785.65428","5":"9.968667e-05","_rn_":"celltype"},{"1":"3","2":"0.43342769","3":"0.144475896","4":"21.26069","5":"1.594409e-02","_rn_":"mouse"},{"1":"3","2":"0.02038634","3":"0.006795446","4":"NA","5":"NA","_rn_":"Residuals"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" tabindex="-1"></a>  <span class="fu">anova</span>(<span class="fu">lm</span>(intensity<span class="sc">~</span> celltype,dataHlp))</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Df"],"name":[1],"type":["int"],"align":["right"]},{"label":["Sum Sq"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Mean Sq"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["F value"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Pr(>F)"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"5.338871","3":"5.33887147","4":"70.58669","5":"0.0001548941","_rn_":"celltype"},{"1":"6","2":"0.453814","3":"0.07563567","4":"NA","5":"NA","_rn_":"Residuals"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" tabindex="-1"></a>  <span class="fu">anova</span>(<span class="fu">lm</span>(intensityCRD<span class="sc">~</span> celltype,dataHlp))</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Df"],"name":[1],"type":["int"],"align":["right"]},{"label":["Sum Sq"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Mean Sq"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["F value"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Pr(>F)"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"5.5183267","3":"5.5183267","4":"59.28184","5":"0.0002514749","_rn_":"celltype"},{"1":"6","2":"0.5585178","3":"0.0930863","4":"NA","5":"NA","_rn_":"Residuals"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="comparison-empirical-bayes-standard-deviation-in-msqrob2"
+class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Comparison Empirical
+Bayes standard deviation in msqrob2</h2>
+<details>
+<summary>
+Click to see code
+</summary>
+<p>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" tabindex="-1"></a>accessions <span class="ot">&lt;-</span> <span class="fu">rownames</span>(pe[[<span class="st">&quot;protein&quot;</span>]])[<span class="fu">rownames</span>(pe[[<span class="st">&quot;protein&quot;</span>]])<span class="sc">%in%</span><span class="fu">rownames</span>(pe2[[<span class="st">&quot;protein&quot;</span>]])]</span>
+<span id="cb56-2"><a href="#cb56-2" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb56-3"><a href="#cb56-3" tabindex="-1"></a><span class="at">sigmaRBC =</span> <span class="fu">sapply</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;protein&quot;</span>]])<span class="sc">$</span>msqrobModels[accessions], getSigmaPosterior),</span>
+<span id="cb56-4"><a href="#cb56-4" tabindex="-1"></a><span class="at">sigmaRBCwrong =</span> <span class="fu">sapply</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;protein&quot;</span>]])<span class="sc">$</span>wrongModel[accessions], getSigmaPosterior),</span>
+<span id="cb56-5"><a href="#cb56-5" tabindex="-1"></a>sigmaCRD <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">rowData</span>(pe2[[<span class="st">&quot;protein&quot;</span>]])<span class="sc">$</span>msqrobModels[accessions], getSigmaPosterior)</span>
+<span id="cb56-6"><a href="#cb56-6" tabindex="-1"></a>)</span>
+<span id="cb56-7"><a href="#cb56-7" tabindex="-1"></a></span>
+<span id="cb56-8"><a href="#cb56-8" tabindex="-1"></a> plotRBCvsWrong <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> dat, <span class="fu">aes</span>(sigmaRBC, sigmaRBCwrong)) <span class="sc">+</span></span>
+<span id="cb56-9"><a href="#cb56-9" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">shape =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb56-10"><a href="#cb56-10" tabindex="-1"></a>    <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
+<span id="cb56-11"><a href="#cb56-11" tabindex="-1"></a>    <span class="fu">scale_y_log10</span>() <span class="sc">+</span></span>
+<span id="cb56-12"><a href="#cb56-12" tabindex="-1"></a>    <span class="fu">geom_abline</span>(<span class="at">intercept=</span><span class="dv">0</span>,<span class="at">slope=</span><span class="dv">1</span>)</span>
+<span id="cb56-13"><a href="#cb56-13" tabindex="-1"></a>plotCRDvsWrong <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> dat, <span class="fu">aes</span>(sigmaCRD, sigmaRBCwrong)) <span class="sc">+</span></span>
+<span id="cb56-14"><a href="#cb56-14" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">shape =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb56-15"><a href="#cb56-15" tabindex="-1"></a>    <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
+<span id="cb56-16"><a href="#cb56-16" tabindex="-1"></a>    <span class="fu">scale_y_log10</span>() <span class="sc">+</span></span>
+<span id="cb56-17"><a href="#cb56-17" tabindex="-1"></a>    <span class="fu">geom_abline</span>(<span class="at">intercept=</span><span class="dv">0</span>,<span class="at">slope=</span><span class="dv">1</span>)</span>
+<span id="cb56-18"><a href="#cb56-18" tabindex="-1"></a>plotRBCvsCRD <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> dat, <span class="fu">aes</span>(sigmaRBC, sigmaCRD)) <span class="sc">+</span></span>
+<span id="cb56-19"><a href="#cb56-19" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">shape =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb56-20"><a href="#cb56-20" tabindex="-1"></a>    <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
+<span id="cb56-21"><a href="#cb56-21" tabindex="-1"></a>    <span class="fu">scale_y_log10</span>() <span class="sc">+</span></span>
+<span id="cb56-22"><a href="#cb56-22" tabindex="-1"></a>    <span class="fu">geom_abline</span>(<span class="at">intercept=</span><span class="dv">0</span>,<span class="at">slope=</span><span class="dv">1</span>)</span></code></pre></div>
+</p>
+</details>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" tabindex="-1"></a><span class="fu">grid.arrange</span>(</span>
+<span id="cb57-2"><a href="#cb57-2" tabindex="-1"></a>  plotRBCvsWrong,</span>
+<span id="cb57-3"><a href="#cb57-3" tabindex="-1"></a>  plotCRDvsWrong,</span>
+<span id="cb57-4"><a href="#cb57-4" tabindex="-1"></a>  plotRBCvsCRD,</span>
+<span id="cb57-5"><a href="#cb57-5" tabindex="-1"></a>  <span class="at">nrow=</span><span class="dv">2</span>)</span></code></pre></div>
+<pre><code>## Warning: Removed 619 rows containing missing values or values outside the scale range
+## (`geom_point()`).</code></pre>
+<pre><code>## Warning: Removed 387 rows containing missing values or values outside the scale range
+## (`geom_point()`).</code></pre>
+<pre><code>## Warning: Removed 650 rows containing missing values or values outside the scale range
+## (`geom_point()`).</code></pre>
+<p><img src="pda_blocking_wrapup_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<ul>
+<li><p>We clearly observe that the standard deviation of the protein
+expression in the RCB is smaller for the majority of the proteins than
+that obtained with the CRD</p></li>
+<li><p>The standard deviation of the protein expression RCB where we
+perform a wrong analysis without considering the blocking factor
+according to mouse is much larger for the marjority of the proteins than
+that obtained with the correct analysis.</p></li>
+<li><p>Indeed, when we ignore the blocking factor in the RCB design we
+do not remove the variability according to mouse from the analysis and
+the mouse effect is absorbed in the error term. The standard deviation
+than becomes very comparable to that observed in the completely
+randomised design where we could not remove the mouse effect from the
+analysis.</p></li>
+<li><p>Why are some of the standard deviations for the RCB with the
+correct analysis larger than than of the RCB with the incorrect analysis
+that ignored the mouse blocking factor?</p></li>
+<li><p>Can you think of a reason why it would not be useful to block on
+a particular factor?</p></li>
+</ul>
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiU3RhdGlzdGljYWwgTWV0aG9kcyBmb3IgUXVhbnRpdGF0aXZlIE1TLWJhc2VkIFByb3Rlb21pY3M6IEJsb2NraW5nIC0gV3JhcC11cCIKYXV0aG9yOiAiTGlldmVuIENsZW1lbnQiCmRhdGU6ICJbc3RhdE9taWNzXShodHRwczovL3N0YXRvbWljcy5naXRodWIuaW8pLCBHaGVudCBVbml2ZXJzaXR5IgpvdXRwdXQ6CiAgICBodG1sX2RvY3VtZW50OgogICAgICBjb2RlX2Rvd25sb2FkOiB0cnVlCiAgICAgIHRoZW1lOiBmbGF0bHkKICAgICAgdG9jOiB0cnVlCiAgICAgIHRvY19mbG9hdDogdHJ1ZQogICAgICBoaWdobGlnaHQ6IHRhbmdvCiAgICAgIG51bWJlcl9zZWN0aW9uczogdHJ1ZQogICAgcGRmX2RvY3VtZW50OgogICAgICB0b2M6IHRydWUKICAgICAgbnVtYmVyX3NlY3Rpb25zOiB0cnVlCmxpbmtjb2xvcjogYmx1ZQp1cmxjb2xvcjogYmx1ZQpjaXRlY29sb3I6IGJsdWUKCmJpYmxpb2dyYXBoeTogbXNxcm9iMi5iaWIKCi0tLQoKPGEgcmVsPSJsaWNlbnNlIiBocmVmPSJodHRwczovL2NyZWF0aXZlY29tbW9ucy5vcmcvbGljZW5zZXMvYnktbmMtc2EvNC4wIj48aW1nIGFsdD0iQ3JlYXRpdmUgQ29tbW9ucyBMaWNlbnNlIiBzdHlsZT0iYm9yZGVyLXdpZHRoOjAiIHNyYz0iaHR0cHM6Ly9pLmNyZWF0aXZlY29tbW9ucy5vcmcvbC9ieS1uYy1zYS80LjAvODh4MzEucG5nIiAvPjwvYT4KClRoaXMgaXMgcGFydCBvZiB0aGUgb25saW5lIGNvdXJzZSBbUHJvdGVvbWljcyBEYXRhIEFuYWx5c2lzIChQREEpXShodHRwczovL3N0YXRvbWljcy5naXRodWIuaW8vUERBMjJHVFBCLykKCiMgSW1wb3J0IERhdGEgYW5kIFByZXByb2Nlc3NpbmcgCgojIyBEYXRhIAo8ZGV0YWlscz48c3VtbWFyeT4gQ2xpY2sgdG8gc2VlIGNvZGUgIDwvc3VtbWFyeT48cD4KYGBge3IsIHdhcm5pbmc9RkFMU0UsIG1lc3NhZ2U9RkFMU0V9CmxpYnJhcnkodGlkeXZlcnNlKQpsaWJyYXJ5KGxpbW1hKQpsaWJyYXJ5KFFGZWF0dXJlcykKbGlicmFyeShtc3Fyb2IyKQpsaWJyYXJ5KHBsb3RseSkKbGlicmFyeShncmlkRXh0cmEpCgpwZXB0aWRlc0ZpbGUgPC0gImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9zdGF0T21pY3MvUERBMjJHVFBCL2RhdGEvcXVhbnRpZmljYXRpb24vbW91c2VUY2VsbC9wZXB0aWRlc1JDQi50eHQiCnBlcHRpZGVzRmlsZTIgPC0gImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9zdGF0T21pY3MvUERBMjJHVFBCL2RhdGEvcXVhbnRpZmljYXRpb24vbW91c2VUY2VsbC9wZXB0aWRlc0NSRC50eHQiCnBlcHRpZGVzRmlsZTMgPC0gImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9zdGF0T21pY3MvUERBMjJHVFBCL2RhdGEvcXVhbnRpZmljYXRpb24vbW91c2VUY2VsbC9wZXB0aWRlcy50eHQiCgplY29scyA8LSBncmVwKCJJbnRlbnNpdHlcXC4iLCBuYW1lcyhyZWFkLmRlbGltKHBlcHRpZGVzRmlsZSkpKQpwZSA8LSByZWFkUUZlYXR1cmVzKAogIGFzc2F5RGF0YSA9IHJlYWQuZGVsaW0ocGVwdGlkZXNGaWxlKSwKICBmbmFtZXMgPSAxLAogIHF1YW50Q29scyA9IGVjb2xzLAogIG5hbWUgPSAicGVwdGlkZVJhdyIpCgplY29sczIgPC0gZ3JlcCgiSW50ZW5zaXR5XFwuIiwgbmFtZXMocmVhZC5kZWxpbShwZXB0aWRlc0ZpbGUyKSkpCnBlMiA8LSByZWFkUUZlYXR1cmVzKAogIGFzc2F5RGF0YSA9IHJlYWQuZGVsaW0ocGVwdGlkZXNGaWxlMiksCiAgZm5hbWVzID0gMSwKICBxdWFudENvbHMgPSBlY29sczIsCiAgbmFtZSA9ICJwZXB0aWRlUmF3IikKCmVjb2xzMyA8LSBncmVwKCJJbnRlbnNpdHlcXC4iLCBuYW1lcyhyZWFkLmRlbGltKHBlcHRpZGVzRmlsZTMpKSkKcGUzIDwtIHJlYWRRRmVhdHVyZXMoCiAgYXNzYXlEYXRhID0gcmVhZC5kZWxpbShwZXB0aWRlc0ZpbGUzKSwKICBmbmFtZXMgPSAxLAogIHF1YW50Q29scyA9IGVjb2xzMywKICBuYW1lID0gInBlcHRpZGVSYXciKQoKIyMjIERlc2lnbgpjb2xEYXRhKHBlKSRjZWxsdHlwZSA8LSBzdWJzdHIoCiAgY29sbmFtZXMocGVbWyJwZXB0aWRlUmF3Il1dKSwKICAxMSwKICAxNCkgJT4lCiAgdW5saXN0ICU+JSAgCiAgYXMuZmFjdG9yCgpjb2xEYXRhKHBlKSRtb3VzZSA8LSBwZVtbMV1dICU+JQogIGNvbG5hbWVzICU+JQogIHN0cnNwbGl0KHNwbGl0PSJbLl0iKSAgJT4lCiAgc2FwcGx5KGZ1bmN0aW9uKHgpIHhbM10pICU+JQogIGFzLmZhY3RvcgoKY29sRGF0YShwZTIpJGNlbGx0eXBlIDwtIHN1YnN0cigKICBjb2xuYW1lcyhwZTJbWyJwZXB0aWRlUmF3Il1dKSwKICAxMSwKICAxNCkgJT4lCiAgdW5saXN0ICU+JSAgCiAgYXMuZmFjdG9yCgpjb2xEYXRhKHBlMikkbW91c2UgPC0gcGUyW1sxXV0gJT4lCiAgY29sbmFtZXMgJT4lCiAgc3Ryc3BsaXQoc3BsaXQ9IlsuXSIpICAlPiUKICBzYXBwbHkoZnVuY3Rpb24oeCkgeFszXSkgJT4lCiAgYXMuZmFjdG9yCgpjb2xEYXRhKHBlMykkY2VsbHR5cGUgPC0gc3Vic3RyKAogIGNvbG5hbWVzKHBlM1tbInBlcHRpZGVSYXciXV0pLAogIDExLAogIDE0KSAlPiUKICB1bmxpc3QgJT4lICAKICBhcy5mYWN0b3IKCmNvbERhdGEocGUzKSRtb3VzZSA8LSBwZTNbWzFdXSAlPiUKICBjb2xuYW1lcyAlPiUKICBzdHJzcGxpdChzcGxpdD0iWy5dIikgICU+JQogIHNhcHBseShmdW5jdGlvbih4KSB4WzNdKSAlPiUKICBhcy5mYWN0b3IKYGBgCjwvcD48L2Rlc2lnbj4KCiMjIFByZXByb2Nlc3NpbmcgCgoKIyMjIExvZy10cmFuc2Zvcm0KCjxkZXRhaWxzPjxzdW1tYXJ5PiBDbGljayB0byBzZWUgY29kZSB0byBsb2ctdHJhbnNmcm9tIHRoZSBkYXRhIDwvc3VtbWFyeT48cD4KLSBXZSBjYWxjdWxhdGUgaG93IG1hbnkgbm9uIHplcm8gaW50ZW5zaXRpZXMgd2UgaGF2ZSBmb3IgZWFjaCBwZXB0aWRlIGFuZCB0aGlzIGNhbiBiZSB1c2VmdWwgZm9yIGZpbHRlcmluZy4KCmBgYHtyfQpyb3dEYXRhKHBlW1sicGVwdGlkZVJhdyJdXSkkbk5vblplcm8gPC0gcm93U3Vtcyhhc3NheShwZVtbInBlcHRpZGVSYXciXV0pID4gMCkKCnJvd0RhdGEocGUyW1sicGVwdGlkZVJhdyJdXSkkbk5vblplcm8gPC0gcm93U3Vtcyhhc3NheShwZTJbWyJwZXB0aWRlUmF3Il1dKSA+IDApCgpyb3dEYXRhKHBlM1tbInBlcHRpZGVSYXciXV0pJG5Ob25aZXJvIDwtIHJvd1N1bXMoYXNzYXkocGUzW1sicGVwdGlkZVJhdyJdXSkgPiAwKQpgYGAKCi0gUGVwdGlkZXMgd2l0aCB6ZXJvIGludGVuc2l0aWVzIGFyZSBtaXNzaW5nIHBlcHRpZGVzIGFuZCBzaG91bGQgYmUgcmVwcmVzZW50CndpdGggYSBgTkFgIHZhbHVlIHJhdGhlciB0aGFuIGAwYC4KCmBgYHtyfQpwZSA8LSB6ZXJvSXNOQShwZSwgInBlcHRpZGVSYXciKSAjIGNvbnZlcnQgMCB0byBOQQoKcGUyIDwtIHplcm9Jc05BKHBlMiwgInBlcHRpZGVSYXciKSAjIGNvbnZlcnQgMCB0byBOQQoKcGUzIDwtIHplcm9Jc05BKHBlMywgInBlcHRpZGVSYXciKSAjIGNvbnZlcnQgMCB0byBOQQpgYGAKCi0gTG9ndHJhbnNmb3JtIGRhdGEgd2l0aCBiYXNlIDIKCmBgYHtyfQpwZSA8LSBsb2dUcmFuc2Zvcm0ocGUsIGJhc2UgPSAyLCBpID0gInBlcHRpZGVSYXciLCBuYW1lID0gInBlcHRpZGVMb2ciKQoKcGUyIDwtIGxvZ1RyYW5zZm9ybShwZTIsIGJhc2UgPSAyLCBpID0gInBlcHRpZGVSYXciLCBuYW1lID0gInBlcHRpZGVMb2ciKQoKcGUzIDwtIGxvZ1RyYW5zZm9ybShwZTMsIGJhc2UgPSAyLCBpID0gInBlcHRpZGVSYXciLCBuYW1lID0gInBlcHRpZGVMb2ciKQpgYGAKPC9wPjwvZGV0YWlscz4KCgojIyMgRmlsdGVyaW5nCjxkZXRhaWxzPjxzdW1tYXJ5PiBDbGljayB0byBzZWUgZGV0YWlscyBvbiBmaWx0ZXJpbmcgPC9zdW1tYXJ5PjxwPgoKMS4gSGFuZGxpbmcgb3ZlcmxhcHBpbmcgcHJvdGVpbiBncm91cHMKCkluIG91ciBhcHByb2FjaCBhIHBlcHRpZGUgY2FuIG1hcCB0byBtdWx0aXBsZSBwcm90ZWlucywgYXMgbG9uZyBhcyB0aGVyZSBpcwpub25lIG9mIHRoZXNlIHByb3RlaW5zIHByZXNlbnQgaW4gYSBzbWFsbGVyIHN1Ymdyb3VwLgoKYGBge3J9CnBlIDwtIGZpbHRlckZlYXR1cmVzKHBlLCB+IFByb3RlaW5zICVpbiUgc21hbGxlc3RVbmlxdWVHcm91cHMocm93RGF0YShwZVtbInBlcHRpZGVMb2ciXV0pJFByb3RlaW5zKSkKCnBlMiA8LSBmaWx0ZXJGZWF0dXJlcyhwZTIsIH4gUHJvdGVpbnMgJWluJSBzbWFsbGVzdFVuaXF1ZUdyb3Vwcyhyb3dEYXRhKHBlMltbInBlcHRpZGVMb2ciXV0pJFByb3RlaW5zKSkKCnBlMyA8LSBmaWx0ZXJGZWF0dXJlcyhwZTMsIH4gUHJvdGVpbnMgJWluJSBzbWFsbGVzdFVuaXF1ZUdyb3Vwcyhyb3dEYXRhKHBlM1tbInBlcHRpZGVMb2ciXV0pJFByb3RlaW5zKSkKYGBgCjIuIFJlbW92ZSByZXZlcnNlIHNlcXVlbmNlcyAoZGVjb3lzKSBhbmQgY29udGFtaW5hbnRzCgpXZSBub3cgcmVtb3ZlIHRoZSBjb250YW1pbmFudHMsIHBlcHRpZGVzIHRoYXQgbWFwIHRvIGRlY295IHNlcXVlbmNlcywgYW5kIHByb3RlaW5zCndoaWNoIHdlcmUgb25seSBpZGVudGlmaWVkIGJ5IHBlcHRpZGVzIHdpdGggbW9kaWZpY2F0aW9ucy4KCmBgYHtyfQpwZSA8LSBmaWx0ZXJGZWF0dXJlcyhwZSx+UmV2ZXJzZSAhPSAiKyIpCnBlIDwtIGZpbHRlckZlYXR1cmVzKHBlLH4gUG90ZW50aWFsLmNvbnRhbWluYW50ICE9ICIrIikKCnBlMiA8LSBmaWx0ZXJGZWF0dXJlcyhwZTIsflJldmVyc2UgIT0gIisiKQpwZTIgPC0gZmlsdGVyRmVhdHVyZXMocGUyLH4gUG90ZW50aWFsLmNvbnRhbWluYW50ICE9ICIrIikKCnBlMyA8LSBmaWx0ZXJGZWF0dXJlcyhwZTMsflJldmVyc2UgIT0gIisiKQpwZTMgPC0gZmlsdGVyRmVhdHVyZXMocGUzLH4gUG90ZW50aWFsLmNvbnRhbWluYW50ICE9ICIrIikKYGBgCjMuIERyb3AgcGVwdGlkZXMgdGhhdCB3ZXJlIG9ubHkgaWRlbnRpZmllZCBpbiBvbmUgc2FtcGxlCgpXZSBrZWVwIHBlcHRpZGVzIHRoYXQgd2VyZSBvYnNlcnZlZCBhdCBsYXN0IHR3aWNlLgoKYGBge3J9CnBlIDwtIGZpbHRlckZlYXR1cmVzKHBlLH4gbk5vblplcm8gPj0yKQpwZTIgPC0gZmlsdGVyRmVhdHVyZXMocGUyLH4gbk5vblplcm8gPj0yKQpwZTMgPC0gZmlsdGVyRmVhdHVyZXMocGUzLH4gbk5vblplcm8gPj0yKQpgYGAKCjwvcD48L2RldGFpbHM+CgojIyBOb3JtYWxpemF0aW9uIAoKPGRldGFpbHM+PHN1bW1hcnk+IENsaWNrIHRvIHNlZSBjb2RlIHRvIG5vcm1hbGl6ZSB0aGUgZGF0YSA8L3N1bW1hcnk+PHA+CmBgYHtyfQpwZSA8LSBub3JtYWxpemUocGUsIAogICAgICAgICAgICAgICAgaSA9ICJwZXB0aWRlTG9nIiwgCiAgICAgICAgICAgICAgICBuYW1lID0gInBlcHRpZGVOb3JtIiwgCiAgICAgICAgICAgICAgICBtZXRob2QgPSAiY2VudGVyLm1lZGlhbiIpCgpwZTIgPC0gbm9ybWFsaXplKHBlMiwgCiAgICAgICAgICAgICAgICBpID0gInBlcHRpZGVMb2ciLCAKICAgICAgICAgICAgICAgIG5hbWUgPSAicGVwdGlkZU5vcm0iLCAKICAgICAgICAgICAgICAgIG1ldGhvZCA9ICJjZW50ZXIubWVkaWFuIikKCgpwZTMgPC0gbm9ybWFsaXplKHBlMywgCiAgICAgICAgICAgICAgICBpID0gInBlcHRpZGVMb2ciLCAKICAgICAgICAgICAgICAgIG5hbWUgPSAicGVwdGlkZU5vcm0iLCAKICAgICAgICAgICAgICAgIG1ldGhvZCA9ICJjZW50ZXIubWVkaWFuIikKYGBgCgo8L3A+PC9kZXRhaWxzPgoKIyMgU3VtbWFyaXphdGlvbgoKPGRldGFpbHM+PHN1bW1hcnk+IENsaWNrIHRvIHNlZSBjb2RlIHRvIHN1bW1hcml6ZSB0aGUgZGF0YSA8L3N1bW1hcnk+PHA+CgpgYGB7cix3YXJuaW5nPUZBTFNFfQpwZSA8LSBhZ2dyZWdhdGVGZWF0dXJlcyhwZSwKIGkgPSAicGVwdGlkZU5vcm0iLAogZmNvbCA9ICJQcm90ZWlucyIsCiBuYS5ybSA9IFRSVUUsCiBuYW1lID0gInByb3RlaW4iKQoKCnBlMiA8LSBhZ2dyZWdhdGVGZWF0dXJlcyhwZTIsCiBpID0gInBlcHRpZGVOb3JtIiwKIGZjb2wgPSAiUHJvdGVpbnMiLAogbmEucm0gPSBUUlVFLAogbmFtZSA9ICJwcm90ZWluIikKCnBlMyA8LSBhZ2dyZWdhdGVGZWF0dXJlcyhwZTMsCiBpID0gInBlcHRpZGVOb3JtIiwKIGZjb2wgPSAiUHJvdGVpbnMiLAogbmEucm0gPSBUUlVFLAogbmFtZSA9ICJwcm90ZWluIikKYGBgCgo8L3A+PC9kZXRhaWxzPgoKIyMgRGF0YSBFeHBsb3JhdGlvbjogd2hhdCBpcyBpbXBhY3Qgb2YgYmxvY2tpbmc/IAoKPGRldGFpbHM+PHN1bW1hcnk+IENsaWNrIHRvIHNlZSBjb2RlIDwvc3VtbWFyeT48cD4KYGBge3J9CmxldmVscyhjb2xEYXRhKHBlMykkbW91c2UpIDwtIHBhc3RlMCgibSIsMTo3KQptZHNPYmozIDwtIHBsb3RNRFMoYXNzYXkocGUzW1sicHJvdGVpbiJdXSksIHBsb3QgPSBGQUxTRSkKbWRzT3JpZyA8LSBjb2xEYXRhKHBlMykgJT4lCiAgYXMuZGF0YS5mcmFtZSAlPiUKICBtdXRhdGUobWRzMSA9IG1kc09iajMkeCwKICAgICAgICAgbWRzMiA9IG1kc09iajMkeSwKICAgICAgICAgbGFiID0gcGFzdGUobW91c2UsY2VsbHR5cGUsc2VwPSJfIikpICU+JQogIGdncGxvdChhZXMoeCA9IG1kczEsIHkgPSBtZHMyLCBsYWJlbCA9IGxhYiwgY29sb3IgPSBjZWxsdHlwZSwgZ3JvdXAgPSBtb3VzZSkpICsKICBnZW9tX3RleHQoc2hvdy5sZWdlbmQgPSBGQUxTRSkgKwogIGdlb21fcG9pbnQoc2hhcGUgPSAyMSkgKwogIGdlb21fbGluZShjb2xvciA9ICJibGFjayIsIGxpbmV0eXBlID0gImRhc2hlZCIpICsKICB4bGFiKAogICAgcGFzdGUwKAogICAgICBtZHNPYmozJGF4aXNsYWJlbCwKICAgICAgIiAiLAogICAgICAxLCAKICAgICAgIiAoIiwKICAgICAgcGFzdGUwKAogICAgICAgIHJvdW5kKG1kc09iajMkdmFyLmV4cGxhaW5lZFsxXSAqMTAwLDApLAogICAgICAgICIlIgogICAgICAgICksCiAgICAgICIpIgogICAgICApCiAgICApICsKICB5bGFiKAogICAgcGFzdGUwKAogICAgICBtZHNPYmozJGF4aXNsYWJlbCwKICAgICAgIiAiLAogICAgICAyLCAKICAgICAgIiAoIiwKICAgICAgcGFzdGUwKAogICAgICAgIHJvdW5kKG1kc09iajMkdmFyLmV4cGxhaW5lZFsyXSAqMTAwLDApLAogICAgICAgICIlIgogICAgICAgICksCiAgICAgICIpIgogICAgICApCiAgICApICsKICBnZ3RpdGxlKCJPcmlnaW5hbCAoUkNCKSIpCgpsZXZlbHMoY29sRGF0YShwZSkkbW91c2UpIDwtIHBhc3RlMCgibSIsMTo0KQptZHNPYmogPC0gcGxvdE1EUyhhc3NheShwZVtbInByb3RlaW4iXV0pLCBwbG90ID0gRkFMU0UpCm1kc1JDQiA8LSBjb2xEYXRhKHBlKSAlPiUKICBhcy5kYXRhLmZyYW1lICU+JQogIG11dGF0ZShtZHMxID0gbWRzT2JqJHgsCiAgICAgICAgIG1kczIgPSBtZHNPYmokeSwKICAgICAgICAgbGFiID0gcGFzdGUobW91c2UsY2VsbHR5cGUsc2VwPSJfIikpICU+JQogIGdncGxvdChhZXMoeCA9IG1kczEsIHkgPSBtZHMyLCBsYWJlbCA9IGxhYiwgY29sb3IgPSBjZWxsdHlwZSwgZ3JvdXAgPSBtb3VzZSkpICsKICBnZW9tX3RleHQoc2hvdy5sZWdlbmQgPSBGQUxTRSkgKwogIGdlb21fcG9pbnQoc2hhcGUgPSAyMSkgKwogIGdlb21fbGluZShjb2xvciA9ICJibGFjayIsIGxpbmV0eXBlID0gImRhc2hlZCIpICsKICB4bGFiKAogICAgcGFzdGUwKAogICAgICBtZHNPYmokYXhpc2xhYmVsLAogICAgICAiICIsCiAgICAgIDEsIAogICAgICAiICgiLAogICAgICBwYXN0ZTAoCiAgICAgICAgcm91bmQobWRzT2JqJHZhci5leHBsYWluZWRbMV0gKjEwMCwwKSwKICAgICAgICAiJSIKICAgICAgICApLAogICAgICAiKSIKICAgICAgKQogICAgKSArCiAgeWxhYigKICAgIHBhc3RlMCgKICAgICAgbWRzT2JqJGF4aXNsYWJlbCwKICAgICAgIiAiLAogICAgICAyLCAKICAgICAgIiAoIiwKICAgICAgcGFzdGUwKAogICAgICAgIHJvdW5kKG1kc09iaiR2YXIuZXhwbGFpbmVkWzJdICoxMDAsMCksCiAgICAgICAgIiUiCiAgICAgICAgKSwKICAgICAgIikiCiAgICAgICkKICAgICkgKwogIGdndGl0bGUoIlJhbmRvbWl6ZWQgQ29tcGxldGUgQmxvY2sgKFJDQikiKQoKCmxldmVscyhjb2xEYXRhKHBlMikkbW91c2UpIDwtIHBhc3RlMCgibSIsMTo4KQptZHNPYmoyIDwtIHBsb3RNRFMoYXNzYXkocGUyW1sicHJvdGVpbiJdXSksIHBsb3QgPSBGQUxTRSkKbWRzQ1JEIDwtIGNvbERhdGEocGUyKSAlPiUKICBhcy5kYXRhLmZyYW1lICU+JQogIG11dGF0ZShtZHMxID0gbWRzT2JqMiR4LAogICAgICAgICBtZHMyID0gbWRzT2JqMiR5LAogICAgICAgICBsYWIgPSBwYXN0ZShtb3VzZSxjZWxsdHlwZSxzZXA9Il8iKSkgJT4lCiAgZ2dwbG90KGFlcyh4ID0gbWRzMSwgeSA9IG1kczIsIGxhYmVsID0gbGFiLCBjb2xvciA9IGNlbGx0eXBlLCBncm91cCA9IG1vdXNlKSkgKwogIGdlb21fdGV4dChzaG93LmxlZ2VuZCA9IEZBTFNFKSArCiAgZ2VvbV9wb2ludChzaGFwZSA9IDIxKSArCiAgeGxhYigKICAgIHBhc3RlMCgKICAgICAgbWRzT2JqJGF4aXNsYWJlbCwKICAgICAgIiAiLAogICAgICAxLCAKICAgICAgIiAoIiwKICAgICAgcGFzdGUwKAogICAgICAgIHJvdW5kKG1kc09iajIkdmFyLmV4cGxhaW5lZFsxXSAqMTAwLDApLAogICAgICAgICIlIgogICAgICAgICksCiAgICAgICIpIgogICAgICApCiAgICApICsKICB5bGFiKAogICAgcGFzdGUwKAogICAgICBtZHNPYmokYXhpc2xhYmVsLAogICAgICAiICIsCiAgICAgIDIsIAogICAgICAiICgiLAogICAgICBwYXN0ZTAoCiAgICAgICAgcm91bmQobWRzT2JqMiR2YXIuZXhwbGFpbmVkWzJdICoxMDAsMCksCiAgICAgICAgIiUiCiAgICAgICAgKSwKICAgICAgIikiCiAgICAgICkKICAgICkgKwogIGdndGl0bGUoIkNvbXBsZXRlbHkgUmFuZG9taXplZCBEZXNpZ24gKENSRCkiKQpgYGAKPC9wPjwvZGV0YWlscz4KYGBge3J9Cm1kc09yaWcKbWRzUkNCCm1kc0NSRApgYGAKCi0gV2Ugb2JzZXJ2ZSB0aGF0IHRoZSBsZWFkaW5nIGZvbGQgY2hhbmdlIGlzIGFjY29yZGluZyB0byBtb3VzZQotIEluIHRoZSBzZWNvbmQgZGltZW5zaW9uIHdlIHNlZSBhIHNlcGFyYXRpb24gYWNjb3JkaW5nIHRvIGNlbGwtdHlwZSAKLSBXaXRoIHRoZSBSYW5kb21pemVkIENvbXBsZXRlIEJsb2NrIGRlc2lnbiAoUkNCKSB3ZSBjYW4gcmVtb3ZlIHRoZSBtb3VzZSBlZmZlY3QgZnJvbSB0aGUgYW5hbHlzaXMhCgojIyBNb2RlbGluZyBhbmQgaW5mZXJlbmNlCgojIyMgUkNCIGFuYWx5c2lzCmBgYHtyIHdhcm5pbmc9RkFMU0V9CnBlIDwtIG1zcXJvYigKICBvYmplY3QgPSBwZSwKICBpID0gInByb3RlaW4iLAogIGZvcm11bGEgPSB+IGNlbGx0eXBlICsgbW91c2UpCmBgYAoKIyMjIFJDQiB3cm9uZyBhbmFseXNpcwpgYGB7ciB3YXJuaW5nPUZBTFNFfQpwZSA8LSBtc3Fyb2IoCiAgb2JqZWN0ID0gcGUsCiAgaSA9ICJwcm90ZWluIiwKICBmb3JtdWxhID0gfiBjZWxsdHlwZSwgbW9kZWxDb2x1bW5OYW1lID0gIndyb25nTW9kZWwiKQpgYGAKCiMjIENSRCBhbmFseXNpcyAKYGBge3Igd2FybmluZyA9IEZBTFNFfQpwZTIgPC0gbXNxcm9iKAogIG9iamVjdCA9IHBlMiwKICBpID0gInByb3RlaW4iLAogIGZvcm11bGEgPSB+IGNlbGx0eXBlKQpgYGAKCiMjIyBJbmZlcmVuY2UgCgpgYGB7cn0KbGlicmFyeShFeHBsb3JlTW9kZWxNYXRyaXgpClZpc3VhbGl6ZURlc2lnbihjb2xEYXRhKHBlKSx+IGNlbGx0eXBlICsgbW91c2UpJHBsb3RsaXN0ClZpc3VhbGl6ZURlc2lnbihjb2xEYXRhKHBlMiksfiBjZWxsdHlwZSkkcGxvdGxpc3QKYGBgCgoKYGBge3J9CkwgPC0gbWFrZUNvbnRyYXN0KCJjZWxsdHlwZVRyZWcgPSAwIiwgcGFyYW1ldGVyTmFtZXMgPSBjKCJjZWxsdHlwZVRyZWciKSkKcGUgPC0gaHlwb3RoZXNpc1Rlc3Qob2JqZWN0ID0gcGUsIGkgPSAicHJvdGVpbiIsIGNvbnRyYXN0ID0gTCkKcGUgPC0gaHlwb3RoZXNpc1Rlc3Qob2JqZWN0ID0gcGUsIGkgPSAicHJvdGVpbiIsIGNvbnRyYXN0ID0gTCwgbW9kZWxDb2x1bW4gPSAid3JvbmdNb2RlbCIsIHJlc3VsdHNDb2x1bW5OYW1lUHJlZml4PSJ3cm9uZyIpCnBlMiA8LSBoeXBvdGhlc2lzVGVzdChvYmplY3QgPSBwZTIsIGkgPSAicHJvdGVpbiIsIGNvbnRyYXN0ID0gTCkKYGBgCgojIEFkdmFudGFnZSBvZiBCbG9ja2luZzogY29tcGFyaXNvbiBiZXR3ZWVuIGRlc2lnbnMKCiMjIFZvbGNhbm8gcGxvdHMKCjxkZXRhaWxzPjxzdW1tYXJ5PiBDbGljayB0byBzZWUgY29kZSA8L3N1bW1hcnk+PHA+CmBgYHtyfQp2b2xjYW5vUkNCIDwtIGdncGxvdCgKICAgIHJvd0RhdGEocGVbWyJwcm90ZWluIl1dKSRjZWxsdHlwZVRyZWcsCiAgICBhZXMoeCA9IGxvZ0ZDLCB5ID0gLWxvZzEwKHB2YWwpLCBjb2xvciA9IGFkalB2YWwgPCAwLjA1KQopICsKICAgIGdlb21fcG9pbnQoY2V4ID0gMi41KSArCiAgICBzY2FsZV9jb2xvcl9tYW51YWwodmFsdWVzID0gYWxwaGEoYygiYmxhY2siLCAicmVkIiksIDAuNSkpICsKICAgIHRoZW1lX21pbmltYWwoKSArCiAgICBnZ3RpdGxlKHBhc3RlMCgiUkNCOiBcbiIsIAogICAgICAgICAgICAgICAgc3VtKHJvd0RhdGEocGVbWyJwcm90ZWluIl1dKSRjZWxsdHlwZVRyZWckYWRqUHZhbDwwLjA1LG5hLnJtPVRSVUUpLAogICAgICAgICAgICAiIHNpZ25pZmljYW50IikpCgp2b2xjYW5vUkNCd3JvbmcgPC0gZ2dwbG90KAogICAgcm93RGF0YShwZVtbInByb3RlaW4iXV0pJHdyb25nY2VsbHR5cGVUcmVnLAogICAgYWVzKHggPSBsb2dGQywgeSA9IC1sb2cxMChwdmFsKSwgY29sb3IgPSBhZGpQdmFsIDwgMC4wNSkKKSArCiAgICBnZW9tX3BvaW50KGNleCA9IDIuNSkgKwogICAgc2NhbGVfY29sb3JfbWFudWFsKHZhbHVlcyA9IGFscGhhKGMoImJsYWNrIiwgInJlZCIpLCAwLjUpKSArCiAgICB0aGVtZV9taW5pbWFsKCkgKwogICAgZ2d0aXRsZShwYXN0ZTAoIlJDQiB3cm9uZzogXG4iLCAKICAgICAgICAgICAgICAgIHN1bShyb3dEYXRhKHBlW1sicHJvdGVpbiJdXSkkd3JvbmdjZWxsdHlwZVRyZWckYWRqUHZhbDwwLjA1LG5hLnJtPVRSVUUpLAogICAgICAgICAgICAiIHNpZ25pZmljYW50IikpCgp2b2xjYW5vQ1JEIDwtIGdncGxvdCgKICAgIHJvd0RhdGEocGUyW1sicHJvdGVpbiJdXSkkY2VsbHR5cGVUcmVnLAogICAgYWVzKHggPSBsb2dGQywgeSA9IC1sb2cxMChwdmFsKSwgY29sb3IgPSBhZGpQdmFsIDwgMC4wNSkKKSArCiAgICBnZW9tX3BvaW50KGNleCA9IDIuNSkgKwogICAgc2NhbGVfY29sb3JfbWFudWFsKHZhbHVlcyA9IGFscGhhKGMoImJsYWNrIiwgInJlZCIpLCAwLjUpKSArCiAgICB0aGVtZV9taW5pbWFsKCkgKwogICAgZ2d0aXRsZShwYXN0ZTAoIkNSRDogXG4iLCAKICAgICAgICAgICAgICAgIHN1bShyb3dEYXRhKHBlMltbInByb3RlaW4iXV0pJGNlbGx0eXBlVHJlZyRhZGpQdmFsPDAuMDUsbmEucm09VFJVRSksCiAgICAgICAgICAgICIgc2lnbmlmaWNhbnQiKSkKYGBgCjwvcD48L2RldGFpbHM+CiAgCmBgYHtyfQpncmlkLmFycmFuZ2Uodm9sY2Fub1JDQix2b2xjYW5vQ1JELCB2b2xjYW5vUkNCd3JvbmcsbmNvbD0yKQpgYGAKCiMjIEFub3ZhIHRhYmxlOiBRN1RQUjQsIEFscGhhLWFjdGluaW4tMQoKRGlzY2xhaW1lcjogdGhlIEFub3ZhIGFuYWx5c2lzIGlzIG9ubHkgZm9yIGRpZGFjdGljYWwgcHVycG9zZXMuIEluIHByYWN0aWNlIHdlIGFzc2VzcyB0aGUgaHlwb3RoZXNlcyB1c2luZyBtc3Fyb2IyLiAKCi0gV2UgaWxsdXN0cmF0ZSB0aGUgcG93ZXIgZ2FpbiBvZiBibG9ja2luZyB1c2luZyBhbiBBbm92YSBhbmFseXNpcyBvbiAxIHByb3RlaW4uIAoKLSBOb3RlLCB0aGF0IG1zcXJvYjIgd2lsbCBwZXJmb3JtIGEgc2ltaWxhciBhbmFseXNpcywgYnV0LCBpdCB1c2VzIHJvYnVzdCByZWdyZXNzaW9uIGFuZCBpdCB1c2VzIGFuIGVtcGlyaWNhbCBCYXllcyBlc3RpbWF0b3IgZm9yIHRoZSB2YXJpYW5jZS4KCmBgYHtyfQpwcm90IDwtICJRN1RQUjQiCmRhdGFIbHAgPC0gY29sRGF0YShwZSkgJT4lIAogIGFzLmRhdGEuZnJhbWUgJT4lCiAgbXV0YXRlKGludGVuc2l0eT1hc3NheShwZVtbInByb3RlaW4iXV0pW3Byb3QsXSwKICAgICAgICAgaW50ZW5zaXR5Q1JEPWFzc2F5KHBlMltbInByb3RlaW4iXV0pW3Byb3QsXSkKCiAgYW5vdmEobG0oaW50ZW5zaXR5fiBjZWxsdHlwZSArIG1vdXNlLCBkYXRhSGxwKSkgCiAgYW5vdmEobG0oaW50ZW5zaXR5fiBjZWxsdHlwZSxkYXRhSGxwKSkKICBhbm92YShsbShpbnRlbnNpdHlDUkR+IGNlbGx0eXBlLGRhdGFIbHApKQpgYGAKCiMjIENvbXBhcmlzb24gRW1waXJpY2FsIEJheWVzIHN0YW5kYXJkIGRldmlhdGlvbiBpbiBtc3Fyb2IyIAoKPGRldGFpbHM+PHN1bW1hcnk+IENsaWNrIHRvIHNlZSBjb2RlIDwvc3VtbWFyeT48cD4KYGBge3J9CmFjY2Vzc2lvbnMgPC0gcm93bmFtZXMocGVbWyJwcm90ZWluIl1dKVtyb3duYW1lcyhwZVtbInByb3RlaW4iXV0pJWluJXJvd25hbWVzKHBlMltbInByb3RlaW4iXV0pXQpkYXQgPC0gZGF0YS5mcmFtZSgKc2lnbWFSQkMgPSBzYXBwbHkocm93RGF0YShwZVtbInByb3RlaW4iXV0pJG1zcXJvYk1vZGVsc1thY2Nlc3Npb25zXSwgZ2V0U2lnbWFQb3N0ZXJpb3IpLApzaWdtYVJCQ3dyb25nID0gc2FwcGx5KHJvd0RhdGEocGVbWyJwcm90ZWluIl1dKSR3cm9uZ01vZGVsW2FjY2Vzc2lvbnNdLCBnZXRTaWdtYVBvc3RlcmlvciksCnNpZ21hQ1JEIDwtIHNhcHBseShyb3dEYXRhKHBlMltbInByb3RlaW4iXV0pJG1zcXJvYk1vZGVsc1thY2Nlc3Npb25zXSwgZ2V0U2lnbWFQb3N0ZXJpb3IpCikKCiBwbG90UkJDdnNXcm9uZyA8LSBnZ3Bsb3QoZGF0YSA9IGRhdCwgYWVzKHNpZ21hUkJDLCBzaWdtYVJCQ3dyb25nKSkgKwogICAgZ2VvbV9wb2ludChhbHBoYSA9IDAuMSwgc2hhcGUgPSAyMCkgKwogICAgc2NhbGVfeF9sb2cxMCgpICsKICAgIHNjYWxlX3lfbG9nMTAoKSArCiAgICBnZW9tX2FibGluZShpbnRlcmNlcHQ9MCxzbG9wZT0xKQpwbG90Q1JEdnNXcm9uZyA8LSBnZ3Bsb3QoZGF0YSA9IGRhdCwgYWVzKHNpZ21hQ1JELCBzaWdtYVJCQ3dyb25nKSkgKwogICAgZ2VvbV9wb2ludChhbHBoYSA9IDAuMSwgc2hhcGUgPSAyMCkgKwogICAgc2NhbGVfeF9sb2cxMCgpICsKICAgIHNjYWxlX3lfbG9nMTAoKSArCiAgICBnZW9tX2FibGluZShpbnRlcmNlcHQ9MCxzbG9wZT0xKQpwbG90UkJDdnNDUkQgPC0gZ2dwbG90KGRhdGEgPSBkYXQsIGFlcyhzaWdtYVJCQywgc2lnbWFDUkQpKSArCiAgICBnZW9tX3BvaW50KGFscGhhID0gMC4xLCBzaGFwZSA9IDIwKSArCiAgICBzY2FsZV94X2xvZzEwKCkgKwogICAgc2NhbGVfeV9sb2cxMCgpICsKICAgIGdlb21fYWJsaW5lKGludGVyY2VwdD0wLHNsb3BlPTEpCmBgYAo8L3A+PC9kZXRhaWxzPgoKYGBge3J9CmdyaWQuYXJyYW5nZSgKICBwbG90UkJDdnNXcm9uZywKICBwbG90Q1JEdnNXcm9uZywKICBwbG90UkJDdnNDUkQsCiAgbnJvdz0yKQpgYGAKCi0gV2UgY2xlYXJseSBvYnNlcnZlIHRoYXQgdGhlIHN0YW5kYXJkIGRldmlhdGlvbiBvZiB0aGUgcHJvdGVpbiBleHByZXNzaW9uIGluIHRoZSBSQ0IgaXMgc21hbGxlciBmb3IgdGhlIG1ham9yaXR5IG9mIHRoZSBwcm90ZWlucyB0aGFuIHRoYXQgb2J0YWluZWQgd2l0aCB0aGUgQ1JECgotIFRoZSBzdGFuZGFyZCBkZXZpYXRpb24gb2YgdGhlIHByb3RlaW4gZXhwcmVzc2lvbiBSQ0Igd2hlcmUgd2UgcGVyZm9ybSBhIHdyb25nIGFuYWx5c2lzIHdpdGhvdXQgY29uc2lkZXJpbmcgdGhlIGJsb2NraW5nIGZhY3RvciBhY2NvcmRpbmcgdG8gbW91c2UgaXMgbXVjaCBsYXJnZXIgZm9yIHRoZSBtYXJqb3JpdHkgb2YgdGhlIHByb3RlaW5zIHRoYW4gdGhhdCBvYnRhaW5lZCB3aXRoIHRoZSBjb3JyZWN0IGFuYWx5c2lzLiAKCi0gSW5kZWVkLCB3aGVuIHdlIGlnbm9yZSB0aGUgYmxvY2tpbmcgZmFjdG9yIGluIHRoZSBSQ0IgZGVzaWduIHdlIGRvIG5vdCByZW1vdmUgdGhlIHZhcmlhYmlsaXR5IGFjY29yZGluZyB0byBtb3VzZSBmcm9tIHRoZSBhbmFseXNpcyBhbmQgdGhlIG1vdXNlIGVmZmVjdCBpcyBhYnNvcmJlZCBpbiB0aGUgZXJyb3IgdGVybS4gVGhlIHN0YW5kYXJkIGRldmlhdGlvbiB0aGFuIGJlY29tZXMgdmVyeSBjb21wYXJhYmxlIHRvIHRoYXQgb2JzZXJ2ZWQgaW4gdGhlIGNvbXBsZXRlbHkgcmFuZG9taXNlZCBkZXNpZ24gd2hlcmUgd2UgY291bGQgbm90IHJlbW92ZSB0aGUgbW91c2UgZWZmZWN0IGZyb20gdGhlIGFuYWx5c2lzLiAKCi0gV2h5IGFyZSBzb21lIG9mIHRoZSBzdGFuZGFyZCBkZXZpYXRpb25zIGZvciB0aGUgUkNCIHdpdGggdGhlIGNvcnJlY3QgYW5hbHlzaXMgbGFyZ2VyIHRoYW4gdGhhbiBvZiB0aGUgUkNCIHdpdGggdGhlIGluY29ycmVjdCBhbmFseXNpcyB0aGF0IGlnbm9yZWQgdGhlIG1vdXNlIGJsb2NraW5nIGZhY3Rvcj8KCi0gQ2FuIHlvdSB0aGluayBvZiBhIHJlYXNvbiB3aHkgaXQgd291bGQgbm90IGJlIHVzZWZ1bCB0byBibG9jayBvbiBhIHBhcnRpY3VsYXIgZmFjdG9yPyAK</div>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("pda_blocking_wrapup.Rmd");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

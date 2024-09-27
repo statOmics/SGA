@@ -444,6 +444,28 @@ div.tocify {
     <li>
       <a href="recapGeneralLinearModel.html">1.2 Recap linear model</a>
     </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="./figs/part1_ms_basics.pdf">1.1 MS Basics</a>
+    </li>
+    <li>
+      <a href="./figs/part1_ms_basics.pdf">1.2 Identification</a>
+    </li>
+    <li>
+      <a href="TargetDecoy.html">2.1 Identification - FDR - QC</a>
+    </li>
+    <li>
+      <a href="pda_quantification_preprocessing.html">2.2.1 Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_robustSummarisation_peptideModels.html">2.2.2 Wrap-up Preprocessing - Peptide-Level-Models</a>
+    </li>
+    <li>
+      <a href="pda_quantification_inference.html">2.3.1 Quantification - Differential Abundance Analysis</a>
+    </li>
+    <li>
+      <a href="pda_blocking_wrapup.html">2.3.2. Wrap-up DA - Blocking</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -458,6 +480,19 @@ div.tocify {
     <li class="dropdown-header">---- INTRODUCTION ----</li>
     <li>
       <a href="multipleRegression_KPNA2.html">1 Intro KPNA2</a>
+    </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">1. Bioinformatics for Proteomics</a>
+    </li>
+    <li>
+      <a href="TargetDecoyTutorial.html">2.1. Target Decoy QC</a>
+    </li>
+    <li>
+      <a href="pda_tutorialPreprocessing.html">2.2. Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_tutorialDesign.html">2.3. Quantification - Design</a>
     </li>
   </ul>
 </li>
@@ -788,11 +823,11 @@ Fit: lm(formula = gene %&gt;% log2 ~ grade * node, data = kpna2)
 
 Linear Hypotheses:
                            Estimate Std. Error t value Pr(&gt;|t|)    
-grade3 == 0                  1.6675     0.1827   9.127   &lt;0.001 ***
-grade3 + grade3:node1 == 0   0.8928     0.1827   4.886   &lt;0.001 ***
-node1 == 0                   0.6577     0.1827   3.600   0.0071 ** 
-node1 + grade3:node1 == 0   -0.1170     0.1827  -0.640   0.8982    
-grade3:node1 == 0           -0.7748     0.2584  -2.998   0.0265 *  
+grade3 == 0                  1.6675     0.1827   9.127  &lt; 0.001 ***
+grade3 + grade3:node1 == 0   0.8928     0.1827   4.886  &lt; 0.001 ***
+node1 == 0                   0.6577     0.1827   3.600  0.00706 ** 
+node1 + grade3:node1 == 0   -0.1170     0.1827  -0.640  0.89816    
+grade3:node1 == 0           -0.7748     0.2584  -2.998  0.02674 *  
 ---
 Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 (Adjusted p values reported -- single-step method)</code></pre>
@@ -802,31 +837,31 @@ Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&
 
 Fit: lm(formula = gene %&gt;% log2 ~ grade * node, data = kpna2)
 
-Quantile = 2.6969
+Quantile = 2.6941
 95% family-wise confidence level
  
 
 Linear Hypotheses:
-                           Estimate lwr     upr    
-grade3 == 0                 1.6675   1.1748  2.1603
-grade3 + grade3:node1 == 0  0.8928   0.4000  1.3855
-node1 == 0                  0.6577   0.1650  1.1505
-node1 + grade3:node1 == 0  -0.1170  -0.6098  0.3757
-grade3:node1 == 0          -0.7748  -1.4716 -0.0779</code></pre>
+                           Estimate lwr      upr     
+grade3 == 0                 1.66754  1.17530  2.15978
+grade3 + grade3:node1 == 0  0.89279  0.40054  1.38503
+node1 == 0                  0.65773  0.16549  1.14997
+node1 + grade3:node1 == 0  -0.11702 -0.60926  0.37522
+grade3:node1 == 0          -0.77475 -1.47089 -0.07861</code></pre>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="dv">2</span><span class="sc">^</span><span class="fu">confint</span>(fitGlht)<span class="sc">$</span>confint</span></code></pre></div>
 <pre><code>                       Estimate       lwr       upr
-grade3                3.1767209 2.2570062 4.4712133
-grade3 + grade3:node1 1.8567602 1.3191965 2.6133775
-node1                 1.5775997 1.1208578 2.2204610
-node1 + grade3:node1  0.9220906 0.6551297 1.2978363
-grade3:node1          0.5844896 0.3604475 0.9477888
+grade3                3.1767209 2.2571496 4.4709291
+grade3 + grade3:node1 1.8567602 1.3192804 2.6132114
+node1                 1.5775997 1.1209290 2.2203199
+node1 + grade3:node1  0.9220906 0.6551713 1.2977538
+grade3:node1          0.5844896 0.3604799 0.9477036
 attr(,&quot;conf.level&quot;)
 [1] 0.95
 attr(,&quot;calpha&quot;)
-[1] 2.698935</code></pre>
+[1] 2.698433</code></pre>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="dv">2</span><span class="sc">^-</span><span class="fu">confint</span>(fitGlht)<span class="sc">$</span>confint[<span class="st">&quot;grade3:node1&quot;</span>,]</span></code></pre></div>
 <pre><code>Estimate      lwr      upr 
-1.710895 2.773683 1.055333 </code></pre>
+1.710895 2.773536 1.055389 </code></pre>
 </div>
 <div id="conclusion" class="section level1" number="5">
 <h1><span class="header-section-number">5</span> Conclusion</h1>
@@ -842,7 +877,7 @@ histological grade 3 tumors than patients with histological grade 1
 tumors (95% CI [1.32, 2.61]).</p></li>
 <li><p>The association between the KPNA2 expression with the lymph node
 status in grade 1 patients is very significant (<span
-class="math inline">\(p=\)</span> 0.007).<br />
+class="math inline">\(p=\)</span> 0.0074).<br />
 The KPNA2 expression in histological grade 1 patients with affected
 lymph nodes is on average 1.58 times higher than for grade 1 patients
 with unaffected lymph nodes (95% CI [1.12, 2.22]). In grade 3 patients,
@@ -857,7 +892,7 @@ lower in patients with affected lymph nodes as compared to patients with
 unaffected lymph node (95% CI [1.06, 2.77]). (Similarly, the fold change
 corresponding to the node status is on average 1.71 times lower in
 patients with grade 3 tumors as compared to patients with grade 1
-tumors, 95% CI [1.05, 2.77])</p></li>
+tumors, 95% CI [1.06, 2.77])</p></li>
 </ul>
 </div>
 
