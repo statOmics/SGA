@@ -86,7 +86,7 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
   - Tutorial: [preprocessing](./pda_tutorialPreprocessing.html)
   - Wrap-up Peptide-based Models: [html](./pda_robustSummarisation_peptideModels.html), [pdf](./pda_robustSummarisation_peptideModels.pdf)
 
-<!--  
+ 
   - Solutions: [cancer3x3](cancer3x3.html), [cancer6x6](cancer6x6.html), [cancer9x9](cancer9x9.html)
 <!---->
 
