@@ -29,6 +29,7 @@ navbar:
         href: pda_quantification_inference.html
       - text: 2.3.2. Wrap-up DA - Blocking
         href: pda_blocking_wrapup.html
+      - text: 2.3.3. Technical Details
         
     - text: "tutorials"
       icon: fa-laptop

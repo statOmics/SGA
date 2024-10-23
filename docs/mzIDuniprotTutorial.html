@@ -465,6 +465,7 @@ div.tocify {
     <li>
       <a href="pda_blocking_wrapup.html">2.3.2. Wrap-up DA - Blocking</a>
     </li>
+    <li class="dropdown-header">2.3.3. Technical Details</li>
   </ul>
 </li>
 <li class="dropdown">
@@ -524,23 +525,29 @@ Ghent University<br>
 
 <div id="load-libraries" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Load Libraries</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(TargetDecoy)</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(RCurl)</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(mzID)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(TargetDecoy)</span></code></pre></div>
+<pre><code>## Warning in fun(libname, pkgname): mzR has been built against a different Rcpp version (1.0.12)
+## than is installed on your system (1.0.13). This might lead to errors
+## when loading mzR. If you encounter such issues, please send a report,
+## including the output of sessionInfo() to the Bioc support forum at 
+## https://support.bioconductor.org/. For details see also
+## https://github.com/sneumann/mzR/wiki/mzR-Rcpp-compiler-linker-issue.</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(RCurl)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">library</span>(mzID)</span></code></pre></div>
 </div>
 <div id="download-data-in-working-directory" class="section level1"
 number="2">
 <h1><span class="header-section-number">2</span> Download data in
 working directory</h1>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">download.file</span>( </span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="at">url =</span> <span class="st">&quot;https://raw.githubusercontent.com/statOmics/PDA22GTPB/data/identification/pyroUniprot.mzid&quot;</span>,</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">destfile =</span> <span class="st">&quot;pyroUniprot.mzid&quot;</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">download.file</span>( </span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="at">url =</span> <span class="st">&quot;https://raw.githubusercontent.com/statOmics/PDA22GTPB/data/identification/pyroUniprot.mzid&quot;</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">destfile =</span> <span class="st">&quot;pyroUniprot.mzid&quot;</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  )</span></code></pre></div>
 </div>
 <div id="load-data-in-r" class="section level1" number="3">
 <h1><span class="header-section-number">3</span> Load Data in R</h1>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>path2File <span class="ot">&lt;-</span> <span class="st">&quot;pyroUniprot.mzid&quot;</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>mzidUniprot <span class="ot">&lt;-</span> <span class="fu">mzID</span>(path2File)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>path2File <span class="ot">&lt;-</span> <span class="st">&quot;pyroUniprot.mzid&quot;</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>mzidUniprot <span class="ot">&lt;-</span> <span class="fu">mzID</span>(path2File)</span></code></pre></div>
 <pre><code>## reading pyroUniprot.mzid... DONE!</code></pre>
 </div>
 <div id="launch-the-shiny-gadget" class="section level1" number="4">
@@ -548,7 +555,7 @@ working directory</h1>
 Gadget</h1>
 <p>Explore the results for search eninge scores to find correct names of
 search engine scores in the mzID.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">evalTargetDecoys</span>(mzidUniprot)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">evalTargetDecoys</span>(mzidUniprot)</span></code></pre></div>
 </div>
 <div id="evaluate-target-decoy-assumptions" class="section level1"
 number="5">
@@ -556,11 +563,11 @@ number="5">
 assumptions</h1>
 <div id="peptide-shaker" class="section level2" number="5.1">
 <h2><span class="header-section-number">5.1</span> Peptide Shaker</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">evalTargetDecoys</span>(</span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="at">object =</span> mzidUniprot, </span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">decoy =</span> <span class="st">&quot;isdecoy&quot;</span>, </span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">score =</span> <span class="st">&quot;peptideshaker psm score&quot;</span>,</span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="at">log10 =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">evalTargetDecoys</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="at">object =</span> mzidUniprot, </span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">decoy =</span> <span class="st">&quot;isdecoy&quot;</span>, </span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="at">score =</span> <span class="st">&quot;peptideshaker psm score&quot;</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="at">log10 =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <p><img src="mzIDuniprotTutorial_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>We observe that</p>
 <ul>
@@ -584,11 +591,11 @@ used by peptide shaker.</p></li>
 </div>
 <div id="msgf" class="section level2" number="5.2">
 <h2><span class="header-section-number">5.2</span> MSGF+</h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">evalTargetDecoys</span>(</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="at">object =</span> mzidUniprot, </span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="at">decoy =</span> <span class="st">&quot;isdecoy&quot;</span>, </span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="at">score =</span> <span class="st">&quot;ms-gf:specevalue&quot;</span>,</span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="at">log10 =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">evalTargetDecoys</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="at">object =</span> mzidUniprot, </span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">decoy =</span> <span class="st">&quot;isdecoy&quot;</span>, </span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="at">score =</span> <span class="st">&quot;ms-gf:specevalue&quot;</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  <span class="at">log10 =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p><img src="mzIDuniprotTutorial_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <ul>
 <li><p>The plots show that the distribution of the MSGF+ PSM scores are
@@ -602,11 +609,11 @@ assumptions.</p></li>
 </div>
 <div id="omssa" class="section level2" number="5.3">
 <h2><span class="header-section-number">5.3</span> Omssa</h2>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">evalTargetDecoys</span>(</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="at">object =</span> mzidUniprot, </span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">decoy =</span> <span class="st">&quot;isdecoy&quot;</span>, </span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="at">score =</span> <span class="st">&quot;omssa:evalue&quot;</span>,</span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="at">log10 =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">evalTargetDecoys</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  <span class="at">object =</span> mzidUniprot, </span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="at">decoy =</span> <span class="st">&quot;isdecoy&quot;</span>, </span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="at">score =</span> <span class="st">&quot;omssa:evalue&quot;</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  <span class="at">log10 =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p><img src="mzIDuniprotTutorial_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <ul>
 <li><p>The separation between good target PSM scores and bad target PSM
@@ -618,11 +625,11 @@ assumptions.</p></li>
 </div>
 <div id="xtandem" class="section level2" number="5.4">
 <h2><span class="header-section-number">5.4</span> X!Tandem</h2>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">evalTargetDecoys</span>(</span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="at">object =</span> mzidUniprot, </span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">decoy =</span> <span class="st">&quot;isdecoy&quot;</span>, </span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="at">score =</span> <span class="st">&quot;x!tandem:expect&quot;</span>,</span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  <span class="at">log10 =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">evalTargetDecoys</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>  <span class="at">object =</span> mzidUniprot, </span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  <span class="at">decoy =</span> <span class="st">&quot;isdecoy&quot;</span>, </span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="at">score =</span> <span class="st">&quot;x!tandem:expect&quot;</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="at">log10 =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p><img src="mzIDuniprotTutorial_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <ul>
 <li><p>The separation between good target PSM scores and bad target PSM
