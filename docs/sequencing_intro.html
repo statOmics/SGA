@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Koen Van den Berge &amp; Lieven Clement" />
+
+
+<title>Introduction to RNA-seq sequencing: Preprocessing</title>
+
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SGA</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-chalkboard-teacher"></span>
+     
+    Lectures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">---- INTRODUCTION ----</li>
+    <li>
+      <a href="intro.html">1.1 Position</a>
+    </li>
+    <li>
+      <a href="recapGeneralLinearModel.html">1.2 Recap linear model</a>
+    </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="./figs/part1_ms_basics.pdf">1.1 MS Basics</a>
+    </li>
+    <li>
+      <a href="./figs/part1_ms_basics.pdf">1.2 Identification</a>
+    </li>
+    <li>
+      <a href="TargetDecoy.html">2.1 Identification - FDR - QC</a>
+    </li>
+    <li>
+      <a href="pda_quantification_preprocessing.html">2.2.1 Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_robustSummarisation_peptideModels.html">2.2.2 Wrap-up Preprocessing - Peptide-Level-Models</a>
+    </li>
+    <li>
+      <a href="pda_quantification_inference.html">2.3.1 Quantification - Differential Abundance Analysis</a>
+    </li>
+    <li>
+      <a href="pda_blocking_wrapup.html">2.3.2. Wrap-up DA - Blocking</a>
+    </li>
+    <li>
+      <a href="pda_technicalDetails.html">2.3.3. Technical Details</a>
+    </li>
+    <li class="dropdown-header">---- MODULE II RNA-seq ----</li>
+    <li>
+      <a href="sequencing_intro.html">1.  Introduction to RNA-seq</a>
+    </li>
+    <li>
+      <a href="sequencing_countData.html">2.  Working with count data and GLMs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-laptop"></span>
+     
+    tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">---- INTRODUCTION ----</li>
+    <li>
+      <a href="multipleRegression_KPNA2.html">1 Intro KPNA2</a>
+    </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">1. Bioinformatics for Proteomics</a>
+    </li>
+    <li>
+      <a href="TargetDecoyTutorial.html">2.1. Target Decoy QC</a>
+    </li>
+    <li>
+      <a href="pda_tutorialPreprocessing.html">2.2. Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_tutorialDesign.html">2.3. Quantification - Design</a>
+    </li>
+    <li>
+      <a href="sequencingTutorial1_mapping.html">1. Read mapping</a>
+    </li>
+    <li>
+      <a href="sequencingTutorial2_DE.html">2. Working with Count Data</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Introduction to RNA-seq sequencing:
+Preprocessing</h1>
+<h4 class="author">Koen Van den Berge &amp; Lieven Clement</h4>
+<h4 class="date">Last edited on 25 October, 2024</h4>
+
+</div>
+
+
+<div id="the-study-of-gene-expression" class="section level1"
+number="1">
+<h1><span class="header-section-number">1</span> The study of gene
+expression</h1>
+<ul>
+<li><p>The first part of this course focussed on proteomics, studying
+the concentration of proteins in biological samples. We have seen that
+identification of proteins and measuring their respective concentrations
+are extremely challenging, leading to many technological and statistical
+challenges in order to interpret these data.</p></li>
+<li><p>In the second part of the course, we will focus on measuring gene
+expression, i.e., measuring the concentration of mRNA molecules, that
+may eventually be translated into proteins, but may also have functions
+on their own.</p></li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">include_graphics</span>(<span class="st">&quot;./images_sequencing/centralParadigm.png&quot;</span>)</span></code></pre></div>
+<div class="figure">
+<img src="images_sequencing/centralParadigm.png" alt="Central Paradigm of Biology: a gene, a specific region in the DNA, is first transcribed into RNA and then into proteins. Note, that for RNA-genes the RNA molecule is the end product itself, which is referred to as non-coding RNA (ncRNA) (Source: Wikipedia)" width="709" />
+<p class="caption">
+Central Paradigm of Biology: a gene, a specific region in the DNA, is
+first transcribed into RNA and then into proteins. Note, that for
+RNA-genes the RNA molecule is the end product itself, which is referred
+to as non-coding RNA (ncRNA) (Source: Wikipedia)
+</p>
+</div>
+<div id="alternative-splicing" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Alternative
+splicing</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">include_graphics</span>(<span class="st">&quot;./images_sequencing/alternative_splicing.png&quot;</span>)</span></code></pre></div>
+<div class="figure">
+<img src="images_sequencing/alternative_splicing.png" alt="Alternative splicing allows a single gene in Eucaryotes to code for multiple proteins. During alternative splicing particular exons of a gene may be included or excluded from the premature messenger RNA when producing the messenger RNA (mRNA) from that gene. Hence exons can be joined in different combinations, leading to different (alternative) mRNA strands. The proteins translated from alternatively spliced mRNAs thus differ in their amino acid sequence and, often, in their biological functions (Source: Wikipedia)" width="500" />
+<p class="caption">
+Alternative splicing allows a single gene in Eucaryotes to code for
+multiple proteins. During alternative splicing particular exons of a
+gene may be included or excluded from the premature messenger RNA when
+producing the messenger RNA (mRNA) from that gene. Hence exons can be
+joined in different combinations, leading to different (alternative)
+mRNA strands. The proteins translated from alternatively spliced mRNAs
+thus differ in their amino acid sequence and, often, in their biological
+functions (Source: Wikipedia)
+</p>
+</div>
+</div>
+</div>
+<div id="sequencing-technology" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Sequencing
+technology</h1>
+<ul>
+<li>Measuring mRNA molecules typically happens through sequencing.</li>
+<li>The technology continues to evolve at an incredible speed. The data
+output of so-called `next generation’ sequencing machines has more than
+doubled each year! Simultaneously, the cost of sequencing (in terms of $
+per Gigabase) is dropping. Each year, we’re able to sequence more for
+less money, providing more information, as well as also computational
+and statistical challenges.</li>
+<li>This tremendous technological revolution has revolutionized biology,
+and genomic sequencing is now a core component of the modern-day
+biologist’s toolkit.</li>
+<li>The large majority of sequencing data is generated using
+sequencing-by-synthesis using machines produced by the company Illumina.
+While new players such as Pacific Biosciences and Oxford Nanopore have
+entered the scene, these are typically most useful for (but not limited
+to) DNA sequencing rather than gene expression studies, owing to their
+capability of sequencing long molecules.</li>
+</ul>
+<div class="figure">
+<img src="images_sequencing/seqTechnology_throughput.png" alt="Figure: The data output revolution of sequencing machines. Image from Illumina documentation." width="698" />
+<p class="caption">
+Figure: The data output revolution of sequencing machines. Image from
+Illumina documentation.
+</p>
+</div>
+<div id="from-sample-to-data-analysis" class="section level2"
+number="2.1">
+<h2><span class="header-section-number">2.1</span> From sample to data
+analysis</h2>
+<div class="figure">
+<img src="images_sequencing/seqWorkflow3.png" alt="Figure: The sequencing workflow. Image adapted from Van den Berge et al. (2019)." width="1291" />
+<p class="caption">
+Figure: The sequencing workflow. Image adapted from Van den Berge et
+al. (2019).
+</p>
+</div>
+</div>
+<div id="illumina-sequencing" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Illumina
+Sequencing</h2>
+<div class="figure">
+<img src="images_sequencing/illuminaSeq-step1-6.jpg" alt="Figure: Illumina sequencing steps 1-6 (Source: Illumina)" width="318" />
+<p class="caption">
+Figure: Illumina sequencing steps 1-6 (Source: Illumina)
+</p>
+</div>
+<div class="figure">
+<img src="images_sequencing/illuminaSeq-step7-12.jpg" alt="Figure: Illumina sequencing steps 1-6 (Source: Illumina)" width="318" />
+<p class="caption">
+Figure: Illumina sequencing steps 1-6 (Source: Illumina)
+</p>
+</div>
+</div>
+<div id="single-vs-paired-end" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Single vs paired
+end</h2>
+<div class="figure">
+<img src="images_sequencing/singleEndVsPairedEnd.png" alt="Figure: Single vs paired end sequencing. In contrast to single-end sequencing, paired-end sequencing allows users to sequence both ends of a fragment (Image adopted from Zhernakova et al., 2013, doi.org/10.1371/journal.pgen.1003594)." width="1223" />
+<p class="caption">
+Figure: Single vs paired end sequencing. In contrast to single-end
+sequencing, paired-end sequencing allows users to sequence both ends of
+a fragment (Image adopted from Zhernakova et al., 2013,
+doi.org/10.1371/journal.pgen.1003594).
+</p>
+</div>
+</div>
+<div id="the-sequencing-workflow-with-details" class="section level2"
+number="2.4">
+<h2><span class="header-section-number">2.4</span> The sequencing
+workflow with Details</h2>
+<p>Library preparation steps</p>
+<ol style="list-style-type: decimal">
+<li>First, the biological <strong>samples of interest are
+collected</strong>. Owing to the maturity of different protocols for
+sequencing, several types of biological input samples are amenable to
+sequencing, such as frozen tissues or FFPE-preserved samples.</li>
+<li>The <strong>mRNA molecules from our sample are captured</strong>.
+This typically involves cell lysis in order to release the mRNA
+molecules from within the cells. The mRNA molecules are most often
+captured using (i) polyA-capture to select for polyadenylated RNA, or
+(ii) ribosomal depletion, where ribosomal and transfer RNAs are
+depleted, and so also non-polyA-mRNA molecules may be captured, such as
+long non-coding RNAs. In the case of `targeted sequencing’, where
+relevant molecules are of main interest (e.g., a gene panel), these
+targets can be specifically targeted in this step.</li>
+<li><strong>Fragmentation</strong> of captured molecules. The captured
+molecules are fragmented, either chemically or mechanically. The
+appropriate size of fragments depends on the sequencing machines, but is
+often in the range of 300 - 500bp.</li>
+<li><strong>Reverse transcription</strong>. Current dominant sequencing
+machines only sequence double-stranded DNA molecules. Therefore, in
+order to measure single-stranded mRNA, we must first reverse transcribe
+these molecules to a double-stranded complementary (cDNA) molecule.</li>
+<li><strong>Adapter ligation</strong>. Adapters are oligonucleotides
+(short sequences of nucleotides) that are platform-specific sequences
+for fragment recognition by the sequencing machines. These are added
+either to the 3’ or 5’ end of the cDNA molecules or used as primers in
+the reverse transcription reaction. The final cDNA library consists of
+cDNA inserts flanked by an adapter sequence on each end.</li>
+<li><strong>PCR amplification</strong>. To increase concentration,
+several PCR reactions are performed.</li>
+<li>Loading the amplified cDNA library on the
+<strong>sequencing</strong> machine. Find out how
+sequencing-by-synthesis works through <a
+href="https://www.youtube.com/watch?v=fCd6B5HRaZ8">this video</a>. Note
+that the video shows paired-end sequencing, where a number of basepairs
+are sequenced at each end of the fragment. All previous steps together
+are described as `sample prep’ in that video.</li>
+</ol>
+<div class="figure">
+<img src="images_sequencing/seqWorkflow1_clean.png" alt="Figure: The sequencing workflow. Image adapted from Van den Berge et al. (2019)." width="822" />
+<p class="caption">
+Figure: The sequencing workflow. Image adapted from Van den Berge et
+al. (2019).
+</p>
+</div>
+<p>Note that several variants of library preparation protocols are
+available. The most important ones are:</p>
+<ul>
+<li>Single-end vs paired-end sequencing: In single-end sequencing, a
+single end (3’ or 5’) of the cDNA fragment is sequenced. In paired-end
+sequencing, both ends are sequenced, and depending on the size of the
+fragment, the reads may or may not overlap.</li>
+<li>Strand-specific protocols: Some library preparation protocols allow
+measuring strand specificity, where the strand information (i.e.,
+sense/antisense) of each read can be preserved.</li>
+</ul>
+</div>
+<div id="the-sequencing-output-files" class="section level2"
+number="2.5">
+<h2><span class="header-section-number">2.5</span> The sequencing output
+files</h2>
+<ul>
+<li>The typical output of a sequencing machine we will be working with
+are FASTA or FASTQ files for each sample. Each of these files are
+several gigbases large and contain millions of sequences, which we will
+call <strong>reads</strong>. For paired-end sequencing, there are two
+files for each sample, one for each end of the sequenced fragments.</li>
+<li>The difference between a FASTA file and a FASTQ file, is that while
+FASTA files only store the results of base calls (sequences), FASTQ
+files also store the quality score of each base call (i.e., each called
+nucleotide), which can be useful in downstream analyses such as mapping
+or variant calling.</li>
+<li>A FASTQ file contains four lines for each sequenced read:
+<ol style="list-style-type: decimal">
+<li>Sequence identifier line, starting with @.</li>
+<li>The sequence.</li>
+<li>Another sequence identifier line, now starting with +.</li>
+<li>Quality scores.</li>
+</ol></li>
+</ul>
+<div class="figure">
+<img src="images_sequencing/fastqLine.png" alt="Figure: One read in a FASTQ file. Slide courtesy by Charlotte Soneson." width="5333" />
+<p class="caption">
+Figure: One read in a FASTQ file. Slide courtesy by Charlotte Soneson.
+</p>
+</div>
+<p>As you’ll have noticed, the base call quality scores are encoded as
+ASCII characters for efficient storage. These ASCII characters can be
+converted into integers called Phred scores, which are logarithmically
+related to the probability of an erroneous base call.</p>
+<div id="quality-score" class="section level3" number="2.5.1">
+<h3><span class="header-section-number">2.5.1</span> Quality score</h3>
+<p>The Phred Score is a quality score <span class="math display">\[Q =
+-10 \log_{10} p\]</span>, with p the probability on an incorrect base
+call</p>
+<table>
+<thead>
+<tr class="header">
+<th align="right">Phred Score</th>
+<th align="left">Probability on incorrect base call</th>
+<th align="left">Base call accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">10</td>
+<td align="left">1/10</td>
+<td align="left">90%</td>
+</tr>
+<tr class="even">
+<td align="right">20</td>
+<td align="left">1/100</td>
+<td align="left">99%</td>
+</tr>
+<tr class="odd">
+<td align="right">30</td>
+<td align="left">1/1000</td>
+<td align="left">99.9%</td>
+</tr>
+<tr class="even">
+<td align="right">40</td>
+<td align="left">1/10000</td>
+<td align="left">99.99%</td>
+</tr>
+<tr class="odd">
+<td align="right">50</td>
+<td align="left">1/10000</td>
+<td align="left">99.999%</td>
+</tr>
+</tbody>
+</table>
+<p>Phred score encoded as an ASCII letter. E.g. Phred+33:</p>
+<table style="width:100%;">
+<colgroup>
+<col width="8%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td align="left">Phred</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">2</td>
+<td align="left">3</td>
+<td align="left">4</td>
+<td align="left">5</td>
+<td align="left">6</td>
+<td align="left">7</td>
+<td align="left">8</td>
+<td align="left">9</td>
+<td align="left">10</td>
+<td align="left">11</td>
+<td align="left">12</td>
+<td align="left">13</td>
+<td align="left">14</td>
+<td align="left">15</td>
+<td align="left">16</td>
+<td align="left">17</td>
+<td align="left">18</td>
+<td align="left">19</td>
+<td align="left">20</td>
+<td align="left">21</td>
+<td align="left">22</td>
+<td align="left">23</td>
+<td align="left">24</td>
+<td align="left">25</td>
+<td align="left">26</td>
+<td align="left">27</td>
+<td align="left">28</td>
+<td align="left">29</td>
+<td align="left">30</td>
+<td align="left">31</td>
+<td align="left">32</td>
+<td align="left">33</td>
+<td align="left">34</td>
+<td align="left">35</td>
+<td align="left">36</td>
+<td align="left">37</td>
+<td align="left">38</td>
+<td align="left">39</td>
+<td align="left">40</td>
+</tr>
+<tr class="even">
+<td align="left">Phred + 33</td>
+<td align="left">33</td>
+<td align="left">34</td>
+<td align="left">35</td>
+<td align="left">36</td>
+<td align="left">37</td>
+<td align="left">38</td>
+<td align="left">39</td>
+<td align="left">40</td>
+<td align="left">41</td>
+<td align="left">42</td>
+<td align="left">43</td>
+<td align="left">44</td>
+<td align="left">45</td>
+<td align="left">46</td>
+<td align="left">47</td>
+<td align="left">48</td>
+<td align="left">49</td>
+<td align="left">50</td>
+<td align="left">51</td>
+<td align="left">52</td>
+<td align="left">53</td>
+<td align="left">54</td>
+<td align="left">55</td>
+<td align="left">56</td>
+<td align="left">57</td>
+<td align="left">58</td>
+<td align="left">59</td>
+<td align="left">60</td>
+<td align="left">61</td>
+<td align="left">62</td>
+<td align="left">63</td>
+<td align="left">64</td>
+<td align="left">65</td>
+<td align="left">66</td>
+<td align="left">67</td>
+<td align="left">68</td>
+<td align="left">69</td>
+<td align="left">70</td>
+<td align="left">71</td>
+<td align="left">72</td>
+<td align="left">73</td>
+</tr>
+<tr class="odd">
+<td align="left">ASCII</td>
+<td align="left">!</td>
+<td align="left">”</td>
+<td align="left">#</td>
+<td align="left">$</td>
+<td align="left">%</td>
+<td align="left">&amp;</td>
+<td align="left">’</td>
+<td align="left">(</td>
+<td align="left">)</td>
+<td align="left">*</td>
+<td align="left">+</td>
+<td align="left">,</td>
+<td align="left">-</td>
+<td align="left">.</td>
+<td align="left">/</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">2</td>
+<td align="left">3</td>
+<td align="left">4</td>
+<td align="left">5</td>
+<td align="left">6</td>
+<td align="left">7</td>
+<td align="left">8</td>
+<td align="left">9</td>
+<td align="left">:</td>
+<td align="left">;</td>
+<td align="left">&lt;</td>
+<td align="left">=</td>
+<td align="left">&gt;</td>
+<td align="left">?</td>
+<td align="left">@</td>
+<td align="left">A</td>
+<td align="left">B</td>
+<td align="left">C</td>
+<td align="left">D</td>
+<td align="left">E</td>
+<td align="left">F</td>
+<td align="left">G</td>
+<td align="left">H</td>
+<td align="left">I</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="preprocessing-of-raw-sequencing-data" class="section level1"
+number="3">
+<h1><span class="header-section-number">3</span> Preprocessing of raw
+sequencing data</h1>
+<p>After sequencing, we typically do a quality control (QC) check to
+verify the quality of the samples. During QC check, aberrant samples due
+to e.g. degraded mRNA can be detected.</p>
+<p>The sequencing reads on their own contain a lot of information, but
+are most useful if we would be able to assign sequencing reads to
+genomic features (genes, exons, transcripts, etc.), i.e., for each
+sequencing read we will try to derive the (set of) feature(s) that could
+have plausibly produced the fragment through the process of gene
+expression. This process is called <strong>mapping</strong>. Most often
+we map reads to genes.</p>
+<div class="figure">
+<img src="images_sequencing/seqWorkflow2.png" alt="Figure: An updated sequencing workflow, including sequencing and mapping. Image adapted from Van den Berge et al. (2019)." width="1288" />
+<p class="caption">
+Figure: An updated sequencing workflow, including sequencing and
+mapping. Image adapted from Van den Berge et al. (2019).
+</p>
+</div>
+<div id="quality-control" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Quality control</h2>
+<p>During quality control, diagnostic plots are created for each sample
+in order to determine its quality. The most popular QC tool for bulk
+RNA-seq data is <a
+href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/">FastQC</a>.
+If many samples are sequenced, then <a
+href="https://multiqc.info/">MultiQC</a> can be used to aggregate the QC
+checks across samples in a conveniently organized overview.</p>
+<p>The FastQC website provides interesting example reports for us to
+look at and compare against. Here are example reports of <a
+href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/good_sequence_short_fastqc.html">high-quality
+Illumina data</a> and <a
+href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/bad_sequence_fastqc.html">low-quality
+Illumina data</a>.</p>
+</div>
+<div id="read-trimming" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Read Trimming</h2>
+<ul>
+<li><p>Read Trimming</p>
+<ul>
+<li>Adaptor sequence</li>
+<li>Bar code</li>
+<li>(deteriorating bases at the end of reads)</li>
+<li>often already done by the sequencing provider.</li>
+<li>remaining polyA tails</li>
+</ul></li>
+<li><p>Read filtering</p>
+<ul>
+<li>low quality reads</li>
+<li>PhiX reads (should be removed already by sequence provider) in<br />
+</li>
+<li>RNA-seq never remove duplicates because they can occur for highly
+expressed transcripts</li>
+</ul></li>
+<li><p>Perform fastQC again</p></li>
+</ul>
+</div>
+<div id="mapping" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Mapping</h2>
+<ul>
+<li>Mapping is a critical step in the interpretation of RNA-seq data,
+where we are attributing reads to genomic features.</li>
+<li>Allows us to measure how strong a feature such as a gene is
+expressed: the number of reads mapping to a gene serve as a proxy for
+how high that gene has been expressed in the sample.</li>
+<li>While this opens the door to many opportunities, mapping is
+hard.</li>
+<li>We are <strong>typically unable to assign each individual read
+uniquely</strong> to one specific gene; some reads cannot be
+unambiguously mapped and are compatible with multiple genes. These reads
+are said to be ‘multi-mapping’.</li>
+</ul>
+<p>Finally, a note on terminology. In this text we will use the words
+‘read’ or ‘fragment’ (referring to the fragmented mRNA molecule being
+sequenced) to designate a datum, note that this could be either a single
+read (in single-end sequencing) or a read pair (in paired-end
+sequencing). The literature may also use these words interchangeably,
+although ‘fragment’ seems better at avoiding ambiguity between
+single-end reads and paired-end read pairs.</p>
+<div id="reference-files" class="section level3" number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> Reference
+files</h3>
+<ul>
+<li>The alignment most often relies on a <strong>reference
+genome</strong> of the species, which can be considered a
+‘representative example’ of the genome sequence of that species.
+Reference genomes are contiuously updated and released
+periodically.</li>
+<li>Reference genomes can be freely downloaded from several providers,
+for example <a
+href="http://www.ensembl.org/info/data/ftp/index.html">Ensembl</a> or <a
+href="https://www.gencodegenes.org/human/">Gencode</a>.</li>
+<li>Along with a reference genome, an annotation GFF or GTF file defines
+the coordinates of specific genomic features.</li>
+<li>While here we will focus on reference-based alignment, i.e.,
+alignment where a reference genome or transcriptome is available, note
+that a <em>de novo</em> construction of a reference transcriptome is
+also possible, where the reference may be constructed from the observed
+sequencing reads.</li>
+</ul>
+<div class="figure">
+<embed src="./images_sequencing/humanReferenceGenome.pdf" title="slide courtesy Charlotte Soneson" width="100%" type="application/pdf" />
+<p class="caption">
+slide courtesy Charlotte Soneson
+</p>
+</div>
+<div class="figure">
+<img src="images_sequencing/referenceGenome.png" alt="Figure: A reference sequence of human chr1." width="787" />
+<p class="caption">
+Figure: A reference sequence of human chr1.
+</p>
+</div>
+<div class="figure">
+<embed src="./images_sequencing/humanReferenceTranscriptome.pdf" title="slide courtesy Charlotte Soneson" width="100%" type="application/pdf" />
+<p class="caption">
+slide courtesy Charlotte Soneson
+</p>
+</div>
+<div class="figure">
+<img src="images_sequencing/gtfFile.png" alt="Figure: An example GTF file." width="1084" />
+<p class="caption">
+Figure: An example GTF file.
+</p>
+</div>
+<ul>
+<li>More recently, mapping of RNA-seq data occurs more often against a
+<strong>reference transcriptome</strong>, which is a reference file
+containing the sequences all known isoforms of a particular species,
+e.g., using <a
+href="https://www.nature.com/articles/nbt.3519">kallisto</a> or <a
+href="https://www.nature.com/articles/nmeth.4197">Salmon</a>.</li>
+<li>The set of spliced transcripts is much smaller than the entire
+genome, and therefore mapping against a reference transcriptome is
+typically <strong>fast and memory efficient</strong>.</li>
+<li>However, <a
+href="https://www.biorxiv.org/content/10.1101/2021.05.05.442755v1">it
+has been noted</a> that mapping against a reference transcriptome may
+also introduce spurious expression for genes that are not expressed.
+These observations can be explained by <strong>intronic reads</strong>
+that share some sequence similarity with transcripts, and could map to
+spliced transcript sequences. Recent methods, such as <a
+href="https://www.biorxiv.org/content/10.1101/2021.06.29.450377v1">alevin-fry</a>,
+avoid this by expanding the reference transcriptome to also include
+intronic sequences.</li>
+</ul>
+</div>
+<div id="alignment-based-workflows" class="section level3"
+number="3.3.2">
+<h3><span class="header-section-number">3.3.2</span> Alignment-based
+workflows</h3>
+<ul>
+<li>Traditionally, alignment-based workflows have been used to map
+reads, where one tries to find the exact coordinates a read maps to on
+the reference genome or the reference transcriptome.</li>
+<li>Note that due to alternative splicing, reads do not necessarily map
+contiguously on a reference genome, as a read can overlap with a
+splicing junction, where an intron has been excised. When mapping
+against a transcriptome, however, reads should be mapping
+contiguously.</li>
+<li>A main challenge in spliced alignment against a reference genome is
+the proper alignment of reads that span a splice junction, especially
+when these junctions are not annotated a priori. Indeed, in spliced
+alignment reads can be split at any nucleotide, and the corresponding
+subsequences can map several thousands of basepairs apart. Meanwhile,
+the main challenge in unspliced alignment to a transcriptome is the
+redundant sequence among related transcripts in the transcriptome, which
+often leads to a high multi-mapping rate (i.e., reads that cannot be
+unambiguously assigned to a single transcript).</li>
+<li>Spliced alignment against a genome is therefore computationally a
+much harder task. Since the transcript sequences are already spliced
+when aligning to a reference transcriptome, reads should align
+contiguously, and many of the computationally expensive steps and
+heuristics can be avoided, there.</li>
+</ul>
+<div class="figure">
+<img src="images_sequencing/splicedAlignment.png" alt="Figure: Unspliced and spliced alignment. Figure from Van den Berge et al. (2019)." width="802" />
+<p class="caption">
+Figure: Unspliced and spliced alignment. Figure from Van den Berge et
+al. (2019).
+</p>
+</div>
+</div>
+<div id="alignment-free-workflows" class="section level3"
+number="3.3.3">
+<h3><span class="header-section-number">3.3.3</span> Alignment-free
+workflows</h3>
+<ul>
+<li>Modern approaches avoid mapping each fragment individually (i.e., do
+not attempt to find the exact coordinates of a read’s origin), and
+instead posit a probabilistic model where transcript abundances are
+typically defined using its constituent <span
+class="math inline">\(k\)</span>-mers. These methods are sometimes
+referred to as <em>lightweight</em>.</li>
+<li>A <span class="math inline">\(k\)</span>-mer is a short sequence of
+nucleotides of length <span class="math inline">\(k\)</span>. The space
+of possible <span class="math inline">\(k\)</span>-mers and the
+corresponding transcripts can be precomputed in advance using the
+reference transcriptome, providing a computational advantage as it only
+needs to be computed once.</li>
+<li>For each fragment, the transcripts its <span
+class="math inline">\(k\)</span>-mers are compatible with is searched
+for using an indexed (efficiently searchable) transcriptome. The set of
+compatible transcripts is called the ‘<span
+class="math inline">\(k\)</span>-compatibility class’, ‘equivalence
+class’ or ‘transcript compatibility class’ of the fragment.</li>
+</ul>
+<div class="figure">
+<img src="images_sequencing/kallisto_equivalenceClasses.png" alt="Figure: Overview of kallisto, image from Bray et al. (2016)." width="478" />
+<p class="caption">
+Figure: Overview of kallisto, image from Bray et al. (2016).
+</p>
+</div>
+<div class="figure">
+<img src="images_sequencing/kallisto_equivalenceClasses_caption.png" alt="Figure: Overview of kallisto, image from Bray et al. (2016)." width="538" />
+<p class="caption">
+Figure: Overview of kallisto, image from Bray et al. (2016).
+</p>
+</div>
+</div>
+</div>
+<div id="abundance-quantification" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> Abundance
+quantification</h2>
+<p>Given a set of mappings, using either alignment-based or
+alignment-free workflows, the estimation of expression of a
+gene/transcript/exon may occur in several ways.</p>
+<p><strong>Counting</strong>:</p>
+<ul>
+<li>In alignment-based workflows, one could do a direct counting of
+fragments at the gene-level, counting the number fragments mapping to
+each gene. This has been the dominant approach for the first decade of
+RNA-seq data, often obtained using reference genome alignments.</li>
+<li>Many heuristic choices need to be made: Do we count a fragment as
+soon as it intersects with the gene’s coordinates, or do we require the
+full fragment to map to the gene? Do we count intronic reads? Do we
+count multi-mapping reads?</li>
+</ul>
+<div class="figure">
+<img src="images_sequencing/readCounting.png" alt="Figure: Gene- and exon-level read counting. Image adapted from Charlotte Soneson." width="2844" />
+<p class="caption">
+Figure: Gene- and exon-level read counting. Image adapted from Charlotte
+Soneson.
+</p>
+</div>
+<p><strong>Estimation</strong>:</p>
+<ul>
+<li>Abundance quantification is more recently starting to shift from
+counting towards using statistical models to estimate the expression
+counts for a feature, which in this case is typically a transcript.</li>
+<li>This approach is amenable to alignment-free workflows, since the
+number of fragments in each equivalence class are sufficient statistics
+for the abundance quantification, meaning that they contain all
+information needed to estimate the parameters of the statistical model,
+and hence the feature-level abundances. Since the expression counts in
+this case are estimated, they are not necessarily integer counts, and
+will be referred to as ‘estimated counts’.</li>
+<li>In order to derive these, the EM-algorithm is often used, although
+other approaches have been used by tools like Salmon. A big advantage of
+the estimation approach is that it probabilistically assigns fragments
+to transcripts, thereby automatically dealing with multi-mapping reads.
+The total number of fragments mapping to each transcript is then the sum
+of all fragment-level probabilities to be assigned to that respective
+transcript.</li>
+</ul>
+<div class="figure">
+<img src="images_sequencing/abundanceEMAlgorithm.png" alt="Figure: Abundance quantification using the EM algorithm. Figure from Van den Berge et al. (2019)." width="1300" />
+<p class="caption">
+Figure: Abundance quantification using the EM algorithm. Figure from Van
+den Berge et al. (2019).
+</p>
+</div>
+<div id="abundance-metrics" class="section level3" number="3.4.1">
+<h3><span class="header-section-number">3.4.1</span> Abundance
+metrics</h3>
+<ul>
+<li>For simplicity, we have only been talking about feature-level counts
+as in sums of fragments. However, this is merely one metric that can be
+used as a proxy for expression, and several others exist.</li>
+<li>Most of these were introduced to attempt to make the abundances more
+comparable across samples or features, as compared to the simple counts.
+These mainly serve to correct for technical biases such as transcript
+length and sequencing depth, both of which have significant impact on
+the observed counts.</li>
+<li>Indeed, for a gene with the same mRNA concentration in two samples,
+sequencing one sample deeper, will on average result in a higher
+count.</li>
+<li>Likewise, for two transcripts with the same mRNA concentration but
+different transcript lengths, one will tend to observe more fragments
+from the longer transcript due to the fragmentation step in the RNA-seq
+protocol, where longer transcripts can be split into more fragments of
+appropriate length.</li>
+</ul>
+<p>Below we introduce several relevant abundance metrics, but note that
+most data analysis methods we will discuss in this course will work with
+(estimated) counts. In what follows, let <span
+class="math inline">\(Y_{fi}\)</span> denote the random variable
+representing the expression counts of feature <span
+class="math inline">\(f\)</span> in sample <span
+class="math inline">\(i\)</span> (obtained either as a simple sum of
+fragments or estimated using lightweight approaches), and let <span
+class="math inline">\(N_i = \sum_f Y_{fi}\)</span> denote the sequencing
+depth of sample <span class="math inline">\(i\)</span>.</p>
+<ul>
+<li><strong>Counts per million (CPM)</strong> are the counts one could
+expect to observe if the sample was sequenced to a depth of one
+million.</li>
+</ul>
+<p><span class="math display">\[ CPM_{fi} = \frac{Y_{fi}}{N_i} 10^6
+\]</span></p>
+<ul>
+<li><strong>Transcripts per million (TPM)</strong> refers to the
+concentration or proportion of your feature in the sample. TPMs take
+into account the length of the feature, which is often reformulated into
+an <em>effective length</em> <span
+class="math inline">\(l_{fi}^{(eff)}\)</span>, relating to the number of
+possible start sites that a feature may have in order to generate
+fragments of a typical length observed in your dataset. This typical
+length is often calculated using the observed fragment length
+distribution from the data and defined as <span class="math display">\[
+l_{fi}^{(eff)} = l_{f} - \hat{\bar{F}}_i + 1,\]</span> where <span
+class="math inline">\(l_{f}\)</span> is the total length of a feature in
+terms of number of nucleotides, and <span
+class="math inline">\(\hat{\bar{F}}_i\)</span> is the estimated average
+fragment length in sample <span class="math inline">\(i\)</span>. We can
+use this to define <span class="math display">\[ TPM_{fi} =
+\frac{Y_{fi}}{l_{fi}^{(eff)}} \left( \frac{1}{\sum_f
+\frac{Y_{fi}}{l_{fi}^{(eff)}}} \right) 10^6.\]</span> Note that the
+first part of the right-hand-side (RHS), <span
+class="math inline">\(\frac{Y_{fi}}{l_{fi}^{(eff)}}\)</span> is the
+expression counts normalized for the length of the feature. This
+measure, however, is still affected by the sequencing depth, which is
+then alleviated by dividing by the sum of the length-normalized counts
+across all features, i.e., <span class="math inline">\(\sum_f
+\frac{Y_{fi}}{l_{fi}^{(eff)}}\)</span>. TPMs hence normalize for the
+feature length as well as sequencing depth.</li>
+</ul>
+</div>
+<div id="the-final-countdown" class="section level3" number="3.4.2">
+<h3><span class="header-section-number">3.4.2</span> The final
+countdown</h3>
+<p>Once abundances have been quantified, the (estimated) counts are
+typically stored in a count matrix, with genes spanning the rows and
+samples spanning the columns. This count matrix forms the basis of most
+downstream analyses to interpret RNA-seq data, and it will be the main
+object we will be working with in the following lectures.</p>
+<div class="figure">
+<img src="images_sequencing/seqWorkflow3.png" alt="Figure: An updated sequencing workflow. Image adapted from Van den Berge et al. (2019)." width="1291" />
+<p class="caption">
+Figure: An updated sequencing workflow. Image adapted from Van den Berge
+et al. (2019).
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="references" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> References</h1>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiSW50cm9kdWN0aW9uIHRvIFJOQS1zZXEgc2VxdWVuY2luZzogUHJlcHJvY2Vzc2luZyIKYXV0aG9yOiAiS29lbiBWYW4gZGVuIEJlcmdlICYgTGlldmVuIENsZW1lbnQiCmRhdGU6ICJMYXN0IGVkaXRlZCBvbiBgciBmb3JtYXQoU3lzLnRpbWUoKSwgJyVkICVCLCAlWScpYCIKb3V0cHV0OiAKICBodG1sX2RvY3VtZW50OgogICAgdG9jOiB0cnVlCiAgICB0b2NfZmxvYXQ6IHRydWUKICBwZGZfZG9jdW1lbnQ6CiAgICB0b2M6IHRydWUKICAgIG51bWJlcl9zZWN0aW9uczogdHJ1ZQogICAgbGF0ZXhfZW5naW5lOiB4ZWxhdGV4Ci0tLQoKYGBge3IgZnVuY3Rpb25zLCBpbmNsdWRlPUZBTFNFfQojIEEgZnVuY3Rpb24gZm9yIGNhcHRpb25pbmcgYW5kIHJlZmVyZW5jaW5nIGltYWdlcwpmaWcgPC0gbG9jYWwoewogICAgaSA8LSAwCiAgICByZWYgPC0gbGlzdCgpCiAgICBsaXN0KAogICAgICAgIGNhcD1mdW5jdGlvbihyZWZOYW1lLCB0ZXh0KSB7CiAgICAgICAgICAgIGkgPDwtIGkgKyAxCiAgICAgICAgICAgIHJlZltbcmVmTmFtZV1dIDw8LSBpCiAgICAgICAgICAgIHBhc3RlKCJGaWd1cmUgIiwgaSwgIjogIiwgdGV4dCwgc2VwPSIiKQogICAgICAgIH0sCiAgICAgICAgcmVmPWZ1bmN0aW9uKHJlZk5hbWUpIHsKICAgICAgICAgICAgcmVmW1tyZWZOYW1lXV0KICAgICAgICB9KQp9KQpgYGAgCgpgYGB7ciwgZWNobz1GQUxTRSwgZXZhbD1UUlVFfQpzdXBwcmVzc1BhY2thZ2VTdGFydHVwTWVzc2FnZXMoewogIGxpYnJhcnkoa25pdHIpCiAgbGlicmFyeShybWFya2Rvd24pCiAgbGlicmFyeShnZ3Bsb3QyKQogIGxpYnJhcnkodGlkeXZlcnNlKQp9KQpgYGAKCiMgVGhlIHN0dWR5IG9mIGdlbmUgZXhwcmVzc2lvbgoKIC0gVGhlIGZpcnN0IHBhcnQgb2YgdGhpcyBjb3Vyc2UgZm9jdXNzZWQgb24gcHJvdGVvbWljcywgc3R1ZHlpbmcgdGhlIGNvbmNlbnRyYXRpb24gb2YgcHJvdGVpbnMgaW4gYmlvbG9naWNhbCBzYW1wbGVzLiBXZSBoYXZlIHNlZW4gdGhhdCBpZGVudGlmaWNhdGlvbiBvZiBwcm90ZWlucyBhbmQgbWVhc3VyaW5nIHRoZWlyIHJlc3BlY3RpdmUgY29uY2VudHJhdGlvbnMgYXJlIGV4dHJlbWVseSBjaGFsbGVuZ2luZywgbGVhZGluZyB0byBtYW55IHRlY2hub2xvZ2ljYWwgYW5kIHN0YXRpc3RpY2FsIGNoYWxsZW5nZXMgaW4gb3JkZXIgdG8gaW50ZXJwcmV0IHRoZXNlIGRhdGEuCiAKIC0gSW4gdGhlIHNlY29uZCBwYXJ0IG9mIHRoZSBjb3Vyc2UsIHdlIHdpbGwgZm9jdXMgb24gbWVhc3VyaW5nIGdlbmUgZXhwcmVzc2lvbiwgaS5lLiwgbWVhc3VyaW5nIHRoZSBjb25jZW50cmF0aW9uIG9mIG1STkEgbW9sZWN1bGVzLCB0aGF0IG1heSBldmVudHVhbGx5IGJlIHRyYW5zbGF0ZWQgaW50byBwcm90ZWlucywgYnV0IG1heSBhbHNvIGhhdmUgZnVuY3Rpb25zIG9uIHRoZWlyIG93bi4KCmBgYHtyIGZpZy5jYXA9J0NlbnRyYWwgUGFyYWRpZ20gb2YgQmlvbG9neTogYSBnZW5lLCBhIHNwZWNpZmljIHJlZ2lvbiBpbiB0aGUgRE5BLCBpcyBmaXJzdCB0cmFuc2NyaWJlZCBpbnRvIFJOQSBhbmQgdGhlbiBpbnRvIHByb3RlaW5zLiBOb3RlLCB0aGF0IGZvciBSTkEtZ2VuZXMgdGhlIFJOQSBtb2xlY3VsZSBpcyB0aGUgZW5kIHByb2R1Y3QgaXRzZWxmLCB3aGljaCBpcyByZWZlcnJlZCB0byBhcyBub24tY29kaW5nIFJOQSAobmNSTkEpIChTb3VyY2U6IFdpa2lwZWRpYSknfQppbmNsdWRlX2dyYXBoaWNzKCIuL2ltYWdlc19zZXF1ZW5jaW5nL2NlbnRyYWxQYXJhZGlnbS5wbmciKQpgYGAKCiMjIEFsdGVybmF0aXZlIHNwbGljaW5nIAoKYGBge3IgZmlnLmNhcD0nQWx0ZXJuYXRpdmUgc3BsaWNpbmcgYWxsb3dzIGEgc2luZ2xlIGdlbmUgaW4gRXVjYXJ5b3RlcyB0byBjb2RlIGZvciBtdWx0aXBsZSBwcm90ZWlucy4gRHVyaW5nIGFsdGVybmF0aXZlIHNwbGljaW5nIHBhcnRpY3VsYXIgZXhvbnMgb2YgYSBnZW5lIG1heSBiZSBpbmNsdWRlZCBvciBleGNsdWRlZCBmcm9tIHRoZSBwcmVtYXR1cmUgbWVzc2VuZ2VyIFJOQSB3aGVuIHByb2R1Y2luZyB0aGUgbWVzc2VuZ2VyIFJOQSAobVJOQSkgZnJvbSB0aGF0IGdlbmUuIEhlbmNlIGV4b25zIGNhbiBiZSBqb2luZWQgaW4gZGlmZmVyZW50IGNvbWJpbmF0aW9ucywgbGVhZGluZyB0byBkaWZmZXJlbnQgKGFsdGVybmF0aXZlKSBtUk5BIHN0cmFuZHMuIFRoZSBwcm90ZWlucyB0cmFuc2xhdGVkIGZyb20gYWx0ZXJuYXRpdmVseSBzcGxpY2VkIG1STkFzIHRodXMgZGlmZmVyIGluIHRoZWlyIGFtaW5vIGFjaWQgc2VxdWVuY2UgYW5kLCBvZnRlbiwgaW4gdGhlaXIgYmlvbG9naWNhbCBmdW5jdGlvbnMgKFNvdXJjZTogV2lraXBlZGlhKSd9CmluY2x1ZGVfZ3JhcGhpY3MoIi4vaW1hZ2VzX3NlcXVlbmNpbmcvYWx0ZXJuYXRpdmVfc3BsaWNpbmcucG5nIikKYGBgCgojIFNlcXVlbmNpbmcgdGVjaG5vbG9neQoKIC0gTWVhc3VyaW5nIG1STkEgbW9sZWN1bGVzIHR5cGljYWxseSBoYXBwZW5zIHRocm91Z2ggc2VxdWVuY2luZy4KIC0gVGhlIHRlY2hub2xvZ3kgY29udGludWVzIHRvIGV2b2x2ZSBhdCBhbiBpbmNyZWRpYmxlIHNwZWVkLiBUaGUgZGF0YSBvdXRwdXQgb2Ygc28tY2FsbGVkIGBuZXh0IGdlbmVyYXRpb24nIHNlcXVlbmNpbmcgbWFjaGluZXMgaGFzIG1vcmUgdGhhbiBkb3VibGVkIGVhY2ggeWVhciEgU2ltdWx0YW5lb3VzbHksIHRoZSBjb3N0IG9mIHNlcXVlbmNpbmcgKGluIHRlcm1zIG9mICQgcGVyIEdpZ2FiYXNlKSBpcyBkcm9wcGluZy4gRWFjaCB5ZWFyLCB3ZSdyZSBhYmxlIHRvIHNlcXVlbmNlIG1vcmUgZm9yIGxlc3MgbW9uZXksIHByb3ZpZGluZyBtb3JlIGluZm9ybWF0aW9uLCBhcyB3ZWxsIGFzIGFsc28gY29tcHV0YXRpb25hbCBhbmQgc3RhdGlzdGljYWwgY2hhbGxlbmdlcy4KIC0gVGhpcyB0cmVtZW5kb3VzIHRlY2hub2xvZ2ljYWwgcmV2b2x1dGlvbiBoYXMgcmV2b2x1dGlvbml6ZWQgYmlvbG9neSwgYW5kIGdlbm9taWMgc2VxdWVuY2luZyBpcyBub3cgYSBjb3JlIGNvbXBvbmVudCBvZiB0aGUgbW9kZXJuLWRheSBiaW9sb2dpc3QncyB0b29sa2l0LgogLSBUaGUgbGFyZ2UgbWFqb3JpdHkgb2Ygc2VxdWVuY2luZyBkYXRhIGlzIGdlbmVyYXRlZCB1c2luZyBzZXF1ZW5jaW5nLWJ5LXN5bnRoZXNpcyB1c2luZyBtYWNoaW5lcyBwcm9kdWNlZCBieSB0aGUgY29tcGFueSBJbGx1bWluYS4gV2hpbGUgbmV3IHBsYXllcnMgc3VjaCBhcyBQYWNpZmljIEJpb3NjaWVuY2VzIGFuZCBPeGZvcmQgTmFub3BvcmUgaGF2ZSBlbnRlcmVkIHRoZSBzY2VuZSwgdGhlc2UgYXJlIHR5cGljYWxseSBtb3N0IHVzZWZ1bCBmb3IgKGJ1dCBub3QgbGltaXRlZCB0bykgRE5BIHNlcXVlbmNpbmcgcmF0aGVyIHRoYW4gZ2VuZSBleHByZXNzaW9uIHN0dWRpZXMsIG93aW5nIHRvIHRoZWlyIGNhcGFiaWxpdHkgb2Ygc2VxdWVuY2luZyBsb25nIG1vbGVjdWxlcy4KCmBgYHtyLCBlY2hvPUZBTFNFLCBmaWcuY2FwPXBhc3RlKCJGaWd1cmU6IFRoZSBkYXRhIG91dHB1dCByZXZvbHV0aW9uIG9mIHNlcXVlbmNpbmcgbWFjaGluZXMuIEltYWdlIGZyb20gSWxsdW1pbmEgZG9jdW1lbnRhdGlvbi4iKX0KIyBBbGwgZGVmYXVsdHMKaW5jbHVkZV9ncmFwaGljcygiLi9pbWFnZXNfc2VxdWVuY2luZy9zZXFUZWNobm9sb2d5X3Rocm91Z2hwdXQucG5nIikKYGBgCgojIyBGcm9tIHNhbXBsZSB0byBkYXRhIGFuYWx5c2lzCgpgYGB7ciwgZWNobz1GQUxTRSwgZmlnLmNhcD1wYXN0ZSgiRmlndXJlOiBUaGUgc2VxdWVuY2luZyB3b3JrZmxvdy4gSW1hZ2UgYWRhcHRlZCBmcm9tIFZhbiBkZW4gQmVyZ2UgZXQgYWwuICgyMDE5KS4iKX0KaW5jbHVkZV9ncmFwaGljcygiLi9pbWFnZXNfc2VxdWVuY2luZy9zZXFXb3JrZmxvdzMucG5nIikKYGBgCgojIyBJbGx1bWluYSBTZXF1ZW5jaW5nIAoKYGBge3IsIGVjaG89RkFMU0UsIGZpZy5jYXA9cGFzdGUoIkZpZ3VyZTogSWxsdW1pbmEgc2VxdWVuY2luZyBzdGVwcyAxLTYgKFNvdXJjZTogSWxsdW1pbmEpIil9CmluY2x1ZGVfZ3JhcGhpY3MoIi4vaW1hZ2VzX3NlcXVlbmNpbmcvaWxsdW1pbmFTZXEtc3RlcDEtNi5qcGciKQpgYGAKYGBge3IsIGVjaG89RkFMU0UsIGZpZy5jYXA9cGFzdGUoIkZpZ3VyZTogSWxsdW1pbmEgc2VxdWVuY2luZyBzdGVwcyAxLTYgKFNvdXJjZTogSWxsdW1pbmEpIil9CmluY2x1ZGVfZ3JhcGhpY3MoIi4vaW1hZ2VzX3NlcXVlbmNpbmcvaWxsdW1pbmFTZXEtc3RlcDctMTIuanBnIikKYGBgCgojIyBTaW5nbGUgdnMgcGFpcmVkIGVuZAoKYGBge3IsIGVjaG89RkFMU0UsIGZpZy5jYXA9cGFzdGUoIkZpZ3VyZTogU2luZ2xlIHZzIHBhaXJlZCBlbmQgc2VxdWVuY2luZy4gSW4gY29udHJhc3QgdG8gc2luZ2xlLWVuZCBzZXF1ZW5jaW5nLCBwYWlyZWQtZW5kIHNlcXVlbmNpbmcgYWxsb3dzIHVzZXJzIHRvIHNlcXVlbmNlIGJvdGggZW5kcyBvZiBhIGZyYWdtZW50IChJbWFnZSBhZG9wdGVkIGZyb20gWmhlcm5ha292YSBldCBhbC4sIDIwMTMsIGRvaS5vcmcvMTAuMTM3MS9qb3VybmFsLnBnZW4uMTAwMzU5NCkuIil9CmluY2x1ZGVfZ3JhcGhpY3MoIi4vaW1hZ2VzX3NlcXVlbmNpbmcvc2luZ2xlRW5kVnNQYWlyZWRFbmQucG5nIikKYGBgCgojIyBUaGUgc2VxdWVuY2luZyB3b3JrZmxvdyB3aXRoIERldGFpbHMKCkxpYnJhcnkgcHJlcGFyYXRpb24gc3RlcHMKCjEuIEZpcnN0LCB0aGUgYmlvbG9naWNhbCAqKnNhbXBsZXMgb2YgaW50ZXJlc3QgYXJlIGNvbGxlY3RlZCoqLiBPd2luZyB0byB0aGUgbWF0dXJpdHkgb2YgZGlmZmVyZW50IHByb3RvY29scyBmb3Igc2VxdWVuY2luZywgc2V2ZXJhbCB0eXBlcyBvZiBiaW9sb2dpY2FsIGlucHV0IHNhbXBsZXMgYXJlIGFtZW5hYmxlIHRvIHNlcXVlbmNpbmcsIHN1Y2ggYXMgZnJvemVuIHRpc3N1ZXMgb3IgRkZQRS1wcmVzZXJ2ZWQgc2FtcGxlcy4KMi4gVGhlICoqbVJOQSBtb2xlY3VsZXMgZnJvbSBvdXIgc2FtcGxlIGFyZSBjYXB0dXJlZCoqLiBUaGlzIHR5cGljYWxseSBpbnZvbHZlcyBjZWxsIGx5c2lzIGluIG9yZGVyIHRvIHJlbGVhc2UgdGhlIG1STkEgbW9sZWN1bGVzIGZyb20gd2l0aGluIHRoZSBjZWxscy4gVGhlIG1STkEgbW9sZWN1bGVzIGFyZSBtb3N0IG9mdGVuIGNhcHR1cmVkIHVzaW5nIChpKSBwb2x5QS1jYXB0dXJlIHRvIHNlbGVjdCBmb3IgcG9seWFkZW55bGF0ZWQgUk5BLCBvciAoaWkpIHJpYm9zb21hbCBkZXBsZXRpb24sIHdoZXJlIHJpYm9zb21hbCBhbmQgdHJhbnNmZXIgUk5BcyBhcmUgZGVwbGV0ZWQsIGFuZCBzbyBhbHNvIG5vbi1wb2x5QS1tUk5BIG1vbGVjdWxlcyBtYXkgYmUgY2FwdHVyZWQsIHN1Y2ggYXMgbG9uZyBub24tY29kaW5nIFJOQXMuIEluIHRoZSBjYXNlIG9mIGB0YXJnZXRlZCBzZXF1ZW5jaW5nJywgd2hlcmUgcmVsZXZhbnQgbW9sZWN1bGVzIGFyZSBvZiBtYWluIGludGVyZXN0IChlLmcuLCBhIGdlbmUgcGFuZWwpLCB0aGVzZSB0YXJnZXRzIGNhbiBiZSBzcGVjaWZpY2FsbHkgdGFyZ2V0ZWQgaW4gdGhpcyBzdGVwLgozLiAqKkZyYWdtZW50YXRpb24qKiBvZiBjYXB0dXJlZCBtb2xlY3VsZXMuIFRoZSBjYXB0dXJlZCBtb2xlY3VsZXMgYXJlIGZyYWdtZW50ZWQsIGVpdGhlciBjaGVtaWNhbGx5IG9yIG1lY2hhbmljYWxseS4gVGhlIGFwcHJvcHJpYXRlIHNpemUgb2YgZnJhZ21lbnRzIGRlcGVuZHMgb24gdGhlIHNlcXVlbmNpbmcgbWFjaGluZXMsIGJ1dCBpcyBvZnRlbiBpbiB0aGUgcmFuZ2Ugb2YgMzAwIC0gNTAwYnAuCjQuICoqUmV2ZXJzZSB0cmFuc2NyaXB0aW9uKiouIEN1cnJlbnQgZG9taW5hbnQgc2VxdWVuY2luZyBtYWNoaW5lcyBvbmx5IHNlcXVlbmNlIGRvdWJsZS1zdHJhbmRlZCBETkEgbW9sZWN1bGVzLiBUaGVyZWZvcmUsIGluIG9yZGVyIHRvIG1lYXN1cmUgc2luZ2xlLXN0cmFuZGVkIG1STkEsIHdlIG11c3QgZmlyc3QgcmV2ZXJzZSB0cmFuc2NyaWJlIHRoZXNlIG1vbGVjdWxlcyB0byBhIGRvdWJsZS1zdHJhbmRlZCBjb21wbGVtZW50YXJ5IChjRE5BKSBtb2xlY3VsZS4KNS4gKipBZGFwdGVyIGxpZ2F0aW9uKiouIEFkYXB0ZXJzIGFyZSBvbGlnb251Y2xlb3RpZGVzIChzaG9ydCBzZXF1ZW5jZXMgb2YgbnVjbGVvdGlkZXMpIHRoYXQgYXJlIHBsYXRmb3JtLXNwZWNpZmljIHNlcXVlbmNlcyBmb3IgZnJhZ21lbnQgcmVjb2duaXRpb24gYnkgdGhlIHNlcXVlbmNpbmcgbWFjaGluZXMuIFRoZXNlIGFyZSBhZGRlZCBlaXRoZXIgdG8gdGhlIDMnIG9yIDUnIGVuZCBvZiB0aGUgY0ROQSBtb2xlY3VsZXMgb3IgdXNlZCBhcyBwcmltZXJzIGluIHRoZSByZXZlcnNlIHRyYW5zY3JpcHRpb24gcmVhY3Rpb24uIFRoZSBmaW5hbCBjRE5BIGxpYnJhcnkgY29uc2lzdHMgb2YgY0ROQSBpbnNlcnRzIGZsYW5rZWQgYnkgYW4gYWRhcHRlciBzZXF1ZW5jZSBvbiBlYWNoIGVuZC4gCjYuICoqUENSIGFtcGxpZmljYXRpb24qKi4gVG8gaW5jcmVhc2UgY29uY2VudHJhdGlvbiwgc2V2ZXJhbCBQQ1IgcmVhY3Rpb25zIGFyZSBwZXJmb3JtZWQuCjcuIExvYWRpbmcgdGhlIGFtcGxpZmllZCBjRE5BIGxpYnJhcnkgb24gdGhlICoqc2VxdWVuY2luZyoqIG1hY2hpbmUuIEZpbmQgb3V0IGhvdyBzZXF1ZW5jaW5nLWJ5LXN5bnRoZXNpcyB3b3JrcyB0aHJvdWdoIFt0aGlzIHZpZGVvXShodHRwczovL3d3dy55b3V0dWJlLmNvbS93YXRjaD92PWZDZDZCNUhSYVo4KS4gTm90ZSB0aGF0IHRoZSB2aWRlbyBzaG93cyBwYWlyZWQtZW5kIHNlcXVlbmNpbmcsIHdoZXJlIGEgbnVtYmVyIG9mIGJhc2VwYWlycyBhcmUgc2VxdWVuY2VkIGF0IGVhY2ggZW5kIG9mIHRoZSBmcmFnbWVudC4gQWxsIHByZXZpb3VzIHN0ZXBzIHRvZ2V0aGVyIGFyZSBkZXNjcmliZWQgYXMgYHNhbXBsZSBwcmVwJyBpbiB0aGF0IHZpZGVvLgoKYGBge3IsIGVjaG89RkFMU0UsIGZpZy5jYXA9cGFzdGUoIkZpZ3VyZTogVGhlIHNlcXVlbmNpbmcgd29ya2Zsb3cuIEltYWdlIGFkYXB0ZWQgZnJvbSBWYW4gZGVuIEJlcmdlIGV0IGFsLiAoMjAxOSkuIil9CmluY2x1ZGVfZ3JhcGhpY3MoIi4vaW1hZ2VzX3NlcXVlbmNpbmcvc2VxV29ya2Zsb3cxX2NsZWFuLnBuZyIpCmBgYAoKTm90ZSB0aGF0IHNldmVyYWwgdmFyaWFudHMgb2YgbGlicmFyeSBwcmVwYXJhdGlvbiBwcm90b2NvbHMgYXJlIGF2YWlsYWJsZS4gVGhlIG1vc3QgaW1wb3J0YW50IG9uZXMgYXJlOgoKIC0gU2luZ2xlLWVuZCB2cyBwYWlyZWQtZW5kIHNlcXVlbmNpbmc6IEluIHNpbmdsZS1lbmQgc2VxdWVuY2luZywgYSBzaW5nbGUgZW5kICgzJyBvciA1Jykgb2YgdGhlIGNETkEgZnJhZ21lbnQgaXMgc2VxdWVuY2VkLiBJbiBwYWlyZWQtZW5kIHNlcXVlbmNpbmcsIGJvdGggZW5kcyBhcmUgc2VxdWVuY2VkLCBhbmQgZGVwZW5kaW5nIG9uIHRoZSBzaXplIG9mIHRoZSBmcmFnbWVudCwgdGhlIHJlYWRzIG1heSBvciBtYXkgbm90IG92ZXJsYXAuCiAtIFN0cmFuZC1zcGVjaWZpYyBwcm90b2NvbHM6IFNvbWUgbGlicmFyeSBwcmVwYXJhdGlvbiBwcm90b2NvbHMgYWxsb3cgbWVhc3VyaW5nIHN0cmFuZCBzcGVjaWZpY2l0eSwgd2hlcmUgdGhlIHN0cmFuZCBpbmZvcm1hdGlvbiAoaS5lLiwgc2Vuc2UvYW50aXNlbnNlKSBvZiBlYWNoIHJlYWQgY2FuIGJlIHByZXNlcnZlZC4KCiMjIFRoZSBzZXF1ZW5jaW5nIG91dHB1dCBmaWxlcwoKLSBUaGUgdHlwaWNhbCBvdXRwdXQgb2YgYSBzZXF1ZW5jaW5nIG1hY2hpbmUgd2Ugd2lsbCBiZSB3b3JraW5nIHdpdGggYXJlIEZBU1RBIG9yIEZBU1RRIGZpbGVzIGZvciBlYWNoIHNhbXBsZS4gRWFjaCBvZiB0aGVzZSBmaWxlcyBhcmUgc2V2ZXJhbCBnaWdiYXNlcyBsYXJnZSBhbmQgY29udGFpbiBtaWxsaW9ucyBvZiBzZXF1ZW5jZXMsIHdoaWNoIHdlIHdpbGwgY2FsbCAqKnJlYWRzKiouIEZvciBwYWlyZWQtZW5kIHNlcXVlbmNpbmcsIHRoZXJlIGFyZSB0d28gZmlsZXMgZm9yIGVhY2ggc2FtcGxlLCBvbmUgZm9yIGVhY2ggZW5kIG9mIHRoZSBzZXF1ZW5jZWQgZnJhZ21lbnRzLgogLSBUaGUgZGlmZmVyZW5jZSBiZXR3ZWVuIGEgRkFTVEEgZmlsZSBhbmQgYSBGQVNUUSBmaWxlLCBpcyB0aGF0IHdoaWxlIEZBU1RBIGZpbGVzIG9ubHkgc3RvcmUgdGhlIHJlc3VsdHMgb2YgYmFzZSBjYWxscyAoc2VxdWVuY2VzKSwgRkFTVFEgZmlsZXMgYWxzbyBzdG9yZSB0aGUgcXVhbGl0eSBzY29yZSBvZiBlYWNoIGJhc2UgY2FsbCAoaS5lLiwgZWFjaCBjYWxsZWQgbnVjbGVvdGlkZSksIHdoaWNoIGNhbiBiZSB1c2VmdWwgaW4gZG93bnN0cmVhbSBhbmFseXNlcyBzdWNoIGFzIG1hcHBpbmcgb3IgdmFyaWFudCBjYWxsaW5nLgogLSBBIEZBU1RRIGZpbGUgY29udGFpbnMgZm91ciBsaW5lcyBmb3IgZWFjaCBzZXF1ZW5jZWQgcmVhZDoKICAgIDEuIFNlcXVlbmNlIGlkZW50aWZpZXIgbGluZSwgc3RhcnRpbmcgd2l0aCBALgogICAgMi4gVGhlIHNlcXVlbmNlLgogICAgMy4gQW5vdGhlciBzZXF1ZW5jZSBpZGVudGlmaWVyIGxpbmUsIG5vdyBzdGFydGluZyB3aXRoICsuCiAgICA0LiBRdWFsaXR5IHNjb3Jlcy4KCmBgYHtyLCBlY2hvPUZBTFNFLCBmaWcuY2FwPXBhc3RlKCJGaWd1cmU6IE9uZSByZWFkIGluIGEgRkFTVFEgZmlsZS4gU2xpZGUgY291cnRlc3kgYnkgQ2hhcmxvdHRlIFNvbmVzb24uIil9CmluY2x1ZGVfZ3JhcGhpY3MoIi4vaW1hZ2VzX3NlcXVlbmNpbmcvZmFzdHFMaW5lLnBuZyIpCmBgYAoKQXMgeW91J2xsIGhhdmUgbm90aWNlZCwgdGhlIGJhc2UgY2FsbCBxdWFsaXR5IHNjb3JlcyBhcmUgZW5jb2RlZCBhcyBBU0NJSSBjaGFyYWN0ZXJzIGZvciBlZmZpY2llbnQgc3RvcmFnZS4gVGhlc2UgQVNDSUkgY2hhcmFjdGVycyBjYW4gYmUgY29udmVydGVkIGludG8gaW50ZWdlcnMgY2FsbGVkIFBocmVkIHNjb3Jlcywgd2hpY2ggYXJlIGxvZ2FyaXRobWljYWxseSByZWxhdGVkIHRvIHRoZSBwcm9iYWJpbGl0eSBvZiBhbiBlcnJvbmVvdXMgYmFzZSBjYWxsLgoKIyMjIFF1YWxpdHkgc2NvcmUKClRoZSBQaHJlZCBTY29yZSBpcyBhIHF1YWxpdHkgc2NvcmUgCiQkUSA9IC0xMCBcbG9nX3sxMH0gcCQkLCB3aXRoIHAgdGhlIHByb2JhYmlsaXR5IG9uIGFuIGluY29ycmVjdCBiYXNlIGNhbGwKCgpgYGB7ciBlY2hvPUZBTFNFfQpkYXRhLmZyYW1lKCJQaHJlZCBTY29yZSI9c2VxKDEwLDUwLDEwKSwgCiAgICAgICAgICAgIlByb2JhYmlsaXR5IG9uIGluY29ycmVjdCBiYXNlIGNhbGwiPWMocGFzdGUwKCIxLyIsYygiMTAiLCIxMDAiLCIxMDAwIiwiMTAwMDAiLCIxMDAwMCIpKSksCiAgICAgICAgICAgIkJhc2UgY2FsbCBhY2N1cmFjeSIgPSBwYXN0ZTAoKDEtMS8xMF4oMTo1KSkqMTAwLCIlIikKICAgICAgICAgICkgJT4lICBrbml0cjo6a2FibGUoLixjb2wubmFtZXMgPSBjKCJQaHJlZCBTY29yZSIsIlByb2JhYmlsaXR5IG9uIGluY29ycmVjdCBiYXNlIGNhbGwiLCAiQmFzZSBjYWxsIGFjY3VyYWN5IikpCmBgYApQaHJlZCBzY29yZSBlbmNvZGVkIGFzIGFuIEFTQ0lJIGxldHRlci4gRS5nLiBQaHJlZCszMzogCgpgYGB7ciBlY2hvPUZBTFNFfQpyYmluZCgiUGhyZWQiPTA6NDAsIlBocmVkICsgMzMiPSgwOjQwKSszMywiQVNDSUkiPXNhcHBseShhcy5yYXcoKDA6NDApKzMzKSxyYXdUb0NoYXIpKSAlPiVrbml0cjo6a2FibGUoLikKYGBgCgojIFByZXByb2Nlc3Npbmcgb2YgcmF3IHNlcXVlbmNpbmcgZGF0YQoKQWZ0ZXIgc2VxdWVuY2luZywgd2UgdHlwaWNhbGx5IGRvIGEgcXVhbGl0eSBjb250cm9sIChRQykgY2hlY2sgdG8gdmVyaWZ5IHRoZSBxdWFsaXR5IG9mIHRoZSBzYW1wbGVzLiBEdXJpbmcgUUMgY2hlY2ssIGFiZXJyYW50IHNhbXBsZXMgZHVlIHRvIGUuZy4gZGVncmFkZWQgbVJOQSBjYW4gYmUgZGV0ZWN0ZWQuCgpUaGUgc2VxdWVuY2luZyByZWFkcyBvbiB0aGVpciBvd24gY29udGFpbiBhIGxvdCBvZiBpbmZvcm1hdGlvbiwgYnV0IGFyZSBtb3N0IHVzZWZ1bCBpZiB3ZSB3b3VsZCBiZSBhYmxlIHRvIGFzc2lnbiBzZXF1ZW5jaW5nIHJlYWRzIHRvIGdlbm9taWMgZmVhdHVyZXMgKGdlbmVzLCBleG9ucywgdHJhbnNjcmlwdHMsIGV0Yy4pLCBpLmUuLCBmb3IgZWFjaCBzZXF1ZW5jaW5nIHJlYWQgd2Ugd2lsbCB0cnkgdG8gZGVyaXZlIHRoZSAoc2V0IG9mKSBmZWF0dXJlKHMpIHRoYXQgY291bGQgaGF2ZSBwbGF1c2libHkgcHJvZHVjZWQgdGhlIGZyYWdtZW50IHRocm91Z2ggdGhlIHByb2Nlc3Mgb2YgZ2VuZSBleHByZXNzaW9uLiBUaGlzIHByb2Nlc3MgaXMgY2FsbGVkICoqbWFwcGluZyoqLiBNb3N0IG9mdGVuIHdlIG1hcCByZWFkcyB0byBnZW5lcy4gCgpgYGB7ciwgZWNobz1GQUxTRSwgZmlnLmNhcD1wYXN0ZSgiRmlndXJlOiBBbiB1cGRhdGVkIHNlcXVlbmNpbmcgd29ya2Zsb3csIGluY2x1ZGluZyBzZXF1ZW5jaW5nIGFuZCBtYXBwaW5nLiBJbWFnZSBhZGFwdGVkIGZyb20gVmFuIGRlbiBCZXJnZSBldCBhbC4gKDIwMTkpLiIpfQppbmNsdWRlX2dyYXBoaWNzKCIuL2ltYWdlc19zZXF1ZW5jaW5nL3NlcVdvcmtmbG93Mi5wbmciKQpgYGAKCiMjIFF1YWxpdHkgY29udHJvbAoKRHVyaW5nIHF1YWxpdHkgY29udHJvbCwgZGlhZ25vc3RpYyBwbG90cyBhcmUgY3JlYXRlZCBmb3IgZWFjaCBzYW1wbGUgaW4gb3JkZXIgdG8gZGV0ZXJtaW5lIGl0cyBxdWFsaXR5LiBUaGUgbW9zdCBwb3B1bGFyIFFDIHRvb2wgZm9yIGJ1bGsgUk5BLXNlcSBkYXRhIGlzIFtGYXN0UUNdKGh0dHBzOi8vd3d3LmJpb2luZm9ybWF0aWNzLmJhYnJhaGFtLmFjLnVrL3Byb2plY3RzL2Zhc3RxYy8pLiBJZiBtYW55IHNhbXBsZXMgYXJlIHNlcXVlbmNlZCwgdGhlbiBbTXVsdGlRQ10oaHR0cHM6Ly9tdWx0aXFjLmluZm8vKSBjYW4gYmUgdXNlZCB0byBhZ2dyZWdhdGUgdGhlIFFDIGNoZWNrcyBhY3Jvc3Mgc2FtcGxlcyBpbiBhIGNvbnZlbmllbnRseSBvcmdhbml6ZWQgb3ZlcnZpZXcuCgpUaGUgRmFzdFFDIHdlYnNpdGUgcHJvdmlkZXMgaW50ZXJlc3RpbmcgZXhhbXBsZSByZXBvcnRzIGZvciB1cyB0byBsb29rIGF0IGFuZCBjb21wYXJlIGFnYWluc3QuIEhlcmUgYXJlIGV4YW1wbGUgcmVwb3J0cyBvZiBbaGlnaC1xdWFsaXR5IElsbHVtaW5hIGRhdGFdKGh0dHBzOi8vd3d3LmJpb2luZm9ybWF0aWNzLmJhYnJhaGFtLmFjLnVrL3Byb2plY3RzL2Zhc3RxYy9nb29kX3NlcXVlbmNlX3Nob3J0X2Zhc3RxYy5odG1sKSBhbmQgW2xvdy1xdWFsaXR5IElsbHVtaW5hIGRhdGFdKGh0dHBzOi8vd3d3LmJpb2luZm9ybWF0aWNzLmJhYnJhaGFtLmFjLnVrL3Byb2plY3RzL2Zhc3RxYy9iYWRfc2VxdWVuY2VfZmFzdHFjLmh0bWwpLgoKIyMgUmVhZCBUcmltbWluZyAKCi0gUmVhZCBUcmltbWluZyAKCiAgICAtIEFkYXB0b3Igc2VxdWVuY2UKICAgIC0gQmFyIGNvZGUKICAgIC0gKGRldGVyaW9yYXRpbmcgYmFzZXMgYXQgdGhlIGVuZCBvZiByZWFkcykKICAgIC0gb2Z0ZW4gYWxyZWFkeSBkb25lIGJ5IHRoZSBzZXF1ZW5jaW5nIHByb3ZpZGVyLiAKICAgIC0gcmVtYWluaW5nIHBvbHlBIHRhaWxzCgotIFJlYWQgZmlsdGVyaW5nCiAgICAKICAgIC0gbG93IHF1YWxpdHkgcmVhZHMKICAgIC0gUGhpWCByZWFkcyAoc2hvdWxkIGJlIHJlbW92ZWQgYWxyZWFkeSBieSBzZXF1ZW5jZSBwcm92aWRlcikgaW4gICAgICAKICAgIC0gUk5BLXNlcSBuZXZlciByZW1vdmUgZHVwbGljYXRlcyBiZWNhdXNlIHRoZXkgY2FuIG9jY3VyIGZvciBoaWdobHkgZXhwcmVzc2VkIHRyYW5zY3JpcHRzCgotIFBlcmZvcm0gZmFzdFFDIGFnYWluCgojIyBNYXBwaW5nCgogLSBNYXBwaW5nIGlzIGEgY3JpdGljYWwgc3RlcCBpbiB0aGUgaW50ZXJwcmV0YXRpb24gb2YgUk5BLXNlcSBkYXRhLCB3aGVyZSB3ZSBhcmUgYXR0cmlidXRpbmcgcmVhZHMgdG8gZ2Vub21pYyBmZWF0dXJlcy4gCiAtIEFsbG93cyB1cyB0byBtZWFzdXJlIGhvdyBzdHJvbmcgYSBmZWF0dXJlIHN1Y2ggYXMgYSBnZW5lIGlzIGV4cHJlc3NlZDogdGhlIG51bWJlciBvZiByZWFkcyBtYXBwaW5nIHRvIGEgZ2VuZSBzZXJ2ZSBhcyBhIHByb3h5IGZvciBob3cgaGlnaCB0aGF0IGdlbmUgaGFzIGJlZW4gZXhwcmVzc2VkIGluIHRoZSBzYW1wbGUuIAogLSBXaGlsZSB0aGlzIG9wZW5zIHRoZSBkb29yIHRvIG1hbnkgb3Bwb3J0dW5pdGllcywgbWFwcGluZyBpcyBoYXJkLgogLSBXZSBhcmUgKip0eXBpY2FsbHkgdW5hYmxlIHRvIGFzc2lnbiBlYWNoIGluZGl2aWR1YWwgcmVhZCB1bmlxdWVseSoqIHRvIG9uZSBzcGVjaWZpYyBnZW5lOyBzb21lIHJlYWRzIGNhbm5vdCBiZSB1bmFtYmlndW91c2x5IG1hcHBlZCBhbmQgYXJlIGNvbXBhdGlibGUgd2l0aCBtdWx0aXBsZSBnZW5lcy4gVGhlc2UgcmVhZHMgYXJlIHNhaWQgdG8gYmUgJ211bHRpLW1hcHBpbmcnLgogCkZpbmFsbHksIGEgbm90ZSBvbiB0ZXJtaW5vbG9neS4gSW4gdGhpcyB0ZXh0IHdlIHdpbGwgdXNlIHRoZSB3b3JkcyAncmVhZCcgb3IgJ2ZyYWdtZW50JyAocmVmZXJyaW5nIHRvIHRoZSBmcmFnbWVudGVkIG1STkEgbW9sZWN1bGUgYmVpbmcgc2VxdWVuY2VkKSB0byBkZXNpZ25hdGUgYSBkYXR1bSwgbm90ZSB0aGF0IHRoaXMgY291bGQgYmUgZWl0aGVyIGEgc2luZ2xlIHJlYWQgKGluIHNpbmdsZS1lbmQgc2VxdWVuY2luZykgb3IgYSByZWFkIHBhaXIgKGluIHBhaXJlZC1lbmQgc2VxdWVuY2luZykuIFRoZSBsaXRlcmF0dXJlIG1heSBhbHNvIHVzZSB0aGVzZSB3b3JkcyBpbnRlcmNoYW5nZWFibHksIGFsdGhvdWdoICdmcmFnbWVudCcgc2VlbXMgYmV0dGVyIGF0IGF2b2lkaW5nIGFtYmlndWl0eSBiZXR3ZWVuIHNpbmdsZS1lbmQgcmVhZHMgYW5kIHBhaXJlZC1lbmQgcmVhZCBwYWlycy4KCiMjIyBSZWZlcmVuY2UgZmlsZXMKCiAtIFRoZSBhbGlnbm1lbnQgbW9zdCBvZnRlbiByZWxpZXMgb24gYSAqKnJlZmVyZW5jZSBnZW5vbWUqKiBvZiB0aGUgc3BlY2llcywgd2hpY2ggY2FuIGJlIGNvbnNpZGVyZWQgYSAncmVwcmVzZW50YXRpdmUgZXhhbXBsZScgb2YgdGhlIGdlbm9tZSBzZXF1ZW5jZSBvZiB0aGF0IHNwZWNpZXMuIFJlZmVyZW5jZSBnZW5vbWVzIGFyZSBjb250aXVvdXNseSB1cGRhdGVkIGFuZCByZWxlYXNlZCBwZXJpb2RpY2FsbHkuCiAtIFJlZmVyZW5jZSBnZW5vbWVzIGNhbiBiZSBmcmVlbHkgZG93bmxvYWRlZCBmcm9tIHNldmVyYWwgcHJvdmlkZXJzLCBmb3IgZXhhbXBsZSBbRW5zZW1ibF0oaHR0cDovL3d3dy5lbnNlbWJsLm9yZy9pbmZvL2RhdGEvZnRwL2luZGV4Lmh0bWwpIG9yIFtHZW5jb2RlXShodHRwczovL3d3dy5nZW5jb2RlZ2VuZXMub3JnL2h1bWFuLykuCiAtIEFsb25nIHdpdGggYSByZWZlcmVuY2UgZ2Vub21lLCBhbiBhbm5vdGF0aW9uIEdGRiBvciBHVEYgZmlsZSBkZWZpbmVzIHRoZSBjb29yZGluYXRlcyBvZiBzcGVjaWZpYyBnZW5vbWljIGZlYXR1cmVzLgogLSBXaGlsZSBoZXJlIHdlIHdpbGwgZm9jdXMgb24gcmVmZXJlbmNlLWJhc2VkIGFsaWdubWVudCwgaS5lLiwgYWxpZ25tZW50IHdoZXJlIGEgcmVmZXJlbmNlIGdlbm9tZSBvciB0cmFuc2NyaXB0b21lIGlzIGF2YWlsYWJsZSwgbm90ZSB0aGF0IGEgKmRlIG5vdm8qIGNvbnN0cnVjdGlvbiBvZiBhIHJlZmVyZW5jZSB0cmFuc2NyaXB0b21lIGlzIGFsc28gcG9zc2libGUsIHdoZXJlIHRoZSByZWZlcmVuY2UgbWF5IGJlIGNvbnN0cnVjdGVkIGZyb20gdGhlIG9ic2VydmVkIHNlcXVlbmNpbmcgcmVhZHMuCgpgYGB7ciByZWZHZW5vbWUsIGVjaG89RkFMU0UsIGZpZy5jYXA9InNsaWRlIGNvdXJ0ZXN5IENoYXJsb3R0ZSBTb25lc29uIiwgb3V0LndpZHRoPScxMDAlJ30Ka25pdHI6OmluY2x1ZGVfZ3JhcGhpY3MoIi4vaW1hZ2VzX3NlcXVlbmNpbmcvaHVtYW5SZWZlcmVuY2VHZW5vbWUucGRmIikKYGBgCgogCgpgYGB7ciwgZWNobz1GQUxTRSwgZmlnLmNhcD1wYXN0ZSgiRmlndXJlOiBBIHJlZmVyZW5jZSBzZXF1ZW5jZSBvZiBodW1hbiBjaHIxLiIpfQppbmNsdWRlX2dyYXBoaWNzKCIuL2ltYWdlc19zZXF1ZW5jaW5nL3JlZmVyZW5jZUdlbm9tZS5wbmciKQpgYGAKCgpgYGB7ciByZWZUcmFuc2NyaXB0b21lLCBlY2hvPUZBTFNFLCBmaWcuY2FwPSJzbGlkZSBjb3VydGVzeSBDaGFybG90dGUgU29uZXNvbiIsIG91dC53aWR0aD0nMTAwJSd9CmtuaXRyOjppbmNsdWRlX2dyYXBoaWNzKCIuL2ltYWdlc19zZXF1ZW5jaW5nL2h1bWFuUmVmZXJlbmNlVHJhbnNjcmlwdG9tZS5wZGYiKQpgYGAKCmBgYHtyLCBlY2hvPUZBTFNFLCBmaWcuY2FwPXBhc3RlKCJGaWd1cmU6IEFuIGV4YW1wbGUgR1RGIGZpbGUuIil9CmluY2x1ZGVfZ3JhcGhpY3MoIi4vaW1hZ2VzX3NlcXVlbmNpbmcvZ3RmRmlsZS5wbmciKQpgYGAKCiAtIE1vcmUgcmVjZW50bHksIG1hcHBpbmcgb2YgUk5BLXNlcSBkYXRhIG9jY3VycyBtb3JlIG9mdGVuIGFnYWluc3QgYSAqKnJlZmVyZW5jZSB0cmFuc2NyaXB0b21lKiosIHdoaWNoIGlzIGEgcmVmZXJlbmNlIGZpbGUgY29udGFpbmluZyB0aGUgc2VxdWVuY2VzIGFsbCBrbm93biBpc29mb3JtcyBvZiBhIHBhcnRpY3VsYXIgc3BlY2llcywgZS5nLiwgdXNpbmcgW2thbGxpc3RvXShodHRwczovL3d3dy5uYXR1cmUuY29tL2FydGljbGVzL25idC4zNTE5KSBvciBbU2FsbW9uXShodHRwczovL3d3dy5uYXR1cmUuY29tL2FydGljbGVzL25tZXRoLjQxOTcpLgogLSBUaGUgc2V0IG9mIHNwbGljZWQgdHJhbnNjcmlwdHMgaXMgbXVjaCBzbWFsbGVyIHRoYW4gdGhlIGVudGlyZSBnZW5vbWUsIGFuZCB0aGVyZWZvcmUgbWFwcGluZyBhZ2FpbnN0IGEgcmVmZXJlbmNlIHRyYW5zY3JpcHRvbWUgaXMgdHlwaWNhbGx5ICoqZmFzdCBhbmQgbWVtb3J5IGVmZmljaWVudCoqLgogLSBIb3dldmVyLCBbaXQgaGFzIGJlZW4gbm90ZWRdKGh0dHBzOi8vd3d3LmJpb3J4aXYub3JnL2NvbnRlbnQvMTAuMTEwMS8yMDIxLjA1LjA1LjQ0Mjc1NXYxKSB0aGF0IG1hcHBpbmcgYWdhaW5zdCBhIHJlZmVyZW5jZSB0cmFuc2NyaXB0b21lIG1heSBhbHNvIGludHJvZHVjZSBzcHVyaW91cyBleHByZXNzaW9uIGZvciBnZW5lcyB0aGF0IGFyZSBub3QgZXhwcmVzc2VkLiBUaGVzZSBvYnNlcnZhdGlvbnMgY2FuIGJlIGV4cGxhaW5lZCBieSAqKmludHJvbmljIHJlYWRzKiogdGhhdCBzaGFyZSBzb21lIHNlcXVlbmNlIHNpbWlsYXJpdHkgd2l0aCB0cmFuc2NyaXB0cywgYW5kIGNvdWxkIG1hcCB0byBzcGxpY2VkIHRyYW5zY3JpcHQgc2VxdWVuY2VzLiBSZWNlbnQgbWV0aG9kcywgc3VjaCBhcyBbYWxldmluLWZyeV0oaHR0cHM6Ly93d3cuYmlvcnhpdi5vcmcvY29udGVudC8xMC4xMTAxLzIwMjEuMDYuMjkuNDUwMzc3djEpLCBhdm9pZCB0aGlzIGJ5IGV4cGFuZGluZyB0aGUgcmVmZXJlbmNlIHRyYW5zY3JpcHRvbWUgdG8gYWxzbyBpbmNsdWRlIGludHJvbmljIHNlcXVlbmNlcy4KCiMjIyBBbGlnbm1lbnQtYmFzZWQgd29ya2Zsb3dzCgogLSBUcmFkaXRpb25hbGx5LCBhbGlnbm1lbnQtYmFzZWQgd29ya2Zsb3dzIGhhdmUgYmVlbiB1c2VkIHRvIG1hcCByZWFkcywgd2hlcmUgb25lIHRyaWVzIHRvIGZpbmQgdGhlIGV4YWN0IGNvb3JkaW5hdGVzIGEgcmVhZCBtYXBzIHRvIG9uIHRoZSByZWZlcmVuY2UgZ2Vub21lIG9yIHRoZSByZWZlcmVuY2UgdHJhbnNjcmlwdG9tZS4KIC0gTm90ZSB0aGF0IGR1ZSB0byBhbHRlcm5hdGl2ZSBzcGxpY2luZywgcmVhZHMgZG8gbm90IG5lY2Vzc2FyaWx5IG1hcCBjb250aWd1b3VzbHkgb24gYSByZWZlcmVuY2UgZ2Vub21lLCBhcyBhIHJlYWQgY2FuIG92ZXJsYXAgd2l0aCBhIHNwbGljaW5nIGp1bmN0aW9uLCB3aGVyZSBhbiBpbnRyb24gaGFzIGJlZW4gZXhjaXNlZC4gV2hlbiBtYXBwaW5nIGFnYWluc3QgYSB0cmFuc2NyaXB0b21lLCBob3dldmVyLCByZWFkcyBzaG91bGQgYmUgbWFwcGluZyBjb250aWd1b3VzbHkuCiAgLSBBIG1haW4gY2hhbGxlbmdlIGluIHNwbGljZWQgYWxpZ25tZW50IGFnYWluc3QgYSByZWZlcmVuY2UgZ2Vub21lIGlzIHRoZSBwcm9wZXIgYWxpZ25tZW50IG9mIHJlYWRzIHRoYXQgc3BhbiBhIHNwbGljZSBqdW5jdGlvbiwgZXNwZWNpYWxseSB3aGVuIHRoZXNlIGp1bmN0aW9ucyBhcmUgbm90IGFubm90YXRlZCBhIHByaW9yaS4gSW5kZWVkLCBpbiBzcGxpY2VkIGFsaWdubWVudCByZWFkcyBjYW4gYmUgc3BsaXQgYXQgYW55IG51Y2xlb3RpZGUsIGFuZCB0aGUgY29ycmVzcG9uZGluZyBzdWJzZXF1ZW5jZXMgY2FuIG1hcCBzZXZlcmFsIHRob3VzYW5kcyBvZiBiYXNlcGFpcnMgYXBhcnQuIE1lYW53aGlsZSwgdGhlIG1haW4gY2hhbGxlbmdlIGluIHVuc3BsaWNlZCBhbGlnbm1lbnQgdG8gYSB0cmFuc2NyaXB0b21lIGlzIHRoZSByZWR1bmRhbnQgc2VxdWVuY2UgYW1vbmcgcmVsYXRlZCB0cmFuc2NyaXB0cyBpbiB0aGUgdHJhbnNjcmlwdG9tZSwgd2hpY2ggb2Z0ZW4gbGVhZHMgdG8gYSBoaWdoIG11bHRpLW1hcHBpbmcgcmF0ZSAoaS5lLiwgcmVhZHMgdGhhdCBjYW5ub3QgYmUgdW5hbWJpZ3VvdXNseSBhc3NpZ25lZCB0byBhIHNpbmdsZSB0cmFuc2NyaXB0KS4KIC0gU3BsaWNlZCBhbGlnbm1lbnQgYWdhaW5zdCBhIGdlbm9tZSBpcyB0aGVyZWZvcmUgY29tcHV0YXRpb25hbGx5IGEgbXVjaCBoYXJkZXIgdGFzay4gU2luY2UgdGhlIHRyYW5zY3JpcHQgc2VxdWVuY2VzIGFyZSBhbHJlYWR5IHNwbGljZWQgd2hlbiBhbGlnbmluZyB0byBhIHJlZmVyZW5jZSB0cmFuc2NyaXB0b21lLCByZWFkcyBzaG91bGQgYWxpZ24gY29udGlndW91c2x5LCBhbmQgbWFueSBvZiB0aGUgY29tcHV0YXRpb25hbGx5IGV4cGVuc2l2ZSBzdGVwcyBhbmQgaGV1cmlzdGljcyBjYW4gYmUgYXZvaWRlZCwgdGhlcmUuCgpgYGB7ciwgZWNobz1GQUxTRSwgZmlnLmNhcD1wYXN0ZSgiRmlndXJlOiBVbnNwbGljZWQgYW5kIHNwbGljZWQgYWxpZ25tZW50LiBGaWd1cmUgZnJvbSBWYW4gZGVuIEJlcmdlIGV0IGFsLiAoMjAxOSkuIil9CmluY2x1ZGVfZ3JhcGhpY3MoIi4vaW1hZ2VzX3NlcXVlbmNpbmcvc3BsaWNlZEFsaWdubWVudC5wbmciKQpgYGAKCiMjIyBBbGlnbm1lbnQtZnJlZSB3b3JrZmxvd3MKCiAtIE1vZGVybiBhcHByb2FjaGVzIGF2b2lkIG1hcHBpbmcgZWFjaCBmcmFnbWVudCBpbmRpdmlkdWFsbHkgKGkuZS4sIGRvIG5vdCBhdHRlbXB0IHRvIGZpbmQgdGhlIGV4YWN0IGNvb3JkaW5hdGVzIG9mIGEgcmVhZCdzIG9yaWdpbiksIGFuZCBpbnN0ZWFkIHBvc2l0IGEgcHJvYmFiaWxpc3RpYyBtb2RlbCB3aGVyZSB0cmFuc2NyaXB0IGFidW5kYW5jZXMgYXJlIHR5cGljYWxseSBkZWZpbmVkIHVzaW5nIGl0cyBjb25zdGl0dWVudCAkayQtbWVycy4gVGhlc2UgbWV0aG9kcyBhcmUgc29tZXRpbWVzIHJlZmVycmVkIHRvIGFzICpsaWdodHdlaWdodCouCiAtIEEgJGskLW1lciBpcyBhIHNob3J0IHNlcXVlbmNlIG9mIG51Y2xlb3RpZGVzIG9mIGxlbmd0aCAkayQuIFRoZSBzcGFjZSBvZiBwb3NzaWJsZSAkayQtbWVycyBhbmQgdGhlIGNvcnJlc3BvbmRpbmcgdHJhbnNjcmlwdHMgY2FuIGJlIHByZWNvbXB1dGVkIGluIGFkdmFuY2UgdXNpbmcgdGhlIHJlZmVyZW5jZSB0cmFuc2NyaXB0b21lLCBwcm92aWRpbmcgYSBjb21wdXRhdGlvbmFsIGFkdmFudGFnZSBhcyBpdCBvbmx5IG5lZWRzIHRvIGJlIGNvbXB1dGVkIG9uY2UuCiAtIEZvciBlYWNoIGZyYWdtZW50LCB0aGUgdHJhbnNjcmlwdHMgaXRzICRrJC1tZXJzIGFyZSBjb21wYXRpYmxlIHdpdGggaXMgc2VhcmNoZWQgZm9yIHVzaW5nIGFuIGluZGV4ZWQgKGVmZmljaWVudGx5IHNlYXJjaGFibGUpIHRyYW5zY3JpcHRvbWUuIFRoZSBzZXQgb2YgY29tcGF0aWJsZSB0cmFuc2NyaXB0cyBpcyBjYWxsZWQgdGhlICckayQtY29tcGF0aWJpbGl0eSBjbGFzcycsICdlcXVpdmFsZW5jZSBjbGFzcycgb3IgJ3RyYW5zY3JpcHQgY29tcGF0aWJpbGl0eSBjbGFzcycgb2YgdGhlIGZyYWdtZW50LgogCmBgYHtyLCBlY2hvPUZBTFNFLCBmaWcuY2FwPXBhc3RlKCJGaWd1cmU6IE92ZXJ2aWV3IG9mIGthbGxpc3RvLCBpbWFnZSBmcm9tIEJyYXkgZXQgYWwuICgyMDE2KS4iKX0KaW5jbHVkZV9ncmFwaGljcygiLi9pbWFnZXNfc2VxdWVuY2luZy9rYWxsaXN0b19lcXVpdmFsZW5jZUNsYXNzZXMucG5nIikKaW5jbHVkZV9ncmFwaGljcygiLi9pbWFnZXNfc2VxdWVuY2luZy9rYWxsaXN0b19lcXVpdmFsZW5jZUNsYXNzZXNfY2FwdGlvbi5wbmciKQpgYGAKIAojIyBBYnVuZGFuY2UgcXVhbnRpZmljYXRpb24KCkdpdmVuIGEgc2V0IG9mIG1hcHBpbmdzLCB1c2luZyBlaXRoZXIgYWxpZ25tZW50LWJhc2VkIG9yIGFsaWdubWVudC1mcmVlIHdvcmtmbG93cywgdGhlIGVzdGltYXRpb24gb2YgZXhwcmVzc2lvbiBvZiBhIGdlbmUvdHJhbnNjcmlwdC9leG9uIG1heSBvY2N1ciBpbiBzZXZlcmFsIHdheXMuCgoqKkNvdW50aW5nKio6CgogLSBJbiBhbGlnbm1lbnQtYmFzZWQgd29ya2Zsb3dzLCBvbmUgY291bGQgZG8gYSBkaXJlY3QgY291bnRpbmcgb2YgZnJhZ21lbnRzIGF0IHRoZSBnZW5lLWxldmVsLCBjb3VudGluZyB0aGUgbnVtYmVyIGZyYWdtZW50cyBtYXBwaW5nIHRvIGVhY2ggZ2VuZS4gVGhpcyBoYXMgYmVlbiB0aGUgZG9taW5hbnQgYXBwcm9hY2ggZm9yIHRoZSBmaXJzdCBkZWNhZGUgb2YgUk5BLXNlcSBkYXRhLCBvZnRlbiBvYnRhaW5lZCB1c2luZyByZWZlcmVuY2UgZ2Vub21lIGFsaWdubWVudHMuIAogLSBNYW55IGhldXJpc3RpYyBjaG9pY2VzIG5lZWQgdG8gYmUgbWFkZTogRG8gd2UgY291bnQgYSBmcmFnbWVudCBhcyBzb29uIGFzIGl0IGludGVyc2VjdHMgd2l0aCB0aGUgZ2VuZSdzIGNvb3JkaW5hdGVzLCBvciBkbyB3ZSByZXF1aXJlIHRoZSBmdWxsIGZyYWdtZW50IHRvIG1hcCB0byB0aGUgZ2VuZT8gRG8gd2UgY291bnQgaW50cm9uaWMgcmVhZHM/IERvIHdlIGNvdW50IG11bHRpLW1hcHBpbmcgcmVhZHM/CiAKYGBge3IsIGVjaG89RkFMU0UsIGZpZy5jYXA9cGFzdGUoIkZpZ3VyZTogR2VuZS0gYW5kIGV4b24tbGV2ZWwgcmVhZCBjb3VudGluZy4gSW1hZ2UgYWRhcHRlZCBmcm9tIENoYXJsb3R0ZSBTb25lc29uLiIpfQppbmNsdWRlX2dyYXBoaWNzKCIuL2ltYWdlc19zZXF1ZW5jaW5nL3JlYWRDb3VudGluZy5wbmciKQpgYGAKIAoqKkVzdGltYXRpb24qKjogCiAKIC0gQWJ1bmRhbmNlIHF1YW50aWZpY2F0aW9uIGlzIG1vcmUgcmVjZW50bHkgc3RhcnRpbmcgdG8gc2hpZnQgZnJvbSBjb3VudGluZyB0b3dhcmRzIHVzaW5nIHN0YXRpc3RpY2FsIG1vZGVscyB0byBlc3RpbWF0ZSB0aGUgZXhwcmVzc2lvbiBjb3VudHMgZm9yIGEgZmVhdHVyZSwgd2hpY2ggaW4gdGhpcyBjYXNlIGlzIHR5cGljYWxseSBhIHRyYW5zY3JpcHQuIAogLSBUaGlzIGFwcHJvYWNoIGlzIGFtZW5hYmxlIHRvIGFsaWdubWVudC1mcmVlIHdvcmtmbG93cywgc2luY2UgdGhlIG51bWJlciBvZiBmcmFnbWVudHMgaW4gZWFjaCBlcXVpdmFsZW5jZSBjbGFzcyBhcmUgc3VmZmljaWVudCBzdGF0aXN0aWNzIGZvciB0aGUgYWJ1bmRhbmNlIHF1YW50aWZpY2F0aW9uLCBtZWFuaW5nIHRoYXQgdGhleSBjb250YWluIGFsbCBpbmZvcm1hdGlvbiBuZWVkZWQgdG8gZXN0aW1hdGUgdGhlIHBhcmFtZXRlcnMgb2YgdGhlIHN0YXRpc3RpY2FsIG1vZGVsLCBhbmQgaGVuY2UgdGhlIGZlYXR1cmUtbGV2ZWwgYWJ1bmRhbmNlcy4gU2luY2UgdGhlIGV4cHJlc3Npb24gY291bnRzIGluIHRoaXMgY2FzZSBhcmUgZXN0aW1hdGVkLCB0aGV5IGFyZSBub3QgbmVjZXNzYXJpbHkgaW50ZWdlciBjb3VudHMsIGFuZCB3aWxsIGJlIHJlZmVycmVkIHRvIGFzICdlc3RpbWF0ZWQgY291bnRzJy4gCiAtIEluIG9yZGVyIHRvIGRlcml2ZSB0aGVzZSwgdGhlIEVNLWFsZ29yaXRobSBpcyBvZnRlbiB1c2VkLCBhbHRob3VnaCBvdGhlciBhcHByb2FjaGVzIGhhdmUgYmVlbiB1c2VkIGJ5IHRvb2xzIGxpa2UgU2FsbW9uLiBBIGJpZyBhZHZhbnRhZ2Ugb2YgdGhlIGVzdGltYXRpb24gYXBwcm9hY2ggaXMgdGhhdCBpdCBwcm9iYWJpbGlzdGljYWxseSBhc3NpZ25zIGZyYWdtZW50cyB0byB0cmFuc2NyaXB0cywgdGhlcmVieSBhdXRvbWF0aWNhbGx5IGRlYWxpbmcgd2l0aCBtdWx0aS1tYXBwaW5nIHJlYWRzLiBUaGUgdG90YWwgbnVtYmVyIG9mIGZyYWdtZW50cyBtYXBwaW5nIHRvIGVhY2ggdHJhbnNjcmlwdCBpcyB0aGVuIHRoZSBzdW0gb2YgYWxsIGZyYWdtZW50LWxldmVsIHByb2JhYmlsaXRpZXMgdG8gYmUgYXNzaWduZWQgdG8gdGhhdCByZXNwZWN0aXZlIHRyYW5zY3JpcHQuCiAKYGBge3IsIGVjaG89RkFMU0UsIGZpZy5jYXA9cGFzdGUoIkZpZ3VyZTogQWJ1bmRhbmNlIHF1YW50aWZpY2F0aW9uIHVzaW5nIHRoZSBFTSBhbGdvcml0aG0uIEZpZ3VyZSBmcm9tIFZhbiBkZW4gQmVyZ2UgZXQgYWwuICgyMDE5KS4iKX0KaW5jbHVkZV9ncmFwaGljcygiLi9pbWFnZXNfc2VxdWVuY2luZy9hYnVuZGFuY2VFTUFsZ29yaXRobS5wbmciKQpgYGAKCiMjIyBBYnVuZGFuY2UgbWV0cmljcwoKIC0gRm9yIHNpbXBsaWNpdHksIHdlIGhhdmUgb25seSBiZWVuIHRhbGtpbmcgYWJvdXQgZmVhdHVyZS1sZXZlbCBjb3VudHMgYXMgaW4gc3VtcyBvZiBmcmFnbWVudHMuIEhvd2V2ZXIsIHRoaXMgaXMgbWVyZWx5IG9uZSBtZXRyaWMgdGhhdCBjYW4gYmUgdXNlZCBhcyBhIHByb3h5IGZvciBleHByZXNzaW9uLCBhbmQgc2V2ZXJhbCBvdGhlcnMgZXhpc3QuIAogLSBNb3N0IG9mIHRoZXNlIHdlcmUgaW50cm9kdWNlZCB0byBhdHRlbXB0IHRvIG1ha2UgdGhlIGFidW5kYW5jZXMgbW9yZSBjb21wYXJhYmxlIGFjcm9zcyBzYW1wbGVzIG9yIGZlYXR1cmVzLCBhcyBjb21wYXJlZCB0byB0aGUgc2ltcGxlIGNvdW50cy4gVGhlc2UgbWFpbmx5IHNlcnZlIHRvIGNvcnJlY3QgZm9yIHRlY2huaWNhbCBiaWFzZXMgc3VjaCBhcyB0cmFuc2NyaXB0IGxlbmd0aCBhbmQgc2VxdWVuY2luZyBkZXB0aCwgYm90aCBvZiB3aGljaCBoYXZlIHNpZ25pZmljYW50IGltcGFjdCBvbiB0aGUgb2JzZXJ2ZWQgY291bnRzLiAKICAtIEluZGVlZCwgZm9yIGEgZ2VuZSB3aXRoIHRoZSBzYW1lIG1STkEgY29uY2VudHJhdGlvbiBpbiB0d28gc2FtcGxlcywgc2VxdWVuY2luZyBvbmUgc2FtcGxlIGRlZXBlciwgd2lsbCBvbiBhdmVyYWdlIHJlc3VsdCBpbiBhIGhpZ2hlciBjb3VudC4gCiAgLSBMaWtld2lzZSwgZm9yIHR3byB0cmFuc2NyaXB0cyB3aXRoIHRoZSBzYW1lIG1STkEgY29uY2VudHJhdGlvbiBidXQgZGlmZmVyZW50IHRyYW5zY3JpcHQgbGVuZ3Rocywgb25lIHdpbGwgdGVuZCB0byBvYnNlcnZlIG1vcmUgZnJhZ21lbnRzIGZyb20gdGhlIGxvbmdlciB0cmFuc2NyaXB0IGR1ZSB0byB0aGUgZnJhZ21lbnRhdGlvbiBzdGVwIGluIHRoZSBSTkEtc2VxIHByb3RvY29sLCB3aGVyZSBsb25nZXIgdHJhbnNjcmlwdHMgY2FuIGJlIHNwbGl0IGludG8gbW9yZSBmcmFnbWVudHMgb2YgYXBwcm9wcmlhdGUgbGVuZ3RoLgoKCkJlbG93IHdlIGludHJvZHVjZSBzZXZlcmFsIHJlbGV2YW50IGFidW5kYW5jZSBtZXRyaWNzLCBidXQgbm90ZSB0aGF0IG1vc3QgZGF0YSBhbmFseXNpcyBtZXRob2RzIHdlIHdpbGwgZGlzY3VzcyBpbiB0aGlzIGNvdXJzZSB3aWxsIHdvcmsgd2l0aCAoZXN0aW1hdGVkKSBjb3VudHMuIEluIHdoYXQgZm9sbG93cywgbGV0ICRZX3tmaX0kIGRlbm90ZSB0aGUgcmFuZG9tIHZhcmlhYmxlIHJlcHJlc2VudGluZyB0aGUgZXhwcmVzc2lvbiBjb3VudHMgb2YgZmVhdHVyZSAkZiQgaW4gc2FtcGxlICRpJCAob2J0YWluZWQgZWl0aGVyIGFzIGEgc2ltcGxlIHN1bSBvZiBmcmFnbWVudHMgb3IgZXN0aW1hdGVkIHVzaW5nIGxpZ2h0d2VpZ2h0IGFwcHJvYWNoZXMpLCBhbmQgbGV0ICROX2kgPSBcc3VtX2YgWV97Zml9JCBkZW5vdGUgdGhlIHNlcXVlbmNpbmcgZGVwdGggb2Ygc2FtcGxlICRpJC4KCiAqICoqQ291bnRzIHBlciBtaWxsaW9uIChDUE0pKiogYXJlIHRoZSBjb3VudHMgb25lIGNvdWxkIGV4cGVjdCB0byBvYnNlcnZlIGlmIHRoZSBzYW1wbGUgd2FzIHNlcXVlbmNlZCB0byBhIGRlcHRoIG9mIG9uZSBtaWxsaW9uLgogClxbIENQTV97Zml9ID0gXGZyYWN7WV97Zml9fXtOX2l9IDEwXjYgXF0KCiAqICoqVHJhbnNjcmlwdHMgcGVyIG1pbGxpb24gKFRQTSkqKiByZWZlcnMgdG8gdGhlIGNvbmNlbnRyYXRpb24gb3IgcHJvcG9ydGlvbiBvZiB5b3VyIGZlYXR1cmUgaW4gdGhlIHNhbXBsZS4gVFBNcyB0YWtlIGludG8gYWNjb3VudCB0aGUgbGVuZ3RoIG9mIHRoZSBmZWF0dXJlLCB3aGljaCBpcyBvZnRlbiByZWZvcm11bGF0ZWQgaW50byBhbiAqZWZmZWN0aXZlIGxlbmd0aCogJGxfe2ZpfV57KGVmZil9JCwgcmVsYXRpbmcgdG8gdGhlIG51bWJlciBvZiBwb3NzaWJsZSBzdGFydCBzaXRlcyB0aGF0IGEgZmVhdHVyZSBtYXkgaGF2ZSBpbiBvcmRlciB0byBnZW5lcmF0ZSBmcmFnbWVudHMgb2YgYSB0eXBpY2FsIGxlbmd0aCBvYnNlcnZlZCBpbiB5b3VyIGRhdGFzZXQuIFRoaXMgdHlwaWNhbCBsZW5ndGggaXMgb2Z0ZW4gY2FsY3VsYXRlZCB1c2luZyB0aGUgb2JzZXJ2ZWQgZnJhZ21lbnQgbGVuZ3RoIGRpc3RyaWJ1dGlvbiBmcm9tIHRoZSBkYXRhIGFuZCBkZWZpbmVkIGFzICQkIGxfe2ZpfV57KGVmZil9ID0gbF97Zn0gLSBcaGF0e1xiYXJ7Rn19X2kgKyAxLCQkIHdoZXJlICRsX3tmfSQgaXMgdGhlIHRvdGFsIGxlbmd0aCBvZiBhIGZlYXR1cmUgaW4gdGVybXMgb2YgbnVtYmVyIG9mIG51Y2xlb3RpZGVzLCBhbmQgJFxoYXR7XGJhcntGfX1faSQgaXMgdGhlIGVzdGltYXRlZCBhdmVyYWdlIGZyYWdtZW50IGxlbmd0aCBpbiBzYW1wbGUgJGkkLiBXZSBjYW4gdXNlIHRoaXMgdG8gZGVmaW5lICQkIFRQTV97Zml9ID0gXGZyYWN7WV97Zml9fXtsX3tmaX1eeyhlZmYpfX0gXGxlZnQoIFxmcmFjezF9e1xzdW1fZiBcZnJhY3tZX3tmaX19e2xfe2ZpfV57KGVmZil9fX0gXHJpZ2h0KSAxMF42LiQkIE5vdGUgdGhhdCB0aGUgZmlyc3QgcGFydCBvZiB0aGUgcmlnaHQtaGFuZC1zaWRlIChSSFMpLCAkXGZyYWN7WV97Zml9fXtsX3tmaX1eeyhlZmYpfX0kIGlzIHRoZSBleHByZXNzaW9uIGNvdW50cyBub3JtYWxpemVkIGZvciB0aGUgbGVuZ3RoIG9mIHRoZSBmZWF0dXJlLiBUaGlzIG1lYXN1cmUsIGhvd2V2ZXIsIGlzIHN0aWxsIGFmZmVjdGVkIGJ5IHRoZSBzZXF1ZW5jaW5nIGRlcHRoLCB3aGljaCBpcyB0aGVuIGFsbGV2aWF0ZWQgYnkgZGl2aWRpbmcgYnkgdGhlIHN1bSBvZiB0aGUgbGVuZ3RoLW5vcm1hbGl6ZWQgY291bnRzIGFjcm9zcyBhbGwgZmVhdHVyZXMsIGkuZS4sICRcc3VtX2YgXGZyYWN7WV97Zml9fXtsX3tmaX1eeyhlZmYpfX0kLiBUUE1zIGhlbmNlIG5vcm1hbGl6ZSBmb3IgdGhlIGZlYXR1cmUgbGVuZ3RoIGFzIHdlbGwgYXMgc2VxdWVuY2luZyBkZXB0aC4KCiMjIyBUaGUgZmluYWwgY291bnRkb3duCgpPbmNlIGFidW5kYW5jZXMgaGF2ZSBiZWVuIHF1YW50aWZpZWQsIHRoZSAoZXN0aW1hdGVkKSBjb3VudHMgYXJlIHR5cGljYWxseSBzdG9yZWQgaW4gYSBjb3VudCBtYXRyaXgsIHdpdGggZ2VuZXMgc3Bhbm5pbmcgdGhlIHJvd3MgYW5kIHNhbXBsZXMgc3Bhbm5pbmcgdGhlIGNvbHVtbnMuIFRoaXMgY291bnQgbWF0cml4IGZvcm1zIHRoZSBiYXNpcyBvZiBtb3N0IGRvd25zdHJlYW0gYW5hbHlzZXMgdG8gaW50ZXJwcmV0IFJOQS1zZXEgZGF0YSwgYW5kIGl0IHdpbGwgYmUgdGhlIG1haW4gb2JqZWN0IHdlIHdpbGwgYmUgd29ya2luZyB3aXRoIGluIHRoZSBmb2xsb3dpbmcgbGVjdHVyZXMuCgoKYGBge3IsIGVjaG89RkFMU0UsIGZpZy5jYXA9cGFzdGUoIkZpZ3VyZTogQW4gdXBkYXRlZCBzZXF1ZW5jaW5nIHdvcmtmbG93LiBJbWFnZSBhZGFwdGVkIGZyb20gVmFuIGRlbiBCZXJnZSBldCBhbC4gKDIwMTkpLiIpfQppbmNsdWRlX2dyYXBoaWNzKCIuL2ltYWdlc19zZXF1ZW5jaW5nL3NlcVdvcmtmbG93My5wbmciKQpgYGAKCiMgUmVmZXJlbmNlcwoKCg==</div>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("sequencing_intro.Rmd");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

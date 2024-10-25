@@ -102,13 +102,13 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
   - Solution: [Heart Example](heartMainInteraction.html)
 <!---->
 
-<!--
+
 ## Module II: Next-generation Sequencing (Week 6-12)
   
 ### 1. Introduction to sequencing technology, QC, read mapping and count table
 
 - Lecture Introduction to Sequencing: [html](./sequencing_intro.html),[pdf](./sequencing_intro.pdf)
-- Tutorial: [handout](./sequencingTutorial1_mapping.html), [C. elegans Example](./docs/elegansAlignmentCountTable.html)
+- Tutorial: [handout](./sequencingTutorial1_mapping.html), [C. elegans Example](./elegansAlignmentCountTable.html)
 
 
 ### 2. Introduction to count data and GLMs
@@ -125,6 +125,7 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
 - [Soneson et al. 2016](https://f1000research.com/articles/4-1521/v2)
 - Tutorial: [handout](./sequencingTutorial3_DE.html)
 
+<!--
 ### 5. Solutions Bulk RNA-seq Data Analysis
 
 - airway example: [html](./airway.html)

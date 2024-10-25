@@ -279,7 +279,16 @@ $(document).ready(function () {
     <li>
       <a href="pda_blocking_wrapup.html">2.3.2. Wrap-up DA - Blocking</a>
     </li>
-    <li class="dropdown-header">2.3.3. Technical Details</li>
+    <li>
+      <a href="pda_technicalDetails.html">2.3.3. Technical Details</a>
+    </li>
+    <li class="dropdown-header">---- MODULE II RNA-seq ----</li>
+    <li>
+      <a href="sequencing_intro.html">1.  Introduction to RNA-seq</a>
+    </li>
+    <li>
+      <a href="sequencing_countData.html">2.  Working with count data and GLMs</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -307,6 +316,12 @@ $(document).ready(function () {
     </li>
     <li>
       <a href="pda_tutorialDesign.html">2.3. Quantification - Design</a>
+    </li>
+    <li>
+      <a href="sequencingTutorial1_mapping.html">1. Read mapping</a>
+    </li>
+    <li>
+      <a href="sequencingTutorial2_DE.html">2. Working with Count Data</a>
     </li>
   </ul>
 </li>
@@ -344,9 +359,9 @@ href="./software.html">software</a></p>
 <ol style="list-style-type: decimal">
 <li>Open Rstudio, you will see the following login window</li>
 </ol>
-<div class="float">
-<img src="figures/rstudio.png" alt="Figure 1. RStudio" />
-<div class="figcaption">Figure 1. RStudio</div>
+<div class="figure">
+<img src="figures/rstudio.png" alt="" />
+<p class="caption">Figure 1. RStudio</p>
 </div>
 <ol start="2" style="list-style-type: decimal">
 <li>Copy and paste following commands in the console window and type
@@ -354,10 +369,9 @@ enter</li>
 </ol>
 <pre><code>library(msqrob2gui)
 launchMsqrob2App()</code></pre>
-<div class="float">
-<img src="figures/rstudio2.png"
-alt="Figure 2. Rstudio with launchcommand" />
-<div class="figcaption">Figure 2. Rstudio with launchcommand</div>
+<div class="figure">
+<img src="figures/rstudio2.png" alt="" />
+<p class="caption">Figure 2. Rstudio with launchcommand</p>
 </div>
 <ul>
 <li>The first line will load the msqrob2gui package and its
@@ -367,9 +381,9 @@ dependencies</li>
 <ol start="3" style="list-style-type: decimal">
 <li>A new window will open with the shinyApp</li>
 </ol>
-<div class="float">
-<img src="figures/shinyApp.png" alt="Figure 3. msqrob2 ShinyApp" />
-<div class="figcaption">Figure 3. msqrob2 ShinyApp</div>
+<div class="figure">
+<img src="figures/shinyApp.png" alt="" />
+<p class="caption">Figure 3. msqrob2 ShinyApp</p>
 </div>
 <ol start="4" style="list-style-type: decimal">
 <li>It is recommended to put the shiny app on full screen modus.</li>
@@ -402,10 +416,9 @@ peptide.txt file by clicking on the button generate annotation file.
 Then a download button will appear. The annotation file will contain one
 column named run with the names of the different runs in the peptide.txt
 file.</p>
-<div class="float">
-<img src="figures/lab3Annotation.png"
-alt="Figure 4. Lab 3 Annotation" />
-<div class="figcaption">Figure 4. Lab 3 Annotation</div>
+<div class="figure">
+<img src="figures/lab3Annotation.png" alt="" />
+<p class="caption">Figure 4. Lab 3 Annotation</p>
 </div>
 <p>Experimental annotation file have a typical structure. For the CPTAC
 dataset analyzed with MaxQuant, the first column equals the names given
@@ -419,9 +432,9 @@ file” button. The other columns need to be filled in manually based on
 the experimental design.</em></p>
 <p>After setting your output location and uploading your files, your
 input screen should look as follows:</p>
-<div class="float">
-<img src="figures/guiInput.png" alt="Figure 5. MSqRob Input tab" />
-<div class="figcaption">Figure 5. MSqRob Input tab</div>
+<div class="figure">
+<img src="figures/guiInput.png" alt="" />
+<p class="caption">Figure 5. MSqRob Input tab</p>
 </div>
 <p>At this stage, everything is set for preprocessing and data
 exploration, which are implemented in the preprocessing tab.</p>
@@ -431,10 +444,9 @@ exploration, which are implemented in the preprocessing tab.</p>
 <p>The preprocessing tab features different preprocessing options, many
 of which can be safely left at their default state. When you click the
 preprocessing tab, it should now look as follows:</p>
-<div class="float">
-<img src="figures/guiPreprocessing.png"
-alt="Figure 6. msqrob2 Preprocessing tab" />
-<div class="figcaption">Figure 6. msqrob2 Preprocessing tab</div>
+<div class="figure">
+<img src="figures/guiPreprocessing.png" alt="" />
+<p class="caption">Figure 6. msqrob2 Preprocessing tab</p>
 </div>
 <p>The other normalization steps are performed upon hitting the “Start
 Normalization” button on the bottom of the Normalization tab. This is
@@ -451,11 +463,10 @@ far away from each other. Options are provided to show only dots, only
 labels or both. It is also possible to zoom in on a particular part of
 the plot by dragging the mouse to select a particular area on the plot
 and then double-click to zoom in.</p>
-<div class="float">
-<img src="figures/guiPreprocessing2.png"
-alt="Figure 7. msqrob2 Preprocessing tab upon normalization" />
-<div class="figcaption">Figure 7. msqrob2 Preprocessing tab upon
-normalization</div>
+<div class="figure">
+<img src="figures/guiPreprocessing2.png" alt="" />
+<p class="caption">Figure 7. msqrob2 Preprocessing tab upon
+normalization</p>
 </div>
 <p>The first preprocessing step is log-transformation. Why is
 log-transformation needed? (Hint: untick the checkbox before
@@ -498,10 +509,9 @@ these sequences in the “Filter columns” field.</p>
 <h3>2.3.3. The Summarization tab</h3>
 <p>The preprocessing tab features different summarization options. When
 you click the preprocessing tab, the following screen is obtained:</p>
-<div class="float">
-<img src="figures/guiSummarization.png"
-alt="Figure 9. msqrob2 Summarization tab" />
-<div class="figcaption">Figure 9. msqrob2 Summarization tab</div>
+<div class="figure">
+<img src="figures/guiSummarization.png" alt="" />
+<p class="caption">Figure 9. msqrob2 Summarization tab</p>
 </div>
 <p>When robust summarization is applied, the novel and much faster
 two-stage approach is used to fit the MSqRob model. Mean and median
@@ -524,9 +534,9 @@ would that be the case? [2.3.3.a]</p>
 <div id="the-model-tab" class="section level3">
 <h3>2.3.4. The Model tab</h3>
 <p>When you click the Model tab, the following screen is obtained:</p>
-<div class="float">
-<img src="figures/guiModel.png" alt="Figure 10. msqrob2 Model tab" />
-<div class="figcaption">Figure 10. msqrob2 Model tab</div>
+<div class="figure">
+<img src="figures/guiModel.png" alt="" />
+<p class="caption">Figure 10. msqrob2 Model tab</p>
 </div>
 <p>The Model tab shows information on the experimental design
 (annotation) in the right panel. In the left panel we have to propose
@@ -565,10 +575,9 @@ with two levels: spikein treatment A and B.</p>
 </ol>
 <p><code>~ treatment</code></p>
 <p>Note that as soon as we do that, the design is visualised.</p>
-<div class="float">
-<img src="figures/guiModel2.png"
-alt="Figure 11. msqrob2 Model tab with design" />
-<div class="figcaption">Figure 11. msqrob2 Model tab with design</div>
+<div class="figure">
+<img src="figures/guiModel2.png" alt="" />
+<p class="caption">Figure 11. msqrob2 Model tab with design</p>
 </div>
 <p>This visualisation shows the different group means that are
 modelled.</p>
@@ -606,10 +615,9 @@ using formal hypothesis testing.</p>
 <div id="the-inference-tab" class="section level3">
 <h3>2.3.4. The Inference tab</h3>
 <p>When you click the Model tab, the following screen is obtained:</p>
-<div class="float">
-<img src="figures/guiInference.png"
-alt="Figure 12. msqrob2 Inference tab" />
-<div class="figcaption">Figure 12. msqrob2 Inference tab</div>
+<div class="figure">
+<img src="figures/guiInference.png" alt="" />
+<p class="caption">Figure 12. msqrob2 Inference tab</p>
 </div>
 <p>In the statistical analysis we will want to test the null hypothesis
 that</p>
@@ -635,11 +643,9 @@ true and when there is in reality no effect of the treatment).</p>
 <li>As soon as you specified the Null Hypothesis the window is
 updated</li>
 </ol>
-<div class="float">
-<img src="figures/guiInference2.png"
-alt="Figure 13 msqrob2 Inference tab with contrast" />
-<div class="figcaption">Figure 13 msqrob2 Inference tab with
-contrast</div>
+<div class="figure">
+<img src="figures/guiInference2.png" alt="" />
+<p class="caption">Figure 13 msqrob2 Inference tab with contrast</p>
 </div>
 <p>and a volcano plot appears that gives you a view on statistical
 significance in the y-axis, i.e. the <span
@@ -687,10 +693,9 @@ volcano-plot</p></li>
 <li><p>Clicking on the DetailPlot tab is visualising the data for your
 selected protein.</p></li>
 </ol>
-<div class="float">
-<img src="figures/guiDetailPlot.png"
-alt="Figure 14. msqrob2 DetailPlot tab" />
-<div class="figcaption">Figure 14. msqrob2 DetailPlot tab</div>
+<div class="figure">
+<img src="figures/guiDetailPlot.png" alt="" />
+<p class="caption">Figure 14. msqrob2 DetailPlot tab</p>
 </div>
 <ol start="3" style="list-style-type: decimal">
 <li>You can further modify the plot by coloring the data according to a
@@ -702,10 +707,9 @@ according to design variables.</li>
 <h3>2.3.5. The Report Tab</h3>
 <p>A reproducible Rmarkdown script and html report with the analysis you
 performed with the GUI can be downloaded in the novel report tab.</p>
-<div class="float">
-<img src="figures/guiReport.png"
-alt="Figure 14. msqrob2 DetailPlot tab" />
-<div class="figcaption">Figure 14. msqrob2 DetailPlot tab</div>
+<div class="figure">
+<img src="figures/guiReport.png" alt="" />
+<p class="caption">Figure 14. msqrob2 DetailPlot tab</p>
 </div>
 <ol style="list-style-type: decimal">
 <li><p>You can select the number of detail plots you want to generate in
@@ -746,11 +750,10 @@ field above the table. Now all yeast proteins are removed from the
 results table and a boxplot of the ups protein log2 FCs will be
 made.</p></li>
 </ol>
-<div class="float">
-<img src="figures/guiRobustUps.png"
-alt="Figure 15. msqrob2 Inference tab with Fold Change Boxplot for all UPS proteins" />
-<div class="figcaption">Figure 15. msqrob2 Inference tab with Fold
-Change Boxplot for all UPS proteins</div>
+<div class="figure">
+<img src="figures/guiRobustUps.png" alt="" />
+<p class="caption">Figure 15. msqrob2 Inference tab with Fold Change
+Boxplot for all UPS proteins</p>
 </div>
 <p>[2.3.6.a] We know the real FC for the spike in proteins (see
 description of the data 2.2). Note, that the boxplot is showing the log2

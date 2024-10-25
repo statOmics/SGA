@@ -30,6 +30,13 @@ navbar:
       - text: 2.3.2. Wrap-up DA - Blocking
         href: pda_blocking_wrapup.html
       - text: 2.3.3. Technical Details
+        href: pda_technicalDetails.html
+      - text: ---- MODULE II RNA-seq ----
+      - text: 1.  Introduction to RNA-seq
+        href: sequencing_intro.html
+      - text: 2.  Working with count data and GLMs
+        href: sequencing_countData.html
+
         
     - text: "tutorials"
       icon: fa-laptop
@@ -46,6 +53,10 @@ navbar:
         href: pda_tutorialPreprocessing.html
       - text: 2.3. Quantification - Design
         href: pda_tutorialDesign.html   
+      - text: 1. Read mapping 
+        href: sequencingTutorial1_mapping.html
+      - text: 2. Working with Count Data
+        href: sequencingTutorial2_DE.html
  
 right:
     - icon: fab fa-github      

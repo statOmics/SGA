@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Koen Van den Berge &amp; Lieven Clement" />
+
+
+<title>Introduction to Sequencing: Working with RNA-seq count data</title>
+
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SGA</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-chalkboard-teacher"></span>
+     
+    Lectures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">---- INTRODUCTION ----</li>
+    <li>
+      <a href="intro.html">1.1 Position</a>
+    </li>
+    <li>
+      <a href="recapGeneralLinearModel.html">1.2 Recap linear model</a>
+    </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="./figs/part1_ms_basics.pdf">1.1 MS Basics</a>
+    </li>
+    <li>
+      <a href="./figs/part1_ms_basics.pdf">1.2 Identification</a>
+    </li>
+    <li>
+      <a href="TargetDecoy.html">2.1 Identification - FDR - QC</a>
+    </li>
+    <li>
+      <a href="pda_quantification_preprocessing.html">2.2.1 Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_robustSummarisation_peptideModels.html">2.2.2 Wrap-up Preprocessing - Peptide-Level-Models</a>
+    </li>
+    <li>
+      <a href="pda_quantification_inference.html">2.3.1 Quantification - Differential Abundance Analysis</a>
+    </li>
+    <li>
+      <a href="pda_blocking_wrapup.html">2.3.2. Wrap-up DA - Blocking</a>
+    </li>
+    <li>
+      <a href="pda_technicalDetails.html">2.3.3. Technical Details</a>
+    </li>
+    <li class="dropdown-header">---- MODULE II RNA-seq ----</li>
+    <li>
+      <a href="sequencing_intro.html">1.  Introduction to RNA-seq</a>
+    </li>
+    <li>
+      <a href="sequencing_countData.html">2.  Working with count data and GLMs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-laptop"></span>
+     
+    tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">---- INTRODUCTION ----</li>
+    <li>
+      <a href="multipleRegression_KPNA2.html">1 Intro KPNA2</a>
+    </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">1. Bioinformatics for Proteomics</a>
+    </li>
+    <li>
+      <a href="TargetDecoyTutorial.html">2.1. Target Decoy QC</a>
+    </li>
+    <li>
+      <a href="pda_tutorialPreprocessing.html">2.2. Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_tutorialDesign.html">2.3. Quantification - Design</a>
+    </li>
+    <li>
+      <a href="sequencingTutorial1_mapping.html">1. Read mapping</a>
+    </li>
+    <li>
+      <a href="sequencingTutorial2_DE.html">2. Working with Count Data</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Introduction to Sequencing: Working with
+RNA-seq count data</h1>
+<h4 class="author">Koen Van den Berge &amp; Lieven Clement</h4>
+<h4 class="date">Last edited on 25 October, 2024</h4>
+
+</div>
+
+
+<p>In this lecture we will introduce the main principles of working with
+count data, and how to model these using generalized linear models
+(GLMs). We focus on introducing the concept of generalized linear
+models, and how they can be applied to genomics data analysis.</p>
+<div id="the-poisson-distribution" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> The Poisson
+distribution</h1>
+<ul>
+<li>The Poisson distribution is a typical count distribution that is
+generally popular and fairly easy to work with. It is defined by a
+single parameter: its mean <span class="math inline">\(\mu\)</span>. For
+a Poisson distributed random variable <span
+class="math inline">\(Y_i\)</span> with observations <span
+class="math inline">\(i \in \{1, \ldots, n\}\)</span>, its variance is
+equal to its mean. That is, if</li>
+</ul>
+<p><span class="math display">\[Y_i \sim Poi(\mu)\]</span> , then</p>
+<p><span class="math display">\[E(Y_i) = Var(Y_i) = \mu.\]</span></p>
+<ul>
+<li><p>This immediately shows an important feature of count data: the
+<strong>mean-variance relationship</strong>. Indeed, in count data, the
+variance will always be a function of the mean.</p></li>
+<li><p>This is quite intuitive. Consider the following example. You have
+two bird cages, where in one bird cage there are <span
+class="math inline">\(10\)</span> birds, while in the other there are
+<span class="math inline">\(100\)</span> birds. You let a sample of
+people look to the number of birds in either one of the cages. It seems
+unlikely that a person in front of the 10-bird cage would come up with
+an estimate of <span class="math inline">\(3\)</span>, while it seems
+likely that someone in front of the 100-bird cage would come up with an
+estimate of <span class="math inline">\(80\)</span>. Even though the
+difference from the true value is the same, the exact value has an
+impact on the plausible deviation around it.</p></li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">11</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>y1 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="at">n=</span><span class="dv">500</span>, <span class="at">lambda=</span><span class="dv">10</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>y2 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="at">n=</span><span class="dv">500</span>, <span class="at">lambda=</span><span class="dv">100</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(y1, <span class="at">main=</span><span class="st">&quot;Poisson(10)&quot;</span>, <span class="at">geom =</span> <span class="st">&quot;histogram&quot;</span>, <span class="at">binwidth=</span>.<span class="dv">5</span>,<span class="at">center=</span><span class="dv">0</span>)</span></code></pre></div>
+<pre><code>## Warning: `qplot()` was deprecated in ggplot2 3.4.0.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.</code></pre>
+<p><img src="sequencing_countData_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(y2, <span class="at">main=</span><span class="st">&quot;Poisson(100)&quot;</span>, <span class="at">geom =</span> <span class="st">&quot;histogram&quot;</span>, <span class="at">binwidth=</span>.<span class="dv">5</span>,<span class="at">center=</span><span class="dv">0</span>)</span></code></pre></div>
+<p><img src="sequencing_countData_files/figure-html/unnamed-chunk-1-2.png" width="672" /></p>
+<div id="the-poisson-distribution-in-rna-seq" class="section level2"
+number="1.1">
+<h2><span class="header-section-number">1.1</span> The Poisson
+distribution in RNA-seq</h2>
+<ul>
+<li>In RNA-seq, technical replicates represent different aliquots of the
+same sample being sequenced repeatedly. The underlying true expression
+of a gene can hence safely be assumed to be equal across these technical
+replicates.</li>
+<li><a href="https://genome.cshlp.org/content/18/9/1509">Marioni <em>et
+al.</em> (2008)</a> have shown that, for most genes, the distribution of
+observed gene expression counts across technical replicates follow a
+Poisson distribution. A small proportion of genes (<span
+class="math inline">\(\sim 0.5\%\)</span>) do not follow this Poisson
+model, however, and actually show evidence for <em>‘extra-Poisson
+variation’</em>.</li>
+</ul>
+<div class="figure">
+<img src="images_sequencing/marioniFigs_cropped.png" alt="Figure: Technical replication in RNA-seq. Figures from Marioni et al. (2008)." width="1996" />
+<p class="caption">
+Figure: Technical replication in RNA-seq. Figures from Marioni et
+al. (2008).
+</p>
+</div>
+</div>
+<div id="relative-uncertainty-for-poisson-distributed-random-variables"
+class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> Relative uncertainty
+for Poisson distributed random variables</h2>
+<p>Take a minute to consider the following question:</p>
+<ul>
+<li>Suppose that we have a solid tumor sample from a cancer patient, as
+well as a sample of surrounding healthy tissue. For each sample, we have
+three technical replicates at our disposal. Let <span
+class="math inline">\(Y_{grt}\)</span> denote the observed gene
+expression values of gene <span class="math inline">\(g\)</span> in
+replicate <span class="math inline">\(r \in \{1,2,3\}\)</span> from
+tissue <span class="math inline">\(t \in \{0,1\}\)</span>, where <span
+class="math inline">\(t=0\)</span> denotes healthy tissue and <span
+class="math inline">\(t=1\)</span> denotes tumoral tissue.</li>
+<li>We then know that the random variables <span
+class="math inline">\(Y_{gr0}\)</span> and <span
+class="math inline">\(Y_{gr1}\)</span> follow a Poisson distribution,
+and we would estimate its mean as <span
+class="math inline">\(\bar{Y}_{g0} = \frac{1}{3} \sum_{r=1}^3
+Y_{gr0}\)</span> and <span class="math inline">\(\bar{Y}_{g1} =
+\frac{1}{3} \sum_{r=1}^3 Y_{gr1}\)</span>, respectively.</li>
+<li>Similar, for another gene <span class="math inline">\(k\)</span>, we
+observe <span class="math inline">\(Y_{krt}\)</span>, and estimate <span
+class="math inline">\(\bar{Y}_{k0}\)</span> and <span
+class="math inline">\(\bar{Y}_{k1}\)</span> correspondingly.</li>
+<li>Now suppose that <span class="math inline">\(\beta_{k} =
+\bar{Y}_{k1} / \bar{Y}_{k0} = 5\)</span>, but also <span
+class="math inline">\(\beta_g = \bar{Y}_{g1} / \bar{Y}_{g0} =
+5\)</span>, i.e., the two genes have the same average expression ratio
+(also often called a fold-change) across samples. However, they are
+differently expressed as <span class="math inline">\(\bar{Y}_{k1} =
+100\)</span>, and <span class="math inline">\(\bar{Y}_{g1} = 10\)</span>
+(making <span class="math inline">\(\bar{Y}_{k0} = 20\)</span>, and
+<span class="math inline">\(\bar{Y}_{g0} = 2\)</span>).</li>
+<li>For which of the two genes is the uncertainty on the expression
+ratio the highest? In other words, do we trust <span
+class="math inline">\(\beta_k\)</span> more or do we trust <span
+class="math inline">\(\beta_g\)</span> more?</li>
+</ul>
+<hr />
+<p>Let’s approximate the uncertainty in <span
+class="math inline">\(beta_g\)</span> and <span
+class="math inline">\(\beta_k\)</span> using simulation:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="fl">1e3</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>beta_g <span class="ot">&lt;-</span> beta_k <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="at">length=</span>N)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(ii <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N){</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  ygr1 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="at">n=</span><span class="dv">3</span>, <span class="at">lambda=</span><span class="dv">10</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  ygr0 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="at">n=</span><span class="dv">3</span>, <span class="at">lambda=</span><span class="dv">2</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  ykr1 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="at">n=</span><span class="dv">3</span>, <span class="at">lambda=</span><span class="dv">100</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  ykr0 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="at">n=</span><span class="dv">3</span>, <span class="at">lambda=</span><span class="dv">20</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  beta_g[ii] <span class="ot">&lt;-</span> <span class="fu">mean</span>(ygr1) <span class="sc">/</span> <span class="fu">mean</span>(ygr0)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  beta_k[ii] <span class="ot">&lt;-</span> <span class="fu">mean</span>(ykr1) <span class="sc">/</span> <span class="fu">mean</span>(ykr0)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="at">mar=</span><span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">1</span>))</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(beta_g, <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">50</span>,<span class="at">by=</span><span class="dv">1</span>), <span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">50</span>))</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(beta_k, <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">50</span>,<span class="at">by=</span><span class="dv">1</span>), <span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">50</span>))</span></code></pre></div>
+<p><img src="sequencing_countData_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<hr />
+<p>We clearly see that the uncertainty on <span
+class="math inline">\(\beta_k\)</span> is much lower than on <span
+class="math inline">\(\beta_g\)</span>. Even though the variance on the
+counts of gene <span class="math inline">\(k\)</span> is higher, since
+its mean is higher and it is distributed as a Poisson variable. How do
+we explain this?</p>
+<ul>
+<li>We may explain this by considering the relative uncertainty on the
+mean. Relative uncertainty may be defined as the coefficient of
+variation <span class="math inline">\(CV = \frac{\sigma}{\mu}\)</span>
+(this is, the standard deviation divided by the mean). Indeed, the CV
+describes the relative deviation of the distribution relative to its
+mean, where a low CV indicates low dispersion with respect to the
+mean.</li>
+<li>Calculating the CV shows that <strong>the relative uncertainty for
+gene <span class="math inline">\(k\)</span> than for gene <span
+class="math inline">\(g\)</span>, even though the variance on the raw
+counts is higher for gene <span class="math inline">\(k\)</span> than
+for gene <span class="math inline">\(g\)</span></strong>.</li>
+<li>This lower relative uncertainty on the mean then propagates further
+to a lower uncertainty on the fold-change. This basic result will be
+essential for understanding the results of a differential expression
+analysis!</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="dv">100</span>)<span class="sc">/</span><span class="dv">100</span> <span class="co">#CV for gene k</span></span></code></pre></div>
+<pre><code>## [1] 0.1</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="dv">10</span>)<span class="sc">/</span><span class="dv">10</span> <span class="co">#CV for gene g</span></span></code></pre></div>
+<pre><code>## [1] 0.3162278</code></pre>
+</div>
+</div>
+<div id="modeling-count-data-generalized-linear-models"
+class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Modeling count data:
+Generalized linear models</h1>
+<p>Just like we have modeled protein abundances in the proteomics module
+of this course in order to assess differential protein abundance, we can
+model gene expression counts to identify genes with differences in
+average expression between groups of samples.</p>
+<div id="why-we-cant-use-linear-models-to-model-count-data"
+class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Why we can(’t) use
+linear models to model count data</h2>
+<ul>
+<li>If we are using a linear model to model a response <span
+class="math inline">\(Y_i\)</span>, with <span class="math inline">\(i
+\in \{1, \ldots, n\}\)</span> in function of a single covariate <span
+class="math inline">\(X_i\)</span>, the linear model can be defined as
+follows:</li>
+</ul>
+<p><span class="math display">\[
+\left\{
+\begin{array}{ccc}
+Y_i &amp; = &amp; \beta_0 + \beta_1 x_i + \epsilon_i \\
+Y_i | x_i &amp; \sim &amp; N(\beta_0 + \beta_1 x_i, \sigma^2 ).
+\end{array}
+\right.
+\]</span></p>
+<ul>
+<li>Or, equivalently, we can write it in matrix form as <span
+class="math display">\[
+  \left\{
+  \begin{array}{ccc}
+  Y &amp; = &amp; \mathbf{X}^T \boldsymbol{\beta} + \epsilon \\
+  Y | \mathbf{X} &amp; \sim &amp; N(\mathbf{X} \boldsymbol{\beta},
+\sigma^2 \mathbf{I}),
+  \end{array}
+  \right.
+  \]</span> where <span class="math inline">\(\mathbf{X}\)</span> now
+represents our <span class="math inline">\(n \times p\)</span> design
+matrix, with row <span class="math inline">\(i\)</span> corresponding to
+observation <span class="math inline">\(i\)</span>.</li>
+</ul>
+<hr />
+<ul>
+<li><p>The variance-covariance matrix of <span
+class="math inline">\(\mathbf{Y}\)</span> is assumed a diagonal matrix
+with <span class="math inline">\(\sigma^2\)</span> on the diagonal
+elements and zero everywhere else. This means that the data points are
+uncorrelated, and that every observation has the same variance <span
+class="math inline">\(\sigma^2\)</span>, also referred to as
+homoscedasticity.</p></li>
+<li><p>The latter does not hold for count data, due to the mean-variance
+relationship. This makes linear models, in its basic form, unsuitable to
+model count data.</p></li>
+<li><p>In addition, count data are non-negative, while there are no such
+constraints in the standard linear model to make sure that our estimates
+will be non-negative. Indeed, <span class="math inline">\(\hat{Y}_i =
+\hat\mu_i = \mathbf{X}^T_i \hat{\beta} \in ] -\infty,
+\infty[\)</span>.</p></li>
+</ul>
+</div>
+<div id="generalized-linear-models" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Generalized linear
+models</h2>
+<ul>
+<li>As the name suggests, generalized linear models (GLMs) extend linear
+models. In GLMs, we extend two things with respect to the linear model:
+<ul>
+<li>The <strong>conditional distribution of the response variable <span
+class="math inline">\(Y_i | X_i\)</span></strong> can be assumed to
+follow any distribution that belongs to the <strong>exponential
+family</strong> of distributions, which includes the Gaussian but also
+other commonly known distributions, such as the Binomial, Gamma and
+Poisson distribution.</li>
+<li>The linear model assumed a linear relationship between <span
+class="math inline">\(Y_i\)</span> and <span
+class="math inline">\(X_i\)</span>, since we assumed that <span
+class="math inline">\(E(Y_i | X_i) = \mathbf{X}^T_i \beta\)</span>. In
+GLMs, we will allow a <strong>link function</strong> <span
+class="math inline">\(g()\)</span> that links the conditional mean to
+the covariates. Hence, in GLMs we have that <span
+class="math inline">\(g(E(Y_i | X_i)) = \mathbf{X}^T_i \beta\)</span>.
+Note that each family has got a canonical link function, which is the
+identity link function <span class="math inline">\(g(\mu) = \mu\)</span>
+for Gaussian, the log link function <span class="math inline">\(g(\mu) =
+\log \mu\)</span> for Poisson, or the logit link function <span
+class="math inline">\(g(\mu) = \log(\frac{\mu}{1-\mu})\)</span> for
+Binomial.</li>
+</ul></li>
+</ul>
+<div id="a-poisson-glm" class="section level3" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> A Poisson GLM</h3>
+<ul>
+<li>We can define a Poisson GLM as follows <span class="math display">\[
+  \left\{
+  \begin{array}{ccc}
+  Y_i &amp; \sim &amp; Poi(\mu_i) \\
+  \log \mu_i &amp; = &amp; \eta_i \\
+  \eta_i &amp; = &amp; \mathbf{X}^T_i \beta \\
+  \end{array}
+  \right.
+  \]</span> where <span class="math inline">\(Y_i\)</span> is the
+response variable, with mean <span class="math inline">\(\mu_i\)</span>,
+<span class="math inline">\(\eta_i\)</span> is the linear predictor,
+<span class="math inline">\(\mathbf{X}\)</span> is the <span
+class="math inline">\(n \times p\)</span> model matrix and <span
+class="math inline">\(\beta\)</span> is the <span
+class="math inline">\(p \times 1\)</span> matrix of regression
+coefficients.</li>
+<li>It is insightful to compare this model to a linear model where <span
+class="math inline">\(Y_i\)</span> is log-transformed. Indeed, in the
+linear model case, we would be modeling <span
+class="math inline">\(E(\log Y_i )\)</span>, while in the GLM we are
+modeling <span class="math inline">\(\log E(Y_i)\)</span>.</li>
+<li>This shows that in the GLM setting we are modeling a transformed
+version of the expected value, and after retransforming we can interpret
+the fit in terms of the mean of our response variable. In the
+transformed linear model, however, we are working with the expected
+value of a transformed version of our response variable, and we will not
+be able to interpret the fit in terms of the mean (because <span
+class="math inline">\(E( \log Y_i) \ne \log E(Y_i)\)</span>. In this
+specific case, we would have to resort to interpreting changes in terms
+of a geometric mean.</li>
+<li>Also note that <span class="math inline">\(\mathbf{X}^T_i \beta \in
+]-\infty, \infty[\)</span>, while <span
+class="math inline">\(Y_i\)</span> must be non-negative <span
+class="math inline">\([0, \infty[\)</span>. The link function helps with
+this, since the exponential function transforms any real number to a
+non-negative number, i.e., <span
+class="math inline">\(\exp(\mathbf{X}^T_i \beta) \in [0,
+\infty[\)</span>.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="sequencing-data" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Sequencing Data</h1>
+<p>In this lecture we will use a subset of the real bulk RNA-seq dataset
+from <a
+href="https://academic.oup.com/jcem/article/97/12/4631/2536573">Haglund
+<em>et al.</em> (2012)</a>.</p>
+<p>Lets try to work out the experimental design using the following
+paragraph from the Methods section of the paper.</p>
+<div class="figure">
+<img src="images_sequencing/expDesign_para.png" alt="Figure: A paragraph from the Methods section." width="689" />
+<p class="caption">
+Figure: A paragraph from the Methods section.
+</p>
+</div>
+<div id="technical-repeats" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Technical
+repeats</h2>
+<p>There are technical repeats in the data!</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;parathyroidGenesSE&quot;</span>, <span class="at">package=</span><span class="st">&quot;parathyroidSE&quot;</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>se <span class="ot">&lt;-</span> parathyroidGenesSE</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(parathyroidGenesSE)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colData</span>(se) <span class="sc">%&gt;%</span> knitr<span class="sc">::</span><span class="fu">kable</span>(.)</span></code></pre></div>
+<table>
+<colgroup>
+<col width="13%" />
+<col width="14%" />
+<col width="10%" />
+<col width="13%" />
+<col width="6%" />
+<col width="14%" />
+<col width="13%" />
+<col width="13%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">run</th>
+<th align="left">experiment</th>
+<th align="left">patient</th>
+<th align="left">treatment</th>
+<th align="left">time</th>
+<th align="left">submission</th>
+<th align="left">study</th>
+<th align="left">sample</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">SRR479052</td>
+<td align="left">SRX140503</td>
+<td align="left">1</td>
+<td align="left">Control</td>
+<td align="left">24h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308865</td>
+</tr>
+<tr class="even">
+<td align="left">SRR479053</td>
+<td align="left">SRX140504</td>
+<td align="left">1</td>
+<td align="left">Control</td>
+<td align="left">48h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308866</td>
+</tr>
+<tr class="odd">
+<td align="left">SRR479054</td>
+<td align="left">SRX140505</td>
+<td align="left">1</td>
+<td align="left">DPN</td>
+<td align="left">24h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308867</td>
+</tr>
+<tr class="even">
+<td align="left">SRR479055</td>
+<td align="left">SRX140506</td>
+<td align="left">1</td>
+<td align="left">DPN</td>
+<td align="left">48h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308868</td>
+</tr>
+<tr class="odd">
+<td align="left">SRR479056</td>
+<td align="left">SRX140507</td>
+<td align="left">1</td>
+<td align="left">OHT</td>
+<td align="left">24h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308869</td>
+</tr>
+<tr class="even">
+<td align="left">SRR479057</td>
+<td align="left">SRX140508</td>
+<td align="left">1</td>
+<td align="left">OHT</td>
+<td align="left">48h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308870</td>
+</tr>
+<tr class="odd">
+<td align="left">SRR479058</td>
+<td align="left">SRX140509</td>
+<td align="left">2</td>
+<td align="left">Control</td>
+<td align="left">24h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308871</td>
+</tr>
+<tr class="even">
+<td align="left">SRR479059</td>
+<td align="left">SRX140510</td>
+<td align="left">2</td>
+<td align="left">Control</td>
+<td align="left">48h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308872</td>
+</tr>
+<tr class="odd">
+<td align="left">SRR479060</td>
+<td align="left">SRX140511</td>
+<td align="left">2</td>
+<td align="left">DPN</td>
+<td align="left">24h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308873</td>
+</tr>
+<tr class="even">
+<td align="left">SRR479061</td>
+<td align="left">SRX140511</td>
+<td align="left">2</td>
+<td align="left">DPN</td>
+<td align="left">24h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308873</td>
+</tr>
+<tr class="odd">
+<td align="left">SRR479062</td>
+<td align="left">SRX140512</td>
+<td align="left">2</td>
+<td align="left">DPN</td>
+<td align="left">48h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308874</td>
+</tr>
+<tr class="even">
+<td align="left">SRR479063</td>
+<td align="left">SRX140513</td>
+<td align="left">2</td>
+<td align="left">OHT</td>
+<td align="left">24h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308875</td>
+</tr>
+<tr class="odd">
+<td align="left">SRR479064</td>
+<td align="left">SRX140513</td>
+<td align="left">2</td>
+<td align="left">OHT</td>
+<td align="left">24h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308875</td>
+</tr>
+<tr class="even">
+<td align="left">SRR479065</td>
+<td align="left">SRX140514</td>
+<td align="left">2</td>
+<td align="left">OHT</td>
+<td align="left">48h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308876</td>
+</tr>
+<tr class="odd">
+<td align="left">SRR479066</td>
+<td align="left">SRX140515</td>
+<td align="left">3</td>
+<td align="left">Control</td>
+<td align="left">24h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308877</td>
+</tr>
+<tr class="even">
+<td align="left">SRR479067</td>
+<td align="left">SRX140516</td>
+<td align="left">3</td>
+<td align="left">Control</td>
+<td align="left">48h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308878</td>
+</tr>
+<tr class="odd">
+<td align="left">SRR479068</td>
+<td align="left">SRX140517</td>
+<td align="left">3</td>
+<td align="left">DPN</td>
+<td align="left">24h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308879</td>
+</tr>
+<tr class="even">
+<td align="left">SRR479069</td>
+<td align="left">SRX140518</td>
+<td align="left">3</td>
+<td align="left">DPN</td>
+<td align="left">48h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308880</td>
+</tr>
+<tr class="odd">
+<td align="left">SRR479070</td>
+<td align="left">SRX140519</td>
+<td align="left">3</td>
+<td align="left">OHT</td>
+<td align="left">24h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308881</td>
+</tr>
+<tr class="even">
+<td align="left">SRR479071</td>
+<td align="left">SRX140520</td>
+<td align="left">3</td>
+<td align="left">OHT</td>
+<td align="left">48h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308882</td>
+</tr>
+<tr class="odd">
+<td align="left">SRR479072</td>
+<td align="left">SRX140521</td>
+<td align="left">4</td>
+<td align="left">Control</td>
+<td align="left">48h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308883</td>
+</tr>
+<tr class="even">
+<td align="left">SRR479073</td>
+<td align="left">SRX140522</td>
+<td align="left">4</td>
+<td align="left">DPN</td>
+<td align="left">24h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308884</td>
+</tr>
+<tr class="odd">
+<td align="left">SRR479074</td>
+<td align="left">SRX140523</td>
+<td align="left">4</td>
+<td align="left">DPN</td>
+<td align="left">48h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308885</td>
+</tr>
+<tr class="even">
+<td align="left">SRR479075</td>
+<td align="left">SRX140523</td>
+<td align="left">4</td>
+<td align="left">DPN</td>
+<td align="left">48h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308885</td>
+</tr>
+<tr class="odd">
+<td align="left">SRR479076</td>
+<td align="left">SRX140524</td>
+<td align="left">4</td>
+<td align="left">OHT</td>
+<td align="left">24h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308886</td>
+</tr>
+<tr class="even">
+<td align="left">SRR479077</td>
+<td align="left">SRX140525</td>
+<td align="left">4</td>
+<td align="left">OHT</td>
+<td align="left">48h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308887</td>
+</tr>
+<tr class="odd">
+<td align="left">SRR479078</td>
+<td align="left">SRX140525</td>
+<td align="left">4</td>
+<td align="left">OHT</td>
+<td align="left">48h</td>
+<td align="left">SRA051611</td>
+<td align="left">SRP012167</td>
+<td align="left">SRS308887</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>se <span class="sc">%&gt;%</span> </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  colData <span class="sc">%&gt;%</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame <span class="sc">%&gt;%</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(sample) <span class="sc">%&gt;%</span> </span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  nlevels</span></code></pre></div>
+<pre><code>## [1] 23</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>se <span class="sc">%&gt;%</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  colData <span class="sc">%&gt;%</span> </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  nrow</span></code></pre></div>
+<pre><code>## [1] 27</code></pre>
+<p>Extract sample names of duplicates!</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>dupl <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">table</span>(<span class="fu">colData</span>(se)<span class="sc">$</span>sample) <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> names</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>techreps <span class="ot">&lt;-</span> <span class="fu">assays</span>(se)<span class="sc">$</span>counts[,<span class="fu">colData</span>(se)<span class="sc">$</span>sample<span class="sc">==</span>dupl[<span class="dv">1</span>]]</span></code></pre></div>
+<div id="explore-the-data-of-two-technical-repeats"
+class="section level3" number="3.1.1">
+<h3><span class="header-section-number">3.1.1</span> Explore the data of
+two technical repeats</h3>
+<p>We expect the counts to be very similar. Indeed, they are based on
+the same cell culture, stimulated with the same stimulus and incubated
+for the same time.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(techreps[,<span class="dv">1</span>],techreps[,<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">slope =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Technical repeat 1&quot;</span>) <span class="sc">+</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Technical repeat 2&quot;</span>)</span></code></pre></div>
+<p><img src="sequencing_countData_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<ul>
+<li><p>The plot shows a systematic difference between the counts of both
+technical repeats!</p></li>
+<li><p>However, plotting the data on the original count scale does not
+give a good overview of the data. The plot is dominated by a few very
+abundant genes, i.e. genes with very high counts.</p></li>
+</ul>
+</div>
+<div id="explore-the-data-of-two-technical-repeats-1"
+class="section level3" number="3.1.2">
+<h3><span class="header-section-number">3.1.2</span> Explore the data of
+two technical repeats</h3>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(techreps[,<span class="dv">1</span>],techreps[,<span class="dv">2</span>], <span class="at">log=</span><span class="st">&quot;xy&quot;</span>) <span class="sc">+</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">slope =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Technical repeat 1&quot;</span>) <span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Technical repeat 2&quot;</span>)</span></code></pre></div>
+<pre><code>## Warning in scale_x_log10(): log-10 transformation introduced infinite values.</code></pre>
+<pre><code>## Warning in scale_y_log10(): log-10 transformation introduced infinite values.</code></pre>
+<p><img src="sequencing_countData_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<ul>
+<li><p>The plot clearly shows that the counts for all genes are very
+different in the two technical repeats.</p></li>
+<li><p>However, we have to look at the plot via the diagonal.</p></li>
+<li><p>In omics we therefore often use MA plots. With M (log ratio) and
+A (log average).</p></li>
+</ul>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> techreps <span class="sc">%&gt;%</span> log2 <span class="sc">%&gt;%</span> rowMeans</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>M <span class="ot">&lt;-</span> techreps <span class="sc">%&gt;%</span> log2 <span class="sc">%&gt;%</span> <span class="fu">apply</span>(.,<span class="dv">1</span>,diff)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> techreps[,<span class="dv">1</span>]<span class="sc">==</span><span class="fu">min</span>(techreps[,<span class="dv">1</span>]) <span class="sc">|</span> techreps[,<span class="dv">2</span>]<span class="sc">==</span><span class="fu">min</span>(techreps[,<span class="dv">2</span>])</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">any</span>(w)) {</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>            A[w] <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="fu">sum</span>(w), <span class="at">min =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">max =</span> .<span class="dv">1</span>)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>            M[w] <span class="ot">&lt;-</span> <span class="fu">log2</span>(techreps[w,<span class="dv">2</span>] <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">log2</span>(techreps[w,<span class="dv">1</span>] <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>MAplot <span class="ot">&lt;-</span> <span class="fu">qplot</span>(A, M, <span class="at">col=</span>w) <span class="sc">+</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;black&quot;</span>,<span class="st">&quot;orange&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;A: log2 Average&quot;</span>) <span class="sc">+</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;M: log2 Fold Change&quot;</span>)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>MAplot <span class="sc">+</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept=</span><span class="dv">0</span>,<span class="at">slope=</span><span class="dv">0</span>)</span></code></pre></div>
+<p><img src="sequencing_countData_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>The MA plot clearly shows that the counts of one technical repeat are
+systematically higher than that of the other technical repeats.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(techreps)</span></code></pre></div>
+<pre><code>## [1]  5251911 19332369</code></pre>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>logFCdepth <span class="ot">&lt;-</span> <span class="fu">colSums</span>(techreps) <span class="sc">%&gt;%</span> log2 <span class="sc">%&gt;%</span> diff</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>logFCdepth</span></code></pre></div>
+<pre><code>## [1] 1.880104</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span><span class="sc">^</span>logFCdepth</span></code></pre></div>
+<pre><code>## [1] 3.681016</code></pre>
+<p>The technical repeats differ with a factor 3.7 in sequencing
+depth!</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>MAplot <span class="sc">+</span> <span class="fu">geom_abline</span>(<span class="at">intercept =</span> logFCdepth, <span class="at">slope =</span> <span class="dv">0</span>, <span class="at">color=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<p><img src="sequencing_countData_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<ul>
+<li>This log2 fold change in sequencing depth is also the baseline
+around which the log2 fold changes between technical repeats of
+individual genes are fluctuating!</li>
+</ul>
+<p>Hence, we will have to correct for differences in sequencing
+depth.</p>
+</div>
+</div>
+<div id="count-scaling-using-glm-offsets" class="section level2"
+number="3.2">
+<h2><span class="header-section-number">3.2</span> Count scaling using
+GLM offsets</h2>
+<ul>
+<li><p>We have previously discussed count scaling transformations such
+as CPM and TPM.</p></li>
+<li><p>A more appropriate and natural way when working with GLMs is
+through the use of offsets. The general use of an offset is to account
+for the ‘effort’ performed in order to gather that observation of the
+response variable.</p></li>
+</ul>
+<p><span class="math inline">\(\rightarrow\)</span> i.e. sample being
+sequenced deeper contains more information as compared to a sample being
+sequenced relatively shallow. We have more confidence in a count from a
+deeply sequenced sample than that from a shallowly sequenced sample. We
+can therefore use the sequencing depth <span
+class="math inline">\(N_i=\sum_g Y_{gi}\)</span> as offset in the
+model.</p>
+<ul>
+<li><p>Adding an offset to the model is different from adding a new
+variable to the model. For each new variable we add, we will estimate
+its average effect <span class="math inline">\(\beta\)</span> on the
+response variable. When adding an offset, however, we implicitly set
+<span class="math inline">\(\beta=1\)</span>.</p></li>
+<li><p>Offsets are typically added on the scale of the linear predictor.
+Suppose we have a gene g and sample i specific offset <span
+class="math inline">\(O_{gi}\)</span>, then we can define our GLM
+including the offset as</p>
+<p><span class="math display">\[
+\left\{
+\begin{array}{ccc}
+Y_{gi} &amp; \sim &amp; Poi(\mu_{gi}) \\
+\log \mu_{gi} &amp; = &amp; \eta_{gi} \\
+\eta_{gi} &amp; = &amp; \mathbf{X}^T_i \beta_g + log(O_{gi}) \\
+\end{array}
+\right.
+\]</span></p></li>
+</ul>
+<p>When we would like to correct for the overall sequencing depth <span
+class="math inline">\(O_{gi}=N_i\)</span>. However, better offsets
+exist!</p>
+<p>Note, that</p>
+<p><span class="math display">\[
+\mu_{ig}= \exp(\mathbf{X}^T_i \beta_g) \times O_{gi}
+\]</span> or <span class="math display">\[
+\log\left(\frac{\mu_{ig}}{O_{gi}}\right)= \mathbf{X}^T_i \beta_g
+\]</span></p>
+</div>
+<div id="biological-repeats" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Biological
+repeats</h2>
+<p>We extract the four biological repeats from the study for the control
+treatment at time 24h.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>bioreps <span class="ot">&lt;-</span> <span class="fu">colData</span>(se)<span class="sc">$</span>treatment<span class="sc">==</span><span class="st">&quot;Control&quot;</span> <span class="sc">&amp;</span> <span class="fu">colData</span>(se)<span class="sc">$</span>time<span class="sc">==</span><span class="st">&quot;24h&quot;</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>biorepCounts <span class="ot">&lt;-</span> <span class="fu">assays</span>(se)<span class="sc">$</span>counts[,bioreps]</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(<span class="fu">rowMeans</span>(biorepCounts),<span class="fu">rowVars</span>(biorepCounts),<span class="at">log=</span><span class="st">&quot;xy&quot;</span>) <span class="sc">+</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="dv">0</span>,<span class="at">slope =</span> <span class="dv">1</span>,<span class="at">col=</span><span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">col=</span><span class="st">&quot;orange&quot;</span>)</span></code></pre></div>
+<pre><code>## Warning in scale_x_log10(): log-10 transformation introduced infinite values.</code></pre>
+<pre><code>## Warning in scale_y_log10(): log-10 transformation introduced infinite values.</code></pre>
+<pre><code>## Warning in scale_x_log10(): log-10 transformation introduced infinite values.</code></pre>
+<pre><code>## Warning in scale_y_log10(): log-10 transformation introduced infinite values.</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;gam&#39; and formula = &#39;y ~ s(x, bs = &quot;cs&quot;)&#39;</code></pre>
+<pre><code>## Warning: Removed 37702 rows containing non-finite outside the scale range
+## (`stat_smooth()`).</code></pre>
+<p><img src="sequencing_countData_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<ul>
+<li><p>Having data on thousands of genes provides the opportunity to
+empirically assess the mean-variance relationship.</p></li>
+<li><p>It is clear that the data is overdispersed with respect to the
+Poisson distribution (red y=x line). There also seems to be a quadratic
+trend of the variance as a function of the mean.</p></li>
+</ul>
+</div>
+</div>
+<div id="negative-binomial-distribution" class="section level1"
+number="4">
+<h1><span class="header-section-number">4</span> Negative binomial
+distribution</h1>
+<p>The observed quadratic mean variance trend has motivated the use of
+the negative binomial distribution to model (bulk) RNA-seq gene
+expression data.</p>
+<p><span class="math display">\[
+  \left\{
+  \begin{array}{ccc}
+  Y_{gi} &amp; \sim &amp; NB(\mu_{gi},\phi_g) \\
+  \log \mu_{gi} &amp; = &amp; \eta_{gi} \\
+  \eta_{gi} &amp; = &amp; \mathbf{X}^T_i \beta_g + log(O_{gi}) \\
+  \end{array}
+  \right.
+  \]</span></p>
+<p>with</p>
+<p><span class="math display">\[
+\text{var}[Y_{gi}] = \mu_{gi} + \phi_g \mu_{gi}^2
+\]</span></p>
+<table>
+<colgroup>
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><span class="math inline">\(\quad\)</span></th>
+<th>Seq. technology</th>
+<th><span class="math inline">\(\quad\)</span></th>
+<th>real expression</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>total variability</td>
+<td>=</td>
+<td>technical variability</td>
+<td>+</td>
+<td>biological variability</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\text{var}[Y_{gi}]\)</span></td>
+<td>=</td>
+<td><span class="math inline">\(\mu_{gi}\)</span></td>
+<td>+</td>
+<td><span class="math inline">\(\phi_g \mu_{gi}^2\)</span></td>
+</tr>
+<tr class="odd">
+<td>total CV<span class="math inline">\(^2\)</span></td>
+<td>=</td>
+<td><span class="math inline">\(\frac{1}{\mu_{gi}}\)</span></td>
+<td>+</td>
+<td><span class="math inline">\(\phi_g\)</span></td>
+</tr>
+</tbody>
+</table>
+<div id="what-about-technical-repeats" class="section level2"
+number="4.1">
+<h2><span class="header-section-number">4.1</span> What about technical
+repeats?</h2>
+<ul>
+<li>Technical repeats are Poisson distributed.</li>
+<li>The sum of two Poisson distributed counts is again Poisson. So we
+can summarize over technical repeats by taking the sum of the counts.
+This enables us to collapse the technical repeats to the level of
+biological repeats.</li>
+<li>We will illustrate that in the tutorial session.</li>
+</ul>
+</div>
+<div id="estimating-the-overdispersion" class="section level2"
+number="4.2">
+<h2><span class="header-section-number">4.2</span> Estimating the
+overdispersion?</h2>
+<ul>
+<li>Gene wise: for every single gene, very unstable due to the lack of
+data</li>
+<li>Common dispersion for all genes</li>
+<li>Trended dispersion</li>
+<li>Tag-wise: EB shrinkage to a common (trended) dispersion: Borrow
+strength across genes (McCarthy &amp; Smyth, 2012, <a
+href="https://doi.org/10.1093/nar/gks042">DOI:
+10.1093/nar/gks042</a>)</li>
+</ul>
+<p>In the tutorials we will analyse the entire study and we will focus
+on assessing the main research questions: i.e. comparing the early and
+late effects of the stimuli, and if the effect of stimuli is changes
+over time.</p>
+<p>Here, we illustrate the estimation using the edgeR tool on a subset
+of control treatment for patients 1, 2 and 3. For this subset only
+biological repeats are sequenced and a measurement on time 24 and 48h
+has been taken for cells of each patient.<br />
+So we can model the study using a simple block design with a time effect
+and a block effect for patient.</p>
+<ol style="list-style-type: decimal">
+<li>Setup the data</li>
+</ol>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>seSub <span class="ot">&lt;-</span> se[,<span class="fu">colData</span>(se)<span class="sc">$</span>treatment<span class="sc">==</span><span class="st">&quot;Control&quot;</span><span class="sc">&amp;</span><span class="fu">colData</span>(se)<span class="sc">$</span>patient<span class="sc">%in%</span><span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colData</span>(seSub)<span class="sc">$</span>patient <span class="ot">&lt;-</span> <span class="fu">colData</span>(seSub)<span class="sc">$</span>patient <span class="sc">%&gt;%</span> </span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  as.double <span class="sc">%&gt;%</span> </span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  as.factor</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">DGEList</span>(<span class="at">counts =</span> <span class="fu">assays</span>(seSub)<span class="sc">$</span>counts)</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>time<span class="sc">+</span>patient,<span class="fu">colData</span>(seSub))</span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>Typically lowly expressed genes are filtered.</li>
+</ol>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>keep <span class="ot">&lt;-</span> <span class="fu">filterByExpr</span>(y,design)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> y[keep,]</span></code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li>Normalisation to correct for differences in library size.</li>
+</ol>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">calcNormFactors</span>(y)</span></code></pre></div>
+<ol start="4" style="list-style-type: decimal">
+<li>Estimate the dispersions using empirical Bayes (EB)</li>
+</ol>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">estimateDisp</span>(y, design)</span></code></pre></div>
+<ol start="5" style="list-style-type: decimal">
+<li>Estimate gene-wise dispersions without shrinkage for comparison
+purposes</li>
+</ol>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>yNoEB <span class="ot">&lt;-</span> <span class="fu">estimateDisp</span>(y, design, <span class="at">prior.df =</span> <span class="dv">0</span>)</span></code></pre></div>
+<ol start="6" style="list-style-type: decimal">
+<li>Visualisation and comparison of tag-wise (EB) and genewise
+dispersion</li>
+</ol>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>o <span class="ot">&lt;-</span> <span class="fu">order</span>(y<span class="sc">$</span>AveLogCPM)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">AveLogCPM=</span><span class="fu">rep</span>(yNoEB<span class="sc">$</span>AveLogCPM[o],<span class="dv">2</span>),</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">BCV=</span><span class="fu">sqrt</span>(</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(yNoEB<span class="sc">$</span>tagwise.dispersion[o],</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>      y<span class="sc">$</span>tagwise.dispersion[o])</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    ), </span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">method=</span><span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;genewise&quot;</span>,<span class="st">&quot;tagwise&quot;</span>), <span class="at">each=</span><span class="fu">nrow</span>(y))) <span class="sc">%&gt;%</span></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(AveLogCPM,BCV,<span class="at">color=</span>method)) <span class="sc">+</span></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> .<span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">data.frame</span>(</span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">AveLogCPM=</span>y<span class="sc">$</span>AveLogCPM[o],</span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">BCV =</span> <span class="fu">sqrt</span>(y<span class="sc">$</span>trended.dispersion[o]),</span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">method=</span><span class="st">&quot;trended&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_colour_manual</span>(<span class="at">values =</span><span class="fu">c</span>(<span class="st">&#39;black&#39;</span>,<span class="st">&#39;orange&#39;</span>,<span class="st">&#39;blue&#39;</span>))<span class="sc">+</span></span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Biological Coefficient of Variation&quot;</span>) <span class="sc">+</span></span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Average log CPM&quot;</span>)</span></code></pre></div>
+<p><img src="sequencing_countData_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p>Note, that</p>
+<ul>
+<li>The gene-wise dispersion is very variable (black dots).</li>
+<li>There is a dispersion - mean trend (blue line)</li>
+<li>The tag-wise dispersions (orange dots) are the result of shrinking
+the gene-wise dispersion (black dots) to the trend (blue line)</li>
+</ul>
+<p>By default edgeR provides the following plot</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotBCV</span>(y)</span></code></pre></div>
+<p><img src="sequencing_countData_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p>In the methods paper of edgeR different dispersion estimators were
+compared and the tag-wise dispersions seemed to provide the best
+goodness of fit.</p>
+<div class="figure">
+<img src="images_sequencing/NARDispersion.png" alt="QQ-plots of goodness of fit statistics using common, trended or empirical Bayes. Image from McCarthy and Smyth, 2012, NAR, DOI: 10.1093/nar/gks042" width="2026" />
+<p class="caption">
+QQ-plots of goodness of fit statistics using common, trended or
+empirical Bayes. Image from McCarthy and Smyth, 2012, NAR, DOI:
+10.1093/nar/gks042
+</p>
+</div>
+</div>
+</div>
+<div id="statistical-inference" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Statistical
+Inference</h1>
+<ul>
+<li><p>Asymptotic statistical tests exist to test if (contrasts of the)
+parameters of the GLM are different from zero.</p></li>
+<li><p>Implemented in edgeR and DESeq2.</p></li>
+<li><p>Again we have to correct for multiple testing !!! FDR correction
+is done by default in the edgeR and DESeq2 output</p></li>
+</ul>
+<ol style="list-style-type: decimal">
+<li>Fit the model</li>
+</ol>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">glmFit</span>(y,design)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(fit<span class="sc">$</span>coefficients)</span></code></pre></div>
+<pre><code>##                 (Intercept)     time48h   patient2   patient3
+## ENSG00000000003   -9.349871  0.13638138 -0.5613559 -0.7834884
+## ENSG00000000419  -10.391095 -0.09800617  0.1057271  0.1356434
+## ENSG00000000457  -10.928625 -0.08069712  0.4491010 -0.1289007
+## ENSG00000000460  -10.041597 -0.81035512  0.5044914 -0.5433122
+## ENSG00000000938  -14.614695  0.39307169  1.4719170  0.1349905
+## ENSG00000000971  -13.512986  0.46252084 -0.2107229  0.5042261</code></pre>
+<p>Interpretation of model parameters?</p>
+<ol start="2" style="list-style-type: decimal">
+<li>Statistical test to assess the time effect</li>
+</ol>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>lrt <span class="ot">&lt;-</span> <span class="fu">glmLRT</span>(fit, <span class="at">coef =</span> <span class="st">&quot;time48h&quot;</span>)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">topTags</span>(lrt)</span></code></pre></div>
+<pre><code>## Coefficient:  time48h 
+##                     logFC   logCPM       LR       PValue          FDR
+## ENSG00000164089  4.284786 3.099739 213.7650 2.072422e-48 3.294944e-44
+## ENSG00000148795  3.026969 3.686056 183.3434 9.025281e-42 7.174647e-38
+## ENSG00000133110  1.293005 7.185439 164.0009 1.512056e-37 8.013393e-34
+## ENSG00000211445  1.450374 8.966014 162.1696 3.798734e-37 1.509902e-33
+## ENSG00000107796  1.398750 6.002617 146.0886 1.241600e-33 3.865574e-30
+## ENSG00000169239  1.557744 7.377027 145.7683 1.458799e-33 3.865574e-30
+## ENSG00000188404 -1.590059 9.851890 141.9293 1.007722e-32 2.288824e-29
+## ENSG00000136235  1.375796 5.149565 139.4353 3.537613e-32 7.030564e-29
+## ENSG00000163631  1.835300 4.898878 135.1416 3.074462e-31 5.431208e-28
+## ENSG00000005189 -1.702284 5.615167 134.7941 3.662515e-31 5.823032e-28</code></pre>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAnSW50cm9kdWN0aW9uIHRvIFNlcXVlbmNpbmc6IFdvcmtpbmcgd2l0aCBSTkEtc2VxIGNvdW50IGRhdGEnCmF1dGhvcjogIktvZW4gVmFuIGRlbiBCZXJnZSAmIExpZXZlbiBDbGVtZW50IgpkYXRlOiAiTGFzdCBlZGl0ZWQgb24gYHIgZm9ybWF0KFN5cy50aW1lKCksICclZCAlQiwgJVknKWAiCm91dHB1dDogCiAgcGRmX2RvY3VtZW50OgogICAgdG9jOiB0cnVlCiAgICBudW1iZXJfc2VjdGlvbnM6IHRydWUKICAgIGxhdGV4X2VuZ2luZTogeGVsYXRleAogIGh0bWxfZG9jdW1lbnQ6CiAgICB0b2M6IHRydWUKICAgIHRvY19mbG9hdDogdHJ1ZQogICAgdG9jX2RlcHRoOiA0Ci0tLQoKYGBge3IgZnVuY3Rpb25zLCBpbmNsdWRlPUZBTFNFfQojIEEgZnVuY3Rpb24gZm9yIGNhcHRpb25pbmcgYW5kIHJlZmVyZW5jaW5nIGltYWdlcwpmaWcgPC0gbG9jYWwoewogICAgaSA8LSAwCiAgICByZWYgPC0gbGlzdCgpCiAgICBsaXN0KAogICAgICAgIGNhcD1mdW5jdGlvbihyZWZOYW1lLCB0ZXh0KSB7CiAgICAgICAgICAgIGkgPDwtIGkgKyAxCiAgICAgICAgICAgIHJlZltbcmVmTmFtZV1dIDw8LSBpCiAgICAgICAgICAgIHBhc3RlKCJGaWd1cmUgIiwgaSwgIjogIiwgdGV4dCwgc2VwPSIiKQogICAgICAgIH0sCiAgICAgICAgcmVmPWZ1bmN0aW9uKHJlZk5hbWUpIHsKICAgICAgICAgICAgcmVmW1tyZWZOYW1lXV0KICAgICAgICB9KQp9KQpgYGAgCgpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KGVjaG8gPSBUUlVFKQpzdXBwcmVzc1BhY2thZ2VTdGFydHVwTWVzc2FnZXMoewogIGxpYnJhcnkoa25pdHIpCiAgbGlicmFyeShybWFya2Rvd24pCiAgbGlicmFyeShnZ3Bsb3QyKQogIGxpYnJhcnkodGlkeXZlcnNlKQogIGxpYnJhcnkoU3VtbWFyaXplZEV4cGVyaW1lbnQpCiAgbGlicmFyeShlZGdlUikKICBpZighInBhcmF0aHlyb2lkU0UiICVpbiUgaW5zdGFsbGVkLnBhY2thZ2VzKClbLDFdKSBCaW9jTWFuYWdlcjo6aW5zdGFsbCgicGFyYXRoeXJvaWRTRSIpCn0pCmBgYAoKSW4gdGhpcyBsZWN0dXJlIHdlIHdpbGwgaW50cm9kdWNlIHRoZSBtYWluIHByaW5jaXBsZXMgb2Ygd29ya2luZyB3aXRoIGNvdW50IGRhdGEsIGFuZCBob3cgdG8gbW9kZWwgdGhlc2UgdXNpbmcgZ2VuZXJhbGl6ZWQgbGluZWFyIG1vZGVscyAoR0xNcykuIFdlIGZvY3VzIG9uIGludHJvZHVjaW5nIHRoZSBjb25jZXB0IG9mIGdlbmVyYWxpemVkIGxpbmVhciBtb2RlbHMsIGFuZCBob3cgIHRoZXkgY2FuIGJlIGFwcGxpZWQgdG8gZ2Vub21pY3MgZGF0YSBhbmFseXNpcy4KCiMgVGhlIFBvaXNzb24gZGlzdHJpYnV0aW9uCgogLSBUaGUgUG9pc3NvbiBkaXN0cmlidXRpb24gaXMgYSB0eXBpY2FsIGNvdW50IGRpc3RyaWJ1dGlvbiB0aGF0IGlzIGdlbmVyYWxseSBwb3B1bGFyIGFuZCBmYWlybHkgZWFzeSB0byB3b3JrIHdpdGguIEl0IGlzIGRlZmluZWQgYnkgYSBzaW5nbGUgcGFyYW1ldGVyOiBpdHMgbWVhbiAkXG11JC4gRm9yIGEgUG9pc3NvbiBkaXN0cmlidXRlZCByYW5kb20gdmFyaWFibGUgJFlfaSQgd2l0aCBvYnNlcnZhdGlvbnMgJGkgXGluIFx7MSwgXGxkb3RzLCBuXH0kLCBpdHMgdmFyaWFuY2UgaXMgZXF1YWwgdG8gaXRzIG1lYW4uIFRoYXQgaXMsIGlmIAogCiAkJFlfaSBcc2ltIFBvaShcbXUpJCQKICwgdGhlbiAKIAogJCRFKFlfaSkgPSBWYXIoWV9pKSA9IFxtdS4kJAogCiAtIFRoaXMgaW1tZWRpYXRlbHkgc2hvd3MgYW4gaW1wb3J0YW50IGZlYXR1cmUgb2YgY291bnQgZGF0YTogdGhlICoqbWVhbi12YXJpYW5jZSByZWxhdGlvbnNoaXAqKi4gSW5kZWVkLCBpbiBjb3VudCBkYXRhLCB0aGUgdmFyaWFuY2Ugd2lsbCBhbHdheXMgYmUgYSBmdW5jdGlvbiBvZiB0aGUgbWVhbi4KIAogLSBUaGlzIGlzIHF1aXRlIGludHVpdGl2ZS4gQ29uc2lkZXIgdGhlIGZvbGxvd2luZyBleGFtcGxlLiBZb3UgaGF2ZSB0d28gYmlyZCBjYWdlcywgd2hlcmUgaW4gb25lIGJpcmQgY2FnZSB0aGVyZSBhcmUgJDEwJCBiaXJkcywgd2hpbGUgaW4gdGhlIG90aGVyIHRoZXJlIGFyZSAkMTAwJCBiaXJkcy4gWW91IGxldCBhIHNhbXBsZSBvZiBwZW9wbGUgbG9vayB0byB0aGUgbnVtYmVyIG9mIGJpcmRzIGluIGVpdGhlciBvbmUgb2YgdGhlIGNhZ2VzLiBJdCBzZWVtcyB1bmxpa2VseSB0aGF0IGEgcGVyc29uIGluIGZyb250IG9mIHRoZSAxMC1iaXJkIGNhZ2Ugd291bGQgY29tZSB1cCB3aXRoIGFuIGVzdGltYXRlIG9mICQzJCwgd2hpbGUgaXQgc2VlbXMgbGlrZWx5IHRoYXQgc29tZW9uZSBpbiBmcm9udCBvZiB0aGUgMTAwLWJpcmQgY2FnZSB3b3VsZCBjb21lIHVwIHdpdGggYW4gZXN0aW1hdGUgb2YgJDgwJC4gRXZlbiB0aG91Z2ggdGhlIGRpZmZlcmVuY2UgZnJvbSB0aGUgdHJ1ZSB2YWx1ZSBpcyB0aGUgc2FtZSwgdGhlIGV4YWN0IHZhbHVlIGhhcyBhbiBpbXBhY3Qgb24gdGhlIHBsYXVzaWJsZSBkZXZpYXRpb24gYXJvdW5kIGl0LgogCmBgYHtyfQpzZXQuc2VlZCgxMSkKeTEgPC0gcnBvaXMobj01MDAsIGxhbWJkYT0xMCkKeTIgPC0gcnBvaXMobj01MDAsIGxhbWJkYT0xMDApCgpwYXIobWZyb3cgPSBjKDEsMikpCnFwbG90KHkxLCBtYWluPSJQb2lzc29uKDEwKSIsIGdlb20gPSAiaGlzdG9ncmFtIiwgYmlud2lkdGg9LjUsY2VudGVyPTApCnFwbG90KHkyLCBtYWluPSJQb2lzc29uKDEwMCkiLCBnZW9tID0gImhpc3RvZ3JhbSIsIGJpbndpZHRoPS41LGNlbnRlcj0wKQpgYGAKCiMjIFRoZSBQb2lzc29uIGRpc3RyaWJ1dGlvbiBpbiBSTkEtc2VxCgogLSBJbiBSTkEtc2VxLCB0ZWNobmljYWwgcmVwbGljYXRlcyByZXByZXNlbnQgZGlmZmVyZW50IGFsaXF1b3RzIG9mIHRoZSBzYW1lIHNhbXBsZSBiZWluZyBzZXF1ZW5jZWQgcmVwZWF0ZWRseS4gVGhlIHVuZGVybHlpbmcgdHJ1ZSBleHByZXNzaW9uIG9mIGEgZ2VuZSBjYW4gaGVuY2Ugc2FmZWx5IGJlIGFzc3VtZWQgdG8gYmUgZXF1YWwgYWNyb3NzIHRoZXNlIHRlY2huaWNhbCByZXBsaWNhdGVzLgogLSBbTWFyaW9uaSAqZXQgYWwuKiAoMjAwOCldKGh0dHBzOi8vZ2Vub21lLmNzaGxwLm9yZy9jb250ZW50LzE4LzkvMTUwOSkgaGF2ZSBzaG93biB0aGF0LCBmb3IgbW9zdCBnZW5lcywgdGhlIGRpc3RyaWJ1dGlvbiBvZiBvYnNlcnZlZCBnZW5lIGV4cHJlc3Npb24gY291bnRzIGFjcm9zcyB0ZWNobmljYWwgcmVwbGljYXRlcyBmb2xsb3cgYSBQb2lzc29uIGRpc3RyaWJ1dGlvbi4gQSBzbWFsbCBwcm9wb3J0aW9uIG9mIGdlbmVzICgkXHNpbSAwLjVcJSQpIGRvIG5vdCBmb2xsb3cgdGhpcyBQb2lzc29uIG1vZGVsLCBob3dldmVyLCBhbmQgYWN0dWFsbHkgc2hvdyBldmlkZW5jZSBmb3IgKidleHRyYS1Qb2lzc29uIHZhcmlhdGlvbicqLgogCmBgYHtyLCBlY2hvPUZBTFNFLCBmaWcuY2FwPXBhc3RlKCJGaWd1cmU6IFRlY2huaWNhbCByZXBsaWNhdGlvbiBpbiBSTkEtc2VxLiBGaWd1cmVzIGZyb20gTWFyaW9uaSBldCBhbC4gKDIwMDgpLiIpfQojIEFsbCBkZWZhdWx0cwppbmNsdWRlX2dyYXBoaWNzKCIuL2ltYWdlc19zZXF1ZW5jaW5nL21hcmlvbmlGaWdzX2Nyb3BwZWQucG5nIikKYGBgCgojIyBSZWxhdGl2ZSB1bmNlcnRhaW50eSBmb3IgUG9pc3NvbiBkaXN0cmlidXRlZCByYW5kb20gdmFyaWFibGVzCgpUYWtlIGEgbWludXRlIHRvIGNvbnNpZGVyIHRoZSBmb2xsb3dpbmcgcXVlc3Rpb246CgogLSBTdXBwb3NlIHRoYXQgd2UgaGF2ZSBhIHNvbGlkIHR1bW9yIHNhbXBsZSBmcm9tIGEgY2FuY2VyIHBhdGllbnQsIGFzIHdlbGwgYXMgYSBzYW1wbGUgb2Ygc3Vycm91bmRpbmcgaGVhbHRoeSB0aXNzdWUuIEZvciBlYWNoIHNhbXBsZSwgd2UgaGF2ZSB0aHJlZSB0ZWNobmljYWwgcmVwbGljYXRlcyBhdCBvdXIgZGlzcG9zYWwuIExldCAkWV97Z3J0fSQgZGVub3RlIHRoZSBvYnNlcnZlZCBnZW5lIGV4cHJlc3Npb24gdmFsdWVzIG9mIGdlbmUgJGckIGluIHJlcGxpY2F0ZSAkciBcaW4gXHsxLDIsM1x9JCBmcm9tIHRpc3N1ZSAkdCBcaW4gXHswLDFcfSQsIHdoZXJlICR0PTAkIGRlbm90ZXMgaGVhbHRoeSB0aXNzdWUgYW5kICR0PTEkIGRlbm90ZXMgdHVtb3JhbCB0aXNzdWUuIAogLSBXZSB0aGVuIGtub3cgdGhhdCB0aGUgcmFuZG9tIHZhcmlhYmxlcyAkWV97Z3IwfSQgYW5kICRZX3tncjF9JCBmb2xsb3cgYSBQb2lzc29uIGRpc3RyaWJ1dGlvbiwgYW5kIHdlIHdvdWxkIGVzdGltYXRlIGl0cyBtZWFuIGFzICRcYmFye1l9X3tnMH0gPSBcZnJhY3sxfXszfSBcc3VtX3tyPTF9XjMgWV97Z3IwfSQgYW5kICRcYmFye1l9X3tnMX0gPSBcZnJhY3sxfXszfSBcc3VtX3tyPTF9XjMgWV97Z3IxfSQsIHJlc3BlY3RpdmVseS4gCiAtIFNpbWlsYXIsIGZvciBhbm90aGVyIGdlbmUgJGskLCB3ZSBvYnNlcnZlICRZX3trcnR9JCwgYW5kIGVzdGltYXRlICRcYmFye1l9X3trMH0kIGFuZCAkXGJhcntZfV97azF9JCBjb3JyZXNwb25kaW5nbHkuCiAtIE5vdyBzdXBwb3NlIHRoYXQgJFxiZXRhX3trfSA9IFxiYXJ7WX1fe2sxfSAvIFxiYXJ7WX1fe2swfSA9IDUkLCBidXQgYWxzbyAkXGJldGFfZyA9IFxiYXJ7WX1fe2cxfSAvIFxiYXJ7WX1fe2cwfSA9IDUkLCBpLmUuLCB0aGUgdHdvIGdlbmVzIGhhdmUgdGhlIHNhbWUgYXZlcmFnZSBleHByZXNzaW9uIHJhdGlvIChhbHNvIG9mdGVuIGNhbGxlZCBhIGZvbGQtY2hhbmdlKSBhY3Jvc3Mgc2FtcGxlcy4gSG93ZXZlciwgdGhleSBhcmUgZGlmZmVyZW50bHkgZXhwcmVzc2VkIGFzICRcYmFye1l9X3trMX0gPSAxMDAkLCBhbmQgJFxiYXJ7WX1fe2cxfSA9IDEwJCAobWFraW5nICRcYmFye1l9X3trMH0gPSAyMCQsIGFuZCAkXGJhcntZfV97ZzB9ID0gMiQpLgogLSBGb3Igd2hpY2ggb2YgdGhlIHR3byBnZW5lcyBpcyB0aGUgdW5jZXJ0YWludHkgb24gdGhlIGV4cHJlc3Npb24gcmF0aW8gdGhlIGhpZ2hlc3Q/IEluIG90aGVyIHdvcmRzLCBkbyB3ZSB0cnVzdCAkXGJldGFfayQgbW9yZSBvciBkbyB3ZSB0cnVzdCAkXGJldGFfZyQgbW9yZT8KIAogLS0tCgpMZXQncyBhcHByb3hpbWF0ZSB0aGUgdW5jZXJ0YWludHkgaW4gJGJldGFfZyQgYW5kICRcYmV0YV9rJCB1c2luZyBzaW11bGF0aW9uOgogCmBgYHtyfQpOIDwtIDFlMwpiZXRhX2cgPC0gYmV0YV9rIDwtIHZlY3RvcihsZW5ndGg9TikKZm9yKGlpIGluIDE6Til7CiAgeWdyMSA8LSBycG9pcyhuPTMsIGxhbWJkYT0xMCkKICB5Z3IwIDwtIHJwb2lzKG49MywgbGFtYmRhPTIpCiAgeWtyMSA8LSBycG9pcyhuPTMsIGxhbWJkYT0xMDApCiAgeWtyMCA8LSBycG9pcyhuPTMsIGxhbWJkYT0yMCkKICBiZXRhX2dbaWldIDwtIG1lYW4oeWdyMSkgLyBtZWFuKHlncjApCiAgYmV0YV9rW2lpXSA8LSBtZWFuKHlrcjEpIC8gbWVhbih5a3IwKQp9CgpwYXIobWZyb3c9YygxLDIpLCBtYXI9Yyg0LDIsMywxKSkKaGlzdChiZXRhX2csIGJyZWFrcz1zZXEoMCw1MCxieT0xKSwgeGxpbT1jKDAsNTApKQpoaXN0KGJldGFfaywgYnJlYWtzPXNlcSgwLDUwLGJ5PTEpLCB4bGltPWMoMCw1MCkpCmBgYAogCiAtLS0gCiAKIFdlIGNsZWFybHkgc2VlIHRoYXQgdGhlIHVuY2VydGFpbnR5IG9uICRcYmV0YV9rJCBpcyBtdWNoIGxvd2VyIHRoYW4gb24gJFxiZXRhX2ckLiBFdmVuIHRob3VnaCB0aGUgdmFyaWFuY2Ugb24gdGhlIGNvdW50cyBvZiBnZW5lICRrJCBpcyBoaWdoZXIsIHNpbmNlIGl0cyBtZWFuIGlzIGhpZ2hlciBhbmQgaXQgaXMgZGlzdHJpYnV0ZWQgYXMgYSBQb2lzc29uIHZhcmlhYmxlLiBIb3cgZG8gd2UgZXhwbGFpbiB0aGlzPwogCiAtIFdlIG1heSBleHBsYWluIHRoaXMgYnkgY29uc2lkZXJpbmcgdGhlIHJlbGF0aXZlIHVuY2VydGFpbnR5IG9uIHRoZSBtZWFuLiBSZWxhdGl2ZSB1bmNlcnRhaW50eSBtYXkgYmUgZGVmaW5lZCBhcyB0aGUgY29lZmZpY2llbnQgb2YgdmFyaWF0aW9uICRDViA9IFxmcmFje1xzaWdtYX17XG11fSQgKHRoaXMgaXMsIHRoZSBzdGFuZGFyZCBkZXZpYXRpb24gZGl2aWRlZCBieSB0aGUgbWVhbikuIEluZGVlZCwgdGhlIENWIGRlc2NyaWJlcyB0aGUgcmVsYXRpdmUgZGV2aWF0aW9uIG9mIHRoZSBkaXN0cmlidXRpb24gcmVsYXRpdmUgdG8gaXRzIG1lYW4sIHdoZXJlIGEgbG93IENWIGluZGljYXRlcyBsb3cgZGlzcGVyc2lvbiB3aXRoIHJlc3BlY3QgdG8gdGhlIG1lYW4uCiAtIENhbGN1bGF0aW5nIHRoZSBDViBzaG93cyB0aGF0ICoqdGhlIHJlbGF0aXZlIHVuY2VydGFpbnR5IGZvciBnZW5lICRrJCB0aGFuIGZvciBnZW5lICRnJCwgZXZlbiB0aG91Z2ggdGhlIHZhcmlhbmNlIG9uIHRoZSByYXcgY291bnRzIGlzIGhpZ2hlciBmb3IgZ2VuZSAkayQgdGhhbiBmb3IgZ2VuZSAkZyQqKi4gCiAtIFRoaXMgbG93ZXIgcmVsYXRpdmUgdW5jZXJ0YWludHkgb24gdGhlIG1lYW4gdGhlbiBwcm9wYWdhdGVzIGZ1cnRoZXIgdG8gYSBsb3dlciB1bmNlcnRhaW50eSBvbiB0aGUgZm9sZC1jaGFuZ2UuIFRoaXMgYmFzaWMgcmVzdWx0IHdpbGwgYmUgZXNzZW50aWFsIGZvciB1bmRlcnN0YW5kaW5nIHRoZSByZXN1bHRzIG9mIGEgZGlmZmVyZW50aWFsIGV4cHJlc3Npb24gYW5hbHlzaXMhCiAKYGBge3J9CnNxcnQoMTAwKS8xMDAgI0NWIGZvciBnZW5lIGsKCnNxcnQoMTApLzEwICNDViBmb3IgZ2VuZSBnCmBgYAogCiMgTW9kZWxpbmcgY291bnQgZGF0YTogR2VuZXJhbGl6ZWQgbGluZWFyIG1vZGVscwoKSnVzdCBsaWtlIHdlIGhhdmUgbW9kZWxlZCBwcm90ZWluIGFidW5kYW5jZXMgaW4gdGhlIHByb3Rlb21pY3MgbW9kdWxlIG9mIHRoaXMgY291cnNlIGluIG9yZGVyIHRvIGFzc2VzcyBkaWZmZXJlbnRpYWwgcHJvdGVpbiBhYnVuZGFuY2UsIHdlIGNhbiBtb2RlbCBnZW5lIGV4cHJlc3Npb24gY291bnRzIHRvIGlkZW50aWZ5IGdlbmVzIHdpdGggZGlmZmVyZW5jZXMgaW4gYXZlcmFnZSBleHByZXNzaW9uIGJldHdlZW4gZ3JvdXBzIG9mIHNhbXBsZXMuCgojIyBXaHkgd2UgY2FuKCd0KSB1c2UgbGluZWFyIG1vZGVscyB0byBtb2RlbCBjb3VudCBkYXRhCgogLSBJZiB3ZSBhcmUgdXNpbmcgYSBsaW5lYXIgbW9kZWwgdG8gbW9kZWwgYSByZXNwb25zZSAkWV9pJCwgd2l0aCAkaSBcaW4gXHsxLCBcbGRvdHMsIG5cfSQgaW4gZnVuY3Rpb24gb2YgYSBzaW5nbGUgY292YXJpYXRlICRYX2kkLCB0aGUgbGluZWFyIG1vZGVsIGNhbiBiZSBkZWZpbmVkIGFzIGZvbGxvd3M6CgpcWwpcbGVmdFx7ClxiZWdpbnthcnJheX17Y2NjfQpZX2kgJiA9ICYgXGJldGFfMCArIFxiZXRhXzEgeF9pICsgXGVwc2lsb25faSBcXApZX2kgfCB4X2kgJiBcc2ltICYgTihcYmV0YV8wICsgXGJldGFfMSB4X2ksIFxzaWdtYV4yICkuClxlbmR7YXJyYXl9ClxyaWdodC4KXF0KCiAtIE9yLCBlcXVpdmFsZW50bHksIHdlIGNhbiB3cml0ZSBpdCBpbiBtYXRyaXggZm9ybSBhcwogICQkCiAgXGxlZnRcewogIFxiZWdpbnthcnJheX17Y2NjfQogIFkgJiA9ICYgXG1hdGhiZntYfV5UIFxib2xkc3ltYm9se1xiZXRhfSArIFxlcHNpbG9uIFxcCiAgWSB8IFxtYXRoYmZ7WH0gJiBcc2ltICYgTihcbWF0aGJme1h9IFxib2xkc3ltYm9se1xiZXRhfSwgXHNpZ21hXjIgXG1hdGhiZntJfSksCiAgXGVuZHthcnJheX0KICBccmlnaHQuCiAgJCQKd2hlcmUgJFxtYXRoYmZ7WH0kIG5vdyByZXByZXNlbnRzIG91ciAkbiBcdGltZXMgcCQgZGVzaWduIG1hdHJpeCwgd2l0aCByb3cgJGkkIGNvcnJlc3BvbmRpbmcgdG8gb2JzZXJ2YXRpb24gJGkkLgoKIC0tLQoKIC0gVGhlIHZhcmlhbmNlLWNvdmFyaWFuY2UgbWF0cml4IG9mICRcbWF0aGJme1l9JCBpcyBhc3N1bWVkIGEgZGlhZ29uYWwgbWF0cml4IHdpdGggJFxzaWdtYV4yJCBvbiB0aGUgZGlhZ29uYWwgZWxlbWVudHMgYW5kIHplcm8gZXZlcnl3aGVyZSBlbHNlLiBUaGlzIG1lYW5zIHRoYXQgdGhlIGRhdGEgcG9pbnRzIGFyZSB1bmNvcnJlbGF0ZWQsIGFuZCB0aGF0IGV2ZXJ5IG9ic2VydmF0aW9uIGhhcyB0aGUgc2FtZSB2YXJpYW5jZSAkXHNpZ21hXjIkLCBhbHNvIHJlZmVycmVkIHRvIGFzIGhvbW9zY2VkYXN0aWNpdHkuIAogCiAtIFRoZSBsYXR0ZXIgZG9lcyBub3QgaG9sZCBmb3IgY291bnQgZGF0YSwgZHVlIHRvIHRoZSBtZWFuLXZhcmlhbmNlIHJlbGF0aW9uc2hpcC4gVGhpcyBtYWtlcyBsaW5lYXIgbW9kZWxzLCBpbiBpdHMgYmFzaWMgZm9ybSwgdW5zdWl0YWJsZSB0byBtb2RlbCBjb3VudCBkYXRhLgogCiAtIEluIGFkZGl0aW9uLCBjb3VudCBkYXRhIGFyZSBub24tbmVnYXRpdmUsIHdoaWxlIHRoZXJlIGFyZSBubyBzdWNoIGNvbnN0cmFpbnRzIGluIHRoZSBzdGFuZGFyZCBsaW5lYXIgbW9kZWwgdG8gbWFrZSBzdXJlIHRoYXQgb3VyIGVzdGltYXRlcyB3aWxsIGJlIG5vbi1uZWdhdGl2ZS4gCiBJbmRlZWQsICRcaGF0e1l9X2kgPSBcaGF0XG11X2kgPSBcbWF0aGJme1h9XlRfaSBcaGF0e1xiZXRhfSBcaW4gXSAtXGluZnR5LCBcaW5mdHlbJC4KCiMjIEdlbmVyYWxpemVkIGxpbmVhciBtb2RlbHMKCiAtIEFzIHRoZSBuYW1lIHN1Z2dlc3RzLCBnZW5lcmFsaXplZCBsaW5lYXIgbW9kZWxzIChHTE1zKSBleHRlbmQgbGluZWFyIG1vZGVscy4gSW4gR0xNcywgd2UgZXh0ZW5kIHR3byB0aGluZ3Mgd2l0aCByZXNwZWN0IHRvIHRoZSBsaW5lYXIgbW9kZWw6CiAgICAtIFRoZSAqKmNvbmRpdGlvbmFsIGRpc3RyaWJ1dGlvbiBvZiB0aGUgcmVzcG9uc2UgdmFyaWFibGUgJFlfaSB8IFhfaSQqKiBjYW4gYmUgYXNzdW1lZCB0byBmb2xsb3cgYW55IGRpc3RyaWJ1dGlvbiB0aGF0IGJlbG9uZ3MgdG8gdGhlICoqZXhwb25lbnRpYWwgZmFtaWx5Kiogb2YgZGlzdHJpYnV0aW9ucywgd2hpY2ggaW5jbHVkZXMgdGhlIEdhdXNzaWFuIGJ1dCBhbHNvIG90aGVyIGNvbW1vbmx5IGtub3duIGRpc3RyaWJ1dGlvbnMsIHN1Y2ggYXMgdGhlIEJpbm9taWFsLCBHYW1tYSBhbmQgUG9pc3NvbiBkaXN0cmlidXRpb24uCiAgICAtIFRoZSBsaW5lYXIgbW9kZWwgYXNzdW1lZCBhIGxpbmVhciByZWxhdGlvbnNoaXAgYmV0d2VlbiAkWV9pJCBhbmQgJFhfaSQsIHNpbmNlIHdlIGFzc3VtZWQgdGhhdCAkRShZX2kgfCBYX2kpID0gXG1hdGhiZntYfV5UX2kgXGJldGEkLiBJbiBHTE1zLCB3ZSB3aWxsIGFsbG93IGEgKipsaW5rIGZ1bmN0aW9uKiogJGcoKSQgdGhhdCBsaW5rcyB0aGUgY29uZGl0aW9uYWwgbWVhbiB0byB0aGUgY292YXJpYXRlcy4gSGVuY2UsIGluIEdMTXMgd2UgaGF2ZSB0aGF0ICRnKEUoWV9pIHwgWF9pKSkgPSBcbWF0aGJme1h9XlRfaSBcYmV0YSQuIE5vdGUgdGhhdCBlYWNoIGZhbWlseSBoYXMgZ290IGEgY2Fub25pY2FsIGxpbmsgZnVuY3Rpb24sIHdoaWNoIGlzIHRoZSBpZGVudGl0eSBsaW5rIGZ1bmN0aW9uICRnKFxtdSkgPSBcbXUkIGZvciBHYXVzc2lhbiwgdGhlIGxvZyBsaW5rIGZ1bmN0aW9uICRnKFxtdSkgPSBcbG9nIFxtdSQgZm9yIFBvaXNzb24sIG9yIHRoZSBsb2dpdCBsaW5rIGZ1bmN0aW9uICRnKFxtdSkgPSBcbG9nKFxmcmFje1xtdX17MS1cbXV9KSQgZm9yIEJpbm9taWFsLgogICAgCiMjIyBBIFBvaXNzb24gR0xNCgogLSBXZSBjYW4gZGVmaW5lIGEgUG9pc3NvbiBHTE0gYXMgZm9sbG93cwogICQkCiAgXGxlZnRcewogIFxiZWdpbnthcnJheX17Y2NjfQogIFlfaSAmIFxzaW0gJiBQb2koXG11X2kpIFxcCiAgXGxvZyBcbXVfaSAmID0gJiBcZXRhX2kgXFwKICBcZXRhX2kgJiA9ICYgXG1hdGhiZntYfV5UX2kgXGJldGEgXFwKICBcZW5ke2FycmF5fQogIFxyaWdodC4KICAkJAp3aGVyZSAkWV9pJCBpcyB0aGUgcmVzcG9uc2UgdmFyaWFibGUsIHdpdGggbWVhbiAkXG11X2kkLCAkXGV0YV9pJCBpcyB0aGUgbGluZWFyIHByZWRpY3RvciwgJFxtYXRoYmZ7WH0kIGlzIHRoZSAkbiBcdGltZXMgcCQgbW9kZWwgbWF0cml4IGFuZCAkXGJldGEkIGlzIHRoZSAkcCBcdGltZXMgMSQgbWF0cml4IG9mIHJlZ3Jlc3Npb24gY29lZmZpY2llbnRzLgogIC0gSXQgaXMgaW5zaWdodGZ1bCB0byBjb21wYXJlIHRoaXMgbW9kZWwgdG8gYSBsaW5lYXIgbW9kZWwgd2hlcmUgJFlfaSQgaXMgbG9nLXRyYW5zZm9ybWVkLiBJbmRlZWQsIGluIHRoZSBsaW5lYXIgbW9kZWwgY2FzZSwgd2Ugd291bGQgYmUgbW9kZWxpbmcgJEUoXGxvZyBZX2kgKSQsIHdoaWxlIGluIHRoZSBHTE0gd2UgYXJlIG1vZGVsaW5nICRcbG9nIEUoWV9pKSQuCiAgLSBUaGlzIHNob3dzIHRoYXQgaW4gdGhlIEdMTSBzZXR0aW5nIHdlIGFyZSBtb2RlbGluZyBhIHRyYW5zZm9ybWVkIHZlcnNpb24gb2YgdGhlIGV4cGVjdGVkIHZhbHVlLCBhbmQgYWZ0ZXIgcmV0cmFuc2Zvcm1pbmcgd2UgY2FuIGludGVycHJldCB0aGUgZml0IGluIHRlcm1zIG9mIHRoZSBtZWFuIG9mIG91ciByZXNwb25zZSB2YXJpYWJsZS4gSW4gdGhlIHRyYW5zZm9ybWVkIGxpbmVhciBtb2RlbCwgaG93ZXZlciwgd2UgYXJlIHdvcmtpbmcgd2l0aCB0aGUgZXhwZWN0ZWQgdmFsdWUgb2YgYSB0cmFuc2Zvcm1lZCB2ZXJzaW9uIG9mIG91ciByZXNwb25zZSB2YXJpYWJsZSwgYW5kIHdlIHdpbGwgbm90IGJlIGFibGUgdG8gaW50ZXJwcmV0IHRoZSBmaXQgaW4gdGVybXMgb2YgdGhlIG1lYW4gKGJlY2F1c2UgJEUoIFxsb2cgWV9pKSBcbmUgXGxvZyBFKFlfaSkkLiBJbiB0aGlzIHNwZWNpZmljIGNhc2UsIHdlIHdvdWxkIGhhdmUgdG8gcmVzb3J0IHRvIGludGVycHJldGluZyBjaGFuZ2VzIGluIHRlcm1zIG9mIGEgZ2VvbWV0cmljIG1lYW4uCiAgLSBBbHNvIG5vdGUgdGhhdCAkXG1hdGhiZntYfV5UX2kgXGJldGEgXGluIF0tXGluZnR5LCBcaW5mdHlbJCwgd2hpbGUgJFlfaSQgbXVzdCBiZSBub24tbmVnYXRpdmUgJFswLCBcaW5mdHlbJC4gVGhlIGxpbmsgZnVuY3Rpb24gaGVscHMgd2l0aCB0aGlzLCBzaW5jZSB0aGUgZXhwb25lbnRpYWwgZnVuY3Rpb24gdHJhbnNmb3JtcyBhbnkgcmVhbCBudW1iZXIgdG8gYSBub24tbmVnYXRpdmUgbnVtYmVyLCBpLmUuLCAkXGV4cChcbWF0aGJme1h9XlRfaSBcYmV0YSkgXGluIFswLCBcaW5mdHlbJC4gCgojIFNlcXVlbmNpbmcgRGF0YQoKSW4gdGhpcyBsZWN0dXJlIHdlIHdpbGwgdXNlIGEgc3Vic2V0IG9mIHRoZSByZWFsIGJ1bGsgUk5BLXNlcSBkYXRhc2V0IGZyb20gW0hhZ2x1bmQgKmV0IGFsLiogKDIwMTIpXShodHRwczovL2FjYWRlbWljLm91cC5jb20vamNlbS9hcnRpY2xlLzk3LzEyLzQ2MzEvMjUzNjU3MykuCgpMZXRzIHRyeSB0byB3b3JrIG91dCB0aGUgZXhwZXJpbWVudGFsIGRlc2lnbiB1c2luZyB0aGUgZm9sbG93aW5nIHBhcmFncmFwaCBmcm9tIHRoZSBNZXRob2RzIHNlY3Rpb24gb2YgdGhlIHBhcGVyLgoKYGBge3IsIGVjaG89RkFMU0UsIGZpZy5jYXA9cGFzdGUoIkZpZ3VyZTogQSBwYXJhZ3JhcGggZnJvbSB0aGUgTWV0aG9kcyBzZWN0aW9uLiIpfQojIEFsbCBkZWZhdWx0cwppbmNsdWRlX2dyYXBoaWNzKCIuL2ltYWdlc19zZXF1ZW5jaW5nL2V4cERlc2lnbl9wYXJhLnBuZyIpCmBgYAoKIyMgVGVjaG5pY2FsIHJlcGVhdHMgCgpUaGVyZSBhcmUgdGVjaG5pY2FsIHJlcGVhdHMgaW4gdGhlIGRhdGEhIAoKYGBge3J9CmRhdGEoInBhcmF0aHlyb2lkR2VuZXNTRSIsIHBhY2thZ2U9InBhcmF0aHlyb2lkU0UiKQpzZSA8LSBwYXJhdGh5cm9pZEdlbmVzU0UKcm0ocGFyYXRoeXJvaWRHZW5lc1NFKQpjb2xEYXRhKHNlKSAlPiUga25pdHI6OmthYmxlKC4pCmBgYAoKYGBge3J9CnNlICU+JSAKICBjb2xEYXRhICU+JQogIGFzLmRhdGEuZnJhbWUgJT4lCiAgcHVsbChzYW1wbGUpICU+JSAKICBubGV2ZWxzCgpzZSAlPiUgCiAgY29sRGF0YSAlPiUgCiAgbnJvdwpgYGAKCkV4dHJhY3Qgc2FtcGxlIG5hbWVzIG9mIGR1cGxpY2F0ZXMhIAoKYGBge3J9CmR1cGwgPC0gd2hpY2godGFibGUoY29sRGF0YShzZSkkc2FtcGxlKSA+IDEpICU+JSBuYW1lcwp0ZWNocmVwcyA8LSBhc3NheXMoc2UpJGNvdW50c1ssY29sRGF0YShzZSkkc2FtcGxlPT1kdXBsWzFdXQpgYGAKCiMjIyBFeHBsb3JlIHRoZSBkYXRhIG9mIHR3byB0ZWNobmljYWwgcmVwZWF0cwoKV2UgZXhwZWN0IHRoZSBjb3VudHMgdG8gYmUgdmVyeSBzaW1pbGFyLiBJbmRlZWQsIHRoZXkgYXJlIGJhc2VkIG9uIHRoZSBzYW1lIGNlbGwgY3VsdHVyZSwgc3RpbXVsYXRlZCB3aXRoIHRoZSBzYW1lIHN0aW11bHVzIGFuZCBpbmN1YmF0ZWQgZm9yIHRoZSBzYW1lIHRpbWUuIAoKYGBge3J9CnFwbG90KHRlY2hyZXBzWywxXSx0ZWNocmVwc1ssMl0pICsKICBnZW9tX2FibGluZShpbnRlcmNlcHQgPSAwLCBzbG9wZSA9IDEpICsgCiAgeGxhYigiVGVjaG5pY2FsIHJlcGVhdCAxIikgKwogIHlsYWIoIlRlY2huaWNhbCByZXBlYXQgMiIpCmBgYAoKLSBUaGUgcGxvdCBzaG93cyBhIHN5c3RlbWF0aWMgZGlmZmVyZW5jZSBiZXR3ZWVuIHRoZSBjb3VudHMgb2YgYm90aCB0ZWNobmljYWwgcmVwZWF0cyEKCi0gSG93ZXZlciwgcGxvdHRpbmcgdGhlIGRhdGEgb24gdGhlIG9yaWdpbmFsIGNvdW50IHNjYWxlIGRvZXMgbm90IGdpdmUgYSBnb29kIG92ZXJ2aWV3IG9mIHRoZSBkYXRhLiBUaGUgcGxvdCBpcyBkb21pbmF0ZWQgYnkgYSBmZXcgdmVyeSBhYnVuZGFudCBnZW5lcywgaS5lLiBnZW5lcyB3aXRoIHZlcnkgaGlnaCBjb3VudHMuIAoKIyMjIEV4cGxvcmUgdGhlIGRhdGEgb2YgdHdvIHRlY2huaWNhbCByZXBlYXRzCgoKYGBge3J9CnFwbG90KHRlY2hyZXBzWywxXSx0ZWNocmVwc1ssMl0sIGxvZz0ieHkiKSArCiAgZ2VvbV9hYmxpbmUoaW50ZXJjZXB0ID0gMCwgc2xvcGUgPSAxKSArIAogIHhsYWIoIlRlY2huaWNhbCByZXBlYXQgMSIpICsKICB5bGFiKCJUZWNobmljYWwgcmVwZWF0IDIiKQpgYGAKCi0gVGhlIHBsb3QgY2xlYXJseSBzaG93cyB0aGF0IHRoZSBjb3VudHMgZm9yIGFsbCBnZW5lcyBhcmUgdmVyeSBkaWZmZXJlbnQgaW4gdGhlIHR3byB0ZWNobmljYWwgcmVwZWF0cy4gCgotIEhvd2V2ZXIsIHdlIGhhdmUgdG8gbG9vayBhdCB0aGUgcGxvdCB2aWEgdGhlIGRpYWdvbmFsLiAKCi0gSW4gb21pY3Mgd2UgdGhlcmVmb3JlIG9mdGVuIHVzZSBNQSBwbG90cy4gV2l0aCBNIChsb2cgcmF0aW8pIGFuZCBBIChsb2cgYXZlcmFnZSkuIAoKYGBge3J9CkEgPC0gdGVjaHJlcHMgJT4lIGxvZzIgJT4lIHJvd01lYW5zCk0gPC0gdGVjaHJlcHMgJT4lIGxvZzIgJT4lIGFwcGx5KC4sMSxkaWZmKQp3IDwtIHRlY2hyZXBzWywxXT09bWluKHRlY2hyZXBzWywxXSkgfCB0ZWNocmVwc1ssMl09PW1pbih0ZWNocmVwc1ssMl0pCmlmIChhbnkodykpIHsKICAgICAgICAgICAgQVt3XSA8LSBydW5pZihzdW0odyksIG1pbiA9IC0xLCBtYXggPSAuMSkKICAgICAgICAgICAgTVt3XSA8LSBsb2cyKHRlY2hyZXBzW3csMl0gKyAxKSAtIGxvZzIodGVjaHJlcHNbdywxXSArIDEpCn0KCk1BcGxvdCA8LSBxcGxvdChBLCBNLCBjb2w9dykgKwogIHRoZW1lKGxlZ2VuZC5wb3NpdGlvbiA9ICJub25lIikgKyAKICBzY2FsZV9jb2xvcl9tYW51YWwodmFsdWVzID0gYygiYmxhY2siLCJvcmFuZ2UiKSkgKwogIHhsYWIoIkE6IGxvZzIgQXZlcmFnZSIpICsKICB5bGFiKCJNOiBsb2cyIEZvbGQgQ2hhbmdlIikKCk1BcGxvdCArCiAgZ2VvbV9hYmxpbmUoaW50ZXJjZXB0PTAsc2xvcGU9MCkKYGBgCgpUaGUgTUEgcGxvdCBjbGVhcmx5IHNob3dzIHRoYXQgdGhlIGNvdW50cyBvZiBvbmUgdGVjaG5pY2FsIHJlcGVhdCBhcmUgc3lzdGVtYXRpY2FsbHkgaGlnaGVyIHRoYW4gdGhhdCBvZiB0aGUgb3RoZXIgdGVjaG5pY2FsIHJlcGVhdHMuIAoKYGBge3J9CmNvbFN1bXModGVjaHJlcHMpCmxvZ0ZDZGVwdGggPC0gY29sU3Vtcyh0ZWNocmVwcykgJT4lIGxvZzIgJT4lIGRpZmYKbG9nRkNkZXB0aAoyXmxvZ0ZDZGVwdGgKYGBgCgpUaGUgdGVjaG5pY2FsIHJlcGVhdHMgZGlmZmVyIHdpdGggYSBmYWN0b3IgYHIgcm91bmQoMl5sb2dGQ2RlcHRoLDEpYCBpbiBzZXF1ZW5jaW5nIGRlcHRoISAKCgpgYGB7cn0KTUFwbG90ICsgZ2VvbV9hYmxpbmUoaW50ZXJjZXB0ID0gbG9nRkNkZXB0aCwgc2xvcGUgPSAwLCBjb2xvcj0icmVkIikKYGBgCgotIFRoaXMgbG9nMiBmb2xkIGNoYW5nZSBpbiBzZXF1ZW5jaW5nIGRlcHRoIGlzIGFsc28gdGhlIGJhc2VsaW5lIGFyb3VuZCB3aGljaCB0aGUgbG9nMiBmb2xkIGNoYW5nZXMgYmV0d2VlbiB0ZWNobmljYWwgcmVwZWF0cyBvZiBpbmRpdmlkdWFsIGdlbmVzIGFyZSBmbHVjdHVhdGluZyEgCgpIZW5jZSwgd2Ugd2lsbCBoYXZlIHRvIGNvcnJlY3QgZm9yIGRpZmZlcmVuY2VzIGluIHNlcXVlbmNpbmcgZGVwdGguIAoKIyMgQ291bnQgc2NhbGluZyB1c2luZyBHTE0gb2Zmc2V0cyAKCi0gV2UgaGF2ZSBwcmV2aW91c2x5IGRpc2N1c3NlZCBjb3VudCBzY2FsaW5nIHRyYW5zZm9ybWF0aW9ucyBzdWNoIGFzIENQTSBhbmQgVFBNLgoKLSBBIG1vcmUgYXBwcm9wcmlhdGUgYW5kIG5hdHVyYWwgd2F5IHdoZW4gd29ya2luZyB3aXRoIEdMTXMgaXMgdGhyb3VnaCB0aGUgdXNlIG9mIG9mZnNldHMuIFRoZSBnZW5lcmFsIHVzZSBvZiBhbiBvZmZzZXQgaXMgdG8gYWNjb3VudCBmb3IgdGhlIOKAmGVmZm9ydOKAmSBwZXJmb3JtZWQgaW4gb3JkZXIgdG8gZ2F0aGVyIHRoYXQgb2JzZXJ2YXRpb24gb2YgdGhlIHJlc3BvbnNlIHZhcmlhYmxlLgoKJFxyaWdodGFycm93JCBpLmUuIHNhbXBsZSBiZWluZyBzZXF1ZW5jZWQgZGVlcGVyIGNvbnRhaW5zIG1vcmUgaW5mb3JtYXRpb24gYXMgY29tcGFyZWQgdG8gYSBzYW1wbGUgYmVpbmcgc2VxdWVuY2VkIHJlbGF0aXZlbHkgc2hhbGxvdy4gV2UgaGF2ZSBtb3JlIGNvbmZpZGVuY2UgaW4gYSBjb3VudCBmcm9tIGEgZGVlcGx5IHNlcXVlbmNlZCBzYW1wbGUgdGhhbiB0aGF0IGZyb20gYSBzaGFsbG93bHkgc2VxdWVuY2VkIHNhbXBsZS4gV2UgY2FuIHRoZXJlZm9yZSB1c2UgdGhlIHNlcXVlbmNpbmcgZGVwdGggJE5faT1cc3VtX2cgWV97Z2l9JCBhcyBvZmZzZXQgaW4gdGhlIG1vZGVsLgoKCi0gQWRkaW5nIGFuIG9mZnNldCB0byB0aGUgbW9kZWwgaXMgZGlmZmVyZW50IGZyb20gYWRkaW5nIGEgbmV3IHZhcmlhYmxlIHRvIHRoZSBtb2RlbC4gRm9yIGVhY2ggbmV3IHZhcmlhYmxlIHdlIGFkZCwgd2Ugd2lsbCBlc3RpbWF0ZSBpdHMgYXZlcmFnZSBlZmZlY3QgJFxiZXRhJCBvbiB0aGUgcmVzcG9uc2UgdmFyaWFibGUuIFdoZW4gYWRkaW5nIGFuIG9mZnNldCwgaG93ZXZlciwgd2UgaW1wbGljaXRseSBzZXQgJFxiZXRhPTEkLgoKLSBPZmZzZXRzIGFyZSB0eXBpY2FsbHkgYWRkZWQgb24gdGhlIHNjYWxlIG9mIHRoZSBsaW5lYXIgcHJlZGljdG9yLiBTdXBwb3NlIHdlIGhhdmUgYSBnZW5lIGcgYW5kIHNhbXBsZSBpIHNwZWNpZmljIG9mZnNldCAkT197Z2l9JCwgdGhlbiB3ZSBjYW4gZGVmaW5lIG91ciBHTE0gaW5jbHVkaW5nIHRoZSBvZmZzZXQgYXMKCiAgJCQKICBcbGVmdFx7CiAgXGJlZ2lue2FycmF5fXtjY2N9CiAgWV97Z2l9ICYgXHNpbSAmIFBvaShcbXVfe2dpfSkgXFwKICBcbG9nIFxtdV97Z2l9ICYgPSAmIFxldGFfe2dpfSBcXAogIFxldGFfe2dpfSAmID0gJiBcbWF0aGJme1h9XlRfaSBcYmV0YV9nICsgbG9nKE9fe2dpfSkgXFwKICBcZW5ke2FycmF5fQogIFxyaWdodC4KICAkJAoKV2hlbiB3ZSB3b3VsZCBsaWtlIHRvIGNvcnJlY3QgZm9yIHRoZSBvdmVyYWxsIHNlcXVlbmNpbmcgZGVwdGggJE9fe2dpfT1OX2kkLiBIb3dldmVyLCBiZXR0ZXIgb2Zmc2V0cyBleGlzdCEKCk5vdGUsIHRoYXQgCgokJApcbXVfe2lnfT0gXGV4cChcbWF0aGJme1h9XlRfaSBcYmV0YV9nKSBcdGltZXMgT197Z2l9CiQkCm9yIAokJApcbG9nXGxlZnQoXGZyYWN7XG11X3tpZ319e09fe2dpfX1ccmlnaHQpPSBcbWF0aGJme1h9XlRfaSBcYmV0YV9nCiQkCgojIyBCaW9sb2dpY2FsIHJlcGVhdHMKCldlIGV4dHJhY3QgdGhlIGZvdXIgYmlvbG9naWNhbCByZXBlYXRzIGZyb20gdGhlIHN0dWR5IGZvciB0aGUgY29udHJvbCB0cmVhdG1lbnQgYXQgdGltZSAyNGguIAoKYGBge3J9CmJpb3JlcHMgPC0gY29sRGF0YShzZSkkdHJlYXRtZW50PT0iQ29udHJvbCIgJiBjb2xEYXRhKHNlKSR0aW1lPT0iMjRoIgpiaW9yZXBDb3VudHMgPC0gYXNzYXlzKHNlKSRjb3VudHNbLGJpb3JlcHNdCnFwbG90KHJvd01lYW5zKGJpb3JlcENvdW50cykscm93VmFycyhiaW9yZXBDb3VudHMpLGxvZz0ieHkiKSArCiAgZ2VvbV9hYmxpbmUoaW50ZXJjZXB0ID0gMCxzbG9wZSA9IDEsY29sPSJyZWQiKSArCiAgZ2VvbV9zbW9vdGgoY29sPSJvcmFuZ2UiKQpgYGAKCi0gSGF2aW5nIGRhdGEgb24gdGhvdXNhbmRzIG9mIGdlbmVzIHByb3ZpZGVzIHRoZSBvcHBvcnR1bml0eSB0byBlbXBpcmljYWxseSBhc3Nlc3MgdGhlIG1lYW4tdmFyaWFuY2UgcmVsYXRpb25zaGlwLgoKLSBJdCBpcyBjbGVhciB0aGF0IHRoZSBkYXRhIGlzIG92ZXJkaXNwZXJzZWQgd2l0aCByZXNwZWN0IHRvIHRoZSBQb2lzc29uIGRpc3RyaWJ1dGlvbiAocmVkIHk9eCBsaW5lKS4gVGhlcmUgYWxzbyBzZWVtcyB0byBiZSBhIHF1YWRyYXRpYyB0cmVuZCBvZiB0aGUgdmFyaWFuY2UgYXMgYSBmdW5jdGlvbiBvZiB0aGUgbWVhbi4gCgojIE5lZ2F0aXZlIGJpbm9taWFsIGRpc3RyaWJ1dGlvbgoKVGhlIG9ic2VydmVkIHF1YWRyYXRpYyBtZWFuIHZhcmlhbmNlIHRyZW5kIGhhcyBtb3RpdmF0ZWQgdGhlIHVzZSBvZiB0aGUgbmVnYXRpdmUgYmlub21pYWwgZGlzdHJpYnV0aW9uIHRvIG1vZGVsIChidWxrKSBSTkEtc2VxIGdlbmUgZXhwcmVzc2lvbiBkYXRhLgoKJCQKICBcbGVmdFx7CiAgXGJlZ2lue2FycmF5fXtjY2N9CiAgWV97Z2l9ICYgXHNpbSAmIE5CKFxtdV97Z2l9LFxwaGlfZykgXFwKICBcbG9nIFxtdV97Z2l9ICYgPSAmIFxldGFfe2dpfSBcXAogIFxldGFfe2dpfSAmID0gJiBcbWF0aGJme1h9XlRfaSBcYmV0YV9nICsgbG9nKE9fe2dpfSkgXFwKICBcZW5ke2FycmF5fQogIFxyaWdodC4KICAkJAoKd2l0aCAKCiQkIApcdGV4dHt2YXJ9W1lfe2dpfV0gPSBcbXVfe2dpfSArIFxwaGlfZyBcbXVfe2dpfV4yIAokJAoKfCAgIHwgJFxxdWFkJCB8IFNlcS4gdGVjaG5vbG9neSAgfCAkXHF1YWQkIHwgcmVhbCBleHByZXNzaW9uICB8IAp8LS0tfC0tLXwtLS18LS0tfC0tLXwKfCB0b3RhbCB2YXJpYWJpbGl0eSB8ID0gfCB0ZWNobmljYWwgdmFyaWFiaWxpdHkgfCArIHwgYmlvbG9naWNhbCB2YXJpYWJpbGl0eSAgIHwKfCAkXHRleHR7dmFyfVtZX3tnaX1dJCB8ID0gfCAkXG11X3tnaX0kICB8ICsgfCAkXHBoaV9nIFxtdV97Z2l9XjIkIHwgfCB0b3RhbCBDViReMiQgfCA9IHwgdGVjaG5pY2FsIENWJF4yJCB8ICsgfCBiaW9sb2dpY2FsIENWJF4yJCB8CnwgdG90YWwgQ1YkXjIkIHwgPSB8ICRcZnJhY3sxfXtcbXVfe2dpfX0kIHwgKyB8ICRccGhpX2ckICB8CgojIyAgV2hhdCBhYm91dCB0ZWNobmljYWwgcmVwZWF0cz8gCgotIFRlY2huaWNhbCByZXBlYXRzIGFyZSBQb2lzc29uIGRpc3RyaWJ1dGVkLgotIFRoZSBzdW0gb2YgdHdvIFBvaXNzb24gZGlzdHJpYnV0ZWQgY291bnRzIGlzIGFnYWluIFBvaXNzb24uIFNvIHdlIGNhbiBzdW1tYXJpemUgb3ZlciB0ZWNobmljYWwgcmVwZWF0cyBieSB0YWtpbmcgdGhlIHN1bSBvZiB0aGUgY291bnRzLiBUaGlzIGVuYWJsZXMgdXMgdG8gY29sbGFwc2UgdGhlIHRlY2huaWNhbCByZXBlYXRzIHRvIHRoZSBsZXZlbCBvZiBiaW9sb2dpY2FsIHJlcGVhdHMuIAotIFdlIHdpbGwgaWxsdXN0cmF0ZSB0aGF0IGluIHRoZSB0dXRvcmlhbCBzZXNzaW9uLgoKIyMgRXN0aW1hdGluZyB0aGUgb3ZlcmRpc3BlcnNpb24/CgotIEdlbmUgd2lzZTogZm9yIGV2ZXJ5IHNpbmdsZSBnZW5lLCB2ZXJ5IHVuc3RhYmxlIGR1ZSB0byB0aGUgbGFjayBvZiBkYXRhIAotIENvbW1vbiBkaXNwZXJzaW9uIGZvciBhbGwgZ2VuZXMgCi0gVHJlbmRlZCBkaXNwZXJzaW9uCi0gVGFnLXdpc2U6IEVCIHNocmlua2FnZSB0byBhIGNvbW1vbiAodHJlbmRlZCkgZGlzcGVyc2lvbjogQm9ycm93IHN0cmVuZ3RoIGFjcm9zcyBnZW5lcyAoTWNDYXJ0aHkgJiBTbXl0aCwgMjAxMiwgW0RPSTogMTAuMTA5My9uYXIvZ2tzMDQyXShodHRwczovL2RvaS5vcmcvMTAuMTA5My9uYXIvZ2tzMDQyKSkKCkluIHRoZSB0dXRvcmlhbHMgd2Ugd2lsbCBhbmFseXNlIHRoZSBlbnRpcmUgc3R1ZHkgYW5kIHdlIHdpbGwgZm9jdXMgb24gYXNzZXNzaW5nIHRoZSBtYWluIHJlc2VhcmNoIHF1ZXN0aW9uczogaS5lLiBjb21wYXJpbmcgdGhlIGVhcmx5IGFuZCBsYXRlIGVmZmVjdHMgb2YgdGhlIHN0aW11bGksIGFuZCBpZiB0aGUgZWZmZWN0IG9mIHN0aW11bGkgaXMgY2hhbmdlcyBvdmVyIHRpbWUuIAoKSGVyZSwgd2UgaWxsdXN0cmF0ZSB0aGUgZXN0aW1hdGlvbiB1c2luZyB0aGUgZWRnZVIgdG9vbCBvbiBhIHN1YnNldCBvZiBjb250cm9sIHRyZWF0bWVudCBmb3IgcGF0aWVudHMgMSwgMiBhbmQgMy4gRm9yIHRoaXMgc3Vic2V0IG9ubHkgYmlvbG9naWNhbCByZXBlYXRzIGFyZSBzZXF1ZW5jZWQgYW5kIGEgbWVhc3VyZW1lbnQgb24gdGltZSAyNCBhbmQgNDhoIGhhcyBiZWVuIHRha2VuIGZvciBjZWxscyBvZiBlYWNoIHBhdGllbnQuICAKU28gd2UgY2FuIG1vZGVsIHRoZSBzdHVkeSB1c2luZyBhIHNpbXBsZSBibG9jayBkZXNpZ24gd2l0aCBhIHRpbWUgZWZmZWN0IGFuZCBhIGJsb2NrIGVmZmVjdCBmb3IgcGF0aWVudC4KCjEuIFNldHVwIHRoZSBkYXRhCiAKCmBgYHtyfQpzZVN1YiA8LSBzZVssY29sRGF0YShzZSkkdHJlYXRtZW50PT0iQ29udHJvbCImY29sRGF0YShzZSkkcGF0aWVudCVpbiUxOjNdCmNvbERhdGEoc2VTdWIpJHBhdGllbnQgPC0gY29sRGF0YShzZVN1YikkcGF0aWVudCAlPiUgCiAgYXMuZG91YmxlICU+JSAKICBhcy5mYWN0b3IKeSA8LSBER0VMaXN0KGNvdW50cyA9IGFzc2F5cyhzZVN1YikkY291bnRzKQoKZGVzaWduIDwtIG1vZGVsLm1hdHJpeCh+dGltZStwYXRpZW50LGNvbERhdGEoc2VTdWIpKQpgYGAKCjIuIFR5cGljYWxseSBsb3dseSBleHByZXNzZWQgZ2VuZXMgYXJlIGZpbHRlcmVkLiAKCmBgYHtyfQprZWVwIDwtIGZpbHRlckJ5RXhwcih5LGRlc2lnbikKeSA8LSB5W2tlZXAsXQpgYGAKCjMuIE5vcm1hbGlzYXRpb24gdG8gY29ycmVjdCBmb3IgZGlmZmVyZW5jZXMgaW4gbGlicmFyeSBzaXplLgoKYGBge3J9CnkgPC0gY2FsY05vcm1GYWN0b3JzKHkpCmBgYAoKNC4gRXN0aW1hdGUgdGhlIGRpc3BlcnNpb25zIHVzaW5nIGVtcGlyaWNhbCBCYXllcyAoRUIpCgpgYGB7cn0KeSA8LSBlc3RpbWF0ZURpc3AoeSwgZGVzaWduKQpgYGAKCjUuIEVzdGltYXRlIGdlbmUtd2lzZSBkaXNwZXJzaW9ucyB3aXRob3V0IHNocmlua2FnZSBmb3IgY29tcGFyaXNvbiBwdXJwb3NlcyAKCmBgYHtyfQp5Tm9FQiA8LSBlc3RpbWF0ZURpc3AoeSwgZGVzaWduLCBwcmlvci5kZiA9IDApCmBgYAoKNi4gVmlzdWFsaXNhdGlvbiBhbmQgY29tcGFyaXNvbiBvZiB0YWctd2lzZSAoRUIpIGFuZCBnZW5ld2lzZSBkaXNwZXJzaW9uIAoKYGBge3J9Cm8gPC0gb3JkZXIoeSRBdmVMb2dDUE0pCmRhdGEuZnJhbWUoCiAgQXZlTG9nQ1BNPXJlcCh5Tm9FQiRBdmVMb2dDUE1bb10sMiksCiAgQkNWPXNxcnQoCiAgICBjKHlOb0VCJHRhZ3dpc2UuZGlzcGVyc2lvbltvXSwKICAgICAgeSR0YWd3aXNlLmRpc3BlcnNpb25bb10pCiAgICApLCAKICBtZXRob2Q9cmVwKGMoImdlbmV3aXNlIiwidGFnd2lzZSIpLCBlYWNoPW5yb3coeSkpKSAlPiUKICBnZ3Bsb3QoYWVzKEF2ZUxvZ0NQTSxCQ1YsY29sb3I9bWV0aG9kKSkgKwogIGdlb21fcG9pbnQoc2l6ZSA9IC4yKSArCiAgZ2VvbV9saW5lKAogICAgZGF0YSA9IGRhdGEuZnJhbWUoCiAgICAgIEF2ZUxvZ0NQTT15JEF2ZUxvZ0NQTVtvXSwKICAgICAgQkNWID0gc3FydCh5JHRyZW5kZWQuZGlzcGVyc2lvbltvXSksCiAgICAgIG1ldGhvZD0idHJlbmRlZCIpKSArCiAgICBzY2FsZV9jb2xvdXJfbWFudWFsKHZhbHVlcyA9YygnYmxhY2snLCdvcmFuZ2UnLCdibHVlJykpKwogIHlsYWIoIkJpb2xvZ2ljYWwgQ29lZmZpY2llbnQgb2YgVmFyaWF0aW9uIikgKwogIHhsYWIoIkF2ZXJhZ2UgbG9nIENQTSIpCmBgYAoKTm90ZSwgdGhhdCAKCi0gVGhlIGdlbmUtd2lzZSBkaXNwZXJzaW9uIGlzIHZlcnkgdmFyaWFibGUgKGJsYWNrIGRvdHMpLgotIFRoZXJlIGlzIGEgZGlzcGVyc2lvbiAtIG1lYW4gdHJlbmQgKGJsdWUgbGluZSkKLSBUaGUgdGFnLXdpc2UgZGlzcGVyc2lvbnMgKG9yYW5nZSBkb3RzKSBhcmUgdGhlIHJlc3VsdCBvZiBzaHJpbmtpbmcgdGhlIGdlbmUtd2lzZSBkaXNwZXJzaW9uIChibGFjayBkb3RzKSB0byB0aGUgdHJlbmQgKGJsdWUgbGluZSkgCgpCeSBkZWZhdWx0IGVkZ2VSIHByb3ZpZGVzIHRoZSBmb2xsb3dpbmcgcGxvdCAKCmBgYHtyfQpwbG90QkNWKHkpCmBgYAoKSW4gdGhlIG1ldGhvZHMgcGFwZXIgb2YgZWRnZVIgZGlmZmVyZW50IGRpc3BlcnNpb24gZXN0aW1hdG9ycyB3ZXJlIGNvbXBhcmVkIGFuZCB0aGUgdGFnLXdpc2UgZGlzcGVyc2lvbnMgc2VlbWVkIHRvIHByb3ZpZGUgdGhlIGJlc3QgZ29vZG5lc3Mgb2YgZml0LiAKCmBgYHtyIHJlZkdlbm9tZSwgZWNobz1GQUxTRSwgZmlnLmNhcD0iUVEtcGxvdHMgb2YgZ29vZG5lc3Mgb2YgZml0IHN0YXRpc3RpY3MgdXNpbmcgY29tbW9uLCB0cmVuZGVkIG9yIGVtcGlyaWNhbCBCYXllcy4gSW1hZ2UgZnJvbSBNY0NhcnRoeSBhbmQgU215dGgsIDIwMTIsIE5BUiwgRE9JOiAxMC4xMDkzL25hci9na3MwNDIifQprbml0cjo6aW5jbHVkZV9ncmFwaGljcygiLi9pbWFnZXNfc2VxdWVuY2luZy9OQVJEaXNwZXJzaW9uLnBuZyIpCmBgYAoKIyBTdGF0aXN0aWNhbCBJbmZlcmVuY2UgCgotIEFzeW1wdG90aWMgc3RhdGlzdGljYWwgdGVzdHMgZXhpc3QgdG8gdGVzdCBpZiAoY29udHJhc3RzIG9mIHRoZSkgcGFyYW1ldGVycyBvZiB0aGUgR0xNIGFyZSBkaWZmZXJlbnQgZnJvbSB6ZXJvLgoKLSBJbXBsZW1lbnRlZCBpbiBlZGdlUiBhbmQgREVTZXEyLgoKLSBBZ2FpbiB3ZSBoYXZlIHRvIGNvcnJlY3QgZm9yIG11bHRpcGxlIHRlc3RpbmcgISEhIEZEUiBjb3JyZWN0aW9uIGlzIGRvbmUgYnkgIGRlZmF1bHQgaW4gdGhlIGVkZ2VSIGFuZCBERVNlcTIgb3V0cHV0IAoKMS4gRml0IHRoZSBtb2RlbAoKYGBge3J9CmZpdCA8LSBnbG1GaXQoeSxkZXNpZ24pCmhlYWQoZml0JGNvZWZmaWNpZW50cykKYGBgCgpJbnRlcnByZXRhdGlvbiBvZiBtb2RlbCBwYXJhbWV0ZXJzPyAKCgoyLiBTdGF0aXN0aWNhbCB0ZXN0IHRvIGFzc2VzcyB0aGUgdGltZSBlZmZlY3QgCgpgYGB7cn0KbHJ0IDwtIGdsbUxSVChmaXQsIGNvZWYgPSAidGltZTQ4aCIpCnRvcFRhZ3MobHJ0KQpgYGAKCg==</div>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("sequencing_countData.Rmd");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
