@@ -1,0 +1,180 @@
+---
+title: "Airway: Read Alignment and Count Table with QausR and Rhisat2"
+author: "Lieven Clement"
+date: "statOmics, Ghent University (https://statomics.github.io)"
+output:
+    html_document:
+      code_download: true
+      theme: flatly
+      toc: true
+      toc_float: true
+      highlight: tango
+      number_sections: true
+linkcolor: blue
+urlcolor: blue
+citecolor: blue
+---
+
+```{r, echo=FALSE}
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(R.utils)
+})
+```
+# Background 
+
+The data used in this workflow comes from an RNA-seq experiment where airway smooth muscle cells were treated with dexamethasone, a synthetic glucocorticoid steroid with anti-inflammatory effects (Himes et al. 2014). Glucocorticoids are used, for example, by people with asthma to reduce inflammation of the airways. In the experiment, four human airway smooth muscle cell lines were treated with 1 micromolar dexamethasone for 18 hours. For each of the four cell lines, we have a treated and an untreated sample.
+For more description of the experiment see the article, PubMed entry 24926665, and for raw data see the GEO entry [GSE52778](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE52778). 
+
+
+The information which connects the sample information from GEO with the SRA run id is downloaded from [SRA](https://www.ncbi.nlm.nih.gov/sra?term=SRP033351) using the Send to: File button.
+
+
+# Preprocessing 
+
+## Download Data 
+
+
+For illustration purposes we will download subsampled fastq files from the course github site. 
+
+
+```{r}
+timeout <- options()$timeout
+options(timeout = 300) #prevent timeout
+
+url <- "https://github.com/statOmics/SGA/archive/refs/heads/airwaySeqData.zip"
+destFile <- "airway.zip"
+
+download.file(url, destFile)
+
+unzip(destFile, exdir = "./", overwrite = TRUE)
+
+if (file.exists(destFile)) {
+  #Delete file if it exists
+  file.remove(destFile)
+}
+
+options(timeout = timeout) #prevent timeout
+```
+
+## Assess Read Quality 
+
+Assess the fastq files with [fastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/). 
+
+## Align data
+
+### Input file for hisat aligner
+
+We will make the input file for the hisat aligner that will be called through the QUASAR package. 
+
+```{r}
+fastqFiles <- list.files(path = "SGA-airwaySeqData/fastQ",full.names = TRUE, pattern = "fastq")
+
+forward <- fastqFiles %>% grepl(pattern="1.fastq")
+reverse <- fastqFiles %>% grepl(pattern="2.fastq")
+samples <- fastqFiles[forward] |>
+    substr(start=25,stop=34) 
+fileInfo <- tibble(FileName1=fastqFiles[forward],FileName2=fastqFiles[reverse],SampleName=samples)
+fileInfo
+```
+
+We write the fileInfo to disk 
+
+```{r}
+write_tsv(fileInfo,file="fastQfiles.txt")
+```
+
+### Download human genome and gff3 file 
+
+All reads in the subsampled fastq files map to chromosome 1.
+So download genome and annotation data for chromosome 1 only. 
+
+```{r}
+timeout <- options()$timeout
+options(timeout = 500) #prevent timeout
+
+urlGenome <- "https://ftp.ensembl.org/pub/release-113/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.1.fa.gz"
+genomeDestFile <- "Homo_sapiens.GRCh38.dna.chromosome.1.fa.gz"
+urlGff <- "https://ftp.ensembl.org/pub/release-113/gff3/homo_sapiens/Homo_sapiens.GRCh38.113.chromosome.1.gff3.gz"
+gffDestFile <- "Homo_sapiens.GRCh38.113.chromosome.1.gff3.gz"
+
+download.file(url = urlGenome ,
+              destfile = genomeDestFile)
+download.file(url = urlGff,
+              destfile = gffDestFile)
+gunzip(genomeDestFile, overwrite = TRUE, remove=TRUE)
+gunzip(gffDestFile, overwrite = TRUE, remove=TRUE)
+list.files()
+options(timeout = timeout) #prevent timeout
+
+```
+
+### Align reads using QuasR and RHisat package
+
+- We are aligning RNA-seq reads and have to use a gap aware alignment modus. We therefore use the argument `splicedAlignment = TRUE`
+
+- The project is a single-end sequencing project! So we use the argument `paired = "no"`.
+
+```{r}
+suppressPackageStartupMessages({
+    library(QuasR)
+    library(Rhisat2)
+})
+sampleFile <- "fastQfiles.txt"
+genomeFile <- "Homo_sapiens.GRCh38.dna.chromosome.1.fa"    
+projAirway <- qAlign(
+    sampleFile = sampleFile, 
+    genome = genomeFile,
+    splicedAlignment = TRUE, 
+    aligner = "Rhisat2",
+    paired="fr")
+```
+
+## Make count table
+
+### Convert gff file into database
+
+The gff3 file contains information on the position of features, e.g. exons and genes, along the chromosome. 
+
+```{r}
+suppressPackageStartupMessages({
+library(GenomicFeatures)
+library(Rsamtools)
+})
+annotFile <- "Homo_sapiens.GRCh38.113.chromosome.1.gff3"
+
+#chrLen <- scanFaIndex(genomeFile)
+
+#chrominfo <- data.frame(chrom = as.character(seqnames(chrLen)),
+#                        length = width(chrLen),
+#                        is_circular = rep(FALSE, length(chrLen)))
+
+txdb <- makeTxDbFromGFF(file = annotFile,
+                        dataSource = "Ensembl",
+                        organism = "Homo sapiens")
+```
+
+### Make Gene Count table 
+
+With the qCount function we can count the overlap between the aligned reads and the genomic features of interest. 
+
+```{r}
+geneCounts <- qCount(projAirway, txdb, reportLevel = "gene")
+head(geneCounts)
+```
+
+Save count table for future use. 
+
+```{r}
+write.csv(as.data.frame(geneCounts),file = "airwayCountTable.csv")
+```
+
+
+# Session Info
+
+With respect to reproducibility, it is highly recommended to include a session info in your script so that readers of your output can see your particular setup of R. 
+
+```{r}
+sessionInfo()
+```
+
