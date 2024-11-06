@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Lieven Clement" />
+
+
+<title>Elegans: Read Alignment and Count Table with QausR and Rhisat2</title>
+
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #204a87; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #8f5902; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #204a87; font-weight: bold; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SGA</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-chalkboard-teacher"></span>
+     
+    Lectures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">---- INTRODUCTION ----</li>
+    <li>
+      <a href="intro.html">1.1 Position</a>
+    </li>
+    <li>
+      <a href="recapGeneralLinearModel.html">1.2 Recap linear model</a>
+    </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="./figs/part1_ms_basics.pdf">1.1 MS Basics</a>
+    </li>
+    <li>
+      <a href="./figs/part1_ms_basics.pdf">1.2 Identification</a>
+    </li>
+    <li>
+      <a href="TargetDecoy.html">2.1 Identification - FDR - QC</a>
+    </li>
+    <li>
+      <a href="pda_quantification_preprocessing.html">2.2.1 Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_robustSummarisation_peptideModels.html">2.2.2 Wrap-up Preprocessing - Peptide-Level-Models</a>
+    </li>
+    <li>
+      <a href="pda_quantification_inference.html">2.3.1 Quantification - Differential Abundance Analysis</a>
+    </li>
+    <li>
+      <a href="pda_blocking_wrapup.html">2.3.2. Wrap-up DA - Blocking</a>
+    </li>
+    <li>
+      <a href="pda_technicalDetails.html">2.3.3. Technical Details</a>
+    </li>
+    <li class="dropdown-header">---- MODULE II RNA-seq ----</li>
+    <li>
+      <a href="sequencing_intro.html">1.  Introduction to RNA-seq</a>
+    </li>
+    <li>
+      <a href="sequencing_countData.html">2.  Working with count data and GLMs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-laptop"></span>
+     
+    tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">---- INTRODUCTION ----</li>
+    <li>
+      <a href="multipleRegression_KPNA2.html">1 Intro KPNA2</a>
+    </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">1. Bioinformatics for Proteomics</a>
+    </li>
+    <li>
+      <a href="TargetDecoyTutorial.html">2.1. Target Decoy QC</a>
+    </li>
+    <li>
+      <a href="pda_tutorialPreprocessing.html">2.2. Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_tutorialDesign.html">2.3. Quantification - Design</a>
+    </li>
+    <li>
+      <a href="sequencingTutorial1_mapping.html">1. Read mapping</a>
+    </li>
+    <li>
+      <a href="sequencingTutorial2_DE.html">2. Working with Count Data</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Elegans: Read Alignment and Count Table
+with QausR and Rhisat2</h1>
+<h4 class="author">Lieven Clement</h4>
+<h4 class="date">statOmics, Ghent University (<a
+href="https://statomics.github.io"
+class="uri">https://statomics.github.io</a>)</h4>
+
+</div>
+
+
+<div id="background" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Background</h1>
+<p>After fertilization but prior to the onset of zygotic transcription,
+the C. elegans zygote cleaves asymmetrically to create the anterior AB
+and posterior P1 blastomeres, each of which goes on to generate distinct
+cell lineages. To understand how patterns of RNA inheritance and
+abundance arise after this first asymmetric cell division, we pooled
+hand-dissected AB and P1 blastomeres and performed RNA-seq (Study <a
+href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE59943">GSE59943</a>).</p>
+<p>The information which connects the sample information from GEO with
+the SRA run id is downloaded from <a
+href="https://www.ncbi.nlm.nih.gov/sra?term=SRP045110">SRA</a> using the
+Send to: File button.</p>
+<p><img
+src="https://raw.githubusercontent.com/statOmics/SGA/master/images_sequencing/elegans_GSE59943.png" /></p>
+<p><img
+src="https://raw.githubusercontent.com/statOmics/SGA/master/images_sequencing/elegans_sraAccessions.png" /></p>
+</div>
+<div id="preprocessing" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Preprocessing</h1>
+<div id="download-data" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Download Data</h2>
+<p>We used the info in the downloaded SraAccList.txt file to download
+the SRA files. We used the system function to invoke aan OS command.
+xargs can converts each line of a file into an argument.</p>
+<p>The fasterq-dump function will then download and convert each
+corresponding sra file from the SRA archive to a fastq file.</p>
+<p>The fasterq-dump is a tool from the <a
+href="https://github.com/ncbi/sra-tools">sra-tools</a> suite that can be
+used to download sra files and to convert them into the fastq
+format.</p>
+<pre><code>system(&quot;xargs fasterq-dump -p &lt; SraAccList.txt&quot;)</code></pre>
+<p>For illustration purposes we will download subsampled fastq files
+from the course github site.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>timeout <span class="ot">&lt;-</span> <span class="fu">options</span>()<span class="sc">$</span>timeout</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">options</span>(<span class="at">timeout =</span> <span class="dv">300</span>) <span class="co">#prevent timeout</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">&quot;https://github.com/statOmics/SGA/archive/refs/heads/elegansFastq.zip&quot;</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>destFile <span class="ot">&lt;-</span> <span class="st">&quot;elegansFastq.zip&quot;</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="fu">download.file</span>(url, destFile)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="fu">unzip</span>(destFile, <span class="at">exdir =</span> <span class="st">&quot;./&quot;</span>, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">file.exists</span>(destFile)) {</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  <span class="co">#Delete file if it exists</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>  <span class="fu">file.remove</span>(destFile)</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">options</span>(<span class="at">timeout =</span> timeout) <span class="co">#prevent timeout</span></span></code></pre></div>
+</div>
+<div id="assess-read-quality" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Assess Read
+Quality</h2>
+<p>Assess the fastq files with <a
+href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/">fastQC</a>.</p>
+</div>
+<div id="align-data" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Align data</h2>
+<div id="input-file-for-hisat-aligner" class="section level3"
+number="2.3.1">
+<h3><span class="header-section-number">2.3.1</span> Input file for
+hisat aligner</h3>
+<p>We will make the input file for the hisat aligner that will be called
+through the QUASAR package.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>fastqFiles <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="at">path =</span> <span class="st">&quot;SGA-elegansFastq&quot;</span>,<span class="at">full.names =</span> <span class="cn">TRUE</span>, <span class="at">pattern =</span> <span class="st">&quot;fastq&quot;</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>samples <span class="ot">&lt;-</span> fastqFiles <span class="sc">|&gt;</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="fu">substr</span>(<span class="at">start=</span><span class="dv">18</span>,<span class="at">stop=</span><span class="dv">27</span>) </span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>fileInfo <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">FileName=</span>fastqFiles,<span class="at">SampleName=</span>samples)</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>fileInfo</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["FileName"],"name":[1],"type":["chr"],"align":["left"]},{"label":["SampleName"],"name":[2],"type":["chr"],"align":["left"]}],"data":[{"1":"SGA-elegansFastq/SRR1532959sub.fastq.gz","2":"SRR1532959"},{"1":"SGA-elegansFastq/SRR1532960sub.fastq.gz","2":"SRR1532960"},{"1":"SGA-elegansFastq/SRR1532961sub.fastq.gz","2":"SRR1532961"},{"1":"SGA-elegansFastq/SRR1532962sub.fastq.gz","2":"SRR1532962"},{"1":"SGA-elegansFastq/SRR1532963sub.fastq.gz","2":"SRR1532963"},{"1":"SGA-elegansFastq/SRR1532964sub.fastq.gz","2":"SRR1532964"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>We write the fileInfo to disk</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">write_tsv</span>(fileInfo,<span class="at">file=</span><span class="st">&quot;fastQfiles.txt&quot;</span>)</span></code></pre></div>
+</div>
+<div id="download-c.-elegans-genome-and-gff3-file"
+class="section level3" number="2.3.2">
+<h3><span class="header-section-number">2.3.2</span> Download C. elegans
+genome and gff3 file</h3>
+<div class="figure">
+<img src="https://raw.githubusercontent.com/statOmics/SGA/master/images_sequencing/humanReferenceGenome_fig.png" alt="slide courtesy Charlotte Soneson" width="100%" />
+<p class="caption">
+slide courtesy Charlotte Soneson
+</p>
+</div>
+<div class="figure">
+<img src="https://raw.githubusercontent.com/statOmics/SGA/master/images_sequencing/humanReferenceTranscriptome_fig.png" alt="slide courtesy Charlotte Soneson" width="100%" />
+<p class="caption">
+slide courtesy Charlotte Soneson
+</p>
+</div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>urlGenome <span class="ot">&lt;-</span> <span class="st">&quot;https://ftp.ensembl.org/pub/release-108/fasta/caenorhabditis_elegans/dna/Caenorhabditis_elegans.WBcel235.dna.toplevel.fa.gz&quot;</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>genomeDestFile <span class="ot">&lt;-</span> <span class="st">&quot;Caenorhabditis_elegans.WBcel235.dna.toplevel.fa.gz&quot;</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>urlGff <span class="ot">&lt;-</span> <span class="st">&quot;https://ftp.ensembl.org/pub/release-108/gff3/caenorhabditis_elegans/Caenorhabditis_elegans.WBcel235.108.gff3.gz&quot;</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>gffDestFile <span class="ot">&lt;-</span> <span class="st">&quot;Caenorhabditis_elegans.WBcel235.108.gff3.gz&quot;</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="fu">download.file</span>(<span class="at">url =</span> urlGenome ,</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>              <span class="at">destfile =</span> genomeDestFile)</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="fu">download.file</span>(<span class="at">url =</span> urlGff,</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>              <span class="at">destfile =</span> gffDestFile)</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="fu">gunzip</span>(genomeDestFile, <span class="at">overwrite =</span> <span class="cn">TRUE</span>, <span class="at">remove=</span><span class="cn">TRUE</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="fu">gunzip</span>(gffDestFile, <span class="at">overwrite =</span> <span class="cn">TRUE</span>, <span class="at">remove=</span><span class="cn">TRUE</span>)</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="fu">list.files</span>()</span></code></pre></div>
+<pre><code>##  [1] &quot;_session-info.Rmd&quot;                              
+##  [2] &quot;_site.yml&quot;                                      
+##  [3] &quot;about.Rmd&quot;                                      
+##  [4] &quot;airway_salmon_edgeR.Rmd&quot;                        
+##  [5] &quot;airway.rmd&quot;                                     
+##  [6] &quot;airwayMapping.Rmd&quot;                              
+##  [7] &quot;bibliography.bib&quot;                               
+##  [8] &quot;Caenorhabditis_elegans.WBcel235.108.gff3&quot;       
+##  [9] &quot;Caenorhabditis_elegans.WBcel235.dna.toplevel.fa&quot;
+## [10] &quot;cancer3x3.Rmd&quot;                                  
+## [11] &quot;cancer6x6.Rmd&quot;                                  
+## [12] &quot;cancer9x9.Rmd&quot;                                  
+## [13] &quot;cptac_maxLFQ.Rmd&quot;                               
+## [14] &quot;cptac_median.Rmd&quot;                               
+## [15] &quot;cptac_robust_gui.Rmd&quot;                           
+## [16] &quot;cptac_robust.Rmd&quot;                               
+## [17] &quot;docs&quot;                                           
+## [18] &quot;elegansAlignmentCountTable.Rmd&quot;                 
+## [19] &quot;elegansDE.Rmd&quot;                                  
+## [20] &quot;fastQfiles.txt&quot;                                 
+## [21] &quot;figs&quot;                                           
+## [22] &quot;figures&quot;                                        
+## [23] &quot;figures.tar.gz&quot;                                 
+## [24] &quot;footer.html&quot;                                    
+## [25] &quot;heartMainInteraction.Rmd&quot;                       
+## [26] &quot;images_sequencing&quot;                              
+## [27] &quot;index.Rmd&quot;                                      
+## [28] &quot;install.R&quot;                                      
+## [29] &quot;intro.Rmd&quot;                                      
+## [30] &quot;msqrob2.bib&quot;                                    
+## [31] &quot;multipleRegression_KPNA2.Rmd&quot;                   
+## [32] &quot;mzIDMsgfSwissprotExample.Rmd&quot;                   
+## [33] &quot;mzIDswissprotTutorial.Rmd&quot;                      
+## [34] &quot;mzIDuniprotTutorial.Rmd&quot;                        
+## [35] &quot;parathyroid.Rmd&quot;                                
+## [36] &quot;pda_blocking_wrapup.Rmd&quot;                        
+## [37] &quot;pda_quantification_inference.Rmd&quot;               
+## [38] &quot;pda_quantification_preprocessing.Rmd&quot;           
+## [39] &quot;pda_robustSummarisation_peptideModels.Rmd&quot;      
+## [40] &quot;pda_technicalDetails.Rmd&quot;                       
+## [41] &quot;pda_tutorialDesign.Rmd&quot;                         
+## [42] &quot;pda_tutorialPreprocessing.Rmd&quot;                  
+## [43] &quot;README.md&quot;                                      
+## [44] &quot;recapGeneralLinearModel.Rmd&quot;                    
+## [45] &quot;rmdBub&quot;                                         
+## [46] &quot;sequencing_countData.Rmd&quot;                       
+## [47] &quot;sequencing_intro.Rmd&quot;                           
+## [48] &quot;sequencing_technicalDE.Rmd&quot;                     
+## [49] &quot;sequencingTutorial1_mapping.Rmd&quot;                
+## [50] &quot;sequencingTutorial2_DE.Rmd&quot;                     
+## [51] &quot;sequencingTutorial3_DE.Rmd&quot;                     
+## [52] &quot;SGA-elegansFastq&quot;                               
+## [53] &quot;style.css&quot;                                      
+## [54] &quot;TargetDecoy.Rmd&quot;                                
+## [55] &quot;TargetDecoyTutorial.Rmd&quot;</code></pre>
+</div>
+<div id="align-reads-using-quasr-and-rhisat-package"
+class="section level3" number="2.3.3">
+<h3><span class="header-section-number">2.3.3</span> Align reads using
+QuasR and RHisat package</h3>
+<ul>
+<li><p>We are aligning RNA-seq reads and have to use a gap aware
+alignment modus. We therefore use the argument
+<code>splicedAlignment = TRUE</code></p></li>
+<li><p>The project is a single-end sequencing project! So we use the
+argument <code>paired = "no"</code>.</p></li>
+</ul>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>({</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>    <span class="fu">library</span>(QuasR)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>    <span class="fu">library</span>(Rhisat2)</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>})</span></code></pre></div>
+<pre><code>## Warning: package &#39;S4Vectors&#39; was built under R version 4.4.1</code></pre>
+<pre><code>## Warning: package &#39;IRanges&#39; was built under R version 4.4.1</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>sampleFile <span class="ot">&lt;-</span> <span class="st">&quot;fastQfiles.txt&quot;</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>genomeFile <span class="ot">&lt;-</span> <span class="st">&quot;Caenorhabditis_elegans.WBcel235.dna.toplevel.fa&quot;</span>    </span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>projElegans <span class="ot">&lt;-</span> <span class="fu">qAlign</span>(</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>    <span class="at">sampleFile =</span> sampleFile, </span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>    <span class="at">genome =</span> genomeFile,</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>    <span class="at">splicedAlignment =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>    <span class="at">aligner =</span> <span class="st">&quot;Rhisat2&quot;</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>    <span class="at">paired=</span><span class="st">&quot;no&quot;</span>)</span></code></pre></div>
+<pre><code>## Creating .fai file for: /Users/lclement/Dropbox/statOmics/SGA/Caenorhabditis_elegans.WBcel235.dna.toplevel.fa</code></pre>
+<pre><code>## alignment files missing - need to:</code></pre>
+<pre><code>##     create alignment index for the genome</code></pre>
+<pre><code>##     create 6 genomic alignment(s)</code></pre>
+<pre><code>## Creating an Rhisat2 index for /Users/lclement/Dropbox/statOmics/SGA/Caenorhabditis_elegans.WBcel235.dna.toplevel.fa</code></pre>
+<pre><code>## Finished creating index</code></pre>
+<pre><code>## Testing the compute nodes...OK
+## Loading QuasR on the compute nodes...preparing to run on 1 nodes...done
+## Available cores:
+## b055h043.ugent.be: 1
+## Performing genomic alignments for 6 samples. See progress in the log file:
+## /Users/lclement/Dropbox/statOmics/SGA/QuasR_log_89194bdc6653.txt
+## Genomic alignments have been created successfully</code></pre>
+</div>
+</div>
+<div id="make-count-table" class="section level2" number="2.4">
+<h2><span class="header-section-number">2.4</span> Make count table</h2>
+<div id="convert-gff-file-into-database" class="section level3"
+number="2.4.1">
+<h3><span class="header-section-number">2.4.1</span> Convert gff file
+into database</h3>
+<p>The gff3 file contains information on the position of features,
+e.g. exons and genes, along the chromosome.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>({</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="fu">library</span>(GenomicFeatures)</span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="fu">library</span>(Rsamtools)</span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>})</span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>annotFile <span class="ot">&lt;-</span> <span class="st">&quot;Caenorhabditis_elegans.WBcel235.108.gff3&quot;</span></span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a><span class="co">#chrLen &lt;- scanFaIndex(genomeFile)</span></span>
+<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a></span>
+<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a><span class="co">#chrominfo &lt;- data.frame(chrom = as.character(seqnames(chrLen)),</span></span>
+<span id="cb20-10"><a href="#cb20-10" tabindex="-1"></a><span class="co">#                        length = width(chrLen),</span></span>
+<span id="cb20-11"><a href="#cb20-11" tabindex="-1"></a><span class="co">#                        is_circular = rep(FALSE, length(chrLen)))</span></span>
+<span id="cb20-12"><a href="#cb20-12" tabindex="-1"></a></span>
+<span id="cb20-13"><a href="#cb20-13" tabindex="-1"></a>txdb <span class="ot">&lt;-</span> <span class="fu">makeTxDbFromGFF</span>(<span class="at">file =</span> annotFile,</span>
+<span id="cb20-14"><a href="#cb20-14" tabindex="-1"></a>                        <span class="at">dataSource =</span> <span class="st">&quot;Ensembl&quot;</span>,</span>
+<span id="cb20-15"><a href="#cb20-15" tabindex="-1"></a>                        <span class="at">organism =</span> <span class="st">&quot;Caenorhabditis elegans&quot;</span>)</span></code></pre></div>
+<pre><code>## Warning in call_fun_in_txdbmaker(&quot;makeTxDbFromGFF&quot;, ...): makeTxDbFromGFF() has moved to the txdbmaker package. Please call
+##   txdbmaker::makeTxDbFromGFF() to get rid of this warning.</code></pre>
+<pre><code>## Import genomic features from the file as a GRanges object ... OK
+## Prepare the &#39;metadata&#39; data frame ... OK
+## Make the TxDb object ...</code></pre>
+<pre><code>## Warning in .extract_exons_from_GRanges(exon_IDX, gr, mcols0, tx_IDX, feature = &quot;exon&quot;, : 15639 exons couldn&#39;t be linked to a transcript so were dropped (showing
+##   only the first 6):
+##   seqid  start    end strand   ID         Name               Parent Parent_type
+## 1     I  31523  31543      + &lt;NA&gt;  Y74C9A.7.e1  transcript:Y74C9A.7        &lt;NA&gt;
+## 2     I  32415  32435      + &lt;NA&gt;  Y74C9A.8.e1  transcript:Y74C9A.8        &lt;NA&gt;
+## 3     I 115656 115676      - &lt;NA&gt; F53G12.14.e1 transcript:F53G12.14        &lt;NA&gt;
+## 4     I 272603 272623      - &lt;NA&gt;   C53D5.8.e1   transcript:C53D5.8        &lt;NA&gt;
+## 5     I 272607 272627      - &lt;NA&gt;   C53D5.7.e1   transcript:C53D5.7        &lt;NA&gt;
+## 6     I 463304 463324      + &lt;NA&gt;   W04C9.7.e1   transcript:W04C9.7        &lt;NA&gt;</code></pre>
+<pre><code>## OK</code></pre>
+</div>
+<div id="make-gene-count-table" class="section level3" number="2.4.2">
+<h3><span class="header-section-number">2.4.2</span> Make Gene Count
+table</h3>
+<p>With the qCount function we can count the overlap between the aligned
+reads and the genomic features of interest.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>geneCounts <span class="ot">&lt;-</span> <span class="fu">qCount</span>(projElegans, txdb, <span class="at">reportLevel =</span> <span class="st">&quot;gene&quot;</span>)</span></code></pre></div>
+<pre><code>## extracting gene regions from TxDb...done
+## counting alignments...done
+## collapsing counts by query name...done</code></pre>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="fu">head</span>(geneCounts)</span></code></pre></div>
+<pre><code>##                width SRR1532959 SRR1532960 SRR1532961 SRR1532962 SRR1532963
+## WBGene00000001  1806        109         57        135         67        202
+## WBGene00000002  1739          0          0          0          0          1
+## WBGene00000003  1738          1          3          4          4          3
+## WBGene00000004  2027          3          2          2          1          3
+## WBGene00000005  1821          0          0          0          0          0
+## WBGene00000006  1937          0          0          0          0          0
+##                SRR1532964
+## WBGene00000001        147
+## WBGene00000002          1
+## WBGene00000003          6
+## WBGene00000004          5
+## WBGene00000005          0
+## WBGene00000006          0</code></pre>
+<p>Save count table for future use.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="fu">write.csv</span>(<span class="fu">as.data.frame</span>(geneCounts),<span class="at">file =</span> <span class="st">&quot;elegansCountTable.csv&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+</div>
+<div id="session-info" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Session Info</h1>
+<p>With respect to reproducibility, it is highly recommended to include
+a session info in your script so that readers of your output can see
+your particular setup of R.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<pre><code>## R version 4.4.0 RC (2024-04-16 r86468)
+## Platform: aarch64-apple-darwin20
+## Running under: macOS Big Sur 11.6
+## 
+## Matrix products: default
+## BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib 
+## LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
+## 
+## locale:
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## time zone: Europe/Brussels
+## tzcode source: internal
+## 
+## attached base packages:
+## [1] stats4    parallel  stats     graphics  grDevices utils     datasets 
+## [8] methods   base     
+## 
+## other attached packages:
+##  [1] Rsamtools_2.20.0       Biostrings_2.72.1      XVector_0.44.0        
+##  [4] GenomicFeatures_1.56.0 AnnotationDbi_1.66.0   Biobase_2.64.0        
+##  [7] Rhisat2_1.20.0         QuasR_1.44.0           Rbowtie_1.44.0        
+## [10] GenomicRanges_1.56.1   GenomeInfoDb_1.40.1    IRanges_2.38.1        
+## [13] S4Vectors_0.42.1       BiocGenerics_0.50.0    R.utils_2.12.3        
+## [16] R.oo_1.26.0            R.methodsS3_1.8.2      lubridate_1.9.3       
+## [19] forcats_1.0.0          stringr_1.5.1          dplyr_1.1.4           
+## [22] purrr_1.0.2            readr_2.1.5            tidyr_1.3.1           
+## [25] tibble_3.2.1           ggplot2_3.5.1          tidyverse_2.0.0       
+## 
+## loaded via a namespace (and not attached):
+##  [1] DBI_1.2.3                   bitops_1.0-8               
+##  [3] deldir_2.0-4                httr2_1.0.5                
+##  [5] biomaRt_2.60.1              rlang_1.1.4                
+##  [7] magrittr_2.0.3              matrixStats_1.4.1          
+##  [9] compiler_4.4.0              RSQLite_2.3.7              
+## [11] txdbmaker_1.0.1             png_0.1-8                  
+## [13] vctrs_0.6.5                 pwalign_1.0.0              
+## [15] pkgconfig_2.0.3             crayon_1.5.3               
+## [17] fastmap_1.2.0               dbplyr_2.5.0               
+## [19] utf8_1.2.4                  rmarkdown_2.28             
+## [21] tzdb_0.4.0                  UCSC.utils_1.0.0           
+## [23] bit_4.5.0                   xfun_0.47                  
+## [25] zlibbioc_1.50.0             cachem_1.1.0               
+## [27] jsonlite_1.8.9              progress_1.2.3             
+## [29] blob_1.2.4                  highr_0.11                 
+## [31] DelayedArray_0.30.1         BiocParallel_1.38.0        
+## [33] jpeg_0.1-10                 prettyunits_1.2.0          
+## [35] R6_2.5.1                    VariantAnnotation_1.50.0   
+## [37] bslib_0.8.0                 stringi_1.8.4              
+## [39] RColorBrewer_1.1-3          rtracklayer_1.64.0         
+## [41] jquerylib_0.1.4             Rcpp_1.0.13                
+## [43] SummarizedExperiment_1.34.0 knitr_1.48                 
+## [45] SGSeq_1.38.0                igraph_2.0.3               
+## [47] Matrix_1.7-0                timechange_0.3.0           
+## [49] tidyselect_1.2.1            rstudioapi_0.16.0          
+## [51] abind_1.4-8                 yaml_2.3.10                
+## [53] codetools_0.2-20            RUnit_0.4.33               
+## [55] hwriter_1.3.2.1             curl_5.2.3                 
+## [57] lattice_0.22-6              withr_3.0.1                
+## [59] ShortRead_1.62.0            KEGGREST_1.44.1            
+## [61] evaluate_1.0.0              BiocFileCache_2.12.0       
+## [63] xml2_1.3.6                  filelock_1.0.3             
+## [65] pillar_1.9.0                MatrixGenerics_1.16.0      
+## [67] generics_0.1.3              vroom_1.6.5                
+## [69] RCurl_1.98-1.16             hms_1.1.3                  
+## [71] munsell_0.5.1               scales_1.3.0               
+## [73] GenomicFiles_1.40.0         glue_1.8.0                 
+## [75] tools_4.4.0                 interp_1.1-6               
+## [77] BiocIO_1.14.0               BSgenome_1.72.0            
+## [79] GenomicAlignments_1.40.0    XML_3.99-0.17              
+## [81] grid_4.4.0                  latticeExtra_0.6-30        
+## [83] colorspace_2.1-1            GenomeInfoDbData_1.2.12    
+## [85] restfulr_0.0.15             cli_3.6.3                  
+## [87] rappdirs_0.3.3              fansi_1.0.6                
+## [89] S4Arrays_1.4.1              gtable_0.3.5               
+## [91] sass_0.4.9                  digest_0.6.37              
+## [93] SparseArray_1.4.8           rjson_0.2.23               
+## [95] memoise_2.0.1               htmltools_0.5.8.1          
+## [97] lifecycle_1.0.4             httr_1.4.7                 
+## [99] bit64_4.5.2</code></pre>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiRWxlZ2FuczogUmVhZCBBbGlnbm1lbnQgYW5kIENvdW50IFRhYmxlIHdpdGggUWF1c1IgYW5kIFJoaXNhdDIiCmF1dGhvcjogIkxpZXZlbiBDbGVtZW50IgpkYXRlOiAic3RhdE9taWNzLCBHaGVudCBVbml2ZXJzaXR5IChodHRwczovL3N0YXRvbWljcy5naXRodWIuaW8pIgpvdXRwdXQ6CiAgICBodG1sX2RvY3VtZW50OgogICAgICBjb2RlX2Rvd25sb2FkOiB0cnVlCiAgICAgIHRoZW1lOiBmbGF0bHkKICAgICAgdG9jOiB0cnVlCiAgICAgIHRvY19mbG9hdDogdHJ1ZQogICAgICBoaWdobGlnaHQ6IHRhbmdvCiAgICAgIG51bWJlcl9zZWN0aW9uczogdHJ1ZQpsaW5rY29sb3I6IGJsdWUKdXJsY29sb3I6IGJsdWUKY2l0ZWNvbG9yOiBibHVlCi0tLQoKYGBge3IsIGVjaG89RkFMU0V9CnN1cHByZXNzUGFja2FnZVN0YXJ0dXBNZXNzYWdlcyh7CiAgbGlicmFyeSh0aWR5dmVyc2UpCiAgbGlicmFyeShSLnV0aWxzKQp9KQpgYGAKIyBCYWNrZ3JvdW5kIAoKQWZ0ZXIgZmVydGlsaXphdGlvbiBidXQgcHJpb3IgdG8gdGhlIG9uc2V0IG9mIHp5Z290aWMgdHJhbnNjcmlwdGlvbiwgdGhlIEMuIGVsZWdhbnMgenlnb3RlIGNsZWF2ZXMgYXN5bW1ldHJpY2FsbHkgdG8gY3JlYXRlIHRoZSBhbnRlcmlvciBBQiBhbmQgcG9zdGVyaW9yIFAxIGJsYXN0b21lcmVzLCBlYWNoIG9mIHdoaWNoIGdvZXMgb24gdG8gZ2VuZXJhdGUgZGlzdGluY3QgY2VsbCBsaW5lYWdlcy4gVG8gdW5kZXJzdGFuZCBob3cgcGF0dGVybnMgb2YgUk5BIGluaGVyaXRhbmNlIGFuZCBhYnVuZGFuY2UgYXJpc2UgYWZ0ZXIgdGhpcyBmaXJzdCBhc3ltbWV0cmljIGNlbGwgZGl2aXNpb24sIHdlIHBvb2xlZCBoYW5kLWRpc3NlY3RlZCBBQiBhbmQgUDEgYmxhc3RvbWVyZXMgYW5kIHBlcmZvcm1lZCBSTkEtc2VxIChTdHVkeSBbR1NFNTk5NDNdKGh0dHBzOi8vd3d3Lm5jYmkubmxtLm5paC5nb3YvZ2VvL3F1ZXJ5L2FjYy5jZ2k/YWNjPUdTRTU5OTQzKSkuCgoKVGhlIGluZm9ybWF0aW9uIHdoaWNoIGNvbm5lY3RzIHRoZSBzYW1wbGUgaW5mb3JtYXRpb24gZnJvbSBHRU8gd2l0aCB0aGUgU1JBIHJ1biBpZCBpcyBkb3dubG9hZGVkIGZyb20gW1NSQV0oaHR0cHM6Ly93d3cubmNiaS5ubG0ubmloLmdvdi9zcmE/dGVybT1TUlAwNDUxMTApIHVzaW5nIHRoZSBTZW5kIHRvOiBGaWxlIGJ1dHRvbi4KCiFbXShodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vc3RhdE9taWNzL1NHQS9tYXN0ZXIvaW1hZ2VzX3NlcXVlbmNpbmcvZWxlZ2Fuc19HU0U1OTk0My5wbmcpCgohW10oaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3N0YXRPbWljcy9TR0EvbWFzdGVyL2ltYWdlc19zZXF1ZW5jaW5nL2VsZWdhbnNfc3JhQWNjZXNzaW9ucy5wbmcpCgojIFByZXByb2Nlc3NpbmcgCgojIyBEb3dubG9hZCBEYXRhIAoKV2UgdXNlZCB0aGUgaW5mbyBpbiB0aGUgZG93bmxvYWRlZCBTcmFBY2NMaXN0LnR4dCBmaWxlIHRvIGRvd25sb2FkIHRoZSBTUkEgZmlsZXMuIApXZSB1c2VkIHRoZSBzeXN0ZW0gZnVuY3Rpb24gdG8gaW52b2tlIGFhbiBPUyBjb21tYW5kLiB4YXJncyBjYW4gY29udmVydHMgZWFjaCBsaW5lIG9mIGEgZmlsZSBpbnRvIGFuIGFyZ3VtZW50LiAKClRoZSBmYXN0ZXJxLWR1bXAgZnVuY3Rpb24gd2lsbCB0aGVuIGRvd25sb2FkIGFuZCBjb252ZXJ0IGVhY2ggY29ycmVzcG9uZGluZyBzcmEgZmlsZSBmcm9tIHRoZSBTUkEgYXJjaGl2ZSB0byBhIGZhc3RxIGZpbGUuIAoKVGhlIGZhc3RlcnEtZHVtcCBpcyBhIHRvb2wgZnJvbSB0aGUgW3NyYS10b29sc10oaHR0cHM6Ly9naXRodWIuY29tL25jYmkvc3JhLXRvb2xzKSBzdWl0ZSB0aGF0IGNhbiBiZSB1c2VkIHRvIGRvd25sb2FkIHNyYSBmaWxlcyBhbmQgdG8gY29udmVydCB0aGVtIGludG8gdGhlIGZhc3RxIGZvcm1hdC4gCgpgYGAKc3lzdGVtKCJ4YXJncyBmYXN0ZXJxLWR1bXAgLXAgPCBTcmFBY2NMaXN0LnR4dCIpCmBgYAoKRm9yIGlsbHVzdHJhdGlvbiBwdXJwb3NlcyB3ZSB3aWxsIGRvd25sb2FkIHN1YnNhbXBsZWQgZmFzdHEgZmlsZXMgZnJvbSB0aGUgY291cnNlIGdpdGh1YiBzaXRlLiAKCgpgYGB7cn0KdGltZW91dCA8LSBvcHRpb25zKCkkdGltZW91dApvcHRpb25zKHRpbWVvdXQgPSAzMDApICNwcmV2ZW50IHRpbWVvdXQKCnVybCA8LSAiaHR0cHM6Ly9naXRodWIuY29tL3N0YXRPbWljcy9TR0EvYXJjaGl2ZS9yZWZzL2hlYWRzL2VsZWdhbnNGYXN0cS56aXAiCmRlc3RGaWxlIDwtICJlbGVnYW5zRmFzdHEuemlwIgoKZG93bmxvYWQuZmlsZSh1cmwsIGRlc3RGaWxlKQoKdW56aXAoZGVzdEZpbGUsIGV4ZGlyID0gIi4vIiwgb3ZlcndyaXRlID0gVFJVRSkKCmlmIChmaWxlLmV4aXN0cyhkZXN0RmlsZSkpIHsKICAjRGVsZXRlIGZpbGUgaWYgaXQgZXhpc3RzCiAgZmlsZS5yZW1vdmUoZGVzdEZpbGUpCn0KCm9wdGlvbnModGltZW91dCA9IHRpbWVvdXQpICNwcmV2ZW50IHRpbWVvdXQKYGBgCgojIyBBc3Nlc3MgUmVhZCBRdWFsaXR5IAoKQXNzZXNzIHRoZSBmYXN0cSBmaWxlcyB3aXRoIFtmYXN0UUNdKGh0dHBzOi8vd3d3LmJpb2luZm9ybWF0aWNzLmJhYnJhaGFtLmFjLnVrL3Byb2plY3RzL2Zhc3RxYy8pLiAKCiMjIEFsaWduIGRhdGEKCiMjIyBJbnB1dCBmaWxlIGZvciBoaXNhdCBhbGlnbmVyCgpXZSB3aWxsIG1ha2UgdGhlIGlucHV0IGZpbGUgZm9yIHRoZSBoaXNhdCBhbGlnbmVyIHRoYXQgd2lsbCBiZSBjYWxsZWQgdGhyb3VnaCB0aGUgUVVBU0FSIHBhY2thZ2UuIAoKYGBge3J9CmZhc3RxRmlsZXMgPC0gbGlzdC5maWxlcyhwYXRoID0gIlNHQS1lbGVnYW5zRmFzdHEiLGZ1bGwubmFtZXMgPSBUUlVFLCBwYXR0ZXJuID0gImZhc3RxIikKCnNhbXBsZXMgPC0gZmFzdHFGaWxlcyB8PgogICAgc3Vic3RyKHN0YXJ0PTE4LHN0b3A9MjcpIApmaWxlSW5mbyA8LSB0aWJibGUoRmlsZU5hbWU9ZmFzdHFGaWxlcyxTYW1wbGVOYW1lPXNhbXBsZXMpCmZpbGVJbmZvCmBgYAoKV2Ugd3JpdGUgdGhlIGZpbGVJbmZvIHRvIGRpc2sgCgpgYGB7cn0Kd3JpdGVfdHN2KGZpbGVJbmZvLGZpbGU9ImZhc3RRZmlsZXMudHh0IikKYGBgCgojIyMgRG93bmxvYWQgQy4gZWxlZ2FucyBnZW5vbWUgYW5kIGdmZjMgZmlsZSAKCmBgYHtyIHJlZkdlbm9tZSwgZWNobz1GQUxTRSwgZmlnLmNhcD0ic2xpZGUgY291cnRlc3kgQ2hhcmxvdHRlIFNvbmVzb24iLCBvdXQud2lkdGg9JzEwMCUnfQprbml0cjo6aW5jbHVkZV9ncmFwaGljcygiaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3N0YXRPbWljcy9TR0EvbWFzdGVyL2ltYWdlc19zZXF1ZW5jaW5nL2h1bWFuUmVmZXJlbmNlR2Vub21lX2ZpZy5wbmciKQpgYGAKCgpgYGB7ciByZWZUcmFuc2NyaXB0b21lLCBlY2hvPUZBTFNFLCBmaWcuY2FwPSJzbGlkZSBjb3VydGVzeSBDaGFybG90dGUgU29uZXNvbiIsIG91dC53aWR0aD0nMTAwJSd9CmtuaXRyOjppbmNsdWRlX2dyYXBoaWNzKCJodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vc3RhdE9taWNzL1NHQS9tYXN0ZXIvaW1hZ2VzX3NlcXVlbmNpbmcvaHVtYW5SZWZlcmVuY2VUcmFuc2NyaXB0b21lX2ZpZy5wbmciKQpgYGAKCmBgYHtyfQp1cmxHZW5vbWUgPC0gImh0dHBzOi8vZnRwLmVuc2VtYmwub3JnL3B1Yi9yZWxlYXNlLTEwOC9mYXN0YS9jYWVub3JoYWJkaXRpc19lbGVnYW5zL2RuYS9DYWVub3JoYWJkaXRpc19lbGVnYW5zLldCY2VsMjM1LmRuYS50b3BsZXZlbC5mYS5neiIKZ2Vub21lRGVzdEZpbGUgPC0gIkNhZW5vcmhhYmRpdGlzX2VsZWdhbnMuV0JjZWwyMzUuZG5hLnRvcGxldmVsLmZhLmd6Igp1cmxHZmYgPC0gImh0dHBzOi8vZnRwLmVuc2VtYmwub3JnL3B1Yi9yZWxlYXNlLTEwOC9nZmYzL2NhZW5vcmhhYmRpdGlzX2VsZWdhbnMvQ2Flbm9yaGFiZGl0aXNfZWxlZ2Fucy5XQmNlbDIzNS4xMDguZ2ZmMy5neiIKZ2ZmRGVzdEZpbGUgPC0gIkNhZW5vcmhhYmRpdGlzX2VsZWdhbnMuV0JjZWwyMzUuMTA4LmdmZjMuZ3oiCgpkb3dubG9hZC5maWxlKHVybCA9IHVybEdlbm9tZSAsCiAgICAgICAgICAgICAgZGVzdGZpbGUgPSBnZW5vbWVEZXN0RmlsZSkKZG93bmxvYWQuZmlsZSh1cmwgPSB1cmxHZmYsCiAgICAgICAgICAgICAgZGVzdGZpbGUgPSBnZmZEZXN0RmlsZSkKZ3VuemlwKGdlbm9tZURlc3RGaWxlLCBvdmVyd3JpdGUgPSBUUlVFLCByZW1vdmU9VFJVRSkKZ3VuemlwKGdmZkRlc3RGaWxlLCBvdmVyd3JpdGUgPSBUUlVFLCByZW1vdmU9VFJVRSkKbGlzdC5maWxlcygpCmBgYAoKIyMjIEFsaWduIHJlYWRzIHVzaW5nIFF1YXNSIGFuZCBSSGlzYXQgcGFja2FnZQoKLSBXZSBhcmUgYWxpZ25pbmcgUk5BLXNlcSByZWFkcyBhbmQgaGF2ZSB0byB1c2UgYSBnYXAgYXdhcmUgYWxpZ25tZW50IG1vZHVzLiBXZSB0aGVyZWZvcmUgdXNlIHRoZSBhcmd1bWVudCBgc3BsaWNlZEFsaWdubWVudCA9IFRSVUVgCgotIFRoZSBwcm9qZWN0IGlzIGEgc2luZ2xlLWVuZCBzZXF1ZW5jaW5nIHByb2plY3QhIFNvIHdlIHVzZSB0aGUgYXJndW1lbnQgYHBhaXJlZCA9ICJubyJgLgoKYGBge3J9CnN1cHByZXNzUGFja2FnZVN0YXJ0dXBNZXNzYWdlcyh7CiAgICBsaWJyYXJ5KFF1YXNSKQogICAgbGlicmFyeShSaGlzYXQyKQp9KQpzYW1wbGVGaWxlIDwtICJmYXN0UWZpbGVzLnR4dCIKZ2Vub21lRmlsZSA8LSAiQ2Flbm9yaGFiZGl0aXNfZWxlZ2Fucy5XQmNlbDIzNS5kbmEudG9wbGV2ZWwuZmEiICAgIApwcm9qRWxlZ2FucyA8LSBxQWxpZ24oCiAgICBzYW1wbGVGaWxlID0gc2FtcGxlRmlsZSwgCiAgICBnZW5vbWUgPSBnZW5vbWVGaWxlLAogICAgc3BsaWNlZEFsaWdubWVudCA9IFRSVUUsIAogICAgYWxpZ25lciA9ICJSaGlzYXQyIiwKICAgIHBhaXJlZD0ibm8iKQpgYGAKCiMjIE1ha2UgY291bnQgdGFibGUKCiMjIyBDb252ZXJ0IGdmZiBmaWxlIGludG8gZGF0YWJhc2UKClRoZSBnZmYzIGZpbGUgY29udGFpbnMgaW5mb3JtYXRpb24gb24gdGhlIHBvc2l0aW9uIG9mIGZlYXR1cmVzLCBlLmcuIGV4b25zIGFuZCBnZW5lcywgYWxvbmcgdGhlIGNocm9tb3NvbWUuIAoKYGBge3J9CnN1cHByZXNzUGFja2FnZVN0YXJ0dXBNZXNzYWdlcyh7CmxpYnJhcnkoR2Vub21pY0ZlYXR1cmVzKQpsaWJyYXJ5KFJzYW10b29scykKfSkKYW5ub3RGaWxlIDwtICJDYWVub3JoYWJkaXRpc19lbGVnYW5zLldCY2VsMjM1LjEwOC5nZmYzIgoKI2NockxlbiA8LSBzY2FuRmFJbmRleChnZW5vbWVGaWxlKQoKI2Nocm9taW5mbyA8LSBkYXRhLmZyYW1lKGNocm9tID0gYXMuY2hhcmFjdGVyKHNlcW5hbWVzKGNockxlbikpLAojICAgICAgICAgICAgICAgICAgICAgICAgbGVuZ3RoID0gd2lkdGgoY2hyTGVuKSwKIyAgICAgICAgICAgICAgICAgICAgICAgIGlzX2NpcmN1bGFyID0gcmVwKEZBTFNFLCBsZW5ndGgoY2hyTGVuKSkpCgp0eGRiIDwtIG1ha2VUeERiRnJvbUdGRihmaWxlID0gYW5ub3RGaWxlLAogICAgICAgICAgICAgICAgICAgICAgICBkYXRhU291cmNlID0gIkVuc2VtYmwiLAogICAgICAgICAgICAgICAgICAgICAgICBvcmdhbmlzbSA9ICJDYWVub3JoYWJkaXRpcyBlbGVnYW5zIikKYGBgCgojIyMgTWFrZSBHZW5lIENvdW50IHRhYmxlIAoKV2l0aCB0aGUgcUNvdW50IGZ1bmN0aW9uIHdlIGNhbiBjb3VudCB0aGUgb3ZlcmxhcCBiZXR3ZWVuIHRoZSBhbGlnbmVkIHJlYWRzIGFuZCB0aGUgZ2Vub21pYyBmZWF0dXJlcyBvZiBpbnRlcmVzdC4gCgpgYGB7cn0KZ2VuZUNvdW50cyA8LSBxQ291bnQocHJvakVsZWdhbnMsIHR4ZGIsIHJlcG9ydExldmVsID0gImdlbmUiKQpoZWFkKGdlbmVDb3VudHMpCmBgYAoKU2F2ZSBjb3VudCB0YWJsZSBmb3IgZnV0dXJlIHVzZS4gCgpgYGB7cn0Kd3JpdGUuY3N2KGFzLmRhdGEuZnJhbWUoZ2VuZUNvdW50cyksZmlsZSA9ICJlbGVnYW5zQ291bnRUYWJsZS5jc3YiKQpgYGAKCgojIFNlc3Npb24gSW5mbwoKV2l0aCByZXNwZWN0IHRvIHJlcHJvZHVjaWJpbGl0eSwgaXQgaXMgaGlnaGx5IHJlY29tbWVuZGVkIHRvIGluY2x1ZGUgYSBzZXNzaW9uIGluZm8gaW4geW91ciBzY3JpcHQgc28gdGhhdCByZWFkZXJzIG9mIHlvdXIgb3V0cHV0IGNhbiBzZWUgeW91ciBwYXJ0aWN1bGFyIHNldHVwIG9mIFIuIAoKYGBge3J9CnNlc3Npb25JbmZvKCkKYGBgCgo=</div>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("elegansAlignmentCountTable.Rmd");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
