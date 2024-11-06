@@ -125,9 +125,11 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
 - [Soneson et al. 2016](https://f1000research.com/articles/4-1521/v2)
 - Tutorial: [handout](./sequencingTutorial3_DE.html)
 
-<!--
+
 ### 5. Solutions Bulk RNA-seq Data Analysis
 
+- airway example: Mapping [html](./airwayMapping.html)
+<!--
 - airway example: [html](./airway.html)
 - Parathyroid Example (quasi-edgeR): [html](./parathyroid.html), [pdf](./parathyroid.pdf)
 - airway transcript quantification: [html](./airway_salmon_edgeR.html)

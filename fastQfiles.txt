@@ -1,7 +1,0 @@
-FileName	SampleName
-SGA-elegansFastq/SRR1532959sub.fastq.gz	SRR1532959
-SGA-elegansFastq/SRR1532960sub.fastq.gz	SRR1532960
-SGA-elegansFastq/SRR1532961sub.fastq.gz	SRR1532961
-SGA-elegansFastq/SRR1532962sub.fastq.gz	SRR1532962
-SGA-elegansFastq/SRR1532963sub.fastq.gz	SRR1532963
-SGA-elegansFastq/SRR1532964sub.fastq.gz	SRR1532964
