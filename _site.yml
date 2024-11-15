@@ -38,8 +38,8 @@ navbar:
         href: sequencing_countData.html
       - text: 3.  Technical Details
         href: sequencing_technicalDE.html
-      - text: 4. Starting from transcrip-level
-        href: https://f1000research.com/articles/4-1521/v2
+      - text: 4. Transcript-level DE and Usage
+        href: https://www.biorxiv.org/content/10.1101/2023.06.29.547014v2
       - text: 6. Intro to scRNA-seq
         href: sequencing_singleCell.html
 
@@ -63,7 +63,7 @@ navbar:
         href: sequencingTutorial1_mapping.html
       - text: 2. Working with Count Data
         href: sequencingTutorial2_DE.html
-      - text: 4. Starting from transcript-level data
+      - text: 4. Transcript-level DE and Usage
         href: sequencingTutorial3_DE.html
       - text: 6. Tutorial scRNA-seq
         href: scRNA-seq-Tutorial.html

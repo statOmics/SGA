@@ -1,0 +1,48 @@
+[2024-11-15 17:17:14 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 1/6): Number of threads available: 1
+[2024-11-15 17:17:14 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 1/6): Decompressing SE read file:/Users/lclement/Dropbox/statOmics/SGA/SGA-elegansFastq/SRR1532959sub.fastq.gz
+[2024-11-15 17:17:15 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)  - Executing hisat2 using 1 cores. Parameters:
+[2024-11-15 17:17:15 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)    '/Users/lclement/Dropbox/statOmics/SGA/Caenorhabditis_elegans.WBcel235.dna.toplevel.fa.Rhisat2/hisat2Index' '/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmprVQawT/SRR1532959sub.fastq.gze37e4b1e35b3.fastq' -k 2 --phred33 -p 1 -S '/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmprVQawT/SRR1532959sub.fastq.gze37e4b1e35b3.fastqe37e2c57a14c.sam.tmp'
+[2024-11-15 17:17:21 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)    Number of filtered secondary alignments:20474
+[2024-11-15 17:17:21 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)    Number of filtered overmapped alignments:20474
+[2024-11-15 17:17:21 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 1/6): Converting sam file to sorted bam file:/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmprVQawT/SRR1532959sub.fastq.gze37e4b1e35b3.fastqe37e2c57a14c.sam
+[2024-11-15 17:17:27 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 1/6): Genomic alignments have been successfully created.
+[2024-11-15 17:17:27 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 2/6): Number of threads available: 1
+[2024-11-15 17:17:27 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 2/6): Decompressing SE read file:/Users/lclement/Dropbox/statOmics/SGA/SGA-elegansFastq/SRR1532960sub.fastq.gz
+[2024-11-15 17:17:27 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)  - Executing hisat2 using 1 cores. Parameters:
+[2024-11-15 17:17:27 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)    '/Users/lclement/Dropbox/statOmics/SGA/Caenorhabditis_elegans.WBcel235.dna.toplevel.fa.Rhisat2/hisat2Index' '/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmprVQawT/SRR1532960sub.fastq.gze37e34673ba2.fastq' -k 2 --phred33 -p 1 -S '/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmprVQawT/SRR1532960sub.fastq.gze37e34673ba2.fastqe37e657c238e.sam.tmp'
+[2024-11-15 17:17:33 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)    Number of filtered secondary alignments:20579
+[2024-11-15 17:17:33 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)    Number of filtered overmapped alignments:20579
+[2024-11-15 17:17:33 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 2/6): Converting sam file to sorted bam file:/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmprVQawT/SRR1532960sub.fastq.gze37e34673ba2.fastqe37e657c238e.sam
+[2024-11-15 17:17:38 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 2/6): Genomic alignments have been successfully created.
+[2024-11-15 17:17:38 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 3/6): Number of threads available: 1
+[2024-11-15 17:17:38 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 3/6): Decompressing SE read file:/Users/lclement/Dropbox/statOmics/SGA/SGA-elegansFastq/SRR1532961sub.fastq.gz
+[2024-11-15 17:17:39 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)  - Executing hisat2 using 1 cores. Parameters:
+[2024-11-15 17:17:39 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)    '/Users/lclement/Dropbox/statOmics/SGA/Caenorhabditis_elegans.WBcel235.dna.toplevel.fa.Rhisat2/hisat2Index' '/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmprVQawT/SRR1532961sub.fastq.gze37e4ff90366.fastq' -k 2 --phred33 -p 1 -S '/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmprVQawT/SRR1532961sub.fastq.gze37e4ff90366.fastqe37e654e468e.sam.tmp'
+[2024-11-15 17:17:48 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)    Number of filtered secondary alignments:15386
+[2024-11-15 17:17:48 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)    Number of filtered overmapped alignments:15386
+[2024-11-15 17:17:48 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 3/6): Converting sam file to sorted bam file:/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmprVQawT/SRR1532961sub.fastq.gze37e4ff90366.fastqe37e654e468e.sam
+[2024-11-15 17:17:56 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 3/6): Genomic alignments have been successfully created.
+[2024-11-15 17:17:56 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 4/6): Number of threads available: 1
+[2024-11-15 17:17:56 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 4/6): Decompressing SE read file:/Users/lclement/Dropbox/statOmics/SGA/SGA-elegansFastq/SRR1532962sub.fastq.gz
+[2024-11-15 17:17:57 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)  - Executing hisat2 using 1 cores. Parameters:
+[2024-11-15 17:17:57 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)    '/Users/lclement/Dropbox/statOmics/SGA/Caenorhabditis_elegans.WBcel235.dna.toplevel.fa.Rhisat2/hisat2Index' '/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmprVQawT/SRR1532962sub.fastq.gze37e2b3ee04.fastq' -k 2 --phred33 -p 1 -S '/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmprVQawT/SRR1532962sub.fastq.gze37e2b3ee04.fastqe37e72cf49fe.sam.tmp'
+[2024-11-15 17:18:03 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)    Number of filtered secondary alignments:9834
+[2024-11-15 17:18:03 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)    Number of filtered overmapped alignments:9834
+[2024-11-15 17:18:03 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 4/6): Converting sam file to sorted bam file:/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmprVQawT/SRR1532962sub.fastq.gze37e2b3ee04.fastqe37e72cf49fe.sam
+[2024-11-15 17:18:08 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 4/6): Genomic alignments have been successfully created.
+[2024-11-15 17:18:08 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 5/6): Number of threads available: 1
+[2024-11-15 17:18:08 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 5/6): Decompressing SE read file:/Users/lclement/Dropbox/statOmics/SGA/SGA-elegansFastq/SRR1532963sub.fastq.gz
+[2024-11-15 17:18:10 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)  - Executing hisat2 using 1 cores. Parameters:
+[2024-11-15 17:18:10 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)    '/Users/lclement/Dropbox/statOmics/SGA/Caenorhabditis_elegans.WBcel235.dna.toplevel.fa.Rhisat2/hisat2Index' '/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmprVQawT/SRR1532963sub.fastq.gze37e555644cb.fastq' -k 2 --phred33 -p 1 -S '/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmprVQawT/SRR1532963sub.fastq.gze37e555644cb.fastqe37e12be9732.sam.tmp'
+[2024-11-15 17:18:25 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)    Number of filtered secondary alignments:88681
+[2024-11-15 17:18:25 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)    Number of filtered overmapped alignments:88681
+[2024-11-15 17:18:25 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 5/6): Converting sam file to sorted bam file:/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmprVQawT/SRR1532963sub.fastq.gze37e555644cb.fastqe37e12be9732.sam
+[2024-11-15 17:18:39 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 5/6): Genomic alignments have been successfully created.
+[2024-11-15 17:18:39 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 6/6): Number of threads available: 1
+[2024-11-15 17:18:39 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 6/6): Decompressing SE read file:/Users/lclement/Dropbox/statOmics/SGA/SGA-elegansFastq/SRR1532964sub.fastq.gz
+[2024-11-15 17:18:40 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)  - Executing hisat2 using 1 cores. Parameters:
+[2024-11-15 17:18:40 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)    '/Users/lclement/Dropbox/statOmics/SGA/Caenorhabditis_elegans.WBcel235.dna.toplevel.fa.Rhisat2/hisat2Index' '/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmprVQawT/SRR1532964sub.fastq.gze37e59f0dc3e.fastq' -k 2 --phred33 -p 1 -S '/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmprVQawT/SRR1532964sub.fastq.gze37e59f0dc3e.fastqe37e540b9893.sam.tmp'
+[2024-11-15 17:18:53 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)    Number of filtered secondary alignments:31735
+[2024-11-15 17:18:53 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local)    Number of filtered overmapped alignments:31735
+[2024-11-15 17:18:53 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 6/6): Converting sam file to sorted bam file:/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmprVQawT/SRR1532964sub.fastq.gze37e59f0dc3e.fastqe37e540b9893.sam
+[2024-11-15 17:19:05 UTC] (lclement@pid58238/Current-Macbook-Lieven-2.local) (Task 6/6): Genomic alignments have been successfully created.

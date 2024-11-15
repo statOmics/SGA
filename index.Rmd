@@ -120,7 +120,7 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
 
 - Lecture: [html](./sequencing_technicalDE.html), [pdf](./sequencing_technicalDE.pdf)
 
-### 4. DE, DTE and DTU starting from transcript level counts
+### 4. DE and usage analysis upon transcript-level quantification
 
 - [Soneson et al. 2016](https://f1000research.com/articles/4-1521/v2)
 - [Differential Usage](https://www.biorxiv.org/content/10.1101/2023.06.29.547014v2)
