@@ -97,11 +97,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 code span.al { color: #ef2929; } /* Alert */
 code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #c4a000; } /* Attribute */
+code span.at { color: #204a87; } /* Attribute */
 code span.bn { color: #0000cf; } /* BaseN */
 code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
 code span.ch { color: #4e9a06; } /* Char */
-code span.cn { color: #000000; } /* Constant */
+code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #8f5902; font-style: italic; } /* Comment */
 code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
 code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
@@ -110,14 +110,14 @@ code span.dv { color: #0000cf; } /* DecVal */
 code span.er { color: #a40000; font-weight: bold; } /* Error */
 code span.ex { } /* Extension */
 code span.fl { color: #0000cf; } /* Float */
-code span.fu { color: #000000; } /* Function */
+code span.fu { color: #204a87; font-weight: bold; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
 code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
 code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
 code span.ot { color: #8f5902; } /* Other */
 code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
-code span.sc { color: #000000; } /* SpecialChar */
+code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
 code span.ss { color: #4e9a06; } /* SpecialString */
 code span.st { color: #4e9a06; } /* String */
 code span.va { color: #000000; } /* Variable */
@@ -476,6 +476,15 @@ div.tocify {
     <li>
       <a href="sequencing_countData.html">2.  Working with count data and GLMs</a>
     </li>
+    <li>
+      <a href="sequencing_technicalDE.html">3.  Technical Details</a>
+    </li>
+    <li>
+      <a href="https://f1000research.com/articles/4-1521/v2">4. Starting from transcrip-level</a>
+    </li>
+    <li>
+      <a href="sequencing_singleCell.html">6. Intro to scRNA-seq</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -509,6 +518,12 @@ div.tocify {
     </li>
     <li>
       <a href="sequencingTutorial2_DE.html">2. Working with Count Data</a>
+    </li>
+    <li>
+      <a href="sequencingTutorial3_DE.html">4. Starting from transcript-level data</a>
+    </li>
+    <li>
+      <a href="scRNA-seq-Tutorial.html">6. Tutorial scRNA-seq</a>
     </li>
   </ul>
 </li>
@@ -544,15 +559,15 @@ class="uri">https://statomics.github.io</a>)</h4>
 <div id="preamble" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Preamble</h1>
 <p>Read stored results for heart data</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(limma)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(QFeatures)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(msqrob2)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">url</span>(</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;https://raw.githubusercontent.com/statOmics/SGA2020/gh-pages/assets/peHeart.rds&quot;</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;rb&quot;</span>)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(limma)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(QFeatures)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(msqrob2)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="fu">url</span>(</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>    <span class="st">&quot;https://raw.githubusercontent.com/statOmics/SGA2020/gh-pages/assets/peHeart.rds&quot;</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>    <span class="st">&quot;rb&quot;</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  )</span></code></pre></div>
 </div>
 <div id="linear-regression" class="section level1" number="2">
 <h1><span class="header-section-number">2</span> Linear regression</h1>
@@ -630,25 +645,25 @@ class="math inline">\(\hat{\boldsymbol{\beta}}=\text{argmin}_\beta \Vert
 <div id="heart-example" class="section level4" number="2.1.1.1">
 <h4><span class="header-section-number">2.1.1.1</span> Heart
 example</h4>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">assay</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])[<span class="dv">2</span>,]</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> location<span class="sc">*</span>tissue <span class="sc">+</span> patient, <span class="at">data =</span> <span class="fu">colData</span>(pe), <span class="at">x =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(fit<span class="sc">$</span>x,<span class="dv">4</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">assay</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])[<span class="dv">2</span>,]</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> location<span class="sc">*</span>tissue <span class="sc">+</span> patient, <span class="at">data =</span> <span class="fu">colData</span>(pe), <span class="at">x =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">head</span>(fit<span class="sc">$</span>x,<span class="dv">4</span>)</span></code></pre></div>
 <pre><code>##               (Intercept) locationR tissueV patient4 patient8 locationR:tissueV
 ## Intensity.LA3           1         0       0        0        0                 0
 ## Intensity.LA4           1         0       0        1        0                 0
 ## Intensity.LA8           1         0       0        0        1                 0
 ## Intensity.LV3           1         0       1        0        0                 0</code></pre>
 <p>The model matrix can also be obtained without fitting the model:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span> location <span class="sc">*</span> tissue <span class="sc">+</span> patient, <span class="fu">colData</span>(pe))</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(X,<span class="dv">4</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span> location <span class="sc">*</span> tissue <span class="sc">+</span> patient, <span class="fu">colData</span>(pe))</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">head</span>(X,<span class="dv">4</span>)</span></code></pre></div>
 <pre><code>##               (Intercept) locationR tissueV patient4 patient8 locationR:tissueV
 ## Intensity.LA3           1         0       0        0        0                 0
 ## Intensity.LA4           1         0       0        1        0                 0
 ## Intensity.LA8           1         0       0        0        1                 0
 ## Intensity.LV3           1         0       1        0        0                 0</code></pre>
 <p>Least squares:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>betas <span class="ot">&lt;-</span> <span class="fu">solve</span>(<span class="fu">t</span>(X)<span class="sc">%*%</span>X) <span class="sc">%*%</span> <span class="fu">t</span>(X) <span class="sc">%*%</span> y</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(fit<span class="sc">$</span>coef, betas)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>betas <span class="ot">&lt;-</span> <span class="fu">solve</span>(<span class="fu">t</span>(X)<span class="sc">%*%</span>X) <span class="sc">%*%</span> <span class="fu">t</span>(X) <span class="sc">%*%</span> y</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">cbind</span>(fit<span class="sc">$</span>coef, betas)</span></code></pre></div>
 <pre><code>##                          [,1]        [,2]
 ## (Intercept)       26.57559360 26.57559360
 ## locationR          0.20636497  0.20636497
@@ -679,7 +694,7 @@ Estimator?</h3>
 <div id="heart-example-1" class="section level4" number="2.1.2.1">
 <h4><span class="header-section-number">2.1.2.1</span> Heart
 example</h4>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)<span class="sc">$</span>cov.unscaled <span class="sc">*</span> <span class="fu">sigma</span>(fit)<span class="sc">^</span><span class="dv">2</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">summary</span>(fit)<span class="sc">$</span>cov.unscaled <span class="sc">*</span> <span class="fu">sigma</span>(fit)<span class="sc">^</span><span class="dv">2</span></span></code></pre></div>
 <pre><code>##                   (Intercept)     locationR       tissueV      patient4
 ## (Intercept)         0.3938774 -2.625849e-01 -2.625849e-01 -1.969387e-01
 ## locationR          -0.2625849  5.251699e-01  2.625849e-01  9.179357e-17
@@ -694,11 +709,11 @@ example</h4>
 ## patient4           1.969387e-01      3.121582e-17
 ## patient8           3.938774e-01     -1.321146e-16
 ## locationR:tissueV -1.321146e-16      1.050340e+00</code></pre>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(X)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ncol</span>(X)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>mse <span class="ot">&lt;-</span> <span class="fu">sum</span>((y<span class="sc">-</span>X<span class="sc">%*%</span>betas)<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>(n<span class="sc">-</span>p)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>SigmaBeta <span class="ot">&lt;-</span> <span class="fu">solve</span>(<span class="fu">t</span>(X)<span class="sc">%*%</span>X) <span class="sc">*</span> mse   </span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>SigmaBeta</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(X)</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ncol</span>(X)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>mse <span class="ot">&lt;-</span> <span class="fu">sum</span>((y<span class="sc">-</span>X<span class="sc">%*%</span>betas)<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>(n<span class="sc">-</span>p)</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>SigmaBeta <span class="ot">&lt;-</span> <span class="fu">solve</span>(<span class="fu">t</span>(X)<span class="sc">%*%</span>X) <span class="sc">*</span> mse   </span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>SigmaBeta</span></code></pre></div>
 <pre><code>##                   (Intercept)     locationR       tissueV   patient4   patient8
 ## (Intercept)         0.3938774 -2.625849e-01 -2.625849e-01 -0.1969387 -0.1969387
 ## locationR          -0.2625849  5.251699e-01  2.625849e-01  0.0000000  0.0000000
@@ -713,9 +728,9 @@ example</h4>
 ## patient4               4.372918e-17
 ## patient8               4.372918e-17
 ## locationR:tissueV      1.050340e+00</code></pre>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(SigmaBeta <span class="sc">-</span> <span class="fu">summary</span>(fit)<span class="sc">$</span>cov.unscaled <span class="sc">*</span> <span class="fu">sigma</span>(fit)<span class="sc">^</span><span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">range</span>(SigmaBeta <span class="sc">-</span> <span class="fu">summary</span>(fit)<span class="sc">$</span>cov.unscaled <span class="sc">*</span> <span class="fu">sigma</span>(fit)<span class="sc">^</span><span class="dv">2</span>)</span></code></pre></div>
 <pre><code>## [1] -1.998401e-15  3.774758e-15</code></pre>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="fu">summary</span>(fit)<span class="sc">$</span>coef[,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], <span class="at">betas =</span> betas, <span class="at">seBetas =</span> <span class="fu">diag</span>(SigmaBeta)<span class="sc">^</span>.<span class="dv">5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="fu">summary</span>(fit)<span class="sc">$</span>coef[,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], <span class="at">betas =</span> betas, <span class="at">seBetas =</span> <span class="fu">diag</span>(SigmaBeta)<span class="sc">^</span>.<span class="dv">5</span>)</span></code></pre></div>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Estimate"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Std..Error"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["betas"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["seBetas"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"26.57559360","2":"0.6275965","3":"26.57559360","4":"0.6275965","_rn_":"(Intercept)"},{"1":"0.20636497","2":"0.7246861","3":"0.20636497","4":"0.7246861","_rn_":"locationR"},{"1":"0.12756675","2":"0.7246861","3":"0.12756675","4":"0.7246861","_rn_":"tissueV"},{"1":"0.30592435","2":"0.6275965","3":"0.30592435","4":"0.6275965","_rn_":"patient4"},{"1":"-0.33432636","2":"0.6275965","3":"-0.33432636","4":"0.6275965","_rn_":"patient8"},{"1":"-0.04130843","2":"1.0248609","3":"-0.04130843","4":"1.0248609","_rn_":"locationR:tissueV"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -740,17 +755,17 @@ class="math display">\[\mathbf{L}^T\hat{\boldsymbol{\beta}}\]</span></p>
 <hr />
 <div id="heart-example-2" class="section level3" number="2.2.1">
 <h3><span class="header-section-number">2.2.1</span> Heart example</h3>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="fu">makeContrast</span>(</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;tissueV = 0&quot;</span>,</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;tissueV + locationR:tissueV = 0&quot;</span>,</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;tissueV + 0.5*locationR:tissueV = 0&quot;</span>,<span class="st">&quot;locationR:tissueV = 0&quot;</span>),</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameterNames =</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels[[<span class="dv">2</span>]] <span class="sc">%&gt;%</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    getCoef <span class="sc">%&gt;%</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    names</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>L</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="fu">makeContrast</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>  <span class="fu">c</span>(</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>    <span class="st">&quot;tissueV = 0&quot;</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>    <span class="st">&quot;tissueV + locationR:tissueV = 0&quot;</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>    <span class="st">&quot;tissueV + 0.5*locationR:tissueV = 0&quot;</span>,<span class="st">&quot;locationR:tissueV = 0&quot;</span>),</span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>  <span class="at">parameterNames =</span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>    <span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels[[<span class="dv">2</span>]] <span class="sc">%&gt;%</span></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a>    getCoef <span class="sc">%&gt;%</span></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a>    names</span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a>  )</span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a>L</span></code></pre></div>
 <pre><code>##                   tissueV tissueV + locationR:tissueV
 ## (Intercept)             0                           0
 ## locationR               0                           0
@@ -765,13 +780,13 @@ class="math display">\[\mathbf{L}^T\hat{\boldsymbol{\beta}}\]</span></p>
 ## patient4                                        0.0                 0
 ## patient8                                        0.0                 0
 ## locationR:tissueV                               0.5                 1</code></pre>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>contrasts <span class="ot">&lt;-</span> <span class="fu">t</span>(L) <span class="sc">%*%</span> betas</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>SigmaContrasts <span class="ot">&lt;-</span> <span class="fu">t</span>(L) <span class="sc">%*%</span> SigmaBeta <span class="sc">%*%</span> L</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>seContrasts <span class="ot">&lt;-</span> SigmaContrasts <span class="sc">%&gt;%</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  diag <span class="sc">%&gt;%</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  sqrt</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>contrasts <span class="ot">&lt;-</span> <span class="fu">t</span>(L) <span class="sc">%*%</span> betas</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>SigmaContrasts <span class="ot">&lt;-</span> <span class="fu">t</span>(L) <span class="sc">%*%</span> SigmaBeta <span class="sc">%*%</span> L</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>seContrasts <span class="ot">&lt;-</span> SigmaContrasts <span class="sc">%&gt;%</span></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>  diag <span class="sc">%&gt;%</span></span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>  sqrt</span></code></pre></div>
 <p>Comparison with lm and glht results</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(multcomp)</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="fu">library</span>(multcomp)</span></code></pre></div>
 <pre><code>## Loading required package: mvtnorm</code></pre>
 <pre><code>## Warning: package &#39;mvtnorm&#39; was built under R version 4.4.1</code></pre>
 <pre><code>## Loading required package: survival</code></pre>
@@ -787,8 +802,8 @@ class="math display">\[\mathbf{L}^T\hat{\boldsymbol{\beta}}\]</span></p>
 <pre><code>## The following object is masked from &#39;package:MASS&#39;:
 ## 
 ##     geyser</code></pre>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>fitGlht <span class="ot">&lt;-</span> <span class="fu">glht</span>(fit, <span class="at">linfct =</span> <span class="fu">t</span>(L))</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fitGlht, <span class="at">test =</span> <span class="fu">adjusted</span>(<span class="st">&quot;none&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a>fitGlht <span class="ot">&lt;-</span> <span class="fu">glht</span>(fit, <span class="at">linfct =</span> <span class="fu">t</span>(L))</span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a><span class="fu">summary</span>(fitGlht, <span class="at">test =</span> <span class="fu">adjusted</span>(<span class="st">&quot;none&quot;</span>))</span></code></pre></div>
 <pre><code>## 
 ##   Simultaneous Tests for General Linear Hypotheses
 ## 
@@ -802,7 +817,7 @@ class="math display">\[\mathbf{L}^T\hat{\boldsymbol{\beta}}\]</span></p>
 ## tissueV + 0.5 * locationR:tissueV == 0  0.10691    0.51243   0.209    0.842
 ## locationR:tissueV == 0                 -0.04131    1.02486  -0.040    0.969
 ## (Adjusted p values reported -- none method)</code></pre>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(contrasts, seContrasts)</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="fu">data.frame</span>(contrasts, seContrasts)</span></code></pre></div>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["contrasts"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["seContrasts"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"0.12756675","2":"0.7246861","_rn_":"tissueV"},{"1":"0.08625832","2":"0.7246861","_rn_":"tissueV + locationR:tissueV"},{"1":"0.10691253","2":"0.5124304","_rn_":"tissueV + 0.5 * locationR:tissueV"},{"1":"-0.04130843","2":"1.0248609","_rn_":"locationR:tissueV"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -832,14 +847,14 @@ class="math inline">\(\sqrt{2}\)</span> larger than for the ventriculum
 - atrium effect left or right and a factor 2 larger than for the average
 effect between ventriculum and atrium.</p></li>
 </ul>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>seContrasts <span class="sc">/</span> seContrasts[<span class="dv">1</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a>seContrasts <span class="sc">/</span> seContrasts[<span class="dv">1</span>]</span></code></pre></div>
 <pre><code>##                           tissueV       tissueV + locationR:tissueV 
 ##                         1.0000000                         1.0000000 
 ## tissueV + 0.5 * locationR:tissueV                 locationR:tissueV 
 ##                         0.7071068                         1.4142136</code></pre>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="dv">2</span>)</span></code></pre></div>
 <pre><code>## [1] 1.414214</code></pre>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span><span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="dv">1</span><span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">2</span>)</span></code></pre></div>
 <pre><code>## [1] 0.7071068</code></pre>
 </div>
 <div id="t-tests" class="section level3" number="2.2.2">
@@ -872,12 +887,12 @@ degrees of freedom under <span class="math inline">\(H_0:
 <div id="heart-example-3" class="section level4" number="2.2.2.1">
 <h4><span class="header-section-number">2.2.2.1</span> Heart
 example</h4>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>tContrasts <span class="ot">&lt;-</span> contrasts<span class="sc">/</span>seContrasts</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>pContrasts <span class="ot">&lt;-</span> <span class="fu">pt</span>(<span class="fu">abs</span>(tContrasts),</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">df =</span> n <span class="sc">-</span> p,</span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">lower.tail =</span> <span class="cn">FALSE</span>) <span class="sc">*</span> <span class="dv">2</span></span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a>tContrasts <span class="ot">&lt;-</span> contrasts<span class="sc">/</span>seContrasts</span>
+<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a>pContrasts <span class="ot">&lt;-</span> <span class="fu">pt</span>(<span class="fu">abs</span>(tContrasts),</span>
+<span id="cb37-3"><a href="#cb37-3" tabindex="-1"></a>  <span class="at">df =</span> n <span class="sc">-</span> p,</span>
+<span id="cb37-4"><a href="#cb37-4" tabindex="-1"></a>  <span class="at">lower.tail =</span> <span class="cn">FALSE</span>) <span class="sc">*</span> <span class="dv">2</span></span></code></pre></div>
 <p>Comparison with lm and glht results</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fitGlht, <span class="at">test =</span> <span class="fu">adjusted</span>(<span class="st">&quot;none&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a><span class="fu">summary</span>(fitGlht, <span class="at">test =</span> <span class="fu">adjusted</span>(<span class="st">&quot;none&quot;</span>))</span></code></pre></div>
 <pre><code>## 
 ##   Simultaneous Tests for General Linear Hypotheses
 ## 
@@ -891,7 +906,7 @@ example</h4>
 ## tissueV + 0.5 * locationR:tissueV == 0  0.10691    0.51243   0.209    0.842
 ## locationR:tissueV == 0                 -0.04131    1.02486  -0.040    0.969
 ## (Adjusted p values reported -- none method)</code></pre>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(contrasts, seContrasts, tContrasts, pContrasts)</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a><span class="fu">data.frame</span>(contrasts, seContrasts, tContrasts, pContrasts)</span></code></pre></div>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["contrasts"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["seContrasts"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["tContrasts"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["pContrasts"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"0.12756675","2":"0.7246861","3":"0.17603036","4":"0.8660611","_rn_":"tissueV"},{"1":"0.08625832","2":"0.7246861","3":"0.11902853","4":"0.9091380","_rn_":"tissueV + locationR:tissueV"},{"1":"0.10691253","2":"0.5124304","3":"0.20863814","4":"0.8416333","_rn_":"tissueV + 0.5 * locationR:tissueV"},{"1":"-0.04130843","2":"1.0248609","3":"-0.04030638","4":"0.9691566","_rn_":"locationR:tissueV"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -1006,39 +1021,39 @@ Weight Functions</h3>
 src="https://raw.githubusercontent.com/statOmics/SGA2020/gh-pages/assets/robustRegressionWeights.png" /></p>
 <p>PhD thesis Bolstad 2004</p>
 <hr />
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;MASS&quot;</span>)</span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>rfit <span class="ot">&lt;-</span> <span class="fu">rlm</span>(y <span class="sc">~</span> location <span class="sc">*</span> tissue <span class="sc">+</span> patient, <span class="fu">colData</span>(pe), <span class="at">maxit=</span><span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;MASS&quot;</span>)</span>
+<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a>rfit <span class="ot">&lt;-</span> <span class="fu">rlm</span>(y <span class="sc">~</span> location <span class="sc">*</span> tissue <span class="sc">+</span> patient, <span class="fu">colData</span>(pe), <span class="at">maxit=</span><span class="dv">1</span>)</span></code></pre></div>
 <pre><code>## Warning in rlm.default(x, y, weights, method = method, wt.method = wt.method, :
 ## &#39;rlm&#39; failed to converge in 1 steps</code></pre>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(fit<span class="sc">$</span>coefficient[<span class="sc">-</span><span class="dv">1</span>],</span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  rfit<span class="sc">$</span>coefficient[<span class="sc">-</span><span class="dv">1</span>],</span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab=</span><span class="st">&quot;fit&quot;</span>,</span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylab=</span><span class="st">&quot;robust fit&quot;</span>) <span class="sc">+</span></span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>() <span class="sc">+</span></span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="fu">range</span>(<span class="fu">c</span>(fit<span class="sc">$</span>coefficient[<span class="sc">-</span><span class="dv">1</span>],rfit<span class="sc">$</span>coefficient[<span class="sc">-</span><span class="dv">1</span>]))) <span class="sc">+</span></span>
-<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fu">range</span>(<span class="fu">c</span>(fit<span class="sc">$</span>coefficient[<span class="sc">-</span><span class="dv">1</span>],rfit<span class="sc">$</span>coefficient[<span class="sc">-</span><span class="dv">1</span>])))</span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a><span class="fu">qplot</span>(fit<span class="sc">$</span>coefficient[<span class="sc">-</span><span class="dv">1</span>],</span>
+<span id="cb43-2"><a href="#cb43-2" tabindex="-1"></a>  rfit<span class="sc">$</span>coefficient[<span class="sc">-</span><span class="dv">1</span>],</span>
+<span id="cb43-3"><a href="#cb43-3" tabindex="-1"></a>  <span class="at">xlab=</span><span class="st">&quot;fit&quot;</span>,</span>
+<span id="cb43-4"><a href="#cb43-4" tabindex="-1"></a>  <span class="at">ylab=</span><span class="st">&quot;robust fit&quot;</span>) <span class="sc">+</span></span>
+<span id="cb43-5"><a href="#cb43-5" tabindex="-1"></a>  <span class="fu">geom_abline</span>() <span class="sc">+</span></span>
+<span id="cb43-6"><a href="#cb43-6" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="fu">range</span>(<span class="fu">c</span>(fit<span class="sc">$</span>coefficient[<span class="sc">-</span><span class="dv">1</span>],rfit<span class="sc">$</span>coefficient[<span class="sc">-</span><span class="dv">1</span>]))) <span class="sc">+</span></span>
+<span id="cb43-7"><a href="#cb43-7" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fu">range</span>(<span class="fu">c</span>(fit<span class="sc">$</span>coefficient[<span class="sc">-</span><span class="dv">1</span>],rfit<span class="sc">$</span>coefficient[<span class="sc">-</span><span class="dv">1</span>])))</span></code></pre></div>
 <pre><code>## Warning: `qplot()` was deprecated in ggplot2 3.4.0.
 ## This warning is displayed once every 8 hours.
 ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
 ## generated.</code></pre>
 <p><img src="pda_technicalDetails_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <hr />
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>rfit<span class="sc">$</span>w</span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a>rfit<span class="sc">$</span>w</span></code></pre></div>
 <pre><code>##  [1] 0.9516397 1.0000000 0.6628477 1.0000000 1.0000000 1.0000000 1.0000000
 ##  [8] 1.0000000 1.0000000 0.4805187 1.0000000 0.4344049</code></pre>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  rfit<span class="sc">$</span>fitted,</span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  rfit<span class="sc">$</span>res,</span>
-<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex=</span>rfit<span class="sc">$</span>w,</span>
-<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">pch=</span><span class="dv">19</span>,<span class="at">col=</span><span class="dv">2</span>,</span>
-<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex.lab=</span><span class="fl">1.5</span>,</span>
-<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex.axis=</span><span class="fl">1.5</span>,</span>
-<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylab=</span><span class="st">&quot;residuals&quot;</span>,</span>
-<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab=</span><span class="st">&quot;fit&quot;</span>)</span>
-<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(rfit<span class="sc">$</span>fitted, rfit<span class="sc">$</span>res , <span class="at">cex=</span> <span class="fl">1.5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" tabindex="-1"></a><span class="fu">plot</span>(</span>
+<span id="cb47-2"><a href="#cb47-2" tabindex="-1"></a>  rfit<span class="sc">$</span>fitted,</span>
+<span id="cb47-3"><a href="#cb47-3" tabindex="-1"></a>  rfit<span class="sc">$</span>res,</span>
+<span id="cb47-4"><a href="#cb47-4" tabindex="-1"></a>  <span class="at">cex=</span>rfit<span class="sc">$</span>w,</span>
+<span id="cb47-5"><a href="#cb47-5" tabindex="-1"></a>  <span class="at">pch=</span><span class="dv">19</span>,<span class="at">col=</span><span class="dv">2</span>,</span>
+<span id="cb47-6"><a href="#cb47-6" tabindex="-1"></a>  <span class="at">cex.lab=</span><span class="fl">1.5</span>,</span>
+<span id="cb47-7"><a href="#cb47-7" tabindex="-1"></a>  <span class="at">cex.axis=</span><span class="fl">1.5</span>,</span>
+<span id="cb47-8"><a href="#cb47-8" tabindex="-1"></a>  <span class="at">ylab=</span><span class="st">&quot;residuals&quot;</span>,</span>
+<span id="cb47-9"><a href="#cb47-9" tabindex="-1"></a>  <span class="at">xlab=</span><span class="st">&quot;fit&quot;</span>)</span>
+<span id="cb47-10"><a href="#cb47-10" tabindex="-1"></a><span class="fu">points</span>(rfit<span class="sc">$</span>fitted, rfit<span class="sc">$</span>res , <span class="at">cex=</span> <span class="fl">1.5</span>)</span></code></pre></div>
 <p><img src="pda_technicalDetails_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 <hr />
-<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code></pre></div>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = y ~ location * tissue + patient, data = colData(pe), 
@@ -1062,7 +1077,7 @@ src="https://raw.githubusercontent.com/statOmics/SGA2020/gh-pages/assets/robustR
 ## Residual standard error: 0.8876 on 6 degrees of freedom
 ## Multiple R-squared:  0.1687, Adjusted R-squared:  -0.524 
 ## F-statistic: 0.2436 on 5 and 6 DF,  p-value: 0.9286</code></pre>
-<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(rfit)</span></code></pre></div>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" tabindex="-1"></a><span class="fu">summary</span>(rfit)</span></code></pre></div>
 <pre><code>## 
 ## Call: rlm(formula = y ~ location * tissue + patient, data = colData(pe), 
 ##     maxit = 1)
@@ -1080,7 +1095,7 @@ src="https://raw.githubusercontent.com/statOmics/SGA2020/gh-pages/assets/robustR
 ## locationR:tissueV -0.0555  0.8803    -0.0630
 ## 
 ## Residual standard error: 0.4189 on 6 degrees of freedom</code></pre>
-<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels[[<span class="dv">2</span>]] <span class="sc">%&gt;%</span> getCoef</span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" tabindex="-1"></a><span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels[[<span class="dv">2</span>]] <span class="sc">%&gt;%</span> getCoef</span></code></pre></div>
 <pre><code>##       (Intercept)         locationR           tissueV          patient4 
 ##       26.33779939        0.28826213        0.20946392        0.46536955 
 ##          patient8 locationR:tissueV 
@@ -1098,41 +1113,41 @@ class="section level3" number="3.3.1">
 <h3><span class="header-section-number">3.3.1</span> Simulate 20
 observations from a linear model with errors that follow a normal
 distribution</h3>
-<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>set.seed <span class="ot">&lt;-</span> <span class="dv">112358</span></span>
-<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>nobs <span class="ot">&lt;-</span> <span class="dv">20</span></span>
-<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>sdy <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>xsim <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">length.out =</span> nobs)</span>
-<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>ysim <span class="ot">&lt;-</span> <span class="dv">10</span> <span class="sc">+</span> <span class="dv">5</span><span class="sc">*</span>xsim <span class="sc">+</span> <span class="fu">rnorm</span>(nobs, <span class="at">sd =</span> sdy)</span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" tabindex="-1"></a>set.seed <span class="ot">&lt;-</span> <span class="dv">112358</span></span>
+<span id="cb54-2"><a href="#cb54-2" tabindex="-1"></a>nobs <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb54-3"><a href="#cb54-3" tabindex="-1"></a>sdy <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb54-4"><a href="#cb54-4" tabindex="-1"></a>xsim <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">length.out =</span> nobs)</span>
+<span id="cb54-5"><a href="#cb54-5" tabindex="-1"></a>ysim <span class="ot">&lt;-</span> <span class="dv">10</span> <span class="sc">+</span> <span class="dv">5</span><span class="sc">*</span>xsim <span class="sc">+</span> <span class="fu">rnorm</span>(nobs, <span class="at">sd =</span> sdy)</span></code></pre></div>
 </div>
 <div id="add-outlier-at-high-leverage-point" class="section level3"
 number="3.3.2">
 <h3><span class="header-section-number">3.3.2</span> add outlier at high
 leverage point</h3>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>ysim[nobs] <span class="ot">&lt;-</span> <span class="dv">7</span></span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" tabindex="-1"></a>ysim[nobs] <span class="ot">&lt;-</span> <span class="dv">7</span></span></code></pre></div>
 </div>
 <div id="fit-linear-model" class="section level3" number="3.3.3">
 <h3><span class="header-section-number">3.3.3</span> fit linear
 model</h3>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(ysim <span class="sc">~</span> xsim)</span></code></pre></div>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" tabindex="-1"></a>ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(ysim <span class="sc">~</span> xsim)</span></code></pre></div>
 </div>
 <div id="fit-robust-linear-model" class="section level3" number="3.3.4">
 <h3><span class="header-section-number">3.3.4</span> fit robust linear
 model</h3>
-<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>mEst <span class="ot">&lt;-</span> <span class="fu">rlm</span>(ysim <span class="sc">~</span> xsim)</span></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb57-2"><a href="#cb57-2" tabindex="-1"></a>mEst <span class="ot">&lt;-</span> <span class="fu">rlm</span>(ysim <span class="sc">~</span> xsim)</span></code></pre></div>
 <div id="plot-results" class="section level4" number="3.3.4.1">
 <h4><span class="header-section-number">3.3.4.1</span> plot results</h4>
-<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(xsim, ysim)</span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(ols, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(mEst, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topleft&quot;</span>,</span>
-<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;OLS&quot;</span>, <span class="st">&quot;M-estimation&quot;</span>),</span>
-<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">lwd =</span> <span class="dv">2</span>,</span>
-<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" tabindex="-1"></a><span class="fu">plot</span>(xsim, ysim)</span>
+<span id="cb58-2"><a href="#cb58-2" tabindex="-1"></a><span class="fu">abline</span>(ols, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb58-3"><a href="#cb58-3" tabindex="-1"></a><span class="fu">abline</span>(mEst, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb58-4"><a href="#cb58-4" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topleft&quot;</span>,</span>
+<span id="cb58-5"><a href="#cb58-5" tabindex="-1"></a>  <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;OLS&quot;</span>, <span class="st">&quot;M-estimation&quot;</span>),</span>
+<span id="cb58-6"><a href="#cb58-6" tabindex="-1"></a>  <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb58-7"><a href="#cb58-7" tabindex="-1"></a>  <span class="at">col =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)</span></code></pre></div>
 <p><img src="pda_technicalDetails_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(mEst<span class="sc">$</span>w,<span class="dv">3</span>)</span></code></pre></div>
-<pre><code>##  [1] 0.342 0.967 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000
-## [13] 1.000 1.000 1.000 1.000 1.000 1.000 1.000 0.170</code></pre>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" tabindex="-1"></a><span class="fu">round</span>(mEst<span class="sc">$</span>w,<span class="dv">3</span>)</span></code></pre></div>
+<pre><code>##  [1] 1.000 1.000 1.000 1.000 1.000 1.000 0.698 1.000 1.000 1.000 1.000 1.000
+## [13] 1.000 1.000 1.000 1.000 1.000 1.000 1.000 0.175</code></pre>
 <p>The plot clearly shows that the outlier has a high impact on the
 slope estimate. This is because the outlier is at a high leverage point,
 i.e. far from the average covariate pattern.</p>
@@ -1144,83 +1159,83 @@ yourself</h3>
 <div id="start-from-ols-fit" class="section level4" number="3.3.5.1">
 <h4><span class="header-section-number">3.3.5.1</span> start from ols
 fit</h4>
-<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>lmMod <span class="ot">&lt;-</span> ols</span></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" tabindex="-1"></a>lmMod <span class="ot">&lt;-</span> ols</span></code></pre></div>
 </div>
 <div id="use-robust-variance-estimator-to-calculate-the-z"
 class="section level4" number="3.3.5.2">
 <h4><span class="header-section-number">3.3.5.2</span> Use robust
 variance estimator to calculate the z</h4>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> lmMod<span class="sc">$</span>res</span>
-<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>stdev <span class="ot">&lt;-</span> <span class="fu">mad</span>(res)</span>
-<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>stdev</span></code></pre></div>
-<pre><code>## [1] 1.465073</code></pre>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(<span class="fu">abs</span>(res<span class="sc">-</span><span class="fu">median</span>(res)))<span class="sc">*</span><span class="fl">1.4826</span></span></code></pre></div>
-<pre><code>## [1] 1.465073</code></pre>
-<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> res<span class="sc">/</span>stdev</span></code></pre></div>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" tabindex="-1"></a>res <span class="ot">&lt;-</span> lmMod<span class="sc">$</span>res</span>
+<span id="cb62-2"><a href="#cb62-2" tabindex="-1"></a>stdev <span class="ot">&lt;-</span> <span class="fu">mad</span>(res)</span>
+<span id="cb62-3"><a href="#cb62-3" tabindex="-1"></a>stdev</span></code></pre></div>
+<pre><code>## [1] 0.9877</code></pre>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" tabindex="-1"></a><span class="fu">median</span>(<span class="fu">abs</span>(res<span class="sc">-</span><span class="fu">median</span>(res)))<span class="sc">*</span><span class="fl">1.4826</span></span></code></pre></div>
+<pre><code>## [1] 0.9877</code></pre>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" tabindex="-1"></a>z <span class="ot">&lt;-</span> res<span class="sc">/</span>stdev</span></code></pre></div>
 </div>
 <div id="calculate-weights-use-psi.huber-function"
 class="section level4" number="3.3.5.3">
 <h4><span class="header-section-number">3.3.5.3</span> Calculate weights
 use psi.huber function</h4>
-<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">psi.huber</span>(z)</span>
-<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(xsim, ysim)</span></code></pre></div>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">psi.huber</span>(z)</span>
+<span id="cb67-2"><a href="#cb67-2" tabindex="-1"></a><span class="fu">plot</span>(xsim, ysim)</span></code></pre></div>
 <p><img src="pda_technicalDetails_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
-<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(xsim, lmMod<span class="sc">$</span>res, <span class="at">cex =</span> w, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>)</span>
-<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(xsim,lmMod<span class="sc">$</span>res, <span class="at">cex =</span> <span class="fl">1.5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" tabindex="-1"></a><span class="fu">plot</span>(xsim, lmMod<span class="sc">$</span>res, <span class="at">cex =</span> w, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>)</span>
+<span id="cb68-2"><a href="#cb68-2" tabindex="-1"></a><span class="fu">points</span>(xsim,lmMod<span class="sc">$</span>res, <span class="at">cex =</span> <span class="fl">1.5</span>)</span></code></pre></div>
 <p><img src="pda_technicalDetails_files/figure-html/unnamed-chunk-24-2.png" width="672" /></p>
 </div>
 <div id="perform-a-weighted-regression-use-lm-with-weightsw"
 class="section level4" number="3.3.5.4">
 <h4><span class="header-section-number">3.3.5.4</span> Perform a
 weighted regression use lm with weights=w</h4>
-<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>lmMod <span class="ot">&lt;-</span> <span class="fu">lm</span>(ysim<span class="sc">~</span>xsim, <span class="at">weights =</span> w)</span></code></pre></div>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" tabindex="-1"></a>lmMod <span class="ot">&lt;-</span> <span class="fu">lm</span>(ysim<span class="sc">~</span>xsim, <span class="at">weights =</span> w)</span></code></pre></div>
 </div>
 <div id="plot-results-1" class="section level4" number="3.3.5.5">
 <h4><span class="header-section-number">3.3.5.5</span> Plot results</h4>
-<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(xsim, ysim)</span>
-<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(ols, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(mEst, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(lmMod, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topleft&quot;</span>,</span>
-<span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;OLS&quot;</span>,<span class="st">&quot;M-estimation&quot;</span>,<span class="st">&quot;Our Impl&quot;</span>),</span>
-<span id="cb70-7"><a href="#cb70-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">lwd =</span> <span class="dv">2</span>,</span>
-<span id="cb70-8"><a href="#cb70-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" tabindex="-1"></a><span class="fu">plot</span>(xsim, ysim)</span>
+<span id="cb70-2"><a href="#cb70-2" tabindex="-1"></a><span class="fu">abline</span>(ols, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb70-3"><a href="#cb70-3" tabindex="-1"></a><span class="fu">abline</span>(mEst, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb70-4"><a href="#cb70-4" tabindex="-1"></a><span class="fu">abline</span>(lmMod, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb70-5"><a href="#cb70-5" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topleft&quot;</span>,</span>
+<span id="cb70-6"><a href="#cb70-6" tabindex="-1"></a>  <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;OLS&quot;</span>,<span class="st">&quot;M-estimation&quot;</span>,<span class="st">&quot;Our Impl&quot;</span>),</span>
+<span id="cb70-7"><a href="#cb70-7" tabindex="-1"></a>  <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb70-8"><a href="#cb70-8" tabindex="-1"></a>  <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>))</span></code></pre></div>
 <p><img src="pda_technicalDetails_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
 </div>
 <div id="repeat-this-many-times" class="section level4"
 number="3.3.5.6">
 <h4><span class="header-section-number">3.3.5.6</span> Repeat this many
 times</h4>
-<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>lmMod <span class="ot">&lt;-</span> ols</span>
-<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span>
-<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a><span class="do">######repeat this part several times until convergence</span></span>
-<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a><span class="co">#use robust variance estimator to calculate the z</span></span>
-<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> lmMod<span class="sc">$</span>res</span>
-<span id="cb71-7"><a href="#cb71-7" aria-hidden="true" tabindex="-1"></a>stdev <span class="ot">&lt;-</span> <span class="fu">mad</span>(res)</span>
-<span id="cb71-8"><a href="#cb71-8" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(<span class="fu">abs</span>(res<span class="sc">-</span><span class="fu">median</span>(res)))<span class="sc">*</span><span class="fl">1.4826</span></span>
-<span id="cb71-9"><a href="#cb71-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-10"><a href="#cb71-10" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> res<span class="sc">/</span>stdev</span>
-<span id="cb71-11"><a href="#cb71-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-12"><a href="#cb71-12" aria-hidden="true" tabindex="-1"></a><span class="co">#calculate weights</span></span>
-<span id="cb71-13"><a href="#cb71-13" aria-hidden="true" tabindex="-1"></a><span class="co">#use psi.huber function</span></span>
-<span id="cb71-14"><a href="#cb71-14" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">psi.huber</span>(z)</span>
-<span id="cb71-15"><a href="#cb71-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-16"><a href="#cb71-16" aria-hidden="true" tabindex="-1"></a><span class="co">#perform a weighted regression use lm with weights=w</span></span>
-<span id="cb71-17"><a href="#cb71-17" aria-hidden="true" tabindex="-1"></a>lmMod <span class="ot">&lt;-</span> <span class="fu">lm</span>(ysim <span class="sc">~</span> xsim, <span class="at">weights =</span> w)</span>
-<span id="cb71-18"><a href="#cb71-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-19"><a href="#cb71-19" aria-hidden="true" tabindex="-1"></a><span class="co">#plot results</span></span>
-<span id="cb71-20"><a href="#cb71-20" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(xsim,ysim)</span>
-<span id="cb71-21"><a href="#cb71-21" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(ols, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb71-22"><a href="#cb71-22" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(mEst, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb71-23"><a href="#cb71-23" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(lmMod, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb71-24"><a href="#cb71-24" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topleft&quot;</span>,</span>
-<span id="cb71-25"><a href="#cb71-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;OLS&quot;</span>,<span class="st">&quot;M-estimation&quot;</span>,<span class="st">&quot;Our Impl&quot;</span>),</span>
-<span id="cb71-26"><a href="#cb71-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">lwd =</span> <span class="dv">2</span>,</span>
-<span id="cb71-27"><a href="#cb71-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>)</span>
-<span id="cb71-28"><a href="#cb71-28" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb71-29"><a href="#cb71-29" aria-hidden="true" tabindex="-1"></a><span class="do">####################################</span></span>
-<span id="cb71-30"><a href="#cb71-30" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" tabindex="-1"></a>lmMod <span class="ot">&lt;-</span> ols</span>
+<span id="cb71-2"><a href="#cb71-2" tabindex="-1"></a><span class="cf">for</span> (k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span>
+<span id="cb71-3"><a href="#cb71-3" tabindex="-1"></a>{</span>
+<span id="cb71-4"><a href="#cb71-4" tabindex="-1"></a><span class="do">######repeat this part several times until convergence</span></span>
+<span id="cb71-5"><a href="#cb71-5" tabindex="-1"></a><span class="co">#use robust variance estimator to calculate the z</span></span>
+<span id="cb71-6"><a href="#cb71-6" tabindex="-1"></a>res <span class="ot">&lt;-</span> lmMod<span class="sc">$</span>res</span>
+<span id="cb71-7"><a href="#cb71-7" tabindex="-1"></a>stdev <span class="ot">&lt;-</span> <span class="fu">mad</span>(res)</span>
+<span id="cb71-8"><a href="#cb71-8" tabindex="-1"></a><span class="fu">median</span>(<span class="fu">abs</span>(res<span class="sc">-</span><span class="fu">median</span>(res)))<span class="sc">*</span><span class="fl">1.4826</span></span>
+<span id="cb71-9"><a href="#cb71-9" tabindex="-1"></a></span>
+<span id="cb71-10"><a href="#cb71-10" tabindex="-1"></a>z <span class="ot">&lt;-</span> res<span class="sc">/</span>stdev</span>
+<span id="cb71-11"><a href="#cb71-11" tabindex="-1"></a></span>
+<span id="cb71-12"><a href="#cb71-12" tabindex="-1"></a><span class="co">#calculate weights</span></span>
+<span id="cb71-13"><a href="#cb71-13" tabindex="-1"></a><span class="co">#use psi.huber function</span></span>
+<span id="cb71-14"><a href="#cb71-14" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">psi.huber</span>(z)</span>
+<span id="cb71-15"><a href="#cb71-15" tabindex="-1"></a></span>
+<span id="cb71-16"><a href="#cb71-16" tabindex="-1"></a><span class="co">#perform a weighted regression use lm with weights=w</span></span>
+<span id="cb71-17"><a href="#cb71-17" tabindex="-1"></a>lmMod <span class="ot">&lt;-</span> <span class="fu">lm</span>(ysim <span class="sc">~</span> xsim, <span class="at">weights =</span> w)</span>
+<span id="cb71-18"><a href="#cb71-18" tabindex="-1"></a></span>
+<span id="cb71-19"><a href="#cb71-19" tabindex="-1"></a><span class="co">#plot results</span></span>
+<span id="cb71-20"><a href="#cb71-20" tabindex="-1"></a><span class="fu">plot</span>(xsim,ysim)</span>
+<span id="cb71-21"><a href="#cb71-21" tabindex="-1"></a><span class="fu">abline</span>(ols, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb71-22"><a href="#cb71-22" tabindex="-1"></a><span class="fu">abline</span>(mEst, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb71-23"><a href="#cb71-23" tabindex="-1"></a><span class="fu">abline</span>(lmMod, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb71-24"><a href="#cb71-24" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topleft&quot;</span>,</span>
+<span id="cb71-25"><a href="#cb71-25" tabindex="-1"></a>  <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;OLS&quot;</span>,<span class="st">&quot;M-estimation&quot;</span>,<span class="st">&quot;Our Impl&quot;</span>),</span>
+<span id="cb71-26"><a href="#cb71-26" tabindex="-1"></a>  <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb71-27"><a href="#cb71-27" tabindex="-1"></a>  <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>)</span>
+<span id="cb71-28"><a href="#cb71-28" tabindex="-1"></a>  )</span>
+<span id="cb71-29"><a href="#cb71-29" tabindex="-1"></a><span class="do">####################################</span></span>
+<span id="cb71-30"><a href="#cb71-30" tabindex="-1"></a>}</span></code></pre></div>
 <p><img src="pda_technicalDetails_files/figure-html/unnamed-chunk-27-1.png" width="672" /><img src="pda_technicalDetails_files/figure-html/unnamed-chunk-27-2.png" width="672" /><img src="pda_technicalDetails_files/figure-html/unnamed-chunk-27-3.png" width="672" /></p>
 </div>
 </div>
@@ -1353,35 +1368,35 @@ class="math inline">\(s_p^2\)</span>) with the maximum a-posteriori
 variance <span class="math display">\[\tilde{s}_p = \frac{d_p s^2_p +
 d_0 s_0^2}{d_p+d_0}\]</span></li>
 </ol>
-<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>sd <span class="ot">&lt;-</span> <span class="fu">sapply</span>(</span>
-<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels,</span>
-<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>  getSigma) <span class="sc">%&gt;%</span></span>
-<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>  na.exclude</span>
-<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>sdPost <span class="ot">&lt;-</span> <span class="fu">sapply</span>(</span>
-<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels,</span>
-<span id="cb72-7"><a href="#cb72-7" aria-hidden="true" tabindex="-1"></a>  getSigmaPosterior) <span class="sc">%&gt;%</span></span>
-<span id="cb72-8"><a href="#cb72-8" aria-hidden="true" tabindex="-1"></a>  na.exclude</span>
-<span id="cb72-9"><a href="#cb72-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-10"><a href="#cb72-10" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">qplot</span>(sd,sdPost) <span class="sc">+</span></span>
-<span id="cb72-11"><a href="#cb72-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>()</span>
-<span id="cb72-12"><a href="#cb72-12" aria-hidden="true" tabindex="-1"></a>p1</span></code></pre></div>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" tabindex="-1"></a>sd <span class="ot">&lt;-</span> <span class="fu">sapply</span>(</span>
+<span id="cb72-2"><a href="#cb72-2" tabindex="-1"></a>  <span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels,</span>
+<span id="cb72-3"><a href="#cb72-3" tabindex="-1"></a>  getSigma) <span class="sc">%&gt;%</span></span>
+<span id="cb72-4"><a href="#cb72-4" tabindex="-1"></a>  na.exclude</span>
+<span id="cb72-5"><a href="#cb72-5" tabindex="-1"></a>sdPost <span class="ot">&lt;-</span> <span class="fu">sapply</span>(</span>
+<span id="cb72-6"><a href="#cb72-6" tabindex="-1"></a>  <span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels,</span>
+<span id="cb72-7"><a href="#cb72-7" tabindex="-1"></a>  getSigmaPosterior) <span class="sc">%&gt;%</span></span>
+<span id="cb72-8"><a href="#cb72-8" tabindex="-1"></a>  na.exclude</span>
+<span id="cb72-9"><a href="#cb72-9" tabindex="-1"></a></span>
+<span id="cb72-10"><a href="#cb72-10" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">qplot</span>(sd,sdPost) <span class="sc">+</span></span>
+<span id="cb72-11"><a href="#cb72-11" tabindex="-1"></a>  <span class="fu">geom_abline</span>()</span>
+<span id="cb72-12"><a href="#cb72-12" tabindex="-1"></a>p1</span></code></pre></div>
 <p><img src="pda_technicalDetails_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
 <div id="how-do-we-get-to-the-posterior-standard-deviation"
 class="section level3" number="4.5.1">
 <h3><span class="header-section-number">4.5.1</span> How do we get to
 the posterior standard deviation?</h3>
-<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>hlp <span class="ot">&lt;-</span> limma<span class="sc">::</span><span class="fu">squeezeVar</span>(</span>
-<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">var =</span> <span class="fu">sapply</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels, getVar),</span>
-<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">df =</span> <span class="fu">sapply</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels, getDF)</span>
-<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" tabindex="-1"></a>hlp <span class="ot">&lt;-</span> limma<span class="sc">::</span><span class="fu">squeezeVar</span>(</span>
+<span id="cb73-2"><a href="#cb73-2" tabindex="-1"></a>  <span class="at">var =</span> <span class="fu">sapply</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels, getVar),</span>
+<span id="cb73-3"><a href="#cb73-3" tabindex="-1"></a>  <span class="at">df =</span> <span class="fu">sapply</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels, getDF)</span>
+<span id="cb73-4"><a href="#cb73-4" tabindex="-1"></a>  )</span></code></pre></div>
 <div id="degrees-of-freedom-of-prior" class="section level4"
 number="4.5.1.1">
 <h4><span class="header-section-number">4.5.1.1</span> Degrees of
 freedom of prior</h4>
-<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>hlp<span class="sc">$</span>df.prior</span></code></pre></div>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" tabindex="-1"></a>hlp<span class="sc">$</span>df.prior</span></code></pre></div>
 <pre><code>## [1] 3.385413</code></pre>
-<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels[[<span class="dv">2</span>]]</span>
-<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a><span class="fu">getDfPosterior</span>(model) <span class="sc">-</span> <span class="fu">getDF</span>(model)</span></code></pre></div>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels[[<span class="dv">2</span>]]</span>
+<span id="cb76-2"><a href="#cb76-2" tabindex="-1"></a><span class="fu">getDfPosterior</span>(model) <span class="sc">-</span> <span class="fu">getDF</span>(model)</span></code></pre></div>
 <pre><code>## [1] 3.385413</code></pre>
 </div>
 <div id="posterior-variance" class="section level4" number="4.5.1.2">
@@ -1389,18 +1404,18 @@ freedom of prior</h4>
 variance</h4>
 <p><span class="math display">\[\tilde s_p=\sqrt{\frac{d_p\times s^2_p +
 d_0 s_0^2}{d_p+d_0}} \]</span></p>
-<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>hlp<span class="sc">$</span>var.prior</span></code></pre></div>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" tabindex="-1"></a>hlp<span class="sc">$</span>var.prior</span></code></pre></div>
 <pre><code>## [1] 0.2489859</code></pre>
-<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>varPost <span class="ot">&lt;-</span> (<span class="fu">getVar</span>(model) <span class="sc">*</span> <span class="fu">getDF</span>(model) <span class="sc">+</span> hlp<span class="sc">$</span>df.prior <span class="sc">*</span> hlp<span class="sc">$</span>var.prior)<span class="sc">/</span>(<span class="fu">getDF</span>(model)<span class="sc">+</span>hlp<span class="sc">$</span>df.prior)</span>
-<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(varPost)</span></code></pre></div>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" tabindex="-1"></a>varPost <span class="ot">&lt;-</span> (<span class="fu">getVar</span>(model) <span class="sc">*</span> <span class="fu">getDF</span>(model) <span class="sc">+</span> hlp<span class="sc">$</span>df.prior <span class="sc">*</span> hlp<span class="sc">$</span>var.prior)<span class="sc">/</span>(<span class="fu">getDF</span>(model)<span class="sc">+</span>hlp<span class="sc">$</span>df.prior)</span>
+<span id="cb80-2"><a href="#cb80-2" tabindex="-1"></a><span class="fu">sqrt</span>(varPost)</span></code></pre></div>
 <pre><code>## [1] 0.6607153</code></pre>
-<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getSigmaPosterior</span>(model)</span></code></pre></div>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" tabindex="-1"></a><span class="fu">getSigmaPosterior</span>(model)</span></code></pre></div>
 <pre><code>## [1] 0.6607153</code></pre>
 <p>Hence, standard deviations are shrunken towards prior standard
 deviation! Large standard deviations become smaller and smaller standard
 deviations become larger!</p>
-<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">+</span></span>
-<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> hlp<span class="sc">$</span>var.prior<span class="sc">^</span>.<span class="dv">5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" tabindex="-1"></a>p1 <span class="sc">+</span></span>
+<span id="cb84-2"><a href="#cb84-2" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> hlp<span class="sc">$</span>var.prior<span class="sc">^</span>.<span class="dv">5</span>)</span></code></pre></div>
 <p><img src="pda_technicalDetails_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
 </div>
 </div>
@@ -1411,49 +1426,49 @@ Simulation</h3>
 <p>Suppose that the standard deviations for all proteins are the same
 and are equal to 1. We simulate proteins with the same mean as the
 fitted mean in the experiment but with standard deviation of 1.</p>
-<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>nCoefs <span class="ot">&lt;-</span> <span class="fu">getCoef</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels[[<span class="dv">2</span>]]) <span class="sc">%&gt;%</span> length</span>
-<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>coefs <span class="ot">&lt;-</span></span>
-<span id="cb85-3"><a href="#cb85-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels,</span>
-<span id="cb85-4"><a href="#cb85-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">function</span>(x) <span class="fu">getCoef</span>(x)[<span class="dv">1</span><span class="sc">:</span>nCoefs]</span>
-<span id="cb85-5"><a href="#cb85-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb85-6"><a href="#cb85-6" aria-hidden="true" tabindex="-1"></a>  t <span class="sc">%&gt;%</span></span>
-<span id="cb85-7"><a href="#cb85-7" aria-hidden="true" tabindex="-1"></a>  na.exclude</span>
-<span id="cb85-8"><a href="#cb85-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb85-9"><a href="#cb85-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb85-10"><a href="#cb85-10" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">nrow</span>(coefs)</span>
-<span id="cb85-11"><a href="#cb85-11" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">ncol</span>(pe[[<span class="dv">1</span>]])</span>
-<span id="cb85-12"><a href="#cb85-12" aria-hidden="true" tabindex="-1"></a>f0_equalVar <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>p,</span>
-<span id="cb85-13"><a href="#cb85-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">FUN=</span><span class="cf">function</span>(i, n, betas, sd, design) {</span>
-<span id="cb85-14"><a href="#cb85-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rnorm</span>(n, <span class="at">mean =</span> design <span class="sc">%*%</span> betas[i,], <span class="at">sd =</span> sd)},</span>
-<span id="cb85-15"><a href="#cb85-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> n,</span>
-<span id="cb85-16"><a href="#cb85-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">betas =</span> coefs,</span>
-<span id="cb85-17"><a href="#cb85-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">sd =</span> <span class="dv">1</span>,</span>
-<span id="cb85-18"><a href="#cb85-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">design =</span> X</span>
-<span id="cb85-19"><a href="#cb85-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb85-20"><a href="#cb85-20" aria-hidden="true" tabindex="-1"></a>  t</span>
-<span id="cb85-21"><a href="#cb85-21" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(f0_equalVar) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(pe[[<span class="dv">1</span>]])</span>
-<span id="cb85-22"><a href="#cb85-22" aria-hidden="true" tabindex="-1"></a>sims <span class="ot">&lt;-</span> <span class="fu">readQFeatures</span>(f0_equalVar <span class="sc">%&gt;%</span> as.data.frame, <span class="at">ecol =</span> <span class="dv">1</span><span class="sc">:</span>n, <span class="at">name =</span> <span class="st">&quot;sim_equalVar&quot;</span>)</span>
-<span id="cb85-23"><a href="#cb85-23" aria-hidden="true" tabindex="-1"></a><span class="fu">colData</span>(sims) <span class="ot">&lt;-</span> <span class="fu">colData</span>(pe)</span>
-<span id="cb85-24"><a href="#cb85-24" aria-hidden="true" tabindex="-1"></a>sims <span class="ot">&lt;-</span> <span class="fu">msqrob</span>(<span class="at">object =</span> sims, <span class="at">i =</span> <span class="st">&quot;sim_equalVar&quot;</span>, <span class="at">formula =</span> <span class="sc">~</span> location<span class="sc">*</span>tissue <span class="sc">+</span> patient)</span>
-<span id="cb85-25"><a href="#cb85-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb85-26"><a href="#cb85-26" aria-hidden="true" tabindex="-1"></a>sd0 <span class="ot">&lt;-</span> <span class="fu">sapply</span>(</span>
-<span id="cb85-27"><a href="#cb85-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowData</span>(sims[[<span class="st">&quot;sim_equalVar&quot;</span>]])<span class="sc">$</span>msqrobModels,</span>
-<span id="cb85-28"><a href="#cb85-28" aria-hidden="true" tabindex="-1"></a>  getSigma) <span class="sc">%&gt;%</span></span>
-<span id="cb85-29"><a href="#cb85-29" aria-hidden="true" tabindex="-1"></a>  na.exclude</span>
-<span id="cb85-30"><a href="#cb85-30" aria-hidden="true" tabindex="-1"></a>sdPost0 <span class="ot">&lt;-</span> <span class="fu">sapply</span>(</span>
-<span id="cb85-31"><a href="#cb85-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowData</span>(sims[[<span class="st">&quot;sim_equalVar&quot;</span>]])<span class="sc">$</span>msqrobModels,</span>
-<span id="cb85-32"><a href="#cb85-32" aria-hidden="true" tabindex="-1"></a>  getSigmaPosterior) <span class="sc">%&gt;%</span></span>
-<span id="cb85-33"><a href="#cb85-33" aria-hidden="true" tabindex="-1"></a>  na.exclude</span>
-<span id="cb85-34"><a href="#cb85-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb85-35"><a href="#cb85-35" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(sd0,sdPost0) <span class="sc">+</span></span>
-<span id="cb85-36"><a href="#cb85-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>() <span class="sc">+</span></span>
-<span id="cb85-37"><a href="#cb85-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fu">range</span>(sd0))</span></code></pre></div>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" tabindex="-1"></a>nCoefs <span class="ot">&lt;-</span> <span class="fu">getCoef</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels[[<span class="dv">2</span>]]) <span class="sc">%&gt;%</span> length</span>
+<span id="cb85-2"><a href="#cb85-2" tabindex="-1"></a>coefs <span class="ot">&lt;-</span></span>
+<span id="cb85-3"><a href="#cb85-3" tabindex="-1"></a><span class="fu">sapply</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels,</span>
+<span id="cb85-4"><a href="#cb85-4" tabindex="-1"></a>    <span class="cf">function</span>(x) <span class="fu">getCoef</span>(x)[<span class="dv">1</span><span class="sc">:</span>nCoefs]</span>
+<span id="cb85-5"><a href="#cb85-5" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb85-6"><a href="#cb85-6" tabindex="-1"></a>  t <span class="sc">%&gt;%</span></span>
+<span id="cb85-7"><a href="#cb85-7" tabindex="-1"></a>  na.exclude</span>
+<span id="cb85-8"><a href="#cb85-8" tabindex="-1"></a></span>
+<span id="cb85-9"><a href="#cb85-9" tabindex="-1"></a></span>
+<span id="cb85-10"><a href="#cb85-10" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">nrow</span>(coefs)</span>
+<span id="cb85-11"><a href="#cb85-11" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">ncol</span>(pe[[<span class="dv">1</span>]])</span>
+<span id="cb85-12"><a href="#cb85-12" tabindex="-1"></a>f0_equalVar <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>p,</span>
+<span id="cb85-13"><a href="#cb85-13" tabindex="-1"></a>  <span class="at">FUN=</span><span class="cf">function</span>(i, n, betas, sd, design) {</span>
+<span id="cb85-14"><a href="#cb85-14" tabindex="-1"></a>  <span class="fu">rnorm</span>(n, <span class="at">mean =</span> design <span class="sc">%*%</span> betas[i,], <span class="at">sd =</span> sd)},</span>
+<span id="cb85-15"><a href="#cb85-15" tabindex="-1"></a>  <span class="at">n =</span> n,</span>
+<span id="cb85-16"><a href="#cb85-16" tabindex="-1"></a>  <span class="at">betas =</span> coefs,</span>
+<span id="cb85-17"><a href="#cb85-17" tabindex="-1"></a>  <span class="at">sd =</span> <span class="dv">1</span>,</span>
+<span id="cb85-18"><a href="#cb85-18" tabindex="-1"></a>  <span class="at">design =</span> X</span>
+<span id="cb85-19"><a href="#cb85-19" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb85-20"><a href="#cb85-20" tabindex="-1"></a>  t</span>
+<span id="cb85-21"><a href="#cb85-21" tabindex="-1"></a><span class="fu">colnames</span>(f0_equalVar) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(pe[[<span class="dv">1</span>]])</span>
+<span id="cb85-22"><a href="#cb85-22" tabindex="-1"></a>sims <span class="ot">&lt;-</span> <span class="fu">readQFeatures</span>(f0_equalVar <span class="sc">%&gt;%</span> as.data.frame, <span class="at">ecol =</span> <span class="dv">1</span><span class="sc">:</span>n, <span class="at">name =</span> <span class="st">&quot;sim_equalVar&quot;</span>)</span>
+<span id="cb85-23"><a href="#cb85-23" tabindex="-1"></a><span class="fu">colData</span>(sims) <span class="ot">&lt;-</span> <span class="fu">colData</span>(pe)</span>
+<span id="cb85-24"><a href="#cb85-24" tabindex="-1"></a>sims <span class="ot">&lt;-</span> <span class="fu">msqrob</span>(<span class="at">object =</span> sims, <span class="at">i =</span> <span class="st">&quot;sim_equalVar&quot;</span>, <span class="at">formula =</span> <span class="sc">~</span> location<span class="sc">*</span>tissue <span class="sc">+</span> patient)</span>
+<span id="cb85-25"><a href="#cb85-25" tabindex="-1"></a></span>
+<span id="cb85-26"><a href="#cb85-26" tabindex="-1"></a>sd0 <span class="ot">&lt;-</span> <span class="fu">sapply</span>(</span>
+<span id="cb85-27"><a href="#cb85-27" tabindex="-1"></a>  <span class="fu">rowData</span>(sims[[<span class="st">&quot;sim_equalVar&quot;</span>]])<span class="sc">$</span>msqrobModels,</span>
+<span id="cb85-28"><a href="#cb85-28" tabindex="-1"></a>  getSigma) <span class="sc">%&gt;%</span></span>
+<span id="cb85-29"><a href="#cb85-29" tabindex="-1"></a>  na.exclude</span>
+<span id="cb85-30"><a href="#cb85-30" tabindex="-1"></a>sdPost0 <span class="ot">&lt;-</span> <span class="fu">sapply</span>(</span>
+<span id="cb85-31"><a href="#cb85-31" tabindex="-1"></a>  <span class="fu">rowData</span>(sims[[<span class="st">&quot;sim_equalVar&quot;</span>]])<span class="sc">$</span>msqrobModels,</span>
+<span id="cb85-32"><a href="#cb85-32" tabindex="-1"></a>  getSigmaPosterior) <span class="sc">%&gt;%</span></span>
+<span id="cb85-33"><a href="#cb85-33" tabindex="-1"></a>  na.exclude</span>
+<span id="cb85-34"><a href="#cb85-34" tabindex="-1"></a></span>
+<span id="cb85-35"><a href="#cb85-35" tabindex="-1"></a><span class="fu">qplot</span>(sd0,sdPost0) <span class="sc">+</span></span>
+<span id="cb85-36"><a href="#cb85-36" tabindex="-1"></a>  <span class="fu">geom_abline</span>() <span class="sc">+</span></span>
+<span id="cb85-37"><a href="#cb85-37" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fu">range</span>(sd0))</span></code></pre></div>
 <p><img src="pda_technicalDetails_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
 <ul>
 <li>We observe a large variability in the individual protein level
 standard deviation estimates.</li>
 <li>We simulated proteins with standard deviation of 1, but the protein
-estimates vary from 0.21, … , 2.02.</li>
+estimates vary from 0.21, … , 1.83.</li>
 <li>Large uncertainty on the estimation of variances in small
 samples</li>
 <li>The empirical Bayes method, however, recognises that all proteins
@@ -1465,9 +1480,9 @@ is indeed very close to 1, the value we have adopted in the
 simulation.</li>
 </ul>
 <p>Note, that the prior degrees of freedom are also set to infinity:</p>
-<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getDF</span>(<span class="fu">rowData</span>(sims[[<span class="st">&quot;sim_equalVar&quot;</span>]])<span class="sc">$</span>msqrobModels[[<span class="dv">1</span>]])</span></code></pre></div>
-<pre><code>## [1] 5.820916</code></pre>
-<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getDfPosterior</span>(<span class="fu">rowData</span>(sims[[<span class="st">&quot;sim_equalVar&quot;</span>]])<span class="sc">$</span>msqrobModels[[<span class="dv">1</span>]])</span></code></pre></div>
+<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" tabindex="-1"></a><span class="fu">getDF</span>(<span class="fu">rowData</span>(sims[[<span class="st">&quot;sim_equalVar&quot;</span>]])<span class="sc">$</span>msqrobModels[[<span class="dv">1</span>]])</span></code></pre></div>
+<pre><code>## [1] 5.909523</code></pre>
+<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" tabindex="-1"></a><span class="fu">getDfPosterior</span>(<span class="fu">rowData</span>(sims[[<span class="st">&quot;sim_equalVar&quot;</span>]])<span class="sc">$</span>msqrobModels[[<span class="dv">1</span>]])</span></code></pre></div>
 <pre><code>## [1] Inf</code></pre>
 <p>which imposes shrinkage to the prior standard deviation!</p>
 <p>The empirical Bayes method can thus indeed recognize the common
@@ -1489,64 +1504,64 @@ intensity for ventriculum in the left heart region.</li>
 <li>Extract <span class="math inline">\(\hat \sigma\)</span> and <span
 class="math inline">\(\beta\)</span>’s</li>
 </ol>
-<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>sd <span class="ot">&lt;-</span> <span class="fu">sapply</span>(</span>
-<span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels,</span>
-<span id="cb90-3"><a href="#cb90-3" aria-hidden="true" tabindex="-1"></a>  getSigma) <span class="sc">%&gt;%</span></span>
-<span id="cb90-4"><a href="#cb90-4" aria-hidden="true" tabindex="-1"></a>  na.exclude</span>
-<span id="cb90-5"><a href="#cb90-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb90-6"><a href="#cb90-6" aria-hidden="true" tabindex="-1"></a>coefs <span class="ot">&lt;-</span></span>
-<span id="cb90-7"><a href="#cb90-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels,</span>
-<span id="cb90-8"><a href="#cb90-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">function</span>(x) <span class="fu">getCoef</span>(x)[<span class="dv">1</span><span class="sc">:</span>nCoefs]</span>
-<span id="cb90-9"><a href="#cb90-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb90-10"><a href="#cb90-10" aria-hidden="true" tabindex="-1"></a>  t <span class="sc">%&gt;%</span></span>
-<span id="cb90-11"><a href="#cb90-11" aria-hidden="true" tabindex="-1"></a>  na.exclude</span></code></pre></div>
+<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" tabindex="-1"></a>sd <span class="ot">&lt;-</span> <span class="fu">sapply</span>(</span>
+<span id="cb90-2"><a href="#cb90-2" tabindex="-1"></a>  <span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels,</span>
+<span id="cb90-3"><a href="#cb90-3" tabindex="-1"></a>  getSigma) <span class="sc">%&gt;%</span></span>
+<span id="cb90-4"><a href="#cb90-4" tabindex="-1"></a>  na.exclude</span>
+<span id="cb90-5"><a href="#cb90-5" tabindex="-1"></a></span>
+<span id="cb90-6"><a href="#cb90-6" tabindex="-1"></a>coefs <span class="ot">&lt;-</span></span>
+<span id="cb90-7"><a href="#cb90-7" tabindex="-1"></a><span class="fu">sapply</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>msqrobModels,</span>
+<span id="cb90-8"><a href="#cb90-8" tabindex="-1"></a>    <span class="cf">function</span>(x) <span class="fu">getCoef</span>(x)[<span class="dv">1</span><span class="sc">:</span>nCoefs]</span>
+<span id="cb90-9"><a href="#cb90-9" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb90-10"><a href="#cb90-10" tabindex="-1"></a>  t <span class="sc">%&gt;%</span></span>
+<span id="cb90-11"><a href="#cb90-11" tabindex="-1"></a>  na.exclude</span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Set <span class="math inline">\(\beta_\text{tissue}\)</span> equal
 to 0. No FC between atrium and ventriculum left.</li>
 </ol>
-<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>coefs0 <span class="ot">&lt;-</span> coefs</span>
-<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>coefs0[,<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span></code></pre></div>
+<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" tabindex="-1"></a>coefs0 <span class="ot">&lt;-</span> coefs</span>
+<span id="cb91-2"><a href="#cb91-2" tabindex="-1"></a>coefs0[,<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>Simulate protein expressions for each protein from a Normal
 distribution under <span class="math inline">\(H_0\)</span> for left
 heart region (no FC between atrium and ventriculum left) and sd the sd
 for the protein.</li>
 </ol>
-<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">104</span>)</span>
-<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a>f0 <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>p,</span>
-<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(i, betas, sd, design)</span>
-<span id="cb92-4"><a href="#cb92-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rnorm</span>(n, <span class="at">mean =</span> design <span class="sc">%*%</span> betas[i,], <span class="at">sd =</span> sd[i]),</span>
-<span id="cb92-5"><a href="#cb92-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">betas =</span> coefs0,</span>
-<span id="cb92-6"><a href="#cb92-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">sd =</span> sd,</span>
-<span id="cb92-7"><a href="#cb92-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">design =</span> X</span>
-<span id="cb92-8"><a href="#cb92-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb92-9"><a href="#cb92-9" aria-hidden="true" tabindex="-1"></a>  t</span>
-<span id="cb92-10"><a href="#cb92-10" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(f0) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(pe[[<span class="dv">1</span>]])</span></code></pre></div>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">104</span>)</span>
+<span id="cb92-2"><a href="#cb92-2" tabindex="-1"></a>f0 <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>p,</span>
+<span id="cb92-3"><a href="#cb92-3" tabindex="-1"></a>  <span class="cf">function</span>(i, betas, sd, design)</span>
+<span id="cb92-4"><a href="#cb92-4" tabindex="-1"></a>  <span class="fu">rnorm</span>(n, <span class="at">mean =</span> design <span class="sc">%*%</span> betas[i,], <span class="at">sd =</span> sd[i]),</span>
+<span id="cb92-5"><a href="#cb92-5" tabindex="-1"></a>  <span class="at">betas =</span> coefs0,</span>
+<span id="cb92-6"><a href="#cb92-6" tabindex="-1"></a>  <span class="at">sd =</span> sd,</span>
+<span id="cb92-7"><a href="#cb92-7" tabindex="-1"></a>  <span class="at">design =</span> X</span>
+<span id="cb92-8"><a href="#cb92-8" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb92-9"><a href="#cb92-9" tabindex="-1"></a>  t</span>
+<span id="cb92-10"><a href="#cb92-10" tabindex="-1"></a><span class="fu">colnames</span>(f0) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(pe[[<span class="dv">1</span>]])</span></code></pre></div>
 <ol start="4" style="list-style-type: decimal">
 <li>Setup QFeatures object and perform MSqRob analysis</li>
 </ol>
-<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a>sims <span class="ot">&lt;-</span> <span class="fu">readQFeatures</span>(f0 <span class="sc">%&gt;%</span> as.data.frame, <span class="at">ecol =</span> <span class="dv">1</span><span class="sc">:</span>n, <span class="at">name =</span> <span class="st">&quot;sim0&quot;</span>)</span>
-<span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colData</span>(sims) <span class="ot">&lt;-</span> <span class="fu">colData</span>(pe)</span>
-<span id="cb93-3"><a href="#cb93-3" aria-hidden="true" tabindex="-1"></a>sims <span class="ot">&lt;-</span> <span class="fu">msqrob</span>(<span class="at">object =</span> sims, <span class="at">i =</span> <span class="st">&quot;sim0&quot;</span>, <span class="at">formula =</span> <span class="sc">~</span> location<span class="sc">*</span>tissue <span class="sc">+</span> patient)</span>
-<span id="cb93-4"><a href="#cb93-4" aria-hidden="true" tabindex="-1"></a>sims <span class="ot">&lt;-</span> <span class="fu">hypothesisTest</span>(<span class="at">object =</span> sims, <span class="at">i =</span> <span class="st">&quot;sim0&quot;</span>, <span class="at">contrast =</span> L)</span></code></pre></div>
+<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" tabindex="-1"></a>sims <span class="ot">&lt;-</span> <span class="fu">readQFeatures</span>(f0 <span class="sc">%&gt;%</span> as.data.frame, <span class="at">ecol =</span> <span class="dv">1</span><span class="sc">:</span>n, <span class="at">name =</span> <span class="st">&quot;sim0&quot;</span>)</span>
+<span id="cb93-2"><a href="#cb93-2" tabindex="-1"></a><span class="fu">colData</span>(sims) <span class="ot">&lt;-</span> <span class="fu">colData</span>(pe)</span>
+<span id="cb93-3"><a href="#cb93-3" tabindex="-1"></a>sims <span class="ot">&lt;-</span> <span class="fu">msqrob</span>(<span class="at">object =</span> sims, <span class="at">i =</span> <span class="st">&quot;sim0&quot;</span>, <span class="at">formula =</span> <span class="sc">~</span> location<span class="sc">*</span>tissue <span class="sc">+</span> patient)</span>
+<span id="cb93-4"><a href="#cb93-4" tabindex="-1"></a>sims <span class="ot">&lt;-</span> <span class="fu">hypothesisTest</span>(<span class="at">object =</span> sims, <span class="at">i =</span> <span class="st">&quot;sim0&quot;</span>, <span class="at">contrast =</span> L)</span></code></pre></div>
 <div id="evaluate-pvalues-under-h_0" class="section level3"
 number="5.1.1">
 <h3><span class="header-section-number">5.1.1</span> Evaluate pvalues
 under H_0</h3>
-<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>volcano <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="fu">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="sc">$</span>tissueV,</span>
-<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">aes</span>(<span class="at">x =</span> logFC, <span class="at">y =</span> <span class="sc">-</span><span class="fu">log10</span>(pval), <span class="at">color =</span> pval <span class="sc">&lt;</span> <span class="fl">0.05</span>)) <span class="sc">+</span></span>
-<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a> <span class="fu">geom_point</span>(<span class="at">cex =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
-<span id="cb94-4"><a href="#cb94-4" aria-hidden="true" tabindex="-1"></a> <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">alpha</span>(<span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="sc">+</span> <span class="fu">theme_minimal</span>()</span>
-<span id="cb94-5"><a href="#cb94-5" aria-hidden="true" tabindex="-1"></a>volcano</span></code></pre></div>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" tabindex="-1"></a>volcano <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="fu">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="sc">$</span>tissueV,</span>
+<span id="cb94-2"><a href="#cb94-2" tabindex="-1"></a>                 <span class="fu">aes</span>(<span class="at">x =</span> logFC, <span class="at">y =</span> <span class="sc">-</span><span class="fu">log10</span>(pval), <span class="at">color =</span> pval <span class="sc">&lt;</span> <span class="fl">0.05</span>)) <span class="sc">+</span></span>
+<span id="cb94-3"><a href="#cb94-3" tabindex="-1"></a> <span class="fu">geom_point</span>(<span class="at">cex =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
+<span id="cb94-4"><a href="#cb94-4" tabindex="-1"></a> <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">alpha</span>(<span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="sc">+</span> <span class="fu">theme_minimal</span>()</span>
+<span id="cb94-5"><a href="#cb94-5" tabindex="-1"></a>volcano</span></code></pre></div>
 <p><img src="pda_technicalDetails_files/figure-html/unnamed-chunk-39-1.png" width="672" /></p>
 <p>Number of false positives without multiple testing?</p>
-<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="sc">$</span>tissueV <span class="sc">%&gt;%</span></span>
-<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(pval <span class="sc">&lt;</span><span class="fl">0.05</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a>  nrow</span></code></pre></div>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" tabindex="-1"></a><span class="fu">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="sc">$</span>tissueV <span class="sc">%&gt;%</span></span>
+<span id="cb95-2"><a href="#cb95-2" tabindex="-1"></a>  <span class="fu">filter</span>(pval <span class="sc">&lt;</span><span class="fl">0.05</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb95-3"><a href="#cb95-3" tabindex="-1"></a>  nrow</span></code></pre></div>
 <pre><code>## [1] 115</code></pre>
-<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="sc">$</span>tissueV<span class="sc">$</span>pval <span class="sc">&lt;</span> <span class="fl">0.05</span>)    </span></code></pre></div>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="sc">$</span>tissueV<span class="sc">$</span>pval <span class="sc">&lt;</span> <span class="fl">0.05</span>)    </span></code></pre></div>
 <pre><code>## [1] 0.05665025</code></pre>
-<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="sc">$</span>tissueV<span class="sc">$</span>pval,<span class="at">main =</span> <span class="st">&quot;simulation H0&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="sc">$</span>tissueV<span class="sc">$</span>pval,<span class="at">main =</span> <span class="st">&quot;simulation H0&quot;</span>)</span></code></pre></div>
 <p><img src="pda_technicalDetails_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
 <ul>
 <li>The p-values are uniform!</li>
@@ -1564,7 +1579,7 @@ number="5.2">
 <h2><span class="header-section-number">5.2</span> Pvalue distribution
 in real experiment</h2>
 <div class="sourceCode" id="cb100"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>tissueV<span class="sc">$</span>pval, <span class="at">main =</span> <span class="st">&quot;realData&quot;</span>)</span></code></pre></div>
+class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>tissueV<span class="sc">$</span>pval, <span class="at">main =</span> <span class="st">&quot;realData&quot;</span>)</span></code></pre></div>
 <p><img src="pda_technicalDetails_files/figure-html/unnamed-chunk-41-1.png" width="672" /></p>
 <ul>
 <li>A mixture of null proteins (non-DE): uniform, and, DE proteins:
@@ -1614,17 +1629,17 @@ p_p,1)\)</span></li>
 practise</h3>
 <p>Via R functions</p>
 <div class="sourceCode" id="cb101"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a>padj <span class="ot">&lt;-</span> <span class="fu">p.adjust</span>(</span>
-<span id="cb101-2"><a href="#cb101-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>tissueV<span class="sc">$</span>pval,</span>
-<span id="cb101-3"><a href="#cb101-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">&quot;bonferroni&quot;</span>)</span></code></pre></div>
+class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" tabindex="-1"></a>padj <span class="ot">&lt;-</span> <span class="fu">p.adjust</span>(</span>
+<span id="cb101-2"><a href="#cb101-2" tabindex="-1"></a>  <span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>tissueV<span class="sc">$</span>pval,</span>
+<span id="cb101-3"><a href="#cb101-3" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">&quot;bonferroni&quot;</span>)</span></code></pre></div>
 <p>Own Implementation: adjust and make sure that p-value is smaller than
 1.</p>
 <div class="sourceCode" id="cb102"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>tissueV<span class="sc">$</span>pval))</span>
-<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a>padjSelf <span class="ot">&lt;-</span>  <span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>tissueV<span class="sc">$</span>pval <span class="sc">*</span> m</span>
-<span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a>padjSelf[padjSelf <span class="sc">&gt;</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb102-4"><a href="#cb102-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb102-5"><a href="#cb102-5" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(padj <span class="sc">-</span> padjSelf, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>tissueV<span class="sc">$</span>pval))</span>
+<span id="cb102-2"><a href="#cb102-2" tabindex="-1"></a>padjSelf <span class="ot">&lt;-</span>  <span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>tissueV<span class="sc">$</span>pval <span class="sc">*</span> m</span>
+<span id="cb102-3"><a href="#cb102-3" tabindex="-1"></a>padjSelf[padjSelf <span class="sc">&gt;</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb102-4"><a href="#cb102-4" tabindex="-1"></a></span>
+<span id="cb102-5"><a href="#cb102-5" tabindex="-1"></a><span class="fu">range</span>(padj <span class="sc">-</span> padjSelf, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <pre><code>## [1] 0 0</code></pre>
 </div>
 <div id="illustration-in-simulation-under-h_0-and-heart-case-study"
@@ -1633,26 +1648,26 @@ class="section level3" number="6.1.3">
 simulation under <span class="math inline">\(H_0\)</span> and heart case
 study</h3>
 <div class="sourceCode" id="cb104"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a>volcano <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="fu">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="sc">$</span>tissueV,</span>
-<span id="cb104-2"><a href="#cb104-2" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">aes</span>(<span class="at">x =</span> logFC, <span class="at">y =</span> <span class="sc">-</span><span class="fu">log10</span>(pval), <span class="at">color =</span> <span class="fu">p.adjust</span>(pval,<span class="st">&quot;bonferroni&quot;</span>) <span class="sc">&lt;</span> <span class="fl">0.05</span>)) <span class="sc">+</span></span>
-<span id="cb104-3"><a href="#cb104-3" aria-hidden="true" tabindex="-1"></a> <span class="fu">geom_point</span>(<span class="at">cex =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
-<span id="cb104-4"><a href="#cb104-4" aria-hidden="true" tabindex="-1"></a> <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">alpha</span>(<span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb104-5"><a href="#cb104-5" aria-hidden="true" tabindex="-1"></a> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb104-6"><a href="#cb104-6" aria-hidden="true" tabindex="-1"></a> <span class="fu">ggtitle</span>(<span class="st">&quot;simulated heart data under H0&quot;</span>)</span>
-<span id="cb104-7"><a href="#cb104-7" aria-hidden="true" tabindex="-1"></a>volcano</span></code></pre></div>
+class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" tabindex="-1"></a>volcano <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="fu">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="sc">$</span>tissueV,</span>
+<span id="cb104-2"><a href="#cb104-2" tabindex="-1"></a>                 <span class="fu">aes</span>(<span class="at">x =</span> logFC, <span class="at">y =</span> <span class="sc">-</span><span class="fu">log10</span>(pval), <span class="at">color =</span> <span class="fu">p.adjust</span>(pval,<span class="st">&quot;bonferroni&quot;</span>) <span class="sc">&lt;</span> <span class="fl">0.05</span>)) <span class="sc">+</span></span>
+<span id="cb104-3"><a href="#cb104-3" tabindex="-1"></a> <span class="fu">geom_point</span>(<span class="at">cex =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
+<span id="cb104-4"><a href="#cb104-4" tabindex="-1"></a> <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">alpha</span>(<span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb104-5"><a href="#cb104-5" tabindex="-1"></a> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb104-6"><a href="#cb104-6" tabindex="-1"></a> <span class="fu">ggtitle</span>(<span class="st">&quot;simulated heart data under H0&quot;</span>)</span>
+<span id="cb104-7"><a href="#cb104-7" tabindex="-1"></a>volcano</span></code></pre></div>
 <p><img src="pda_technicalDetails_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
 <ul>
 <li>No false positives are returned for simulation under H_0. List is
 correct according to FWER.</li>
 </ul>
 <div class="sourceCode" id="cb105"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a>volcano <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>tissueV,</span>
-<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">aes</span>(<span class="at">x =</span> logFC, <span class="at">y =</span> <span class="sc">-</span><span class="fu">log10</span>(pval), <span class="at">color =</span> <span class="fu">p.adjust</span>(pval,<span class="st">&quot;bonferroni&quot;</span>) <span class="sc">&lt;</span> <span class="fl">0.05</span>)) <span class="sc">+</span></span>
-<span id="cb105-3"><a href="#cb105-3" aria-hidden="true" tabindex="-1"></a> <span class="fu">geom_point</span>(<span class="at">cex =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
-<span id="cb105-4"><a href="#cb105-4" aria-hidden="true" tabindex="-1"></a> <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">alpha</span>(<span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb105-5"><a href="#cb105-5" aria-hidden="true" tabindex="-1"></a> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb105-6"><a href="#cb105-6" aria-hidden="true" tabindex="-1"></a> <span class="fu">ggtitle</span>(<span class="st">&quot;real heart data&quot;</span>)</span>
-<span id="cb105-7"><a href="#cb105-7" aria-hidden="true" tabindex="-1"></a>volcano</span></code></pre></div>
+class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" tabindex="-1"></a>volcano <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>tissueV,</span>
+<span id="cb105-2"><a href="#cb105-2" tabindex="-1"></a>                 <span class="fu">aes</span>(<span class="at">x =</span> logFC, <span class="at">y =</span> <span class="sc">-</span><span class="fu">log10</span>(pval), <span class="at">color =</span> <span class="fu">p.adjust</span>(pval,<span class="st">&quot;bonferroni&quot;</span>) <span class="sc">&lt;</span> <span class="fl">0.05</span>)) <span class="sc">+</span></span>
+<span id="cb105-3"><a href="#cb105-3" tabindex="-1"></a> <span class="fu">geom_point</span>(<span class="at">cex =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
+<span id="cb105-4"><a href="#cb105-4" tabindex="-1"></a> <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">alpha</span>(<span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb105-5"><a href="#cb105-5" tabindex="-1"></a> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb105-6"><a href="#cb105-6" tabindex="-1"></a> <span class="fu">ggtitle</span>(<span class="st">&quot;real heart data&quot;</span>)</span>
+<span id="cb105-7"><a href="#cb105-7" tabindex="-1"></a>volcano</span></code></pre></div>
 <pre><code>## Warning: Removed 1263 rows containing missing values or values outside the scale range
 ## (`geom_point()`).</code></pre>
 <p><img src="pda_technicalDetails_files/figure-html/unnamed-chunk-45-1.png" width="672" /></p>
@@ -1689,51 +1704,51 @@ p_{0,k}},1\right]\]</span></p>
 <li>Order pvalues</li>
 </ol>
 <div class="sourceCode" id="cb107"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>pvals <span class="ot">&lt;-</span> <span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>tissueV<span class="sc">$</span>pval</span>
-<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a>naInd <span class="ot">&lt;-</span> <span class="fu">is.na</span>(pvals)</span>
-<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a>pHlp <span class="ot">&lt;-</span> pvals[<span class="sc">!</span>naInd]</span>
-<span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a>ord <span class="ot">&lt;-</span> pHlp <span class="sc">%&gt;%</span> order</span>
-<span id="cb107-5"><a href="#cb107-5" aria-hidden="true" tabindex="-1"></a>pHlp <span class="ot">&lt;-</span> pHlp[ord]</span></code></pre></div>
+class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" tabindex="-1"></a>pvals <span class="ot">&lt;-</span> <span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>tissueV<span class="sc">$</span>pval</span>
+<span id="cb107-2"><a href="#cb107-2" tabindex="-1"></a>naInd <span class="ot">&lt;-</span> <span class="fu">is.na</span>(pvals)</span>
+<span id="cb107-3"><a href="#cb107-3" tabindex="-1"></a>pHlp <span class="ot">&lt;-</span> pvals[<span class="sc">!</span>naInd]</span>
+<span id="cb107-4"><a href="#cb107-4" tabindex="-1"></a>ord <span class="ot">&lt;-</span> pHlp <span class="sc">%&gt;%</span> order</span>
+<span id="cb107-5"><a href="#cb107-5" tabindex="-1"></a>pHlp <span class="ot">&lt;-</span> pHlp[ord]</span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Adjust ordered p-values</li>
 </ol>
 <div class="sourceCode" id="cb108"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a>pHlp <span class="ot">&lt;-</span> pHlp<span class="sc">*</span><span class="fu">length</span>(pHlp)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(pHlp))</span></code></pre></div>
+class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" tabindex="-1"></a>pHlp <span class="ot">&lt;-</span> pHlp<span class="sc">*</span><span class="fu">length</span>(pHlp)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(pHlp))</span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>Ensure adjust p-values are smaller are equal than 1</li>
 </ol>
 <div class="sourceCode" id="cb109"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a>pHlp[pHlp<span class="sc">&gt;</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span></code></pre></div>
+class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" tabindex="-1"></a>pHlp[pHlp<span class="sc">&gt;</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span></code></pre></div>
 <ol start="4" style="list-style-type: decimal">
 <li>Monotonicity constraint</li>
 </ol>
 <div class="sourceCode" id="cb110"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a>pmin <span class="ot">&lt;-</span> pHlp[<span class="fu">length</span>(pHlp)]</span>
-<span id="cb110-2"><a href="#cb110-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> (<span class="fu">length</span>(pHlp)<span class="sc">-</span><span class="dv">1</span>)<span class="sc">:</span><span class="dv">1</span>)</span>
-<span id="cb110-3"><a href="#cb110-3" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb110-4"><a href="#cb110-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (pHlp[j] <span class="sc">&lt;</span> pmin)</span>
-<span id="cb110-5"><a href="#cb110-5" aria-hidden="true" tabindex="-1"></a>    pmin <span class="ot">&lt;-</span> pHlp[j] <span class="cf">else</span></span>
-<span id="cb110-6"><a href="#cb110-6" aria-hidden="true" tabindex="-1"></a>    pHlp[j] <span class="ot">&lt;-</span> pmin   </span>
-<span id="cb110-7"><a href="#cb110-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" tabindex="-1"></a>pmin <span class="ot">&lt;-</span> pHlp[<span class="fu">length</span>(pHlp)]</span>
+<span id="cb110-2"><a href="#cb110-2" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> (<span class="fu">length</span>(pHlp)<span class="sc">-</span><span class="dv">1</span>)<span class="sc">:</span><span class="dv">1</span>)</span>
+<span id="cb110-3"><a href="#cb110-3" tabindex="-1"></a>{</span>
+<span id="cb110-4"><a href="#cb110-4" tabindex="-1"></a>  <span class="cf">if</span> (pHlp[j] <span class="sc">&lt;</span> pmin)</span>
+<span id="cb110-5"><a href="#cb110-5" tabindex="-1"></a>    pmin <span class="ot">&lt;-</span> pHlp[j] <span class="cf">else</span></span>
+<span id="cb110-6"><a href="#cb110-6" tabindex="-1"></a>    pHlp[j] <span class="ot">&lt;-</span> pmin   </span>
+<span id="cb110-7"><a href="#cb110-7" tabindex="-1"></a>}</span></code></pre></div>
 <ol start="5" style="list-style-type: decimal">
 <li>Put p-values back in original order</li>
 </ol>
 <div class="sourceCode" id="cb111"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a>pHlp[ord] <span class="ot">&lt;-</span> pHlp</span>
-<span id="cb111-2"><a href="#cb111-2" aria-hidden="true" tabindex="-1"></a>pAdj <span class="ot">&lt;-</span> pvals</span>
-<span id="cb111-3"><a href="#cb111-3" aria-hidden="true" tabindex="-1"></a>pAdj[<span class="sc">!</span>naInd] <span class="ot">&lt;-</span> pHlp</span>
-<span id="cb111-4"><a href="#cb111-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb111-5"><a href="#cb111-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(pAdj)</span></code></pre></div>
+class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" tabindex="-1"></a>pHlp[ord] <span class="ot">&lt;-</span> pHlp</span>
+<span id="cb111-2"><a href="#cb111-2" tabindex="-1"></a>pAdj <span class="ot">&lt;-</span> pvals</span>
+<span id="cb111-3"><a href="#cb111-3" tabindex="-1"></a>pAdj[<span class="sc">!</span>naInd] <span class="ot">&lt;-</span> pHlp</span>
+<span id="cb111-4"><a href="#cb111-4" tabindex="-1"></a></span>
+<span id="cb111-5"><a href="#cb111-5" tabindex="-1"></a><span class="fu">head</span>(pAdj)</span></code></pre></div>
 <pre><code>## [1]        NA 0.8351039        NA        NA 0.9062353        NA</code></pre>
 <div class="sourceCode" id="cb113"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>tissueV)</span></code></pre></div>
+class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>tissueV)</span></code></pre></div>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["logFC"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["se"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["df"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["t"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["pval"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["adjPval"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"NA","2":"NA","3":"NA","4":"NA","5":"NA","6":"NA","_rn_":"A0M8Q6"},{"1":"0.20946392","2":"0.5601628","3":"7.914824","4":"0.3739340","5":"0.7182716","6":"0.8351039","_rn_":"A0PJW6"},{"1":"NA","2":"NA","3":"NA","4":"NA","5":"NA","6":"NA","_rn_":"A0PJZ3"},{"1":"NA","2":"NA","3":"NA","4":"NA","5":"NA","6":"NA","_rn_":"A0PK00"},{"1":"0.07123672","2":"0.3206733","3":"9.293515","4":"0.2221474","5":"0.8290044","6":"0.9062353","_rn_":"A1A4S6"},{"1":"NA","2":"NA","3":"NA","4":"NA","5":"NA","6":"NA","_rn_":"A1A5D9"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <div class="sourceCode" id="cb114"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>tissueV<span class="sc">$</span>adjPval <span class="sc">-</span> pAdj,<span class="at">na.rm=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" tabindex="-1"></a><span class="fu">range</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>tissueV<span class="sc">$</span>adjPval <span class="sc">-</span> pAdj,<span class="at">na.rm=</span><span class="cn">TRUE</span>)</span></code></pre></div>
 <pre><code>## [1] -2.220446e-16  2.220446e-16</code></pre>
 <div id="illustration-in-simulation-under-h_0-and-heart-case-study-1"
 class="section level3" number="6.2.1">
@@ -1741,13 +1756,13 @@ class="section level3" number="6.2.1">
 simulation under <span class="math inline">\(H_0\)</span> and heart case
 study</h3>
 <div class="sourceCode" id="cb116"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1" aria-hidden="true" tabindex="-1"></a>volcano <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="fu">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="sc">$</span>tissueV,</span>
-<span id="cb116-2"><a href="#cb116-2" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">aes</span>(<span class="at">x =</span> logFC, <span class="at">y =</span> <span class="sc">-</span><span class="fu">log10</span>(pval), <span class="at">color =</span> adjPval <span class="sc">&lt;</span> <span class="fl">0.05</span>)) <span class="sc">+</span></span>
-<span id="cb116-3"><a href="#cb116-3" aria-hidden="true" tabindex="-1"></a> <span class="fu">geom_point</span>(<span class="at">cex =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
-<span id="cb116-4"><a href="#cb116-4" aria-hidden="true" tabindex="-1"></a> <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">alpha</span>(<span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb116-5"><a href="#cb116-5" aria-hidden="true" tabindex="-1"></a> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb116-6"><a href="#cb116-6" aria-hidden="true" tabindex="-1"></a> <span class="fu">ggtitle</span>(<span class="st">&quot;simulated heart data under H0&quot;</span>)</span>
-<span id="cb116-7"><a href="#cb116-7" aria-hidden="true" tabindex="-1"></a>volcano</span></code></pre></div>
+class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1" tabindex="-1"></a>volcano <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="fu">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="sc">$</span>tissueV,</span>
+<span id="cb116-2"><a href="#cb116-2" tabindex="-1"></a>                 <span class="fu">aes</span>(<span class="at">x =</span> logFC, <span class="at">y =</span> <span class="sc">-</span><span class="fu">log10</span>(pval), <span class="at">color =</span> adjPval <span class="sc">&lt;</span> <span class="fl">0.05</span>)) <span class="sc">+</span></span>
+<span id="cb116-3"><a href="#cb116-3" tabindex="-1"></a> <span class="fu">geom_point</span>(<span class="at">cex =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
+<span id="cb116-4"><a href="#cb116-4" tabindex="-1"></a> <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">alpha</span>(<span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb116-5"><a href="#cb116-5" tabindex="-1"></a> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb116-6"><a href="#cb116-6" tabindex="-1"></a> <span class="fu">ggtitle</span>(<span class="st">&quot;simulated heart data under H0&quot;</span>)</span>
+<span id="cb116-7"><a href="#cb116-7" tabindex="-1"></a>volcano</span></code></pre></div>
 <p><img src="pda_technicalDetails_files/figure-html/unnamed-chunk-51-1.png" width="672" /></p>
 <ul>
 <li>No false positives are returned for simulation under H_0. List is
@@ -1756,13 +1771,13 @@ correct according to FWER.</li>
 class="math inline">\(H_0\)</span> is true for all features.</li>
 </ul>
 <div class="sourceCode" id="cb117"><pre
-class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a>volcano <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>tissueV,</span>
-<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">aes</span>(<span class="at">x =</span> logFC, <span class="at">y =</span> <span class="sc">-</span><span class="fu">log10</span>(pval), <span class="at">color =</span> adjPval <span class="sc">&lt;</span> <span class="fl">0.05</span>)) <span class="sc">+</span></span>
-<span id="cb117-3"><a href="#cb117-3" aria-hidden="true" tabindex="-1"></a> <span class="fu">geom_point</span>(<span class="at">cex =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
-<span id="cb117-4"><a href="#cb117-4" aria-hidden="true" tabindex="-1"></a> <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">alpha</span>(<span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb117-5"><a href="#cb117-5" aria-hidden="true" tabindex="-1"></a> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb117-6"><a href="#cb117-6" aria-hidden="true" tabindex="-1"></a> <span class="fu">ggtitle</span>(<span class="st">&quot;real heart data&quot;</span>)</span>
-<span id="cb117-7"><a href="#cb117-7" aria-hidden="true" tabindex="-1"></a>volcano</span></code></pre></div>
+class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" tabindex="-1"></a>volcano <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="sc">$</span>tissueV,</span>
+<span id="cb117-2"><a href="#cb117-2" tabindex="-1"></a>                 <span class="fu">aes</span>(<span class="at">x =</span> logFC, <span class="at">y =</span> <span class="sc">-</span><span class="fu">log10</span>(pval), <span class="at">color =</span> adjPval <span class="sc">&lt;</span> <span class="fl">0.05</span>)) <span class="sc">+</span></span>
+<span id="cb117-3"><a href="#cb117-3" tabindex="-1"></a> <span class="fu">geom_point</span>(<span class="at">cex =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
+<span id="cb117-4"><a href="#cb117-4" tabindex="-1"></a> <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">alpha</span>(<span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb117-5"><a href="#cb117-5" tabindex="-1"></a> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb117-6"><a href="#cb117-6" tabindex="-1"></a> <span class="fu">ggtitle</span>(<span class="st">&quot;real heart data&quot;</span>)</span>
+<span id="cb117-7"><a href="#cb117-7" tabindex="-1"></a>volcano</span></code></pre></div>
 <pre><code>## Warning: Removed 1263 rows containing missing values or values outside the scale range
 ## (`geom_point()`).</code></pre>
 <p><img src="pda_technicalDetails_files/figure-html/unnamed-chunk-52-1.png" width="672" /></p>

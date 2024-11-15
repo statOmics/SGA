@@ -1,0 +1,56 @@
+[2024-11-15 12:06:18 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 1/8): Number of threads available: 1
+[2024-11-15 12:06:18 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)  - Executing hisat2 using 1 cores. Parameters:
+[2024-11-15 12:06:18 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    '/Users/lclement/Dropbox/statOmics/SGA/Homo_sapiens.GRCh38.dna.chromosome.1.fa.Rhisat2/hisat2Index' -1 '/Users/lclement/Dropbox/statOmics/SGA/SGA-airwaySeqData/fastQ/SRR1039508_subset_1.fastq' -2 '/Users/lclement/Dropbox/statOmics/SGA/SGA-airwaySeqData/fastQ/SRR1039508_subset_2.fastq' --fr -k 2 --phred33 -p 1 -S '/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmpO0gQa3/SRR1039508_subset_1.fastqb447586f868.sam.tmp'
+[2024-11-15 12:06:19 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    Number of filtered secondary alignments:11
+[2024-11-15 12:06:19 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    Number of filtered overmapped alignments:11
+[2024-11-15 12:06:19 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 1/8): Converting sam file to sorted bam file:/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmpO0gQa3/SRR1039508_subset_1.fastqb447586f868.sam
+[2024-11-15 12:06:19 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 1/8): Genomic alignments have been successfully created.
+[2024-11-15 12:06:19 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 2/8): Number of threads available: 1
+[2024-11-15 12:06:19 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)  - Executing hisat2 using 1 cores. Parameters:
+[2024-11-15 12:06:19 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    '/Users/lclement/Dropbox/statOmics/SGA/Homo_sapiens.GRCh38.dna.chromosome.1.fa.Rhisat2/hisat2Index' -1 '/Users/lclement/Dropbox/statOmics/SGA/SGA-airwaySeqData/fastQ/SRR1039509_subset_1.fastq' -2 '/Users/lclement/Dropbox/statOmics/SGA/SGA-airwaySeqData/fastQ/SRR1039509_subset_2.fastq' --fr -k 2 --phred33 -p 1 -S '/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmpO0gQa3/SRR1039509_subset_1.fastqb44770018927.sam.tmp'
+[2024-11-15 12:06:19 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    Number of filtered secondary alignments:17
+[2024-11-15 12:06:19 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    Number of filtered overmapped alignments:17
+[2024-11-15 12:06:19 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 2/8): Converting sam file to sorted bam file:/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmpO0gQa3/SRR1039509_subset_1.fastqb44770018927.sam
+[2024-11-15 12:06:20 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 2/8): Genomic alignments have been successfully created.
+[2024-11-15 12:06:20 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 3/8): Number of threads available: 1
+[2024-11-15 12:06:20 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)  - Executing hisat2 using 1 cores. Parameters:
+[2024-11-15 12:06:20 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    '/Users/lclement/Dropbox/statOmics/SGA/Homo_sapiens.GRCh38.dna.chromosome.1.fa.Rhisat2/hisat2Index' -1 '/Users/lclement/Dropbox/statOmics/SGA/SGA-airwaySeqData/fastQ/SRR1039512_subset_1.fastq' -2 '/Users/lclement/Dropbox/statOmics/SGA/SGA-airwaySeqData/fastQ/SRR1039512_subset_2.fastq' --fr -k 2 --phred33 -p 1 -S '/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmpO0gQa3/SRR1039512_subset_1.fastqb4476fda9b00.sam.tmp'
+[2024-11-15 12:06:20 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    Number of filtered secondary alignments:16
+[2024-11-15 12:06:20 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    Number of filtered overmapped alignments:16
+[2024-11-15 12:06:20 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 3/8): Converting sam file to sorted bam file:/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmpO0gQa3/SRR1039512_subset_1.fastqb4476fda9b00.sam
+[2024-11-15 12:06:20 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 3/8): Genomic alignments have been successfully created.
+[2024-11-15 12:06:20 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 4/8): Number of threads available: 1
+[2024-11-15 12:06:20 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)  - Executing hisat2 using 1 cores. Parameters:
+[2024-11-15 12:06:20 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    '/Users/lclement/Dropbox/statOmics/SGA/Homo_sapiens.GRCh38.dna.chromosome.1.fa.Rhisat2/hisat2Index' -1 '/Users/lclement/Dropbox/statOmics/SGA/SGA-airwaySeqData/fastQ/SRR1039513_subset_1.fastq' -2 '/Users/lclement/Dropbox/statOmics/SGA/SGA-airwaySeqData/fastQ/SRR1039513_subset_2.fastq' --fr -k 2 --phred33 -p 1 -S '/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmpO0gQa3/SRR1039513_subset_1.fastqb44774a0735c.sam.tmp'
+[2024-11-15 12:06:21 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    Number of filtered secondary alignments:19
+[2024-11-15 12:06:21 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    Number of filtered overmapped alignments:19
+[2024-11-15 12:06:21 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 4/8): Converting sam file to sorted bam file:/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmpO0gQa3/SRR1039513_subset_1.fastqb44774a0735c.sam
+[2024-11-15 12:06:21 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 4/8): Genomic alignments have been successfully created.
+[2024-11-15 12:06:21 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 5/8): Number of threads available: 1
+[2024-11-15 12:06:21 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)  - Executing hisat2 using 1 cores. Parameters:
+[2024-11-15 12:06:21 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    '/Users/lclement/Dropbox/statOmics/SGA/Homo_sapiens.GRCh38.dna.chromosome.1.fa.Rhisat2/hisat2Index' -1 '/Users/lclement/Dropbox/statOmics/SGA/SGA-airwaySeqData/fastQ/SRR1039516_subset_1.fastq' -2 '/Users/lclement/Dropbox/statOmics/SGA/SGA-airwaySeqData/fastQ/SRR1039516_subset_2.fastq' --fr -k 2 --phred33 -p 1 -S '/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmpO0gQa3/SRR1039516_subset_1.fastqb447636eb1fc.sam.tmp'
+[2024-11-15 12:06:21 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    Number of filtered secondary alignments:26
+[2024-11-15 12:06:21 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    Number of filtered overmapped alignments:26
+[2024-11-15 12:06:21 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 5/8): Converting sam file to sorted bam file:/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmpO0gQa3/SRR1039516_subset_1.fastqb447636eb1fc.sam
+[2024-11-15 12:06:21 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 5/8): Genomic alignments have been successfully created.
+[2024-11-15 12:06:21 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 6/8): Number of threads available: 1
+[2024-11-15 12:06:21 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)  - Executing hisat2 using 1 cores. Parameters:
+[2024-11-15 12:06:21 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    '/Users/lclement/Dropbox/statOmics/SGA/Homo_sapiens.GRCh38.dna.chromosome.1.fa.Rhisat2/hisat2Index' -1 '/Users/lclement/Dropbox/statOmics/SGA/SGA-airwaySeqData/fastQ/SRR1039517_subset_1.fastq' -2 '/Users/lclement/Dropbox/statOmics/SGA/SGA-airwaySeqData/fastQ/SRR1039517_subset_2.fastq' --fr -k 2 --phred33 -p 1 -S '/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmpO0gQa3/SRR1039517_subset_1.fastqb4474544e756.sam.tmp'
+[2024-11-15 12:06:22 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    Number of filtered secondary alignments:28
+[2024-11-15 12:06:22 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    Number of filtered overmapped alignments:28
+[2024-11-15 12:06:22 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 6/8): Converting sam file to sorted bam file:/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmpO0gQa3/SRR1039517_subset_1.fastqb4474544e756.sam
+[2024-11-15 12:06:22 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 6/8): Genomic alignments have been successfully created.
+[2024-11-15 12:06:22 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 7/8): Number of threads available: 1
+[2024-11-15 12:06:22 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)  - Executing hisat2 using 1 cores. Parameters:
+[2024-11-15 12:06:22 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    '/Users/lclement/Dropbox/statOmics/SGA/Homo_sapiens.GRCh38.dna.chromosome.1.fa.Rhisat2/hisat2Index' -1 '/Users/lclement/Dropbox/statOmics/SGA/SGA-airwaySeqData/fastQ/SRR1039520_subset_1.fastq' -2 '/Users/lclement/Dropbox/statOmics/SGA/SGA-airwaySeqData/fastQ/SRR1039520_subset_2.fastq' --fr -k 2 --phred33 -p 1 -S '/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmpO0gQa3/SRR1039520_subset_1.fastqb4471d47cff9.sam.tmp'
+[2024-11-15 12:06:23 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    Number of filtered secondary alignments:6
+[2024-11-15 12:06:23 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    Number of filtered overmapped alignments:6
+[2024-11-15 12:06:23 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 7/8): Converting sam file to sorted bam file:/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmpO0gQa3/SRR1039520_subset_1.fastqb4471d47cff9.sam
+[2024-11-15 12:06:23 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 7/8): Genomic alignments have been successfully created.
+[2024-11-15 12:06:23 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 8/8): Number of threads available: 1
+[2024-11-15 12:06:23 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)  - Executing hisat2 using 1 cores. Parameters:
+[2024-11-15 12:06:23 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    '/Users/lclement/Dropbox/statOmics/SGA/Homo_sapiens.GRCh38.dna.chromosome.1.fa.Rhisat2/hisat2Index' -1 '/Users/lclement/Dropbox/statOmics/SGA/SGA-airwaySeqData/fastQ/SRR1039521_subset_1.fastq' -2 '/Users/lclement/Dropbox/statOmics/SGA/SGA-airwaySeqData/fastQ/SRR1039521_subset_2.fastq' --fr -k 2 --phred33 -p 1 -S '/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmpO0gQa3/SRR1039521_subset_1.fastqb44743b92ef3.sam.tmp'
+[2024-11-15 12:06:23 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    Number of filtered secondary alignments:25
+[2024-11-15 12:06:23 UTC] (lclement@pid46151/w039h001.wireless.ugent.be)    Number of filtered overmapped alignments:25
+[2024-11-15 12:06:23 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 8/8): Converting sam file to sorted bam file:/var/folders/mh/4hs3b1cx2lq157vj8zvb38vc0000gn/T//RtmpO0gQa3/SRR1039521_subset_1.fastqb44743b92ef3.sam
+[2024-11-15 12:06:24 UTC] (lclement@pid46151/w039h001.wireless.ugent.be) (Task 8/8): Genomic alignments have been successfully created.

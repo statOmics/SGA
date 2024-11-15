@@ -1,5 +1,5 @@
 ---
-title: III. Differential analysis at the gene level and transcript level 
+title: IV. Differential analysis at the gene level and transcript level 
 author: "Lieven Clement"
 date: "[statOmics](https://statomics.github.io), Ghent University"
 output:
@@ -39,5 +39,6 @@ The mapped output from Salmon can be found at:  [data](https://github.com/statOm
 1. Import the data with tximeta package: see [tximeta](https://bioconductor.org/packages/release/bioc/vignettes/tximeta/inst/doc/tximeta.html#Running_tximeta) vignette on bioconductor
 2. Run a DE analysis on the gene-level counts with quasi-likelihood workflow of edgeR
 3. Run a DE analysis on the transcript level counts with quasi-likelihood workflow of edgeR
+4. Run a transcript usage analysis  
 
 Tip: I had to use the argument `importer=read.delim` in the tximeta function because the default function to read the files returned an error on my laptop. 

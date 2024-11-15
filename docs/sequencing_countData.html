@@ -97,11 +97,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 code span.al { color: #ef2929; } /* Alert */
 code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #c4a000; } /* Attribute */
+code span.at { color: #204a87; } /* Attribute */
 code span.bn { color: #0000cf; } /* BaseN */
 code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
 code span.ch { color: #4e9a06; } /* Char */
-code span.cn { color: #000000; } /* Constant */
+code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #8f5902; font-style: italic; } /* Comment */
 code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
 code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
@@ -110,14 +110,14 @@ code span.dv { color: #0000cf; } /* DecVal */
 code span.er { color: #a40000; font-weight: bold; } /* Error */
 code span.ex { } /* Extension */
 code span.fl { color: #0000cf; } /* Float */
-code span.fu { color: #000000; } /* Function */
+code span.fu { color: #204a87; font-weight: bold; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
 code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
 code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
 code span.ot { color: #8f5902; } /* Other */
 code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
-code span.sc { color: #000000; } /* SpecialChar */
+code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
 code span.ss { color: #4e9a06; } /* SpecialString */
 code span.st { color: #4e9a06; } /* String */
 code span.va { color: #000000; } /* Variable */
@@ -476,6 +476,15 @@ div.tocify {
     <li>
       <a href="sequencing_countData.html">2.  Working with count data and GLMs</a>
     </li>
+    <li>
+      <a href="sequencing_technicalDE.html">3.  Technical Details</a>
+    </li>
+    <li>
+      <a href="https://f1000research.com/articles/4-1521/v2">4. Starting from transcrip-level</a>
+    </li>
+    <li>
+      <a href="sequencing_singleCell.html">6. Intro to scRNA-seq</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -510,6 +519,12 @@ div.tocify {
     <li>
       <a href="sequencingTutorial2_DE.html">2. Working with Count Data</a>
     </li>
+    <li>
+      <a href="sequencingTutorial3_DE.html">4. Starting from transcript-level data</a>
+    </li>
+    <li>
+      <a href="scRNA-seq-Tutorial.html">6. Tutorial scRNA-seq</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -534,7 +549,7 @@ div.tocify {
 <h1 class="title toc-ignore">Introduction to Sequencing: Working with
 RNA-seq count data</h1>
 <h4 class="author">Koen Van den Berge &amp; Lieven Clement</h4>
-<h4 class="date">Last edited on 25 October, 2024</h4>
+<h4 class="date">Last edited on 15 November, 2024</h4>
 
 </div>
 
@@ -573,18 +588,18 @@ estimate of <span class="math inline">\(80\)</span>. Even though the
 difference from the true value is the same, the exact value has an
 impact on the plausible deviation around it.</p></li>
 </ul>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">11</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>y1 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="at">n=</span><span class="dv">500</span>, <span class="at">lambda=</span><span class="dv">10</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>y2 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="at">n=</span><span class="dv">500</span>, <span class="at">lambda=</span><span class="dv">100</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(y1, <span class="at">main=</span><span class="st">&quot;Poisson(10)&quot;</span>, <span class="at">geom =</span> <span class="st">&quot;histogram&quot;</span>, <span class="at">binwidth=</span>.<span class="dv">5</span>,<span class="at">center=</span><span class="dv">0</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">11</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>y1 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="at">n=</span><span class="dv">500</span>, <span class="at">lambda=</span><span class="dv">10</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>y2 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="at">n=</span><span class="dv">500</span>, <span class="at">lambda=</span><span class="dv">100</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">qplot</span>(y1, <span class="at">main=</span><span class="st">&quot;Poisson(10)&quot;</span>, <span class="at">geom =</span> <span class="st">&quot;histogram&quot;</span>, <span class="at">binwidth=</span>.<span class="dv">5</span>,<span class="at">center=</span><span class="dv">0</span>)</span></code></pre></div>
 <pre><code>## Warning: `qplot()` was deprecated in ggplot2 3.4.0.
 ## This warning is displayed once every 8 hours.
 ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
 ## generated.</code></pre>
 <p><img src="sequencing_countData_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(y2, <span class="at">main=</span><span class="st">&quot;Poisson(100)&quot;</span>, <span class="at">geom =</span> <span class="st">&quot;histogram&quot;</span>, <span class="at">binwidth=</span>.<span class="dv">5</span>,<span class="at">center=</span><span class="dv">0</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">qplot</span>(y2, <span class="at">main=</span><span class="st">&quot;Poisson(100)&quot;</span>, <span class="at">geom =</span> <span class="st">&quot;histogram&quot;</span>, <span class="at">binwidth=</span>.<span class="dv">5</span>,<span class="at">center=</span><span class="dv">0</span>)</span></code></pre></div>
 <p><img src="sequencing_countData_files/figure-html/unnamed-chunk-1-2.png" width="672" /></p>
 <div id="the-poisson-distribution-in-rna-seq" class="section level2"
 number="1.1">
@@ -655,20 +670,20 @@ class="math inline">\(\beta_g\)</span> more?</li>
 <p>Let’s approximate the uncertainty in <span
 class="math inline">\(beta_g\)</span> and <span
 class="math inline">\(\beta_k\)</span> using simulation:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="fl">1e3</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>beta_g <span class="ot">&lt;-</span> beta_k <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="at">length=</span>N)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(ii <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N){</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  ygr1 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="at">n=</span><span class="dv">3</span>, <span class="at">lambda=</span><span class="dv">10</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  ygr0 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="at">n=</span><span class="dv">3</span>, <span class="at">lambda=</span><span class="dv">2</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  ykr1 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="at">n=</span><span class="dv">3</span>, <span class="at">lambda=</span><span class="dv">100</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  ykr0 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="at">n=</span><span class="dv">3</span>, <span class="at">lambda=</span><span class="dv">20</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  beta_g[ii] <span class="ot">&lt;-</span> <span class="fu">mean</span>(ygr1) <span class="sc">/</span> <span class="fu">mean</span>(ygr0)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  beta_k[ii] <span class="ot">&lt;-</span> <span class="fu">mean</span>(ykr1) <span class="sc">/</span> <span class="fu">mean</span>(ykr0)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="at">mar=</span><span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">1</span>))</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(beta_g, <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">50</span>,<span class="at">by=</span><span class="dv">1</span>), <span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">50</span>))</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(beta_k, <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">50</span>,<span class="at">by=</span><span class="dv">1</span>), <span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">50</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="fl">1e3</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>beta_g <span class="ot">&lt;-</span> beta_k <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="at">length=</span>N)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="cf">for</span>(ii <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N){</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  ygr1 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="at">n=</span><span class="dv">3</span>, <span class="at">lambda=</span><span class="dv">10</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  ygr0 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="at">n=</span><span class="dv">3</span>, <span class="at">lambda=</span><span class="dv">2</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  ykr1 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="at">n=</span><span class="dv">3</span>, <span class="at">lambda=</span><span class="dv">100</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  ykr0 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="at">n=</span><span class="dv">3</span>, <span class="at">lambda=</span><span class="dv">20</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  beta_g[ii] <span class="ot">&lt;-</span> <span class="fu">mean</span>(ygr1) <span class="sc">/</span> <span class="fu">mean</span>(ygr0)</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  beta_k[ii] <span class="ot">&lt;-</span> <span class="fu">mean</span>(ykr1) <span class="sc">/</span> <span class="fu">mean</span>(ykr0)</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>}</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="at">mar=</span><span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">1</span>))</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="fu">hist</span>(beta_g, <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">50</span>,<span class="at">by=</span><span class="dv">1</span>), <span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">50</span>))</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="fu">hist</span>(beta_k, <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">50</span>,<span class="at">by=</span><span class="dv">1</span>), <span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">50</span>))</span></code></pre></div>
 <p><img src="sequencing_countData_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <hr />
 <p>We clearly see that the uncertainty on <span
@@ -695,9 +710,9 @@ to a lower uncertainty on the fold-change. This basic result will be
 essential for understanding the results of a differential expression
 analysis!</li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="dv">100</span>)<span class="sc">/</span><span class="dv">100</span> <span class="co">#CV for gene k</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="dv">100</span>)<span class="sc">/</span><span class="dv">100</span> <span class="co">#CV for gene k</span></span></code></pre></div>
 <pre><code>## [1] 0.1</code></pre>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="dv">10</span>)<span class="sc">/</span><span class="dv">10</span> <span class="co">#CV for gene g</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="dv">10</span>)<span class="sc">/</span><span class="dv">10</span> <span class="co">#CV for gene g</span></span></code></pre></div>
 <pre><code>## [1] 0.3162278</code></pre>
 </div>
 </div>
@@ -854,10 +869,10 @@ Figure: A paragraph from the Methods section.
 <h2><span class="header-section-number">3.1</span> Technical
 repeats</h2>
 <p>There are technical repeats in the data!</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;parathyroidGenesSE&quot;</span>, <span class="at">package=</span><span class="st">&quot;parathyroidSE&quot;</span>)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>se <span class="ot">&lt;-</span> parathyroidGenesSE</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(parathyroidGenesSE)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colData</span>(se) <span class="sc">%&gt;%</span> knitr<span class="sc">::</span><span class="fu">kable</span>(.)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;parathyroidGenesSE&quot;</span>, <span class="at">package=</span><span class="st">&quot;parathyroidSE&quot;</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>se <span class="ot">&lt;-</span> parathyroidGenesSE</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="fu">rm</span>(parathyroidGenesSE)</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="fu">colData</span>(se) <span class="sc">%&gt;%</span> knitr<span class="sc">::</span><span class="fu">kable</span>(.)</span></code></pre></div>
 <table>
 <colgroup>
 <col width="13%" />
@@ -1154,19 +1169,19 @@ repeats</h2>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>se <span class="sc">%&gt;%</span> </span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  colData <span class="sc">%&gt;%</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame <span class="sc">%&gt;%</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(sample) <span class="sc">%&gt;%</span> </span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  nlevels</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>se <span class="sc">%&gt;%</span> </span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  colData <span class="sc">%&gt;%</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  as.data.frame <span class="sc">%&gt;%</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="fu">pull</span>(sample) <span class="sc">%&gt;%</span> </span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  nlevels</span></code></pre></div>
 <pre><code>## [1] 23</code></pre>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>se <span class="sc">%&gt;%</span> </span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  colData <span class="sc">%&gt;%</span> </span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  nrow</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>se <span class="sc">%&gt;%</span> </span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>  colData <span class="sc">%&gt;%</span> </span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  nrow</span></code></pre></div>
 <pre><code>## [1] 27</code></pre>
 <p>Extract sample names of duplicates!</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>dupl <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">table</span>(<span class="fu">colData</span>(se)<span class="sc">$</span>sample) <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> names</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>techreps <span class="ot">&lt;-</span> <span class="fu">assays</span>(se)<span class="sc">$</span>counts[,<span class="fu">colData</span>(se)<span class="sc">$</span>sample<span class="sc">==</span>dupl[<span class="dv">1</span>]]</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>dupl <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">table</span>(<span class="fu">colData</span>(se)<span class="sc">$</span>sample) <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> names</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>techreps <span class="ot">&lt;-</span> <span class="fu">assays</span>(se)<span class="sc">$</span>counts[,<span class="fu">colData</span>(se)<span class="sc">$</span>sample<span class="sc">==</span>dupl[<span class="dv">1</span>]]</span></code></pre></div>
 <div id="explore-the-data-of-two-technical-repeats"
 class="section level3" number="3.1.1">
 <h3><span class="header-section-number">3.1.1</span> Explore the data of
@@ -1174,10 +1189,10 @@ two technical repeats</h3>
 <p>We expect the counts to be very similar. Indeed, they are based on
 the same cell culture, stimulated with the same stimulus and incubated
 for the same time.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(techreps[,<span class="dv">1</span>],techreps[,<span class="dv">2</span>]) <span class="sc">+</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">slope =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Technical repeat 1&quot;</span>) <span class="sc">+</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Technical repeat 2&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">qplot</span>(techreps[,<span class="dv">1</span>],techreps[,<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">slope =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Technical repeat 1&quot;</span>) <span class="sc">+</span></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Technical repeat 2&quot;</span>)</span></code></pre></div>
 <p><img src="sequencing_countData_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <ul>
 <li><p>The plot shows a systematic difference between the counts of both
@@ -1191,10 +1206,10 @@ abundant genes, i.e. genes with very high counts.</p></li>
 class="section level3" number="3.1.2">
 <h3><span class="header-section-number">3.1.2</span> Explore the data of
 two technical repeats</h3>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(techreps[,<span class="dv">1</span>],techreps[,<span class="dv">2</span>], <span class="at">log=</span><span class="st">&quot;xy&quot;</span>) <span class="sc">+</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">slope =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Technical repeat 1&quot;</span>) <span class="sc">+</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Technical repeat 2&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">qplot</span>(techreps[,<span class="dv">1</span>],techreps[,<span class="dv">2</span>], <span class="at">log=</span><span class="st">&quot;xy&quot;</span>) <span class="sc">+</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">slope =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Technical repeat 1&quot;</span>) <span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Technical repeat 2&quot;</span>)</span></code></pre></div>
 <pre><code>## Warning in scale_x_log10(): log-10 transformation introduced infinite values.</code></pre>
 <pre><code>## Warning in scale_y_log10(): log-10 transformation introduced infinite values.</code></pre>
 <p><img src="sequencing_countData_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
@@ -1205,35 +1220,35 @@ different in the two technical repeats.</p></li>
 <li><p>In omics we therefore often use MA plots. With M (log ratio) and
 A (log average).</p></li>
 </ul>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> techreps <span class="sc">%&gt;%</span> log2 <span class="sc">%&gt;%</span> rowMeans</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>M <span class="ot">&lt;-</span> techreps <span class="sc">%&gt;%</span> log2 <span class="sc">%&gt;%</span> <span class="fu">apply</span>(.,<span class="dv">1</span>,diff)</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> techreps[,<span class="dv">1</span>]<span class="sc">==</span><span class="fu">min</span>(techreps[,<span class="dv">1</span>]) <span class="sc">|</span> techreps[,<span class="dv">2</span>]<span class="sc">==</span><span class="fu">min</span>(techreps[,<span class="dv">2</span>])</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">any</span>(w)) {</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>            A[w] <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="fu">sum</span>(w), <span class="at">min =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">max =</span> .<span class="dv">1</span>)</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>            M[w] <span class="ot">&lt;-</span> <span class="fu">log2</span>(techreps[w,<span class="dv">2</span>] <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">log2</span>(techreps[w,<span class="dv">1</span>] <span class="sc">+</span> <span class="dv">1</span>)</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>MAplot <span class="ot">&lt;-</span> <span class="fu">qplot</span>(A, M, <span class="at">col=</span>w) <span class="sc">+</span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span> </span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;black&quot;</span>,<span class="st">&quot;orange&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;A: log2 Average&quot;</span>) <span class="sc">+</span></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;M: log2 Fold Change&quot;</span>)</span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>MAplot <span class="sc">+</span></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept=</span><span class="dv">0</span>,<span class="at">slope=</span><span class="dv">0</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>A <span class="ot">&lt;-</span> techreps <span class="sc">%&gt;%</span> log2 <span class="sc">%&gt;%</span> rowMeans</span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>M <span class="ot">&lt;-</span> techreps <span class="sc">%&gt;%</span> log2 <span class="sc">%&gt;%</span> <span class="fu">apply</span>(.,<span class="dv">1</span>,diff)</span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a>w <span class="ot">&lt;-</span> techreps[,<span class="dv">1</span>]<span class="sc">==</span><span class="fu">min</span>(techreps[,<span class="dv">1</span>]) <span class="sc">|</span> techreps[,<span class="dv">2</span>]<span class="sc">==</span><span class="fu">min</span>(techreps[,<span class="dv">2</span>])</span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">any</span>(w)) {</span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a>            A[w] <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="fu">sum</span>(w), <span class="at">min =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">max =</span> .<span class="dv">1</span>)</span>
+<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a>            M[w] <span class="ot">&lt;-</span> <span class="fu">log2</span>(techreps[w,<span class="dv">2</span>] <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">log2</span>(techreps[w,<span class="dv">1</span>] <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a>}</span>
+<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a>MAplot <span class="ot">&lt;-</span> <span class="fu">qplot</span>(A, M, <span class="at">col=</span>w) <span class="sc">+</span></span>
+<span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;black&quot;</span>,<span class="st">&quot;orange&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;A: log2 Average&quot;</span>) <span class="sc">+</span></span>
+<span id="cb19-13"><a href="#cb19-13" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;M: log2 Fold Change&quot;</span>)</span>
+<span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a></span>
+<span id="cb19-15"><a href="#cb19-15" tabindex="-1"></a>MAplot <span class="sc">+</span></span>
+<span id="cb19-16"><a href="#cb19-16" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept=</span><span class="dv">0</span>,<span class="at">slope=</span><span class="dv">0</span>)</span></code></pre></div>
 <p><img src="sequencing_countData_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <p>The MA plot clearly shows that the counts of one technical repeat are
 systematically higher than that of the other technical repeats.</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(techreps)</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="fu">colSums</span>(techreps)</span></code></pre></div>
 <pre><code>## [1]  5251911 19332369</code></pre>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>logFCdepth <span class="ot">&lt;-</span> <span class="fu">colSums</span>(techreps) <span class="sc">%&gt;%</span> log2 <span class="sc">%&gt;%</span> diff</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>logFCdepth</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a>logFCdepth <span class="ot">&lt;-</span> <span class="fu">colSums</span>(techreps) <span class="sc">%&gt;%</span> log2 <span class="sc">%&gt;%</span> diff</span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>logFCdepth</span></code></pre></div>
 <pre><code>## [1] 1.880104</code></pre>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span><span class="sc">^</span>logFCdepth</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="dv">2</span><span class="sc">^</span>logFCdepth</span></code></pre></div>
 <pre><code>## [1] 3.681016</code></pre>
 <p>The technical repeats differ with a factor 3.7 in sequencing
 depth!</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>MAplot <span class="sc">+</span> <span class="fu">geom_abline</span>(<span class="at">intercept =</span> logFCdepth, <span class="at">slope =</span> <span class="dv">0</span>, <span class="at">color=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a>MAplot <span class="sc">+</span> <span class="fu">geom_abline</span>(<span class="at">intercept =</span> logFCdepth, <span class="at">slope =</span> <span class="dv">0</span>, <span class="at">color=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
 <p><img src="sequencing_countData_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <ul>
 <li>This log2 fold change in sequencing depth is also the baseline
@@ -1298,11 +1313,11 @@ exist!</p>
 repeats</h2>
 <p>We extract the four biological repeats from the study for the control
 treatment at time 24h.</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>bioreps <span class="ot">&lt;-</span> <span class="fu">colData</span>(se)<span class="sc">$</span>treatment<span class="sc">==</span><span class="st">&quot;Control&quot;</span> <span class="sc">&amp;</span> <span class="fu">colData</span>(se)<span class="sc">$</span>time<span class="sc">==</span><span class="st">&quot;24h&quot;</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>biorepCounts <span class="ot">&lt;-</span> <span class="fu">assays</span>(se)<span class="sc">$</span>counts[,bioreps]</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(<span class="fu">rowMeans</span>(biorepCounts),<span class="fu">rowVars</span>(biorepCounts),<span class="at">log=</span><span class="st">&quot;xy&quot;</span>) <span class="sc">+</span></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="dv">0</span>,<span class="at">slope =</span> <span class="dv">1</span>,<span class="at">col=</span><span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">col=</span><span class="st">&quot;orange&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a>bioreps <span class="ot">&lt;-</span> <span class="fu">colData</span>(se)<span class="sc">$</span>treatment<span class="sc">==</span><span class="st">&quot;Control&quot;</span> <span class="sc">&amp;</span> <span class="fu">colData</span>(se)<span class="sc">$</span>time<span class="sc">==</span><span class="st">&quot;24h&quot;</span></span>
+<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a>biorepCounts <span class="ot">&lt;-</span> <span class="fu">assays</span>(se)<span class="sc">$</span>counts[,bioreps]</span>
+<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a><span class="fu">qplot</span>(<span class="fu">rowMeans</span>(biorepCounts),<span class="fu">rowVars</span>(biorepCounts),<span class="at">log=</span><span class="st">&quot;xy&quot;</span>) <span class="sc">+</span></span>
+<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="dv">0</span>,<span class="at">slope =</span> <span class="dv">1</span>,<span class="at">col=</span><span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
+<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">col=</span><span class="st">&quot;orange&quot;</span>)</span></code></pre></div>
 <pre><code>## Warning in scale_x_log10(): log-10 transformation introduced infinite values.</code></pre>
 <pre><code>## Warning in scale_y_log10(): log-10 transformation introduced infinite values.</code></pre>
 <pre><code>## Warning in scale_x_log10(): log-10 transformation introduced infinite values.</code></pre>
@@ -1421,53 +1436,53 @@ and a block effect for patient.</p>
 <ol style="list-style-type: decimal">
 <li>Setup the data</li>
 </ol>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>seSub <span class="ot">&lt;-</span> se[,<span class="fu">colData</span>(se)<span class="sc">$</span>treatment<span class="sc">==</span><span class="st">&quot;Control&quot;</span><span class="sc">&amp;</span><span class="fu">colData</span>(se)<span class="sc">$</span>patient<span class="sc">%in%</span><span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colData</span>(seSub)<span class="sc">$</span>patient <span class="ot">&lt;-</span> <span class="fu">colData</span>(seSub)<span class="sc">$</span>patient <span class="sc">%&gt;%</span> </span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  as.double <span class="sc">%&gt;%</span> </span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  as.factor</span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">DGEList</span>(<span class="at">counts =</span> <span class="fu">assays</span>(seSub)<span class="sc">$</span>counts)</span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>time<span class="sc">+</span>patient,<span class="fu">colData</span>(seSub))</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a>seSub <span class="ot">&lt;-</span> se[,<span class="fu">colData</span>(se)<span class="sc">$</span>treatment<span class="sc">==</span><span class="st">&quot;Control&quot;</span><span class="sc">&amp;</span><span class="fu">colData</span>(se)<span class="sc">$</span>patient<span class="sc">%in%</span><span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a><span class="fu">colData</span>(seSub)<span class="sc">$</span>patient <span class="ot">&lt;-</span> <span class="fu">colData</span>(seSub)<span class="sc">$</span>patient <span class="sc">%&gt;%</span> </span>
+<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a>  as.double <span class="sc">%&gt;%</span> </span>
+<span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a>  as.factor</span>
+<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">DGEList</span>(<span class="at">counts =</span> <span class="fu">assays</span>(seSub)<span class="sc">$</span>counts)</span>
+<span id="cb34-6"><a href="#cb34-6" tabindex="-1"></a></span>
+<span id="cb34-7"><a href="#cb34-7" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>time<span class="sc">+</span>patient,<span class="fu">colData</span>(seSub))</span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Typically lowly expressed genes are filtered.</li>
 </ol>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>keep <span class="ot">&lt;-</span> <span class="fu">filterByExpr</span>(y,design)</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> y[keep,]</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a>keep <span class="ot">&lt;-</span> <span class="fu">filterByExpr</span>(y,design)</span>
+<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a>y <span class="ot">&lt;-</span> y[keep,]</span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>Normalisation to correct for differences in library size.</li>
 </ol>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">calcNormFactors</span>(y)</span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">calcNormFactors</span>(y)</span></code></pre></div>
 <ol start="4" style="list-style-type: decimal">
 <li>Estimate the dispersions using empirical Bayes (EB)</li>
 </ol>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">estimateDisp</span>(y, design)</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">estimateDisp</span>(y, design)</span></code></pre></div>
 <ol start="5" style="list-style-type: decimal">
 <li>Estimate gene-wise dispersions without shrinkage for comparison
 purposes</li>
 </ol>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>yNoEB <span class="ot">&lt;-</span> <span class="fu">estimateDisp</span>(y, design, <span class="at">prior.df =</span> <span class="dv">0</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a>yNoEB <span class="ot">&lt;-</span> <span class="fu">estimateDisp</span>(y, design, <span class="at">prior.df =</span> <span class="dv">0</span>)</span></code></pre></div>
 <ol start="6" style="list-style-type: decimal">
 <li>Visualisation and comparison of tag-wise (EB) and genewise
 dispersion</li>
 </ol>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>o <span class="ot">&lt;-</span> <span class="fu">order</span>(y<span class="sc">$</span>AveLogCPM)</span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">AveLogCPM=</span><span class="fu">rep</span>(yNoEB<span class="sc">$</span>AveLogCPM[o],<span class="dv">2</span>),</span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">BCV=</span><span class="fu">sqrt</span>(</span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(yNoEB<span class="sc">$</span>tagwise.dispersion[o],</span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>      y<span class="sc">$</span>tagwise.dispersion[o])</span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    ), </span>
-<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">method=</span><span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;genewise&quot;</span>,<span class="st">&quot;tagwise&quot;</span>), <span class="at">each=</span><span class="fu">nrow</span>(y))) <span class="sc">%&gt;%</span></span>
-<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(AveLogCPM,BCV,<span class="at">color=</span>method)) <span class="sc">+</span></span>
-<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> .<span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
-<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">data.frame</span>(</span>
-<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">AveLogCPM=</span>y<span class="sc">$</span>AveLogCPM[o],</span>
-<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">BCV =</span> <span class="fu">sqrt</span>(y<span class="sc">$</span>trended.dispersion[o]),</span>
-<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">method=</span><span class="st">&quot;trended&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_colour_manual</span>(<span class="at">values =</span><span class="fu">c</span>(<span class="st">&#39;black&#39;</span>,<span class="st">&#39;orange&#39;</span>,<span class="st">&#39;blue&#39;</span>))<span class="sc">+</span></span>
-<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Biological Coefficient of Variation&quot;</span>) <span class="sc">+</span></span>
-<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Average log CPM&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a>o <span class="ot">&lt;-</span> <span class="fu">order</span>(y<span class="sc">$</span>AveLogCPM)</span>
+<span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb39-3"><a href="#cb39-3" tabindex="-1"></a>  <span class="at">AveLogCPM=</span><span class="fu">rep</span>(yNoEB<span class="sc">$</span>AveLogCPM[o],<span class="dv">2</span>),</span>
+<span id="cb39-4"><a href="#cb39-4" tabindex="-1"></a>  <span class="at">BCV=</span><span class="fu">sqrt</span>(</span>
+<span id="cb39-5"><a href="#cb39-5" tabindex="-1"></a>    <span class="fu">c</span>(yNoEB<span class="sc">$</span>tagwise.dispersion[o],</span>
+<span id="cb39-6"><a href="#cb39-6" tabindex="-1"></a>      y<span class="sc">$</span>tagwise.dispersion[o])</span>
+<span id="cb39-7"><a href="#cb39-7" tabindex="-1"></a>    ), </span>
+<span id="cb39-8"><a href="#cb39-8" tabindex="-1"></a>  <span class="at">method=</span><span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;genewise&quot;</span>,<span class="st">&quot;tagwise&quot;</span>), <span class="at">each=</span><span class="fu">nrow</span>(y))) <span class="sc">%&gt;%</span></span>
+<span id="cb39-9"><a href="#cb39-9" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(AveLogCPM,BCV,<span class="at">color=</span>method)) <span class="sc">+</span></span>
+<span id="cb39-10"><a href="#cb39-10" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> .<span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb39-11"><a href="#cb39-11" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb39-12"><a href="#cb39-12" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">data.frame</span>(</span>
+<span id="cb39-13"><a href="#cb39-13" tabindex="-1"></a>      <span class="at">AveLogCPM=</span>y<span class="sc">$</span>AveLogCPM[o],</span>
+<span id="cb39-14"><a href="#cb39-14" tabindex="-1"></a>      <span class="at">BCV =</span> <span class="fu">sqrt</span>(y<span class="sc">$</span>trended.dispersion[o]),</span>
+<span id="cb39-15"><a href="#cb39-15" tabindex="-1"></a>      <span class="at">method=</span><span class="st">&quot;trended&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb39-16"><a href="#cb39-16" tabindex="-1"></a>    <span class="fu">scale_colour_manual</span>(<span class="at">values =</span><span class="fu">c</span>(<span class="st">&#39;black&#39;</span>,<span class="st">&#39;orange&#39;</span>,<span class="st">&#39;blue&#39;</span>))<span class="sc">+</span></span>
+<span id="cb39-17"><a href="#cb39-17" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Biological Coefficient of Variation&quot;</span>) <span class="sc">+</span></span>
+<span id="cb39-18"><a href="#cb39-18" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Average log CPM&quot;</span>)</span></code></pre></div>
 <p><img src="sequencing_countData_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 <p>Note, that</p>
 <ul>
@@ -1477,7 +1492,7 @@ dispersion</li>
 the gene-wise dispersion (black dots) to the trend (blue line)</li>
 </ul>
 <p>By default edgeR provides the following plot</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotBCV</span>(y)</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a><span class="fu">plotBCV</span>(y)</span></code></pre></div>
 <p><img src="sequencing_countData_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 <p>In the methods paper of edgeR different dispersion estimators were
 compared and the tag-wise dispersions seemed to provide the best
@@ -1505,8 +1520,8 @@ is done by default in the edgeR and DESeq2 output</p></li>
 <ol style="list-style-type: decimal">
 <li>Fit the model</li>
 </ol>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">glmFit</span>(y,design)</span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(fit<span class="sc">$</span>coefficients)</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">glmFit</span>(y,design)</span>
+<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a><span class="fu">head</span>(fit<span class="sc">$</span>coefficients)</span></code></pre></div>
 <pre><code>##                 (Intercept)     time48h   patient2   patient3
 ## ENSG00000000003   -9.349871  0.13638138 -0.5613559 -0.7834884
 ## ENSG00000000419  -10.391095 -0.09800617  0.1057271  0.1356434
@@ -1518,8 +1533,8 @@ is done by default in the edgeR and DESeq2 output</p></li>
 <ol start="2" style="list-style-type: decimal">
 <li>Statistical test to assess the time effect</li>
 </ol>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>lrt <span class="ot">&lt;-</span> <span class="fu">glmLRT</span>(fit, <span class="at">coef =</span> <span class="st">&quot;time48h&quot;</span>)</span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">topTags</span>(lrt)</span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a>lrt <span class="ot">&lt;-</span> <span class="fu">glmLRT</span>(fit, <span class="at">coef =</span> <span class="st">&quot;time48h&quot;</span>)</span>
+<span id="cb43-2"><a href="#cb43-2" tabindex="-1"></a><span class="fu">topTags</span>(lrt)</span></code></pre></div>
 <pre><code>## Coefficient:  time48h 
 ##                     logFC   logCPM       LR       PValue          FDR
 ## ENSG00000164089  4.284786 3.099739 213.7650 2.072422e-48 3.294944e-44

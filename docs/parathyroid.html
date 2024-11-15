@@ -97,11 +97,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 code span.al { color: #ef2929; } /* Alert */
 code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #c4a000; } /* Attribute */
+code span.at { color: #204a87; } /* Attribute */
 code span.bn { color: #0000cf; } /* BaseN */
 code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
 code span.ch { color: #4e9a06; } /* Char */
-code span.cn { color: #000000; } /* Constant */
+code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #8f5902; font-style: italic; } /* Comment */
 code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
 code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
@@ -110,14 +110,14 @@ code span.dv { color: #0000cf; } /* DecVal */
 code span.er { color: #a40000; font-weight: bold; } /* Error */
 code span.ex { } /* Extension */
 code span.fl { color: #0000cf; } /* Float */
-code span.fu { color: #000000; } /* Function */
+code span.fu { color: #204a87; font-weight: bold; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
 code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
 code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
 code span.ot { color: #8f5902; } /* Other */
 code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
-code span.sc { color: #000000; } /* SpecialChar */
+code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
 code span.ss { color: #4e9a06; } /* SpecialString */
 code span.st { color: #4e9a06; } /* String */
 code span.va { color: #000000; } /* Variable */
@@ -476,6 +476,15 @@ div.tocify {
     <li>
       <a href="sequencing_countData.html">2.  Working with count data and GLMs</a>
     </li>
+    <li>
+      <a href="sequencing_technicalDE.html">3.  Technical Details</a>
+    </li>
+    <li>
+      <a href="https://f1000research.com/articles/4-1521/v2">4. Starting from transcrip-level</a>
+    </li>
+    <li>
+      <a href="sequencing_singleCell.html">6. Intro to scRNA-seq</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -510,6 +519,12 @@ div.tocify {
     <li>
       <a href="sequencingTutorial2_DE.html">2. Working with Count Data</a>
     </li>
+    <li>
+      <a href="sequencingTutorial3_DE.html">4. Starting from transcript-level data</a>
+    </li>
+    <li>
+      <a href="scRNA-seq-Tutorial.html">6. Tutorial scRNA-seq</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -540,9 +555,6 @@ class="uri">https://statomics.github.io</a>)</h4>
 </div>
 
 
-<pre><code>## Warning: package &#39;matrixStats&#39; was built under R version 4.4.1</code></pre>
-<pre><code>## Warning: package &#39;S4Vectors&#39; was built under R version 4.4.1</code></pre>
-<pre><code>## Warning: package &#39;IRanges&#39; was built under R version 4.4.1</code></pre>
 <div id="introduction" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Introduction</h1>
 <p>Paired-end sequencing was performed on primary cultures from
@@ -556,46 +568,46 @@ available at <a
 href="http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE37211"
 class="uri">http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE37211</a>.</p>
 <p>#Count data and meta data</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;parathyroidGenesSE&quot;</span>, <span class="at">package=</span><span class="st">&quot;parathyroidSE&quot;</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>se1 <span class="ot">&lt;-</span> parathyroidGenesSE</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(parathyroidGenesSE)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>dupExps <span class="ot">&lt;-</span> <span class="fu">colData</span>(se1) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">duplicated</span>(experiment))  <span class="sc">%&gt;%</span> </span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(experiment)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>counts <span class="ot">&lt;-</span> <span class="fu">assays</span>(se1)<span class="sc">$</span>counts</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>newCounts <span class="ot">&lt;-</span> counts</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>cd <span class="ot">&lt;-</span> <span class="fu">colData</span>(se1)</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(ss <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(dupExps)){</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># check which samples are duplicates</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  relevantId <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">colData</span>(se1)<span class="sc">$</span>experiment <span class="sc">==</span> dupExps[ss])</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># sum counts</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  newCounts[,relevantId[<span class="dv">1</span>]] <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(counts[,relevantId])</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># keep which columns / rows to remove.</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(ss <span class="sc">==</span> <span class="dv">1</span>){</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    toRemove <span class="ot">&lt;-</span> relevantId[<span class="dv">2</span>]</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    toRemove <span class="ot">&lt;-</span> <span class="fu">c</span>(toRemove, relevantId[<span class="dv">2</span>])</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co"># remove after summing counts (otherwise IDs get mixed up)</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>newCounts <span class="ot">&lt;-</span> newCounts[,<span class="sc">-</span>toRemove]</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>newCD <span class="ot">&lt;-</span> cd[<span class="sc">-</span>toRemove,]</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Create new SummarizedExperiment</span></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>se <span class="ot">&lt;-</span> <span class="fu">SummarizedExperiment</span>(<span class="at">assays =</span> <span class="fu">list</span>(<span class="st">&quot;counts&quot;</span> <span class="ot">=</span> newCounts),</span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>                            <span class="at">colData =</span> newCD,</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>                            <span class="at">metadata =</span> <span class="fu">metadata</span>(se1))</span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(se1)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;parathyroidGenesSE&quot;</span>, <span class="at">package=</span><span class="st">&quot;parathyroidSE&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>se1 <span class="ot">&lt;-</span> parathyroidGenesSE</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">rm</span>(parathyroidGenesSE)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>dupExps <span class="ot">&lt;-</span> <span class="fu">colData</span>(se1) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">duplicated</span>(experiment))  <span class="sc">%&gt;%</span> </span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="fu">pull</span>(experiment)</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>counts <span class="ot">&lt;-</span> <span class="fu">assays</span>(se1)<span class="sc">$</span>counts</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>newCounts <span class="ot">&lt;-</span> counts</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>cd <span class="ot">&lt;-</span> <span class="fu">colData</span>(se1)</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="cf">for</span>(ss <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(dupExps)){</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="co"># check which samples are duplicates</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>  relevantId <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">colData</span>(se1)<span class="sc">$</span>experiment <span class="sc">==</span> dupExps[ss])</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>  <span class="co"># sum counts</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>  newCounts[,relevantId[<span class="dv">1</span>]] <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(counts[,relevantId])</span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>  <span class="co"># keep which columns / rows to remove.</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>  <span class="cf">if</span>(ss <span class="sc">==</span> <span class="dv">1</span>){</span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>    toRemove <span class="ot">&lt;-</span> relevantId[<span class="dv">2</span>]</span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>    toRemove <span class="ot">&lt;-</span> <span class="fu">c</span>(toRemove, relevantId[<span class="dv">2</span>])</span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a>  }</span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a>}</span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a><span class="co"># remove after summing counts (otherwise IDs get mixed up)</span></span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a>newCounts <span class="ot">&lt;-</span> newCounts[,<span class="sc">-</span>toRemove]</span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a>newCD <span class="ot">&lt;-</span> cd[<span class="sc">-</span>toRemove,]</span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a><span class="co"># Create new SummarizedExperiment</span></span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a>se <span class="ot">&lt;-</span> <span class="fu">SummarizedExperiment</span>(<span class="at">assays =</span> <span class="fu">list</span>(<span class="st">&quot;counts&quot;</span> <span class="ot">=</span> newCounts),</span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a>                            <span class="at">colData =</span> newCD,</span>
+<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a>                            <span class="at">metadata =</span> <span class="fu">metadata</span>(se1))</span>
+<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a><span class="fu">rm</span>(se1)</span></code></pre></div>
 </div>
 <div id="data-analysis" class="section level1" number="2">
 <h1><span class="header-section-number">2</span> Data analysis</h1>
 <div id="count-object" class="section level2" number="2.1">
 <h2><span class="header-section-number">2.1</span> Count object</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>dge <span class="ot">&lt;-</span> <span class="fu">DGEList</span>(<span class="at">counts=</span><span class="fu">assay</span>(se))</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>dge<span class="sc">$</span>sample</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>dge <span class="ot">&lt;-</span> <span class="fu">DGEList</span>(<span class="at">counts=</span><span class="fu">assay</span>(se))</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>dge<span class="sc">$</span>sample</span></code></pre></div>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["group"],"name":[1],"type":["fct"],"align":["left"]},{"label":["lib.size"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["norm.factors"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"9102683","3":"1","_rn_":"Sample1"},{"1":"1","2":"10827109","3":"1","_rn_":"Sample2"},{"1":"1","2":"5217761","3":"1","_rn_":"Sample3"},{"1":"1","2":"9706035","3":"1","_rn_":"Sample4"},{"1":"1","2":"5700022","3":"1","_rn_":"Sample5"},{"1":"1","2":"7854568","3":"1","_rn_":"Sample6"},{"1":"1","2":"8610014","3":"1","_rn_":"Sample7"},{"1":"1","2":"6844144","3":"1","_rn_":"Sample8"},{"1":"1","2":"24584280","3":"1","_rn_":"Sample9"},{"1":"1","2":"8267977","3":"1","_rn_":"Sample10"},{"1":"1","2":"23590411","3":"1","_rn_":"Sample11"},{"1":"1","2":"8247122","3":"1","_rn_":"Sample12"},{"1":"1","2":"7341000","3":"1","_rn_":"Sample13"},{"1":"1","2":"8064268","3":"1","_rn_":"Sample14"},{"1":"1","2":"12481958","3":"1","_rn_":"Sample15"},{"1":"1","2":"16310090","3":"1","_rn_":"Sample16"},{"1":"1","2":"23697329","3":"1","_rn_":"Sample17"},{"1":"1","2":"7642648","3":"1","_rn_":"Sample18"},{"1":"1","2":"7701432","3":"1","_rn_":"Sample19"},{"1":"1","2":"7135899","3":"1","_rn_":"Sample20"},{"1":"1","2":"13818393","3":"1","_rn_":"Sample21"},{"1":"1","2":"6099942","3":"1","_rn_":"Sample22"},{"1":"1","2":"15825211","3":"1","_rn_":"Sample23"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -607,9 +619,9 @@ class="uri">http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE37211</a>.</p>
 <p>There can be an effect of agent, time interaction and agent x time
 interaction. We also expect blocking for patient. We can assess all
 effects of interest within patient.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>time<span class="sc">*</span>treatment<span class="sc">+</span>patient,<span class="fu">colData</span>(se))</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(design) <span class="ot">=</span> <span class="fu">colnames</span>(dge)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>design</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>time<span class="sc">*</span>treatment<span class="sc">+</span>patient,<span class="fu">colData</span>(se))</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">rownames</span>(design) <span class="ot">=</span> <span class="fu">colnames</span>(dge)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>design</span></code></pre></div>
 <pre><code>##          (Intercept) time48h treatmentDPN treatmentOHT patient2 patient3
 ## Sample1            1       0            0            0        0        0
 ## Sample2            1       1            0            0        0        0
@@ -669,7 +681,7 @@ effects of interest within patient.</p>
 ## 
 ## attr(,&quot;contrasts&quot;)$patient
 ## [1] &quot;contr.treatment&quot;</code></pre>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ExploreModelMatrix<span class="sc">::</span><span class="fu">VisualizeDesign</span>(<span class="fu">colData</span>(se),<span class="sc">~</span> time<span class="sc">*</span>treatment <span class="sc">+</span> patient)<span class="sc">$</span>plotlist</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>ExploreModelMatrix<span class="sc">::</span><span class="fu">VisualizeDesign</span>(<span class="fu">colData</span>(se),<span class="sc">~</span> time<span class="sc">*</span>treatment <span class="sc">+</span> patient)<span class="sc">$</span>plotlist</span></code></pre></div>
 <pre><code>## $`time = 24h`</code></pre>
 <p><img src="parathyroid_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <pre><code>## 
@@ -678,17 +690,17 @@ effects of interest within patient.</p>
 </div>
 <div id="filtering" class="section level2" number="2.3">
 <h2><span class="header-section-number">2.3</span> Filtering</h2>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>keep <span class="ot">&lt;-</span> <span class="fu">filterByExpr</span>(dge,design)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(keep)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>keep <span class="ot">&lt;-</span> <span class="fu">filterByExpr</span>(dge,design)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">table</span>(keep)</span></code></pre></div>
 <pre><code>## keep
 ## FALSE  TRUE 
 ## 46629 16564</code></pre>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>dge <span class="ot">&lt;-</span> dge[keep, , keep.lib.sizes<span class="ot">=</span><span class="cn">FALSE</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>dge <span class="ot">&lt;-</span> dge[keep, , keep.lib.sizes<span class="ot">=</span><span class="cn">FALSE</span>]</span></code></pre></div>
 </div>
 <div id="normalisation" class="section level2" number="2.4">
 <h2><span class="header-section-number">2.4</span> Normalisation</h2>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>dge <span class="ot">&lt;-</span> <span class="fu">calcNormFactors</span>(dge)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>dge<span class="sc">$</span>samples</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>dge <span class="ot">&lt;-</span> <span class="fu">calcNormFactors</span>(dge)</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>dge<span class="sc">$</span>samples</span></code></pre></div>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["group"],"name":[1],"type":["fct"],"align":["left"]},{"label":["lib.size"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["norm.factors"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"9089191","3":"0.9811632","_rn_":"Sample1"},{"1":"1","2":"10811574","3":"0.9707108","_rn_":"Sample2"},{"1":"1","2":"5210162","3":"0.9768753","_rn_":"Sample3"},{"1":"1","2":"9691321","3":"0.9927766","_rn_":"Sample4"},{"1":"1","2":"5691477","3":"0.9740861","_rn_":"Sample5"},{"1":"1","2":"7843482","3":"0.9831290","_rn_":"Sample6"},{"1":"1","2":"8598294","3":"0.9316231","_rn_":"Sample7"},{"1":"1","2":"6834621","3":"0.9436520","_rn_":"Sample8"},{"1":"1","2":"24548167","3":"0.9421338","_rn_":"Sample9"},{"1":"1","2":"8256710","3":"0.9324177","_rn_":"Sample10"},{"1":"1","2":"23556262","3":"0.9349302","_rn_":"Sample11"},{"1":"1","2":"8235902","3":"0.9306290","_rn_":"Sample12"},{"1":"1","2":"7326632","3":"1.0573853","_rn_":"Sample13"},{"1":"1","2":"8048185","3":"1.0477621","_rn_":"Sample14"},{"1":"1","2":"12458057","3":"1.0616393","_rn_":"Sample15"},{"1":"1","2":"16279311","3":"1.0416439","_rn_":"Sample16"},{"1":"1","2":"23652574","3":"1.0441526","_rn_":"Sample17"},{"1":"1","2":"7628292","3":"1.0367185","_rn_":"Sample18"},{"1":"1","2":"7687278","3":"1.0449427","_rn_":"Sample19"},{"1":"1","2":"7122747","3":"1.0561330","_rn_":"Sample20"},{"1":"1","2":"13792983","3":"1.0382934","_rn_":"Sample21"},{"1":"1","2":"6088410","3":"1.0629288","_rn_":"Sample22"},{"1":"1","2":"15795813","3":"1.0415665","_rn_":"Sample23"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -699,15 +711,15 @@ effects of interest within patient.</p>
 <h2><span class="header-section-number">2.5</span> Data exploration</h2>
 <p>An MDS plot shows the leading fold changes (differential expression)
 between the 23 samples.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMDS</span>(dge,<span class="at">labels=</span><span class="fu">paste</span>(<span class="fu">colData</span>(se)<span class="sc">$</span>treatment,<span class="fu">colData</span>(se)<span class="sc">$</span>time,<span class="fu">colData</span>(se)<span class="sc">$</span>patient,<span class="at">sep=</span><span class="st">&quot;-&quot;</span>),<span class="at">col=</span><span class="fu">as.double</span>(<span class="fu">colData</span>(se)<span class="sc">$</span>treatment))</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">plotMDS</span>(dge,<span class="at">labels=</span><span class="fu">paste</span>(<span class="fu">colData</span>(se)<span class="sc">$</span>treatment,<span class="fu">colData</span>(se)<span class="sc">$</span>time,<span class="fu">colData</span>(se)<span class="sc">$</span>patient,<span class="at">sep=</span><span class="st">&quot;-&quot;</span>),<span class="at">col=</span><span class="fu">as.double</span>(<span class="fu">colData</span>(se)<span class="sc">$</span>treatment))</span></code></pre></div>
 <p><img src="parathyroid_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <p>There is a very strong patient effect! To further assess the
 treatment effects we can make MDS plots per patient</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotMDS</span>(dge[,<span class="fu">colData</span>(se)<span class="sc">$</span>patient<span class="sc">==</span>i], <span class="at">col=</span><span class="fu">as.double</span>(<span class="fu">colData</span>(se)<span class="sc">$</span>treatment)[<span class="fu">colData</span>(se)<span class="sc">$</span>patient<span class="sc">==</span>i],</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="at">labels=</span><span class="fu">paste</span>(<span class="fu">colData</span>(se)<span class="sc">$</span>treatment[<span class="fu">colData</span>(se)<span class="sc">$</span>patient<span class="sc">==</span>i],</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>             <span class="fu">colData</span>(se)<span class="sc">$</span>time[<span class="fu">colData</span>(se)<span class="sc">$</span>patient<span class="sc">==</span>i],</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>             <span class="fu">colData</span>(se)<span class="sc">$</span>patient,<span class="at">sep=</span><span class="st">&quot;-&quot;</span>)[<span class="fu">colData</span>(se)<span class="sc">$</span>patient<span class="sc">==</span>i])</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="fu">plotMDS</span>(dge[,<span class="fu">colData</span>(se)<span class="sc">$</span>patient<span class="sc">==</span>i], <span class="at">col=</span><span class="fu">as.double</span>(<span class="fu">colData</span>(se)<span class="sc">$</span>treatment)[<span class="fu">colData</span>(se)<span class="sc">$</span>patient<span class="sc">==</span>i],</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="at">labels=</span><span class="fu">paste</span>(<span class="fu">colData</span>(se)<span class="sc">$</span>treatment[<span class="fu">colData</span>(se)<span class="sc">$</span>patient<span class="sc">==</span>i],</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>             <span class="fu">colData</span>(se)<span class="sc">$</span>time[<span class="fu">colData</span>(se)<span class="sc">$</span>patient<span class="sc">==</span>i],</span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>             <span class="fu">colData</span>(se)<span class="sc">$</span>patient,<span class="at">sep=</span><span class="st">&quot;-&quot;</span>)[<span class="fu">colData</span>(se)<span class="sc">$</span>patient<span class="sc">==</span>i])</span></code></pre></div>
 <p><img src="parathyroid_files/figure-html/unnamed-chunk-8-1.png" width="672" /><img src="parathyroid_files/figure-html/unnamed-chunk-8-2.png" width="672" /><img src="parathyroid_files/figure-html/unnamed-chunk-8-3.png" width="672" /><img src="parathyroid_files/figure-html/unnamed-chunk-8-4.png" width="672" /></p>
 </div>
 <div id="parameter-estimation" class="section level2" number="2.6">
@@ -771,28 +783,28 @@ DPN}= \beta_{OHT} - \beta_{DPN}\]</span> <span class="math display">\[
 DPN} -\log_2\text{FC}^\text{24h}_\text{OHT - DPN}= \beta_{OHT,t2} -
 \beta_{DPN,t2}
 \]</span></p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>dge <span class="ot">&lt;-</span> <span class="fu">estimateDisp</span>(dge, design)  </span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotBCV</span>(dge)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>dge <span class="ot">&lt;-</span> <span class="fu">estimateDisp</span>(dge, design)  </span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="fu">plotBCV</span>(dge)</span></code></pre></div>
 <p><img src="parathyroid_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>The quasi-negative binomial model can be fitted using the function
 <code>glmQLFit</code></p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">glmQLFit</span>(dge,design)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">glmQLFit</span>(dge,design)</span></code></pre></div>
 </div>
 <div id="contrasts" class="section level2" number="2.7">
 <h2><span class="header-section-number">2.7</span> Contrasts</h2>
 <p>We now implement all 9 contrasts of interest</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>L <span class="ot">&lt;-</span> msqrob2<span class="sc">::</span><span class="fu">makeContrast</span>(</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">&quot;treatmentDPN = 0&quot;</span>,</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;treatmentOHT = 0&quot;</span>,</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;treatmentOHT - treatmentDPN = 0&quot;</span>, </span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;treatmentDPN + time48h:treatmentDPN = 0&quot;</span>,</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;treatmentOHT + time48h:treatmentOHT = 0&quot;</span>,</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;treatmentOHT + time48h:treatmentOHT - treatmentDPN - time48h:treatmentDPN = 0&quot;</span>, </span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;time48h:treatmentDPN = 0&quot;</span>, </span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;time48h:treatmentOHT = 0&quot;</span>, </span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;time48h:treatmentOHT - time48h:treatmentDPN = 0&quot;</span>),</span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">parameterNames =</span> <span class="fu">colnames</span>(design))</span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>L</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>L <span class="ot">&lt;-</span> msqrob2<span class="sc">::</span><span class="fu">makeContrast</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">&quot;treatmentDPN = 0&quot;</span>,</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>      <span class="st">&quot;treatmentOHT = 0&quot;</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>      <span class="st">&quot;treatmentOHT - treatmentDPN = 0&quot;</span>, </span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>      <span class="st">&quot;treatmentDPN + time48h:treatmentDPN = 0&quot;</span>,</span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>      <span class="st">&quot;treatmentOHT + time48h:treatmentOHT = 0&quot;</span>,</span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a>      <span class="st">&quot;treatmentOHT + time48h:treatmentOHT - treatmentDPN - time48h:treatmentDPN = 0&quot;</span>, </span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a>      <span class="st">&quot;time48h:treatmentDPN = 0&quot;</span>, </span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a>      <span class="st">&quot;time48h:treatmentOHT = 0&quot;</span>, </span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a>      <span class="st">&quot;time48h:treatmentOHT - time48h:treatmentDPN = 0&quot;</span>),</span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a>    <span class="at">parameterNames =</span> <span class="fu">colnames</span>(design))</span>
+<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a>L</span></code></pre></div>
 <pre><code>##                      treatmentDPN treatmentOHT treatmentOHT - treatmentDPN
 ## (Intercept)                     0            0                           0
 ## time48h                         0            0                           0
@@ -894,12 +906,12 @@ distribution with <span class="math inline">\(df_{res}^{EB}\)</span>
 degrees of freedom.</p>
 <p>We perform all tests and loop over the columns of L for this
 purpose.</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>testsF <span class="ot">&lt;-</span> <span class="fu">apply</span>(L, <span class="dv">2</span>, <span class="cf">function</span>(fit,contrast) </span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">glmQLFTest</span>(fit,<span class="at">contrast=</span>contrast), </span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">fit =</span> fit)</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>topTablesF<span class="ot">&lt;-</span> <span class="fu">lapply</span>(testsF, topTags, <span class="at">n=</span><span class="fu">nrow</span>(dge))</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(topTablesF, <span class="cf">function</span>(x) <span class="fu">sum</span>(x<span class="sc">$</span>table<span class="sc">$</span>FDR <span class="sc">&lt;</span><span class="fl">0.05</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>testsF <span class="ot">&lt;-</span> <span class="fu">apply</span>(L, <span class="dv">2</span>, <span class="cf">function</span>(fit,contrast) </span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>    <span class="fu">glmQLFTest</span>(fit,<span class="at">contrast=</span>contrast), </span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>    <span class="at">fit =</span> fit)</span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>topTablesF<span class="ot">&lt;-</span> <span class="fu">lapply</span>(testsF, topTags, <span class="at">n=</span><span class="fu">nrow</span>(dge))</span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="fu">sapply</span>(topTablesF, <span class="cf">function</span>(x) <span class="fu">sum</span>(x<span class="sc">$</span>table<span class="sc">$</span>FDR <span class="sc">&lt;</span><span class="fl">0.05</span>))</span></code></pre></div>
 <pre><code>##                                                              treatmentDPN 
 ##                                                                         0 
 ##                                                              treatmentOHT 
@@ -927,26 +939,26 @@ significant interactions.</p>
 <h1><span class="header-section-number">3</span> Plots</h1>
 <div id="volcano-plots" class="section level2" number="3.1">
 <h2><span class="header-section-number">3.1</span> Volcano plots</h2>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(L))</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>   volcano<span class="ot">&lt;-</span> <span class="fu">ggplot</span>(topTablesF[[i]]<span class="sc">$</span>table,<span class="fu">aes</span>(<span class="at">x=</span>logFC,<span class="at">y=</span><span class="sc">-</span><span class="fu">log10</span>(PValue),<span class="at">color=</span>FDR <span class="sc">&lt;</span> <span class="fl">0.05</span>)) <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">&quot;black&quot;</span>,<span class="st">&quot;red&quot;</span>)) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="fu">paste</span>(<span class="st">&quot;contrast&quot;</span>,<span class="fu">names</span>(topTablesF)[i]))</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(volcano)</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(L))</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>{</span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a>   volcano<span class="ot">&lt;-</span> <span class="fu">ggplot</span>(topTablesF[[i]]<span class="sc">$</span>table,<span class="fu">aes</span>(<span class="at">x=</span>logFC,<span class="at">y=</span><span class="sc">-</span><span class="fu">log10</span>(PValue),<span class="at">color=</span>FDR <span class="sc">&lt;</span> <span class="fl">0.05</span>)) <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">&quot;black&quot;</span>,<span class="st">&quot;red&quot;</span>)) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="fu">paste</span>(<span class="st">&quot;contrast&quot;</span>,<span class="fu">names</span>(topTablesF)[i]))</span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="fu">print</span>(volcano)</span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>}</span></code></pre></div>
 <p><img src="parathyroid_files/figure-html/unnamed-chunk-13-1.png" width="672" /><img src="parathyroid_files/figure-html/unnamed-chunk-13-2.png" width="672" /><img src="parathyroid_files/figure-html/unnamed-chunk-13-3.png" width="672" /><img src="parathyroid_files/figure-html/unnamed-chunk-13-4.png" width="672" /><img src="parathyroid_files/figure-html/unnamed-chunk-13-5.png" width="672" /><img src="parathyroid_files/figure-html/unnamed-chunk-13-6.png" width="672" /><img src="parathyroid_files/figure-html/unnamed-chunk-13-7.png" width="672" /><img src="parathyroid_files/figure-html/unnamed-chunk-13-8.png" width="672" /><img src="parathyroid_files/figure-html/unnamed-chunk-13-9.png" width="672" /></p>
 </div>
 <div id="histograms-of-p-values" class="section level2" number="3.2">
 <h2><span class="header-section-number">3.2</span> Histograms of
 p-values</h2>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>histsP <span class="ot">&lt;-</span> <span class="fu">lapply</span>(topTablesF, <span class="cf">function</span>(x) </span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    x<span class="sc">$</span>table <span class="sc">%&gt;%</span> </span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>PValue)) <span class="sc">+</span> </span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_histogram</span>(<span class="at">breaks =</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">1</span>) ,<span class="at">col=</span><span class="dv">1</span>)</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(L)) </span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    histsP[[i]] <span class="ot">&lt;-</span> histsP[[i]] <span class="sc">+</span></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="fu">paste</span>(<span class="st">&quot;contrast&quot;</span>,<span class="fu">names</span>(topTablesF)[i]))</span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>histsP</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>histsP <span class="ot">&lt;-</span> <span class="fu">lapply</span>(topTablesF, <span class="cf">function</span>(x) </span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>    x<span class="sc">$</span>table <span class="sc">%&gt;%</span> </span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>        <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>PValue)) <span class="sc">+</span> </span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>        <span class="fu">geom_histogram</span>(<span class="at">breaks =</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">1</span>) ,<span class="at">col=</span><span class="dv">1</span>)</span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>    )</span>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a>    </span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(L)) </span>
+<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a>    histsP[[i]] <span class="ot">&lt;-</span> histsP[[i]] <span class="sc">+</span></span>
+<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="fu">paste</span>(<span class="st">&quot;contrast&quot;</span>,<span class="fu">names</span>(topTablesF)[i]))</span>
+<span id="cb21-10"><a href="#cb21-10" tabindex="-1"></a>histsP</span></code></pre></div>
 <pre><code>## $treatmentDPN</code></pre>
 <p><img src="parathyroid_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <pre><code>## 
@@ -976,25 +988,25 @@ p-values</h2>
 </div>
 <div id="heatmaps" class="section level2" number="3.3">
 <h2><span class="header-section-number">3.3</span> heatmaps</h2>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(L))</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>    sigID <span class="ot">&lt;-</span> topTablesF[[i]]<span class="sc">$</span>table <span class="sc">%&gt;%</span> </span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(FDR<span class="sc">&lt;</span><span class="fl">0.05</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>        rownames</span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">length</span>(sigID)<span class="sc">&gt;</span><span class="dv">0</span>)</span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">heatmap</span>(dge<span class="sc">$</span>counts[sigID,], <span class="at">main =</span> <span class="fu">colnames</span>(L)[i], <span class="at">cex.main=</span>.<span class="dv">2</span>)</span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(L))</span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a>{</span>
+<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>    sigID <span class="ot">&lt;-</span> topTablesF[[i]]<span class="sc">$</span>table <span class="sc">%&gt;%</span> </span>
+<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a>        <span class="fu">filter</span>(FDR<span class="sc">&lt;</span><span class="fl">0.05</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a>        rownames</span>
+<span id="cb31-6"><a href="#cb31-6" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">length</span>(sigID)<span class="sc">&gt;</span><span class="dv">0</span>)</span>
+<span id="cb31-7"><a href="#cb31-7" tabindex="-1"></a>        <span class="fu">heatmap</span>(dge<span class="sc">$</span>counts[sigID,], <span class="at">main =</span> <span class="fu">colnames</span>(L)[i], <span class="at">cex.main=</span>.<span class="dv">2</span>)</span>
+<span id="cb31-8"><a href="#cb31-8" tabindex="-1"></a>}</span></code></pre></div>
 <p><img src="parathyroid_files/figure-html/unnamed-chunk-15-1.png" width="672" /><img src="parathyroid_files/figure-html/unnamed-chunk-15-2.png" width="672" /></p>
 </div>
 </div>
 <div id="edger-traditional" class="section level1" number="4">
 <h1><span class="header-section-number">4</span> EdgeR traditional</h1>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>fitGlm <span class="ot">&lt;-</span> <span class="fu">glmFit</span>(dge,design)</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>testLRT2 <span class="ot">&lt;-</span> <span class="fu">apply</span>(L, <span class="dv">2</span>, <span class="cf">function</span>(fit,contrast) </span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">glmLRT</span>(fit,<span class="at">contrast=</span>contrast), </span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">fit =</span> fitGlm)</span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>topTablesLRT2 <span class="ot">&lt;-</span> <span class="fu">lapply</span>(testLRT2, topTags, <span class="at">n=</span><span class="fu">nrow</span>(dge))</span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(topTablesLRT2, <span class="cf">function</span>(x) <span class="fu">sum</span>(x<span class="sc">$</span>table<span class="sc">$</span>FDR <span class="sc">&lt;</span><span class="fl">0.05</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a>fitGlm <span class="ot">&lt;-</span> <span class="fu">glmFit</span>(dge,design)</span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a>testLRT2 <span class="ot">&lt;-</span> <span class="fu">apply</span>(L, <span class="dv">2</span>, <span class="cf">function</span>(fit,contrast) </span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a>    <span class="fu">glmLRT</span>(fit,<span class="at">contrast=</span>contrast), </span>
+<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a>    <span class="at">fit =</span> fitGlm)</span>
+<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a>topTablesLRT2 <span class="ot">&lt;-</span> <span class="fu">lapply</span>(testLRT2, topTags, <span class="at">n=</span><span class="fu">nrow</span>(dge))</span>
+<span id="cb32-6"><a href="#cb32-6" tabindex="-1"></a><span class="fu">sapply</span>(topTablesLRT2, <span class="cf">function</span>(x) <span class="fu">sum</span>(x<span class="sc">$</span>table<span class="sc">$</span>FDR <span class="sc">&lt;</span><span class="fl">0.05</span>))</span></code></pre></div>
 <pre><code>##                                                              treatmentDPN 
 ##                                                                         2 
 ##                                                              treatmentOHT 

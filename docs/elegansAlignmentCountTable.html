@@ -476,6 +476,15 @@ div.tocify {
     <li>
       <a href="sequencing_countData.html">2.  Working with count data and GLMs</a>
     </li>
+    <li>
+      <a href="sequencing_technicalDE.html">3.  Technical Details</a>
+    </li>
+    <li>
+      <a href="https://f1000research.com/articles/4-1521/v2">4. Starting from transcrip-level</a>
+    </li>
+    <li>
+      <a href="sequencing_singleCell.html">6. Intro to scRNA-seq</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -509,6 +518,12 @@ div.tocify {
     </li>
     <li>
       <a href="sequencingTutorial2_DE.html">2. Working with Count Data</a>
+    </li>
+    <li>
+      <a href="sequencingTutorial3_DE.html">4. Starting from transcript-level data</a>
+    </li>
+    <li>
+      <a href="scRNA-seq-Tutorial.html">6. Tutorial scRNA-seq</a>
     </li>
   </ul>
 </li>
@@ -650,59 +665,97 @@ slide courtesy Charlotte Soneson
 <span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="fu">list.files</span>()</span></code></pre></div>
 <pre><code>##  [1] &quot;_session-info.Rmd&quot;                              
 ##  [2] &quot;_site.yml&quot;                                      
-##  [3] &quot;about.Rmd&quot;                                      
-##  [4] &quot;airway_salmon_edgeR.Rmd&quot;                        
-##  [5] &quot;airway.rmd&quot;                                     
-##  [6] &quot;airwayMapping.Rmd&quot;                              
-##  [7] &quot;bibliography.bib&quot;                               
-##  [8] &quot;Caenorhabditis_elegans.WBcel235.108.gff3&quot;       
-##  [9] &quot;Caenorhabditis_elegans.WBcel235.dna.toplevel.fa&quot;
-## [10] &quot;cancer3x3.Rmd&quot;                                  
-## [11] &quot;cancer6x6.Rmd&quot;                                  
-## [12] &quot;cancer9x9.Rmd&quot;                                  
-## [13] &quot;cptac_maxLFQ.Rmd&quot;                               
-## [14] &quot;cptac_median.Rmd&quot;                               
-## [15] &quot;cptac_robust_gui.Rmd&quot;                           
-## [16] &quot;cptac_robust.Rmd&quot;                               
-## [17] &quot;docs&quot;                                           
-## [18] &quot;elegansAlignmentCountTable.Rmd&quot;                 
-## [19] &quot;elegansDE.Rmd&quot;                                  
-## [20] &quot;fastQfiles.txt&quot;                                 
-## [21] &quot;figs&quot;                                           
-## [22] &quot;figures&quot;                                        
-## [23] &quot;figures.tar.gz&quot;                                 
-## [24] &quot;footer.html&quot;                                    
-## [25] &quot;heartMainInteraction.Rmd&quot;                       
-## [26] &quot;images_sequencing&quot;                              
-## [27] &quot;index.Rmd&quot;                                      
-## [28] &quot;install.R&quot;                                      
-## [29] &quot;intro.Rmd&quot;                                      
-## [30] &quot;msqrob2.bib&quot;                                    
-## [31] &quot;multipleRegression_KPNA2.Rmd&quot;                   
-## [32] &quot;mzIDMsgfSwissprotExample.Rmd&quot;                   
-## [33] &quot;mzIDswissprotTutorial.Rmd&quot;                      
-## [34] &quot;mzIDuniprotTutorial.Rmd&quot;                        
-## [35] &quot;parathyroid.Rmd&quot;                                
-## [36] &quot;pda_blocking_wrapup.Rmd&quot;                        
-## [37] &quot;pda_quantification_inference.Rmd&quot;               
-## [38] &quot;pda_quantification_preprocessing.Rmd&quot;           
-## [39] &quot;pda_robustSummarisation_peptideModels.Rmd&quot;      
-## [40] &quot;pda_technicalDetails.Rmd&quot;                       
-## [41] &quot;pda_tutorialDesign.Rmd&quot;                         
-## [42] &quot;pda_tutorialPreprocessing.Rmd&quot;                  
-## [43] &quot;README.md&quot;                                      
-## [44] &quot;recapGeneralLinearModel.Rmd&quot;                    
-## [45] &quot;rmdBub&quot;                                         
-## [46] &quot;sequencing_countData.Rmd&quot;                       
-## [47] &quot;sequencing_intro.Rmd&quot;                           
-## [48] &quot;sequencing_technicalDE.Rmd&quot;                     
-## [49] &quot;sequencingTutorial1_mapping.Rmd&quot;                
-## [50] &quot;sequencingTutorial2_DE.Rmd&quot;                     
-## [51] &quot;sequencingTutorial3_DE.Rmd&quot;                     
-## [52] &quot;SGA-elegansFastq&quot;                               
-## [53] &quot;style.css&quot;                                      
-## [54] &quot;TargetDecoy.Rmd&quot;                                
-## [55] &quot;TargetDecoyTutorial.Rmd&quot;</code></pre>
+##  [3] &quot;about.html&quot;                                     
+##  [4] &quot;about.Rmd&quot;                                      
+##  [5] &quot;airway_files&quot;                                   
+##  [6] &quot;airway_salmon_edgeR_files&quot;                      
+##  [7] &quot;airway_salmon_edgeR.html&quot;                       
+##  [8] &quot;airway_salmon_edgeR.Rmd&quot;                        
+##  [9] &quot;airway.html&quot;                                    
+## [10] &quot;airway.rmd&quot;                                     
+## [11] &quot;airwayCountTable.csv&quot;                           
+## [12] &quot;airwayMapping.html&quot;                             
+## [13] &quot;airwayMapping.Rmd&quot;                              
+## [14] &quot;bibliography.bib&quot;                               
+## [15] &quot;Caenorhabditis_elegans.WBcel235.108.gff3&quot;       
+## [16] &quot;Caenorhabditis_elegans.WBcel235.dna.toplevel.fa&quot;
+## [17] &quot;cancer3x3_files&quot;                                
+## [18] &quot;cancer3x3.html&quot;                                 
+## [19] &quot;cancer3x3.pdf&quot;                                  
+## [20] &quot;cancer3x3.Rmd&quot;                                  
+## [21] &quot;cancer6x6_files&quot;                                
+## [22] &quot;cancer6x6.html&quot;                                 
+## [23] &quot;cancer6x6.pdf&quot;                                  
+## [24] &quot;cancer6x6.Rmd&quot;                                  
+## [25] &quot;cancer9x9_files&quot;                                
+## [26] &quot;cancer9x9.html&quot;                                 
+## [27] &quot;cancer9x9.pdf&quot;                                  
+## [28] &quot;cancer9x9.Rmd&quot;                                  
+## [29] &quot;cptac_maxLFQ_files&quot;                             
+## [30] &quot;cptac_maxLFQ.html&quot;                              
+## [31] &quot;cptac_maxLFQ.pdf&quot;                               
+## [32] &quot;cptac_maxLFQ.Rmd&quot;                               
+## [33] &quot;cptac_median_files&quot;                             
+## [34] &quot;cptac_median.html&quot;                              
+## [35] &quot;cptac_median.pdf&quot;                               
+## [36] &quot;cptac_median.Rmd&quot;                               
+## [37] &quot;cptac_robust_files&quot;                             
+## [38] &quot;cptac_robust_gui.html&quot;                          
+## [39] &quot;cptac_robust_gui.Rmd&quot;                           
+## [40] &quot;cptac_robust.html&quot;                              
+## [41] &quot;cptac_robust.pdf&quot;                               
+## [42] &quot;cptac_robust.Rmd&quot;                               
+## [43] &quot;docs&quot;                                           
+## [44] &quot;elegansAlignmentCountTable.Rmd&quot;                 
+## [45] &quot;elegansDE.Rmd&quot;                                  
+## [46] &quot;fastQfiles.txt&quot;                                 
+## [47] &quot;figs&quot;                                           
+## [48] &quot;figures&quot;                                        
+## [49] &quot;figures.tar.gz&quot;                                 
+## [50] &quot;footer.html&quot;                                    
+## [51] &quot;heartMainInteraction.Rmd&quot;                       
+## [52] &quot;Homo_sapiens.GRCh38.113.chromosome.1.gff3&quot;      
+## [53] &quot;Homo_sapiens.GRCh38.dna.chromosome.1.fa&quot;        
+## [54] &quot;Homo_sapiens.GRCh38.dna.chromosome.1.fa.fai&quot;    
+## [55] &quot;Homo_sapiens.GRCh38.dna.chromosome.1.fa.md5&quot;    
+## [56] &quot;Homo_sapiens.GRCh38.dna.chromosome.1.fa.Rhisat2&quot;
+## [57] &quot;images_sequencing&quot;                              
+## [58] &quot;index.Rmd&quot;                                      
+## [59] &quot;install.R&quot;                                      
+## [60] &quot;intro.Rmd&quot;                                      
+## [61] &quot;msqrob2.bib&quot;                                    
+## [62] &quot;multipleRegression_KPNA2.Rmd&quot;                   
+## [63] &quot;mzIDMsgfSwissprotExample.Rmd&quot;                   
+## [64] &quot;mzIDswissprotTutorial.Rmd&quot;                      
+## [65] &quot;mzIDuniprotTutorial.Rmd&quot;                        
+## [66] &quot;parathyroid.Rmd&quot;                                
+## [67] &quot;pda_blocking_wrapup.Rmd&quot;                        
+## [68] &quot;pda_quantification_inference.Rmd&quot;               
+## [69] &quot;pda_quantification_preprocessing.Rmd&quot;           
+## [70] &quot;pda_robustSummarisation_peptideModels.Rmd&quot;      
+## [71] &quot;pda_technicalDetails.Rmd&quot;                       
+## [72] &quot;pda_tutorialDesign.Rmd&quot;                         
+## [73] &quot;pda_tutorialPreprocessing.Rmd&quot;                  
+## [74] &quot;QuasR_log_b3d05cc4dab1.txt&quot;                     
+## [75] &quot;README.md&quot;                                      
+## [76] &quot;recapGeneralLinearModel.Rmd&quot;                    
+## [77] &quot;rmdBub&quot;                                         
+## [78] &quot;scRNA-seq-Tutorial.Rmd&quot;                         
+## [79] &quot;sequencing_countData.Rmd&quot;                       
+## [80] &quot;sequencing_intro.Rmd&quot;                           
+## [81] &quot;sequencing_singleCell.Rmd&quot;                      
+## [82] &quot;sequencing_technicalDE.Rmd&quot;                     
+## [83] &quot;sequencingTutorial1_mapping.Rmd&quot;                
+## [84] &quot;sequencingTutorial2_DE.Rmd&quot;                     
+## [85] &quot;sequencingTutorial3_DE.Rmd&quot;                     
+## [86] &quot;SGA-airwaySeqData&quot;                              
+## [87] &quot;SGA-airwaySeqData.zip&quot;                          
+## [88] &quot;SGA-elegansFastq&quot;                               
+## [89] &quot;singleCell_MacoskoWorkflow_blank.Rmd&quot;           
+## [90] &quot;site_libs&quot;                                      
+## [91] &quot;style.css&quot;                                      
+## [92] &quot;TargetDecoy.Rmd&quot;                                
+## [93] &quot;TargetDecoyTutorial.Rmd&quot;</code></pre>
 </div>
 <div id="align-reads-using-quasr-and-rhisat-package"
 class="section level3" number="2.3.3">
@@ -718,17 +771,15 @@ argument <code>paired = "no"</code>.</p></li>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>({</span>
 <span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>    <span class="fu">library</span>(QuasR)</span>
 <span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>    <span class="fu">library</span>(Rhisat2)</span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>})</span></code></pre></div>
-<pre><code>## Warning: package &#39;S4Vectors&#39; was built under R version 4.4.1</code></pre>
-<pre><code>## Warning: package &#39;IRanges&#39; was built under R version 4.4.1</code></pre>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>sampleFile <span class="ot">&lt;-</span> <span class="st">&quot;fastQfiles.txt&quot;</span></span>
-<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>genomeFile <span class="ot">&lt;-</span> <span class="st">&quot;Caenorhabditis_elegans.WBcel235.dna.toplevel.fa&quot;</span>    </span>
-<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>projElegans <span class="ot">&lt;-</span> <span class="fu">qAlign</span>(</span>
-<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>    <span class="at">sampleFile =</span> sampleFile, </span>
-<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>    <span class="at">genome =</span> genomeFile,</span>
-<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>    <span class="at">splicedAlignment =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>    <span class="at">aligner =</span> <span class="st">&quot;Rhisat2&quot;</span>,</span>
-<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>    <span class="at">paired=</span><span class="st">&quot;no&quot;</span>)</span></code></pre></div>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>})</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>sampleFile <span class="ot">&lt;-</span> <span class="st">&quot;fastQfiles.txt&quot;</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>genomeFile <span class="ot">&lt;-</span> <span class="st">&quot;Caenorhabditis_elegans.WBcel235.dna.toplevel.fa&quot;</span>    </span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>projElegans <span class="ot">&lt;-</span> <span class="fu">qAlign</span>(</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>    <span class="at">sampleFile =</span> sampleFile, </span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>    <span class="at">genome =</span> genomeFile,</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>    <span class="at">splicedAlignment =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>    <span class="at">aligner =</span> <span class="st">&quot;Rhisat2&quot;</span>,</span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>    <span class="at">paired=</span><span class="st">&quot;no&quot;</span>)</span></code></pre></div>
 <pre><code>## Creating .fai file for: /Users/lclement/Dropbox/statOmics/SGA/Caenorhabditis_elegans.WBcel235.dna.toplevel.fa</code></pre>
 <pre><code>## alignment files missing - need to:</code></pre>
 <pre><code>##     create alignment index for the genome</code></pre>
@@ -738,9 +789,9 @@ argument <code>paired = "no"</code>.</p></li>
 <pre><code>## Testing the compute nodes...OK
 ## Loading QuasR on the compute nodes...preparing to run on 1 nodes...done
 ## Available cores:
-## b055h043.ugent.be: 1
+## w039h001.wireless.ugent.be: 1
 ## Performing genomic alignments for 6 samples. See progress in the log file:
-## /Users/lclement/Dropbox/statOmics/SGA/QuasR_log_89194bdc6653.txt
+## /Users/lclement/Dropbox/statOmics/SGA/QuasR_log_b7ea48c99983.txt
 ## Genomic alignments have been created successfully</code></pre>
 </div>
 </div>
@@ -752,21 +803,21 @@ number="2.4.1">
 into database</h3>
 <p>The gff3 file contains information on the position of features,
 e.g. exons and genes, along the chromosome.</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>({</span>
-<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="fu">library</span>(GenomicFeatures)</span>
-<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="fu">library</span>(Rsamtools)</span>
-<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>})</span>
-<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>annotFile <span class="ot">&lt;-</span> <span class="st">&quot;Caenorhabditis_elegans.WBcel235.108.gff3&quot;</span></span>
-<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a></span>
-<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a><span class="co">#chrLen &lt;- scanFaIndex(genomeFile)</span></span>
-<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a></span>
-<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a><span class="co">#chrominfo &lt;- data.frame(chrom = as.character(seqnames(chrLen)),</span></span>
-<span id="cb20-10"><a href="#cb20-10" tabindex="-1"></a><span class="co">#                        length = width(chrLen),</span></span>
-<span id="cb20-11"><a href="#cb20-11" tabindex="-1"></a><span class="co">#                        is_circular = rep(FALSE, length(chrLen)))</span></span>
-<span id="cb20-12"><a href="#cb20-12" tabindex="-1"></a></span>
-<span id="cb20-13"><a href="#cb20-13" tabindex="-1"></a>txdb <span class="ot">&lt;-</span> <span class="fu">makeTxDbFromGFF</span>(<span class="at">file =</span> annotFile,</span>
-<span id="cb20-14"><a href="#cb20-14" tabindex="-1"></a>                        <span class="at">dataSource =</span> <span class="st">&quot;Ensembl&quot;</span>,</span>
-<span id="cb20-15"><a href="#cb20-15" tabindex="-1"></a>                        <span class="at">organism =</span> <span class="st">&quot;Caenorhabditis elegans&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>({</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="fu">library</span>(GenomicFeatures)</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="fu">library</span>(Rsamtools)</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>})</span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>annotFile <span class="ot">&lt;-</span> <span class="st">&quot;Caenorhabditis_elegans.WBcel235.108.gff3&quot;</span></span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="co">#chrLen &lt;- scanFaIndex(genomeFile)</span></span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a></span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="co">#chrominfo &lt;- data.frame(chrom = as.character(seqnames(chrLen)),</span></span>
+<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a><span class="co">#                        length = width(chrLen),</span></span>
+<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a><span class="co">#                        is_circular = rep(FALSE, length(chrLen)))</span></span>
+<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a></span>
+<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a>txdb <span class="ot">&lt;-</span> <span class="fu">makeTxDbFromGFF</span>(<span class="at">file =</span> annotFile,</span>
+<span id="cb17-14"><a href="#cb17-14" tabindex="-1"></a>                        <span class="at">dataSource =</span> <span class="st">&quot;Ensembl&quot;</span>,</span>
+<span id="cb17-15"><a href="#cb17-15" tabindex="-1"></a>                        <span class="at">organism =</span> <span class="st">&quot;Caenorhabditis elegans&quot;</span>)</span></code></pre></div>
 <pre><code>## Warning in call_fun_in_txdbmaker(&quot;makeTxDbFromGFF&quot;, ...): makeTxDbFromGFF() has moved to the txdbmaker package. Please call
 ##   txdbmaker::makeTxDbFromGFF() to get rid of this warning.</code></pre>
 <pre><code>## Import genomic features from the file as a GRanges object ... OK
@@ -788,11 +839,11 @@ e.g. exons and genes, along the chromosome.</p>
 table</h3>
 <p>With the qCount function we can count the overlap between the aligned
 reads and the genomic features of interest.</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>geneCounts <span class="ot">&lt;-</span> <span class="fu">qCount</span>(projElegans, txdb, <span class="at">reportLevel =</span> <span class="st">&quot;gene&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a>geneCounts <span class="ot">&lt;-</span> <span class="fu">qCount</span>(projElegans, txdb, <span class="at">reportLevel =</span> <span class="st">&quot;gene&quot;</span>)</span></code></pre></div>
 <pre><code>## extracting gene regions from TxDb...done
 ## counting alignments...done
 ## collapsing counts by query name...done</code></pre>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="fu">head</span>(geneCounts)</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="fu">head</span>(geneCounts)</span></code></pre></div>
 <pre><code>##                width SRR1532959 SRR1532960 SRR1532961 SRR1532962 SRR1532963
 ## WBGene00000001  1806        109         57        135         67        202
 ## WBGene00000002  1739          0          0          0          0          1
@@ -808,7 +859,7 @@ reads and the genomic features of interest.</p>
 ## WBGene00000005          0
 ## WBGene00000006          0</code></pre>
 <p>Save count table for future use.</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="fu">write.csv</span>(<span class="fu">as.data.frame</span>(geneCounts),<span class="at">file =</span> <span class="st">&quot;elegansCountTable.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="fu">write.csv</span>(<span class="fu">as.data.frame</span>(geneCounts),<span class="at">file =</span> <span class="st">&quot;elegansCountTable.csv&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 </div>
@@ -817,7 +868,7 @@ reads and the genomic features of interest.</p>
 <p>With respect to reproducibility, it is highly recommended to include
 a session info in your script so that readers of your output can see
 your particular setup of R.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
 <pre><code>## R version 4.4.0 RC (2024-04-16 r86468)
 ## Platform: aarch64-apple-darwin20
 ## Running under: macOS Big Sur 11.6
@@ -868,7 +919,7 @@ your particular setup of R.</p>
 ## [35] R6_2.5.1                    VariantAnnotation_1.50.0   
 ## [37] bslib_0.8.0                 stringi_1.8.4              
 ## [39] RColorBrewer_1.1-3          rtracklayer_1.64.0         
-## [41] jquerylib_0.1.4             Rcpp_1.0.13                
+## [41] jquerylib_0.1.4             Rcpp_1.0.13-1              
 ## [43] SummarizedExperiment_1.34.0 knitr_1.48                 
 ## [45] SGSeq_1.38.0                igraph_2.0.3               
 ## [47] Matrix_1.7-0                timechange_0.3.0           

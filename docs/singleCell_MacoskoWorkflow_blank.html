@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Koen Van den Berge" />
+
+<meta name="date" content="2020-11-16" />
+
+<title>scRNA-seq workflow: Macosko et al.</title>
+
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #204a87; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #8f5902; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #204a87; font-weight: bold; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SGA</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-chalkboard-teacher"></span>
+     
+    Lectures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">---- INTRODUCTION ----</li>
+    <li>
+      <a href="intro.html">1.1 Position</a>
+    </li>
+    <li>
+      <a href="recapGeneralLinearModel.html">1.2 Recap linear model</a>
+    </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="./figs/part1_ms_basics.pdf">1.1 MS Basics</a>
+    </li>
+    <li>
+      <a href="./figs/part1_ms_basics.pdf">1.2 Identification</a>
+    </li>
+    <li>
+      <a href="TargetDecoy.html">2.1 Identification - FDR - QC</a>
+    </li>
+    <li>
+      <a href="pda_quantification_preprocessing.html">2.2.1 Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_robustSummarisation_peptideModels.html">2.2.2 Wrap-up Preprocessing - Peptide-Level-Models</a>
+    </li>
+    <li>
+      <a href="pda_quantification_inference.html">2.3.1 Quantification - Differential Abundance Analysis</a>
+    </li>
+    <li>
+      <a href="pda_blocking_wrapup.html">2.3.2. Wrap-up DA - Blocking</a>
+    </li>
+    <li>
+      <a href="pda_technicalDetails.html">2.3.3. Technical Details</a>
+    </li>
+    <li class="dropdown-header">---- MODULE II RNA-seq ----</li>
+    <li>
+      <a href="sequencing_intro.html">1.  Introduction to RNA-seq</a>
+    </li>
+    <li>
+      <a href="sequencing_countData.html">2.  Working with count data and GLMs</a>
+    </li>
+    <li>
+      <a href="sequencing_technicalDE.html">3.  Technical Details</a>
+    </li>
+    <li>
+      <a href="https://f1000research.com/articles/4-1521/v2">4. Starting from transcrip-level</a>
+    </li>
+    <li>
+      <a href="sequencing_singleCell.html">6. Intro to scRNA-seq</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-laptop"></span>
+     
+    tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">---- INTRODUCTION ----</li>
+    <li>
+      <a href="multipleRegression_KPNA2.html">1 Intro KPNA2</a>
+    </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">1. Bioinformatics for Proteomics</a>
+    </li>
+    <li>
+      <a href="TargetDecoyTutorial.html">2.1. Target Decoy QC</a>
+    </li>
+    <li>
+      <a href="pda_tutorialPreprocessing.html">2.2. Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_tutorialDesign.html">2.3. Quantification - Design</a>
+    </li>
+    <li>
+      <a href="sequencingTutorial1_mapping.html">1. Read mapping</a>
+    </li>
+    <li>
+      <a href="sequencingTutorial2_DE.html">2. Working with Count Data</a>
+    </li>
+    <li>
+      <a href="sequencingTutorial3_DE.html">4. Starting from transcript-level data</a>
+    </li>
+    <li>
+      <a href="scRNA-seq-Tutorial.html">6. Tutorial scRNA-seq</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">scRNA-seq workflow: Macosko et al.</h1>
+<h4 class="author">Koen Van den Berge</h4>
+<h4 class="date">11/16/2020</h4>
+
+</div>
+
+
+<div id="import-data" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Import data</h1>
+<p>The <code>scRNAseq</code> package provides convenient access to
+several datasets. See the <a
+href="http://bioconductor.org/packages/release/data/experiment/html/scRNAseq.html">package
+Bioconductor page</a> for more information.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># install BiocManager package if not installed yet.</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co"># BiocManager is the package installer for Bioconductor software.</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">&quot;BiocManager&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>    <span class="fu">install.packages</span>(<span class="st">&quot;BiocManager&quot;</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co"># install packages if not yet installed.</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>pkgs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;SingleCellExperiment&quot;</span>, <span class="st">&quot;DropletUtils&quot;</span>, <span class="st">&quot;scRNAseq&quot;</span>, <span class="st">&quot;scater&quot;</span>, <span class="st">&quot;scuttle&quot;</span>, <span class="st">&quot;scran&quot;</span>, <span class="st">&quot;BiocSingular&quot;</span>, <span class="st">&quot;scDblFinder&quot;</span>, <span class="st">&quot;glmpca&quot;</span>, <span class="st">&quot;uwot&quot;</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>notInstalled <span class="ot">&lt;-</span> pkgs[<span class="sc">!</span>pkgs <span class="sc">%in%</span> <span class="fu">installed.packages</span>()[,<span class="dv">1</span>]]</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">length</span>(notInstalled) <span class="sc">&gt;</span> <span class="dv">0</span>){</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  BiocManager<span class="sc">::</span><span class="fu">install</span>(notInstalled)</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>}</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co"># Code below might ask you to create an ExperimentHub directory. </span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co"># Type &#39;yes&#39; and hit Enter, to allow this.</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(scRNAseq))</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>sce <span class="ot">&lt;-</span> <span class="fu">MacoskoRetinaData</span>()</span></code></pre></div>
+<pre><code>## see ?scRNAseq and browseVignettes(&#39;scRNAseq&#39;) for documentation</code></pre>
+<pre><code>## loading from cache</code></pre>
+<pre><code>## see ?scRNAseq and browseVignettes(&#39;scRNAseq&#39;) for documentation</code></pre>
+<pre><code>## loading from cache</code></pre>
+</div>
+<div id="a-singlecellexperiment-object" class="section level1"
+number="2">
+<h1><span class="header-section-number">2</span> A
+<code>SingleCellExperiment</code> object</h1>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>sce</span></code></pre></div>
+<pre><code>## class: SingleCellExperiment 
+## dim: 24658 49300 
+## metadata(0):
+## assays(1): counts
+## rownames(24658): KITL TMTC3 ... 1110059M19RIK GM20861
+## rowData names(0):
+## colnames(49300): r1_GGCCGCAGTCCG r1_CTTGTGCGGGAA ... p1_TAACGCGCTCCT
+##   p1_ATTCTTGTTCTT
+## colData names(2): cell.id cluster
+## reducedDimNames(0):
+## mainExpName: NULL
+## altExpNames(0):</code></pre>
+<div id="accessing-data-from-a-singlecellexperiment-object"
+class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Accessing data from a
+<code>SingleCellExperiment</code> object</h2>
+<p>Please see <a
+href="http://bioconductor.org/books/release/OSCA/data-infrastructure.html">Figure
+4.1 in OSCA</a> for an overview of a <code>SingleCellExperiment</code>
+object.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Data: assays</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">assays</span>(sce)</span></code></pre></div>
+<pre><code>## List of length 1
+## names(1): counts</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">assays</span>(sce)<span class="sc">$</span>counts[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
+<pre><code>## 5 x 5 sparse Matrix of class &quot;dgCMatrix&quot;
+##               r1_GGCCGCAGTCCG r1_CTTGTGCGGGAA r1_GCGCAACTGCTC r1_GATTGGGAGGCA
+## KITL                        .               .               1               .
+## TMTC3                       3               .               .               .
+## CEP290                      1               3               .               2
+## 4930430F08RIK               2               1               2               .
+## 1700017N19RIK               .               .               .               .
+##               r1_CCTCCTAGTTGG
+## KITL                        .
+## TMTC3                       2
+## CEP290                      1
+## 4930430F08RIK               1
+## 1700017N19RIK               .</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Feature metadata: rowData</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="fu">rowData</span>(sce) <span class="co"># empty for now</span></span></code></pre></div>
+<pre><code>## DataFrame with 24658 rows and 0 columns</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Cell metadata: colData</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="fu">colData</span>(sce)</span></code></pre></div>
+<pre><code>## DataFrame with 49300 rows and 2 columns
+##                         cell.id   cluster
+##                     &lt;character&gt; &lt;integer&gt;
+## r1_GGCCGCAGTCCG r1_GGCCGCAGTCCG         2
+## r1_CTTGTGCGGGAA r1_CTTGTGCGGGAA         2
+## r1_GCGCAACTGCTC r1_GCGCAACTGCTC         2
+## r1_GATTGGGAGGCA r1_GATTGGGAGGCA         2
+## r1_CCTCCTAGTTGG r1_CCTCCTAGTTGG        NA
+## ...                         ...       ...
+## p1_TCAAAAGCCGGG p1_TCAAAAGCCGGG        24
+## p1_ATTAAGTTCCAA p1_ATTAAGTTCCAA        34
+## p1_CTGTCTGAGACC p1_CTGTCTGAGACC         2
+## p1_TAACGCGCTCCT p1_TAACGCGCTCCT        24
+## p1_ATTCTTGTTCTT p1_ATTCTTGTTCTT        24</code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># Reduced dimensions: reducedDims</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="fu">reducedDims</span>(sce) <span class="co"># empty for now</span></span></code></pre></div>
+<pre><code>## List of length 0
+## names(0):</code></pre>
+</div>
+<div id="creating-a-new-singlecellexperiment-object"
+class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Creating a new
+<code>SingleCellExperiment</code> object</h2>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>sceNew <span class="ot">&lt;-</span> <span class="fu">SingleCellExperiment</span>(<span class="at">assays =</span> <span class="fu">list</span>(<span class="at">counts =</span> <span class="fu">assays</span>(sce)<span class="sc">$</span>counts))</span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>sceNew</span></code></pre></div>
+<pre><code>## class: SingleCellExperiment 
+## dim: 24658 49300 
+## metadata(0):
+## assays(1): counts
+## rownames(24658): KITL TMTC3 ... 1110059M19RIK GM20861
+## rowData names(0):
+## colnames(49300): r1_GGCCGCAGTCCG r1_CTTGTGCGGGAA ... p1_TAACGCGCTCCT
+##   p1_ATTCTTGTTCTT
+## colData names(0):
+## reducedDimNames(0):
+## mainExpName: NULL
+## altExpNames(0):</code></pre>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="fu">rm</span>(sceNew)</span></code></pre></div>
+</div>
+<div id="storing-metadata-in-a-singlecellexperiment-object"
+class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Storing (meta)data in
+a <code>SingleCellExperiment</code> object</h2>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>fakeGeneNames <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;gene&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(sce))</span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="fu">rowData</span>(sce)<span class="sc">$</span>fakeName <span class="ot">&lt;-</span> fakeGeneNames</span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">rowData</span>(sce))</span></code></pre></div>
+<pre><code>## DataFrame with 6 rows and 1 column
+##                  fakeName
+##               &lt;character&gt;
+## KITL                gene1
+## TMTC3               gene2
+## CEP290              gene3
+## 4930430F08RIK       gene4
+## 1700017N19RIK       gene5
+## MGAT4C              gene6</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="co"># Remove again by setting to NULL</span></span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a><span class="fu">rowData</span>(sce)<span class="sc">$</span>fakeName <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a><span class="fu">assays</span>(sce)<span class="sc">$</span>logCounts <span class="ot">&lt;-</span> <span class="fu">log1p</span>(<span class="fu">assays</span>(sce)<span class="sc">$</span>counts)</span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a><span class="fu">assays</span>(sce)</span></code></pre></div>
+<pre><code>## List of length 2
+## names(2): counts logCounts</code></pre>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="fu">assays</span>(sce)<span class="sc">$</span>logCounts[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
+<pre><code>## 5 x 5 sparse Matrix of class &quot;dgCMatrix&quot;
+##               r1_GGCCGCAGTCCG r1_CTTGTGCGGGAA r1_GCGCAACTGCTC r1_GATTGGGAGGCA
+## KITL                .               .               0.6931472        .       
+## TMTC3               1.3862944       .               .                .       
+## CEP290              0.6931472       1.3862944       .                1.098612
+## 4930430F08RIK       1.0986123       0.6931472       1.0986123        .       
+## 1700017N19RIK       .               .               .                .       
+##               r1_CCTCCTAGTTGG
+## KITL                .        
+## TMTC3               1.0986123
+## CEP290              0.6931472
+## 4930430F08RIK       0.6931472
+## 1700017N19RIK       .</code></pre>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="fu">assays</span>(sce)<span class="sc">$</span>logCounts <span class="ot">&lt;-</span> <span class="cn">NULL</span></span></code></pre></div>
+</div>
+</div>
+<div id="filtering-non-informative-genes" class="section level1"
+number="3">
+<h1><span class="header-section-number">3</span> Filtering
+non-informative genes</h1>
+</div>
+<div id="quality-control" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Quality control</h1>
+<div id="calculate-qc-variables" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Calculate QC
+variables</h2>
+<p>Note that the character string “^MT-” in the rownames of the sce
+object indicates mitochondrial genes.</p>
+</div>
+<div id="eda" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> EDA</h2>
+<p>High-quality cells should have many features expressed, and a low
+contribution of mitochondrial genes. Here, we see that several cells
+have a very low number of expressed genes, and where most of the
+molecules are derived from mitochondrial genes. This indicates likely
+damaged cells, presumably because of loss of cytoplasmic RNA from
+perforated cells, so we’d want to remove these for the downstream
+analysis.</p>
+</div>
+<div id="qc-using-adaptive-thresholds" class="section level2"
+number="4.3">
+<h2><span class="header-section-number">4.3</span> QC using adaptive
+thresholds</h2>
+<p>Below, we remove cells that are outlying with respect to</p>
+<ol style="list-style-type: decimal">
+<li>A low sequencing depth (number of UMIs);</li>
+<li>A low number of genes detected;</li>
+<li>A high percentage of reads from mitochondrial genes.</li>
+</ol>
+<p>Also make plots to assess the impact of the removal of .</p>
+</div>
+<div id="identifying-and-removing-empty-droplets" class="section level2"
+number="4.4">
+<h2><span class="header-section-number">4.4</span> Identifying and
+removing empty droplets</h2>
+<p>Note that the removal of cells with low sequencing depth using the
+adaptive threshold procedure above is a way of removing empty droplets.
+Other approaches are possible, e.g., removing cells by statistical
+testing using <code>emtpyDrops</code>. This does require us to specify a
+lower bound on the total number of UMIs, below which all cells are
+considered to correspond to empty droplets. This lower bound may not be
+trivial to derive, but the <code>barcodeRanks</code> function can be
+useful to identify an elbow/knee point.</p>
+</div>
+<div id="identifying-and-removing-doublets" class="section level2"
+number="4.5">
+<h2><span class="header-section-number">4.5</span> Identifying and
+removing doublets</h2>
+<p>We will use <a
+href="https://bioconductor.org/packages/3.14/bioc/html/scDblFinder.html">scDblFinder</a>
+to detect doublet cells.</p>
+</div>
+</div>
+<div id="normalization" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Normalization</h1>
+<p>For normalization, the size factors <span
+class="math inline">\(s_i\)</span> computed here are simply scaled
+library sizes: <span class="math display">\[ N_i = \sum_g Y_{gi}
+\]</span> <span class="math display">\[ s_i = N_i / \bar{N}_i
+\]</span></p>
+</div>
+<div id="feature-selection" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Feature selection</h1>
+</div>
+<div id="dimension-reduction" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> Dimension
+reduction</h1>
+<p>Note that, below, we color the cells using the known, true cell type
+label as defined in the metadata, to empirically evaluate the dimension
+reduction. In reality, we don’t know this yet at this stage.</p>
+<div id="linear-dimension-reduction-pca" class="section level2"
+number="7.1">
+<h2><span class="header-section-number">7.1</span> Linear dimension
+reduction: PCA</h2>
+<p>We are able to recover quite some structure. However, many cell
+populations remain obscure, and the plot is overcrowded.</p>
+<div id="pca-without-feature-selection" class="section level3"
+number="7.1.1">
+<h3><span class="header-section-number">7.1.1</span> PCA without feature
+selection</h3>
+</div>
+</div>
+<div id="a-generalization-of-pca-for-exponential-family-distributions."
+class="section level2" number="7.2">
+<h2><span class="header-section-number">7.2</span> A generalization of
+PCA for exponential family distributions.</h2>
+</div>
+<div id="non-linear-dimension-reduction-umap" class="section level2"
+number="7.3">
+<h2><span class="header-section-number">7.3</span> Non-linear dimension
+reduction: UMAP</h2>
+</div>
+</div>
+<div id="clustering" class="section level1" number="8">
+<h1><span class="header-section-number">8</span> Clustering</h1>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="co"># Build a shared nearest-neighbor graph from PCA space</span></span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a><span class="co">#g &lt;- buildSNNGraph(sce, use.dimred = &#39;PCA&#39;)</span></span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a><span class="co"># Louvain clustering on the SNN graph, and add to sce</span></span>
+<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a><span class="co">#colData(sce)$label &lt;- factor(igraph::cluster_louvain(g)$membership)</span></span>
+<span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" tabindex="-1"></a><span class="co"># Visualization.</span></span>
+<span id="cb28-8"><a href="#cb28-8" tabindex="-1"></a><span class="co">#plotUMAP(sce, colour_by=&quot;label&quot;)</span></span></code></pre></div>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAnc2NSTkEtc2VxIHdvcmtmbG93OiBNYWNvc2tvIGV0IGFsLicKYXV0aG9yOiAiS29lbiBWYW4gZGVuIEJlcmdlIgpkYXRlOiAiMTEvMTYvMjAyMCIKb3V0cHV0OiAKICBodG1sX2RvY3VtZW50OgogICAgdG9jOiB0cnVlCiAgICB0b2NfZmxvYXQ6IHRydWUKLS0tCgojIEltcG9ydCBkYXRhCgpUaGUgYHNjUk5Bc2VxYCBwYWNrYWdlIHByb3ZpZGVzIGNvbnZlbmllbnQgYWNjZXNzIHRvIHNldmVyYWwgZGF0YXNldHMuIFNlZSB0aGUgW3BhY2thZ2UgQmlvY29uZHVjdG9yIHBhZ2VdKGh0dHA6Ly9iaW9jb25kdWN0b3Iub3JnL3BhY2thZ2VzL3JlbGVhc2UvZGF0YS9leHBlcmltZW50L2h0bWwvc2NSTkFzZXEuaHRtbCkgZm9yIG1vcmUgaW5mb3JtYXRpb24uCgpgYGB7cn0KIyBpbnN0YWxsIEJpb2NNYW5hZ2VyIHBhY2thZ2UgaWYgbm90IGluc3RhbGxlZCB5ZXQuCiMgQmlvY01hbmFnZXIgaXMgdGhlIHBhY2thZ2UgaW5zdGFsbGVyIGZvciBCaW9jb25kdWN0b3Igc29mdHdhcmUuCmlmICghcmVxdWlyZU5hbWVzcGFjZSgiQmlvY01hbmFnZXIiLCBxdWlldGx5ID0gVFJVRSkpCiAgICBpbnN0YWxsLnBhY2thZ2VzKCJCaW9jTWFuYWdlciIpCgojIGluc3RhbGwgcGFja2FnZXMgaWYgbm90IHlldCBpbnN0YWxsZWQuCnBrZ3MgPC0gYygiU2luZ2xlQ2VsbEV4cGVyaW1lbnQiLCAiRHJvcGxldFV0aWxzIiwgInNjUk5Bc2VxIiwgInNjYXRlciIsICJzY3V0dGxlIiwgInNjcmFuIiwgIkJpb2NTaW5ndWxhciIsICJzY0RibEZpbmRlciIsICJnbG1wY2EiLCAidXdvdCIpCm5vdEluc3RhbGxlZCA8LSBwa2dzWyFwa2dzICVpbiUgaW5zdGFsbGVkLnBhY2thZ2VzKClbLDFdXQppZihsZW5ndGgobm90SW5zdGFsbGVkKSA+IDApewogIEJpb2NNYW5hZ2VyOjppbnN0YWxsKG5vdEluc3RhbGxlZCkKfQoKIyBDb2RlIGJlbG93IG1pZ2h0IGFzayB5b3UgdG8gY3JlYXRlIGFuIEV4cGVyaW1lbnRIdWIgZGlyZWN0b3J5LiAKIyBUeXBlICd5ZXMnIGFuZCBoaXQgRW50ZXIsIHRvIGFsbG93IHRoaXMuCnN1cHByZXNzUGFja2FnZVN0YXJ0dXBNZXNzYWdlcyhsaWJyYXJ5KHNjUk5Bc2VxKSkKc2NlIDwtIE1hY29za29SZXRpbmFEYXRhKCkKYGBgCgojIEEgYFNpbmdsZUNlbGxFeHBlcmltZW50YCBvYmplY3QKCgpgYGB7cn0Kc2NlCmBgYAoKIyMgQWNjZXNzaW5nIGRhdGEgZnJvbSBhIGBTaW5nbGVDZWxsRXhwZXJpbWVudGAgb2JqZWN0CgpQbGVhc2Ugc2VlIFtGaWd1cmUgNC4xIGluIE9TQ0FdKGh0dHA6Ly9iaW9jb25kdWN0b3Iub3JnL2Jvb2tzL3JlbGVhc2UvT1NDQS9kYXRhLWluZnJhc3RydWN0dXJlLmh0bWwpIGZvciBhbiBvdmVydmlldyBvZiBhIGBTaW5nbGVDZWxsRXhwZXJpbWVudGAgb2JqZWN0LgoKYGBge3J9CiMgRGF0YTogYXNzYXlzCmFzc2F5cyhzY2UpCmFzc2F5cyhzY2UpJGNvdW50c1sxOjUsIDE6NV0KCiMgRmVhdHVyZSBtZXRhZGF0YTogcm93RGF0YQpyb3dEYXRhKHNjZSkgIyBlbXB0eSBmb3Igbm93CgojIENlbGwgbWV0YWRhdGE6IGNvbERhdGEKY29sRGF0YShzY2UpCgojIFJlZHVjZWQgZGltZW5zaW9uczogcmVkdWNlZERpbXMKcmVkdWNlZERpbXMoc2NlKSAjIGVtcHR5IGZvciBub3cKYGBgCgojIyBDcmVhdGluZyBhIG5ldyBgU2luZ2xlQ2VsbEV4cGVyaW1lbnRgIG9iamVjdAoKYGBge3J9CnNjZU5ldyA8LSBTaW5nbGVDZWxsRXhwZXJpbWVudChhc3NheXMgPSBsaXN0KGNvdW50cyA9IGFzc2F5cyhzY2UpJGNvdW50cykpCnNjZU5ldwoKcm0oc2NlTmV3KQpgYGAKCiMjIFN0b3JpbmcgKG1ldGEpZGF0YSBpbiBhIGBTaW5nbGVDZWxsRXhwZXJpbWVudGAgb2JqZWN0CgpgYGB7cn0KZmFrZUdlbmVOYW1lcyA8LSBwYXN0ZTAoImdlbmUiLCAxOm5yb3coc2NlKSkKcm93RGF0YShzY2UpJGZha2VOYW1lIDwtIGZha2VHZW5lTmFtZXMKaGVhZChyb3dEYXRhKHNjZSkpCiMgUmVtb3ZlIGFnYWluIGJ5IHNldHRpbmcgdG8gTlVMTApyb3dEYXRhKHNjZSkkZmFrZU5hbWUgPC0gTlVMTAoKYXNzYXlzKHNjZSkkbG9nQ291bnRzIDwtIGxvZzFwKGFzc2F5cyhzY2UpJGNvdW50cykKYXNzYXlzKHNjZSkKYXNzYXlzKHNjZSkkbG9nQ291bnRzWzE6NSwgMTo1XQphc3NheXMoc2NlKSRsb2dDb3VudHMgPC0gTlVMTApgYGAKCiMgRmlsdGVyaW5nIG5vbi1pbmZvcm1hdGl2ZSBnZW5lcwoKCiMgUXVhbGl0eSBjb250cm9sCgojIyBDYWxjdWxhdGUgUUMgdmFyaWFibGVzCgpOb3RlIHRoYXQgdGhlIGNoYXJhY3RlciBzdHJpbmcgIl5NVC0iIGluIHRoZSByb3duYW1lcyBvZiB0aGUgc2NlIG9iamVjdCBpbmRpY2F0ZXMgbWl0b2Nob25kcmlhbCBnZW5lcy4gCgojIyBFREEKCkhpZ2gtcXVhbGl0eSBjZWxscyBzaG91bGQgaGF2ZSBtYW55IGZlYXR1cmVzIGV4cHJlc3NlZCwgYW5kIGEgbG93IGNvbnRyaWJ1dGlvbiBvZiBtaXRvY2hvbmRyaWFsIGdlbmVzLiBIZXJlLCB3ZSBzZWUgdGhhdCBzZXZlcmFsIGNlbGxzIGhhdmUgYSB2ZXJ5IGxvdyBudW1iZXIgb2YgZXhwcmVzc2VkIGdlbmVzLCBhbmQgd2hlcmUgbW9zdCBvZiB0aGUgbW9sZWN1bGVzIGFyZSBkZXJpdmVkIGZyb20gbWl0b2Nob25kcmlhbCBnZW5lcy4gVGhpcyBpbmRpY2F0ZXMgbGlrZWx5IGRhbWFnZWQgY2VsbHMsIHByZXN1bWFibHkgYmVjYXVzZSBvZiBsb3NzIG9mIGN5dG9wbGFzbWljIFJOQSBmcm9tIHBlcmZvcmF0ZWQgY2VsbHMsIHNvIHdlJ2Qgd2FudCB0byByZW1vdmUgdGhlc2UgZm9yIHRoZSBkb3duc3RyZWFtIGFuYWx5c2lzLgoKCiMjIFFDIHVzaW5nIGFkYXB0aXZlIHRocmVzaG9sZHMKCkJlbG93LCB3ZSByZW1vdmUgY2VsbHMgdGhhdCBhcmUgb3V0bHlpbmcgd2l0aCByZXNwZWN0IHRvCgogMS4gQSBsb3cgc2VxdWVuY2luZyBkZXB0aCAobnVtYmVyIG9mIFVNSXMpOwogMi4gQSBsb3cgbnVtYmVyIG9mIGdlbmVzIGRldGVjdGVkOwogMy4gQSBoaWdoIHBlcmNlbnRhZ2Ugb2YgcmVhZHMgZnJvbSBtaXRvY2hvbmRyaWFsIGdlbmVzLgoKQWxzbyBtYWtlIHBsb3RzIHRvIGFzc2VzcyB0aGUgaW1wYWN0IG9mIHRoZSByZW1vdmFsIG9mIC4gCgoKIyMgSWRlbnRpZnlpbmcgYW5kIHJlbW92aW5nIGVtcHR5IGRyb3BsZXRzCgpOb3RlIHRoYXQgdGhlIHJlbW92YWwgb2YgY2VsbHMgd2l0aCBsb3cgc2VxdWVuY2luZyBkZXB0aCB1c2luZyB0aGUgYWRhcHRpdmUgdGhyZXNob2xkIHByb2NlZHVyZSBhYm92ZSBpcyBhIHdheSBvZiByZW1vdmluZyBlbXB0eSBkcm9wbGV0cy4gCk90aGVyIGFwcHJvYWNoZXMgYXJlIHBvc3NpYmxlLCBlLmcuLCByZW1vdmluZyBjZWxscyBieSBzdGF0aXN0aWNhbCB0ZXN0aW5nIHVzaW5nIGBlbXRweURyb3BzYC4KVGhpcyBkb2VzIHJlcXVpcmUgdXMgdG8gc3BlY2lmeSBhIGxvd2VyIGJvdW5kIG9uIHRoZSB0b3RhbCBudW1iZXIgb2YgVU1JcywgYmVsb3cgd2hpY2ggYWxsIGNlbGxzIGFyZSBjb25zaWRlcmVkIHRvIGNvcnJlc3BvbmQgdG8gZW1wdHkgZHJvcGxldHMuClRoaXMgbG93ZXIgYm91bmQgbWF5IG5vdCBiZSB0cml2aWFsIHRvIGRlcml2ZSwgYnV0IHRoZSBgYmFyY29kZVJhbmtzYCBmdW5jdGlvbiBjYW4gYmUgdXNlZnVsIHRvIGlkZW50aWZ5IGFuIGVsYm93L2tuZWUgcG9pbnQuCgoKIyMgSWRlbnRpZnlpbmcgYW5kIHJlbW92aW5nIGRvdWJsZXRzCgpXZSB3aWxsIHVzZSBbc2NEYmxGaW5kZXJdKGh0dHBzOi8vYmlvY29uZHVjdG9yLm9yZy9wYWNrYWdlcy8zLjE0L2Jpb2MvaHRtbC9zY0RibEZpbmRlci5odG1sKSB0byBkZXRlY3QgZG91YmxldCBjZWxscy4KCgoKCiMgTm9ybWFsaXphdGlvbgoKRm9yIG5vcm1hbGl6YXRpb24sIHRoZSBzaXplIGZhY3RvcnMgJHNfaSQgY29tcHV0ZWQgaGVyZSBhcmUgc2ltcGx5IHNjYWxlZCBsaWJyYXJ5IHNpemVzOgpcWyBOX2kgPSBcc3VtX2cgWV97Z2l9IFxdClxbIHNfaSA9IE5faSAvIFxiYXJ7Tn1faSBcXQoKIyBGZWF0dXJlIHNlbGVjdGlvbgoKCiMgRGltZW5zaW9uIHJlZHVjdGlvbgoKTm90ZSB0aGF0LCBiZWxvdywgd2UgY29sb3IgdGhlIGNlbGxzIHVzaW5nIHRoZSBrbm93biwgdHJ1ZSBjZWxsIHR5cGUgbGFiZWwgYXMgZGVmaW5lZCBpbiB0aGUgbWV0YWRhdGEsIHRvIGVtcGlyaWNhbGx5IGV2YWx1YXRlIHRoZSBkaW1lbnNpb24gcmVkdWN0aW9uLiBJbiByZWFsaXR5LCB3ZSBkb24ndCBrbm93IHRoaXMgeWV0IGF0IHRoaXMgc3RhZ2UuCgojIyBMaW5lYXIgZGltZW5zaW9uIHJlZHVjdGlvbjogUENBCgpXZSBhcmUgYWJsZSB0byByZWNvdmVyIHF1aXRlIHNvbWUgc3RydWN0dXJlLiAKSG93ZXZlciwgbWFueSBjZWxsIHBvcHVsYXRpb25zIHJlbWFpbiBvYnNjdXJlLCBhbmQgdGhlIHBsb3QgaXMgb3ZlcmNyb3dkZWQuCgoKIyMjIFBDQSB3aXRob3V0IGZlYXR1cmUgc2VsZWN0aW9uCgoKIyMgQSBnZW5lcmFsaXphdGlvbiBvZiBQQ0EgZm9yIGV4cG9uZW50aWFsIGZhbWlseSBkaXN0cmlidXRpb25zLgoKCgoKIyMgTm9uLWxpbmVhciBkaW1lbnNpb24gcmVkdWN0aW9uOiBVTUFQCgoKIyBDbHVzdGVyaW5nCgpgYGB7cn0KIyBCdWlsZCBhIHNoYXJlZCBuZWFyZXN0LW5laWdoYm9yIGdyYXBoIGZyb20gUENBIHNwYWNlCiNnIDwtIGJ1aWxkU05OR3JhcGgoc2NlLCB1c2UuZGltcmVkID0gJ1BDQScpCgojIExvdXZhaW4gY2x1c3RlcmluZyBvbiB0aGUgU05OIGdyYXBoLCBhbmQgYWRkIHRvIHNjZQojY29sRGF0YShzY2UpJGxhYmVsIDwtIGZhY3RvcihpZ3JhcGg6OmNsdXN0ZXJfbG91dmFpbihnKSRtZW1iZXJzaGlwKQoKIyBWaXN1YWxpemF0aW9uLgojcGxvdFVNQVAoc2NlLCBjb2xvdXJfYnk9ImxhYmVsIikKYGBgCg==</div>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("singleCell_MacoskoWorkflow_blank.Rmd");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
