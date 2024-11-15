@@ -977,11 +977,15 @@ qplot(
   xlab("Patient")+
   ylab("libsize (million reads)")
 ```
+
 ```{r}
-ma2Samp <- function(countMx) {
+ma2Samp <- function(countMx,libSize=NULL) {
 stopifnot("`countMx` is not a matrix with two columns" = ncol(countMx) == 2)
 A <- countMx %>% log2 %>% rowMeans
-M <- countMx %>% log2 %>% apply(.,1,diff)
+if(is.null(libSize)) 
+  M <- countMx %>% log2 %>% apply(.,1,diff) 
+else 
+  M <- countMx %>% log2 %>% apply(.,1,diff) - libSize %>% log2 %>% diff
 w <- countMx[,1]==min(countMx[,1]) | countMx[,2]==min(countMx[,2])
 if (any(w)) {
             A[w] <- runif(sum(w), min = -1, max = .1)
@@ -994,7 +998,8 @@ MAplot <- qplot(A, M, col=w) +
   ylab("M: log2 Fold Change")
 
 MAplot +
-  geom_abline(intercept=0,slope=0,col="red")
+  geom_abline(intercept=0,slope=0,col="blue") +
+  geom_abline(intercept=median(M[!w],na.rm=TRUE),slope=0,col="red")
 }
 ```
 
@@ -1029,6 +1034,13 @@ $$
   \right.
   $$
   
+
+```{r}
+libSize <- colSums(assay(se))
+plots2 <- apply(pairComb,2,function(x) ma2Samp(assay(se)[,x],libSize = libSize[x]) + ggtitle(paste("samples",x[2],"vs", x[1])))
+do.call("grid.arrange",c(plots2,ncol=3))
+```
+
 ## TMM method (default of `edgeR`)
 
 [Robinson and Oshlack (2010). Genome Biology](https://genomebiology.biomedcentral.com/articles/10.1186/gb-2010-11-3-r25)
@@ -1073,10 +1085,11 @@ We see that all MD-plots are now nicely centered around a log-fold-change of zer
 ```{r}
 ## normalize
 effLibSize <- dge$samples$lib.size * dge$samples$norm.factors
-normCountTMM <- sweep(assays(se)$counts, 2, FUN="/", effLibSize)
+#normCountTMM <- sweep(assays(se)$counts, 2, FUN="/", effLibSize)
 
-plotsNorm <- apply(pairComb,2,function(x) ma2Samp(normCountTMM[,x]) + ggtitle(paste("samples",x[2],"vs", x[1])))
-do.call("grid.arrange",c(plots,ncol=3))
+plotsNorm <- apply(pairComb,2,function(x) 
+  ma2Samp(assays(se)$counts[,x], effLibSize[x]) + ggtitle(paste("samples",x[2],"vs", x[1])))
+do.call("grid.arrange",c(plotsNorm,ncol=3))
 ```
 
 
