@@ -1,0 +1,644 @@
+---
+title: "Proteomics data analysis: heart _ HW"
+author: "Lieven Clement"
+date: "statOmics, Ghent University (https://statomics.github.io)"
+output:
+    html_document:
+      code_download: true
+      theme: cosmo
+      toc: true
+      toc_float: true
+      highlight: tango
+      number_sections: true
+---
+# Background
+Researchers have assessed the proteome in different regions of the heart for 3 patients (identifiers 3, 4, and 8). For each patient they sampled the left atrium (LA), right atrium (RA), left ventricle (LV) and the right ventricle (RV). The data are a small subset of the public dataset PXD006675 on PRIDE.
+
+Suppose that researchers are mainly interested in comparing the ventricular to the atrial proteome. Particularly, they would like to compare the left atrium to the left ventricle, the right atrium to the right ventricle, the average ventricular vs atrial proteome and if ventricular vs atrial proteome shifts differ between left and right heart region.
+
+
+# Data
+
+We first import the peptides.txt file. This is the file that contains your peptide-level intensities. For a MaxQuant search [6], this peptides.txt file can be found by default in the "path_to_raw_files/combined/txt/" folder from the MaxQuant output, with "path_to_raw_files" the folder where raw files were saved. In this tutorial, we will use a MaxQuant peptides file from MaxQuant that can be found in the data tree of the SGA2020 github repository https://github.com/statOmics/SGA2020/tree/data/quantification/heart .
+
+To import the data we use the `QFeatures` package.
+
+We generate the object peptideRawFile with the path to the peptideRaws.txt file.
+Using the `grepEcols` function, we find the columns that contain the expression
+data of the peptideRaws in the peptideRaws.txt file.
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(limma)
+library(QFeatures)
+library(msqrob2)
+library(plotly)
+
+peptidesFile <- "https://raw.githubusercontent.com/statOmics/PDA21/data/quantification/heart/peptides.txt"
+
+ecols <- grep("Intensity\\.", names(read.delim(peptidesFile)))
+
+pe <- readQFeatures(
+  assayData = read.delim(peptidesFile),
+  fnames = 1,
+  quantCols =  ecols,
+  name = "peptideRaw")
+
+pe
+pe[["peptideRaw"]]
+```
+
+We will make use from data wrangling functionalities from the tidyverse package.
+The %>% operator allows us to pipe the output of one function to the next function.
+
+```{r}
+colData(pe)$location <- substr(
+  colnames(pe[["peptideRaw"]]),
+  11,
+  11) %>%
+  unlist %>%  
+  as.factor
+
+colData(pe)$tissue <- substr(
+    colnames(pe[["peptideRaw"]]),
+    12,
+    12) %>%
+    unlist %>%  
+    as.factor
+
+colData(pe)$patient <- substr(
+  colnames(pe[["peptideRaw"]]),
+  13,
+  13) %>%
+  unlist %>%  
+  as.factor
+
+colData(pe)$compartment <- paste0(colData(pe)$location,colData(pe)$tissue) %>% as.factor
+```
+
+
+We calculate how many non zero intensities we have per peptide and this
+will be useful for filtering.
+
+```{r}
+rowData(pe[["peptideRaw"]])$nNonZero <- rowSums(assay(pe[["peptideRaw"]]) > 0)
+```
+
+
+Peptides with zero intensities are missing peptides and should be represent
+with a `NA` value rather than `0`.
+```{r}
+pe <- zeroIsNA(pe, "peptideRaw") # convert 0 to NA
+```
+
+
+## Data exploration
+
+`r format(mean(is.na(assay(pe[["peptideRaw"]])))*100,digits=2)`% of all peptide
+intensities are missing and for some peptides we do not even measure a signal
+in any sample. The missingness is similar across samples.
+
+
+# Preprocessing
+
+This section preforms standard preprocessing for the peptide data. This
+include log transformation, filtering and summarisation of the data.
+
+## Log transform the data
+
+```{r}
+pe <- logTransform(pe, base = 2, i = "peptideRaw", name = "peptideLog")
+limma::plotDensities(assay(pe[["peptideLog"]]))
+```
+
+
+## Filtering
+
+### Handling overlapping protein groups
+In our approach a peptide can map to multiple proteins, as long as there is
+none of these proteins present in a smaller subgroup.
+
+```{r}
+pe <- filterFeatures(pe, ~ Proteins %in% smallestUniqueGroups(rowData(pe[["peptideLog"]])$Proteins))
+```
+
+### Remove reverse sequences (decoys) and contaminants
+
+We now remove the contaminants, peptides that map to decoy sequences, and proteins
+which were only identified by peptides with modifications.
+
+First look to the names of the variables for the peptide features
+```{r}
+pe[["peptideLog"]] %>%
+  rowData %>%
+  names
+```
+
+No information on decoys.
+
+```{r}
+pe <- filterFeatures(pe,~ Potential.contaminant != "+")
+```
+
+
+### Drop peptides that were only identified in one sample
+
+We keep peptides that were observed at last twice.
+
+```{r}
+pe <- filterFeatures(pe,~nNonZero >= 2)
+nrow(pe[["peptideLog"]])
+```
+
+We keep `r nrow(pe[["peptideLog"]])` peptides after filtering.
+
+## Normalize the data
+```{r}
+pe <- normalize(pe, 
+                i = "peptideLog", 
+                name = "peptideNorm", 
+                method = "center.median")
+```
+
+
+## Explore normalized data
+
+After  normalisation the density curves for all samples are comparable.
+
+```{r}
+limma::plotDensities(assay(pe[["peptideNorm"]]))
+```
+
+This is more clearly seen is a boxplot.
+
+```{r,}
+boxplot(assay(pe[["peptideNorm"]]), col = palette()[-1],
+       main = "Peptide distribtutions after normalisation", ylab = "intensity")
+```
+
+
+We can visualize our data using a Multi Dimensional Scaling plot,
+eg. as provided by the `limma` package.
+
+```{r}
+limma::plotMDS(assay(pe[["peptideNorm"]]),
+  col = colData(pe)$location:colData(pe)$tissue %>%
+    as.numeric,
+  labels = colData(pe) %>%
+    rownames %>%  
+    substr(start = 11, stop = 13)
+  )
+```
+
+The first axis in the plot is showing the leading log fold changes
+(differences on the log scale) between the samples.
+
+
+## Summarization to protein level
+
+We use robust summarization in aggregateFeatures. This is the default workflow of aggregateFeatures so you do not have to specifiy the argument `fun`.
+However, because we compare methods we have included the `fun` argument to show the summarization method explicitely.
+
+```{r,warning=FALSE}
+pe <- aggregateFeatures(pe,
+ i = "peptideNorm",
+ fcol = "Proteins",
+ na.rm = TRUE,
+ name = "proteinRobust",
+ fun = MsCoreUtils::robustSummary)
+```
+
+```{r}
+plotMDS(assay(pe[["proteinRobust"]]),
+  col = colData(pe)$location:colData(pe)$tissue %>%
+    as.numeric,
+  labels = colData(pe) %>%
+    rownames %>%  
+    substr(start = 11, stop = 13)
+)
+```
+
+# Data Analysis
+
+## Estimation
+
+We model the protein level expression values using `msqrob`.
+By default `msqrob2` estimates the model parameters using robust regression.  
+
+```{r, warning=FALSE}
+pe <- msqrob(
+  object = pe,
+  i = "proteinRobust",
+  formula = ~ compartment + patient)
+```
+
+## Inference
+
+Explore Design
+```{r}
+library(ExploreModelMatrix)
+VisualizeDesign(colData(pe),~ compartment + patient)$plotlist
+```
+
+$$
+\begin{array}{ccl}
+y_i &=& \beta_0 + \beta_{RA}x_{RA,i} + \beta_{LV}x_{LV,i}  + \beta_{RV}x_{VR,i} +\beta_{p4}x_{p4,i} + \beta_{p8}x_{p8,i} + \epsilon_i\\
+\epsilon_i&\sim& N(0,
+\sigma^2)
+\end{array}
+$$
+Means for patient "."? 
+
+$$
+\begin{array}{ccc}
+\mu^{LA}_. &=& \beta_0 + \beta_{p.}\\
+\mu^{RA}_. &=& \beta_0 + \beta_{RA}+ \beta_{p.}\\
+\mu^{LV}_. &=& \beta_0 + \beta_{LV}+ \beta_{p.}\\
+\mu^{RV}_. &=& \beta_0 + \beta_{RV}+ \beta_{p.}
+\end{array}
+$$
+
+$\log_2$ FC after correcting for patient? 
+
+$$
+\begin{array}{lcc}
+\log_2 \text{FC}_{V-A}^L &=& \beta_{LV}\\
+\log_2 \text{FC}_{V-A}^R &=& \beta_{RV} - \beta_{RA}\\
+\log_2 \text{FC}_{V-R}^{AVG} &=& \frac{1}{2}\beta_{LV} + \frac{1}{2} \beta_{RV} - \frac{1}{2} \beta_{RA}\\
+\log_2 \text{FC}_{V-A}^R - \log \text{FC}_{V-A}^L &=& \beta_{RV} - \beta_{RA} - \beta_{LV}\\
+\log_2 \text{FC}_{LA-1/3(LV+RA+RV)} &=& - \frac{1}{3}\beta_{LV} - \frac{1}{3}\beta_{RV} - \frac{1}{3}\beta_{RA} 
+\end{array}
+$$
+
+```{r}
+design <- model.matrix(~compartment + patient, data = colData(pe))
+L <- makeContrast(
+  c(
+    "compartmentLV = 0",
+    "compartmentRV-compartmentRA = 0",
+    "1/2*compartmentLV+1/2*compartmentRV - 1/2 *compartmentRA = 0",
+    "compartmentRV-compartmentRA - compartmentLV  = 0",
+     "- 1/3*compartmentLV - 1/3*compartmentRV - 1/3*compartmentRA = 0"
+    ),
+  parameterNames = colnames(design)
+  )
+
+
+pe <- hypothesisTest(object = pe, i = "proteinRobust", contrast = L, overwrite=TRUE)
+```
+
+## Evaluate results contrast $\log_2 FC_{V-A}^L$
+
+### Volcano-plot
+
+
+```{r,warning=FALSE}
+volcanoLeft <- ggplot(rowData(pe[["proteinRobust"]])$"compartmentLV",
+                 aes(x = logFC, y = -log10(pval), color = adjPval < 0.05)) +
+ geom_point(cex = 2.5) +
+ scale_color_manual(values = alpha(c("black", "red"), 0.5)) + theme_minimal()
+volcanoLeft
+```
+
+
+### Heatmap
+
+We first select the names of the proteins that were declared signficant.
+
+```{r}
+sigNamesLeft <- rowData(pe[["proteinRobust"]])$"compartmentLV" %>%
+ rownames_to_column("proteinRobust") %>%
+ dplyr::filter(adjPval<0.05) %>%
+ pull(proteinRobust)
+heatmap(assay(pe[["proteinRobust"]])[sigNamesLeft, ])
+```
+
+There are `r length(sigNamesLeft)` proteins significantly differentially expressed at the 5% FDR level.
+
+```{r}
+rowData(pe[["proteinRobust"]])$"compartmentLV" %>%
+  cbind(.,rowData(pe[["proteinRobust"]])$Protein.names) %>%
+  na.exclude %>%
+  dplyr::filter(adjPval<0.05) %>%
+  arrange(pval)  %>%
+  knitr::kable(.)
+```
+
+## Evaluate results contrast $\log_2 FC_{V-A}^R$
+
+### Volcano-plot
+
+
+```{r,warning=FALSE}
+volcanoRight <- ggplot(rowData(pe[["proteinRobust"]])$"compartmentRV - compartmentRA",
+                 aes(x = logFC, y = -log10(pval), color = adjPval < 0.05)) +
+ geom_point(cex = 2.5) +
+ scale_color_manual(values = alpha(c("black", "red"), 0.5)) + theme_minimal()
+volcanoRight
+```
+
+
+### Heatmap
+
+We first select the names of the proteins that were declared signficant.
+
+```{r}
+sigNamesRight <- rowData(pe[["proteinRobust"]])$"compartmentRV - compartmentRA" %>%
+ rownames_to_column("proteinRobust") %>%
+ dplyr::filter(adjPval<0.05) %>%
+ pull(proteinRobust)
+heatmap(assay(pe[["proteinRobust"]])[sigNamesRight, ])
+```
+
+There are `r length(sigNamesRight)` proteins significantly differentially expressed at the 5% FDR level.
+
+```{r}
+rowData(pe[["proteinRobust"]])$"compartmentRV - compartmentRA"  %>%
+  cbind(.,rowData(pe[["proteinRobust"]])$Protein.names) %>%
+  na.exclude %>%
+  dplyr::filter(adjPval<0.05) %>%
+  arrange(pval) %>%
+  knitr::kable(.)
+```
+
+
+## Evaluate results average contrast $\log_2 FC_{V-A}$
+
+### Volcano-plot
+
+
+```{r,warning=FALSE}
+volcanoAvg <- ggplot(rowData(pe[["proteinRobust"]])$"1/2 * compartmentLV + 1/2 * compartmentRV - 1/2 * compartmentRA",
+                 aes(x = logFC, y = -log10(pval), color = adjPval < 0.05)) +
+ geom_point(cex = 2.5) +
+ scale_color_manual(values = alpha(c("black", "red"), 0.5)) + theme_minimal()
+volcanoAvg
+```
+
+
+### Heatmap
+
+We first select the names of the proteins that were declared signficant.
+
+```{r}
+sigNamesAvg <- rowData(pe[["proteinRobust"]])$"1/2 * compartmentLV + 1/2 * compartmentRV - 1/2 * compartmentRA" %>%
+ rownames_to_column("proteinRobust") %>%
+ dplyr::filter(adjPval<0.05) %>%
+ pull(proteinRobust)
+heatmap(assay(pe[["proteinRobust"]])[sigNamesAvg, ])
+```
+
+There are `r length(sigNamesAvg)` proteins significantly differentially expressed at the 5% FDR level.
+
+```{r}
+rowData(pe[["proteinRobust"]])$"1/2 * compartmentLV + 1/2 * compartmentRV - 1/2 * compartmentRA" %>%
+  cbind(.,rowData(pe[["proteinRobust"]])$Protein.names) %>%
+  na.exclude %>%
+  dplyr::filter(adjPval<0.05) %>%
+  arrange(pval) %>%
+  knitr::kable(.)
+```
+
+
+
+## Interaction
+
+### Volcano-plot
+
+
+```{r,warning=FALSE}
+volcanoInt <- ggplot(rowData(pe[["proteinRobust"]])$"compartmentRV - compartmentRA - compartmentLV",
+                 aes(x = logFC, y = -log10(pval), color = adjPval < 0.05)) +
+ geom_point(cex = 2.5) +
+ scale_color_manual(values = alpha(c("black", "red"), 0.5)) + theme_minimal()
+volcanoInt
+```
+
+### Heatmap
+
+There were no genes significant at the 5% FDR level.
+We return the top 25 genes.
+
+```{r}
+sigNamesInt <- rowData(pe[["proteinRobust"]])$"compartmentRV - compartmentRA - compartmentLV" %>%
+ rownames_to_column("proteinRobust") %>%
+ dplyr::filter(adjPval<0.05) %>%
+ pull(proteinRobust)
+hlp <- order((rowData(pe[["proteinRobust"]])$"compartmentRV - compartmentRA - compartmentLV")[,"adjPval"])[1:25]
+heatmap(assay(pe[["proteinRobust"]])[hlp, ])
+```
+
+There are `r length(sigNamesInt)` proteins significantly differentially expressed at the 5% FDR level.
+
+```{r}
+rowData(pe[["proteinRobust"]])$"compartmentRV - compartmentRA - compartmentLV" %>%
+  cbind(.,rowData(pe[["proteinRobust"]])$Protein.names) %>%
+  na.exclude %>%
+  dplyr::filter(adjPval<0.05) %>%
+  arrange(pval)
+```
+
+## Fold Change LA vs average of other compartment 
+
+
+### Volcano-plot
+
+
+```{r,warning=FALSE}
+volcanoNew <- ggplot(rowData(pe[["proteinRobust"]])$"-1/3 * compartmentLV - 1/3 * compartmentRV - 1/3 * compartmentRA",
+                 aes(x = logFC, y = -log10(pval), color = adjPval < 0.05)) +
+ geom_point(cex = 2.5) +
+ scale_color_manual(values = alpha(c("black", "red"), 0.5)) + theme_minimal()
+volcanoNew
+```
+
+### Heatmap
+
+
+```{r}
+sigNamesNew <- rowData(pe[["proteinRobust"]])$"-1/3 * compartmentLV - 1/3 * compartmentRV - 1/3 * compartmentRA" %>%
+ rownames_to_column("proteinRobust") %>%
+ dplyr::filter(adjPval<0.05) %>%
+ pull(proteinRobust)
+heatmap(assay(pe[["proteinRobust"]])[sigNamesNew, ])
+```
+There are `r length(sigNamesNew)` proteins significantly differentially expressed at the 5% FDR level.
+
+```{r}
+rowData(pe[["proteinRobust"]])$"-1/3 * compartmentLV - 1/3 * compartmentRV - 1/3 * compartmentRA" %>%
+  cbind(.,rowData(pe[["proteinRobust"]])$Protein.names) %>%
+  na.exclude %>%
+  dplyr::filter(adjPval<0.05) %>%
+  arrange(pval)
+```
+
+# Why are there differences in the results? 
+
+
+## Results Old Incoding 
+
+```{r, warning=FALSE}
+oldEncoding <- pe <- msqrob(
+  object = pe,
+  i = "proteinRobust",
+  formula = ~ location*tissue + patient, modelColumnName = "msqrobModelsMainInt")
+```
+
+```{r}
+designMainInt <- model.matrix(~location*tissue + patient, data = colData(pe))
+LMainInt <- makeContrast(
+  c(
+    "tissueV = 0",
+    "tissueV + locationR:tissueV = 0",
+    "tissueV + 0.5*locationR:tissueV = 0","locationR:tissueV = 0",
+     "- 2/3*locationR - 2/3*tissueV - 1/3*locationR:tissueV = 0"
+    ),
+  parameterNames = colnames(designMainInt)
+  )
+pe <- hypothesisTest(object = pe, i = "proteinRobust", contrast = LMainInt, overwrite=TRUE,  modelColumn = "msqrobModelsMainInt")
+```
+
+## Compare models 
+
+### Number of significant proteins? 
+
+```{r}
+nSigMainInt <- sapply(colnames(LMainInt), function(x) rowData(pe[["proteinRobust"]])[[x]] %>%  dplyr::filter(adjPval<0.05) %>% nrow)
+nSigNew <- sapply(colnames(L), function(x) rowData(pe[["proteinRobust"]])[[x]] %>%  dplyr::filter(adjPval<0.05) %>% nrow)
+nSigMainInt
+nSigNew
+```
+
+
+### Model fit individual protein? 
+
+```{r}
+(rowData(pe[["proteinRobust"]])$"msqrobModels")[[sigNamesLeft[1]]] %>% getModel
+```
+
+```{r}
+(rowData(pe[["proteinRobust"]])$"msqrobModelsMainInt")[[sigNamesLeft[1]]] %>% getModel
+```
+
+Model fit is equal!
+
+### Main effect - Interaction encoding 
+$$
+\begin{array}{ccl}
+y_i &=& \beta_0 + \beta_Rx_{R,i} + \beta_Vx_{V,i} + \beta_{R:V}x_{R,i}x_{V,i} +\beta_{p4}x_{p4,i} + \beta_{p8}x_{p8,i} + \epsilon_i\\
+\epsilon_i&\sim& N(0,
+\sigma^2)
+\end{array}
+$$
+
+Means for patient "."? 
+
+$$
+\begin{array}{ccl}
+\mu^{LA}_. &=& \beta_0 + \beta_{p.}\\
+\mu^{RA}_. &=& \beta_0 + \beta_{R}+ \beta_{p.}\\
+\mu^{LV}_. &=& \beta_0 + \beta_{L}+ \beta_{p.}\\
+\mu^{RV}_. &=& \beta_0 + \beta_{R} + \beta_{L} + \beta_{R:V}+ \beta_{p.}
+\end{array}
+$$
+
+### Compartment encoding 
+
+$$
+\begin{array}{ccl}
+y_i &=& \beta_0 + \beta_{RA}x_{RA,i} + \beta_{LV}x_{LV,i}  + \beta_{RV}x_{VR,i} +\beta_{p4}x_{p4,i} + \beta_{p8}x_{p8,i} + \epsilon_i\\
+\epsilon_i&\sim& N(0,
+\sigma^2)
+\end{array}
+$$
+Means for patient "."? 
+
+$$
+\begin{array}{ccc}
+\mu^{LA}_. &=& \beta_0 + \beta_{p.}\\
+\mu^{RA}_. &=& \beta_0 + \beta_{RA}+ \beta_{p.}\\
+\mu^{LV}_. &=& \beta_0 + \beta_{LV}+ \beta_{p.}\\
+\mu^{RV}_. &=& \beta_0 + \beta_{RV}+ \beta_{p.}
+\end{array}
+$$
+
+### Parameterisation coincides 
+
+$$
+\begin{array}{ccl}
+\hat\beta_0^\text{new} &=& \hat\beta_0^\text{mainInt}\\
+\hat\beta_{p4}^\text{new} &=& \hat\beta_{p4}^\text{mainInt}\\
+\hat\beta_{p8}^\text{new} &=& \hat\beta_{p8}^\text{mainInt}\\
+\hat\beta_{LV}^\text{new} &=& \hat\beta_V^\text{mainInt}\\
+\hat\beta_{RA}^\text{new} &=& \hat\beta_A^\text{mainInt}\\
+\hat\beta_{RV}^\text{new} &=& \hat\beta_R^\text{mainInt}+\hat\beta_V^\text{mainInt}+\hat\beta_{R:V}^\text{mainInt}\\
+\hat\sigma^\text{new} &=& \hat\sigma^\text{mainInt}\\
+\end{array}
+$$
+
+```{r}
+(rowData(pe[["proteinRobust"]])$"msqrobModels")[[sigNamesLeft[1]]] %>% getSigma
+coefs <- (rowData(pe[["proteinRobust"]])$"msqrobModels")[[sigNamesLeft[1]]] %>% getCoef
+coefs
+```
+
+```{r}
+(rowData(pe[["proteinRobust"]])$"msqrobModelsMainInt")[[sigNamesLeft[1]]] %>% getSigma
+coefsMainInt <- (rowData(pe[["proteinRobust"]])$"msqrobModelsMainInt")[[sigNamesLeft[1]]] %>% getCoef
+coefsMainInt
+```
+
+```{r}
+coefsMainInt[c("tissueV","locationR","locationR:tissueV")] %>% sum
+```
+
+
+
+### Posterior variance is slightly different
+
+```{r}
+(rowData(pe[["proteinRobust"]])$"msqrobModels")[[sigNamesLeft[1]]] %>% getVarPosterior()
+(rowData(pe[["proteinRobust"]])$"msqrobModelsMainInt")[[sigNamesLeft[1]]] %>% getVarPosterior()
+(rowData(pe[["proteinRobust"]])$"msqrobModels")[[sigNamesLeft[1]]] %>% getDfPosterior
+(rowData(pe[["proteinRobust"]])$"msqrobModelsMainInt")[[sigNamesLeft[1]]] %>% getDfPosterior()
+```
+
+Why? 
+
+```{r}
+modType <- sapply(rowData(pe[["proteinRobust"]])$msqrobModels, function(x) x@type)
+modType %>% as.factor %>% summary()
+```
+
+```{r}
+modTypeMainInt <- sapply(rowData(pe[["proteinRobust"]])$msqrobModelsMainInt, function(x) x@type)
+modTypeMainInt %>% as.factor %>% summary()
+```
+
+```{r}
+notFittedInOne <- which(modType!=modTypeMainInt)
+modType[notFittedInOne] %>% unique()
+```
+
+```{r}
+modTypeMainInt[notFittedInOne] %>% unique()
+```
+
+More fit errors when using main / interaction encoding. 
+
+Squeezing will differ slightly + slight differences in FDR control
+
+### Example 
+
+```{r}
+(rowData(pe[["proteinRobust"]])$"msqrobModelsMainInt")[[notFittedInOne[2]]] %>% getModel
+(rowData(pe[["proteinRobust"]])$"msqrobModels")[[notFittedInOne[2]]] %>% getModel
+```
+
+```{r}
+y <- assay(pe[["proteinRobust"]])[notFittedInOne[2],]
+y
+lm(y ~ -1 +design)
+lm(y ~ -1 +designMainInt)
+```
+

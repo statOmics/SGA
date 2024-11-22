@@ -100,6 +100,9 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
   - Tutorial: [Design](pda_tutorialDesign.html)
 
   - Solution: [Heart Example](heartMainInteraction.html)
+  
+  - Solution: [Heart Example Homework](heartMainInteraction_HW_otherEncoding.html)
+
 <!---->
 
 
@@ -123,6 +126,7 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
 ### 4. DE and usage analysis upon transcript-level quantification
 
 - [Soneson et al. 2016](https://f1000research.com/articles/4-1521/v2)
+- [Differential Usage Background](./images_sequencing/DTU_jeroen.pdf)
 - [Differential Usage](https://www.biorxiv.org/content/10.1101/2023.06.29.547014v2)
 - Tutorial: [handout](./sequencingTutorial3_DE.html)
 
