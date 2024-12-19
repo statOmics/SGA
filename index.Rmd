@@ -144,5 +144,6 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
 
 - Lecture Intro to scRNA-seq: [html](./sequencing_singleCell.html), [pdf](./sequencing_singleCell.pdf)
 - Tutorial on scRNA-seq: [handout](./scRNA-seq-Tutorial.html)
+- Solution: [Macosko workflow](./singleCell_MacoskoWorkflow.html)
 
 <!---->
