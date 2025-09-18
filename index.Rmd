@@ -60,7 +60,7 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
    - link to a compressed figures directory: [Download figures](https://raw.githubusercontent.com/statOmics/SGA/master/figures.tar.gz)
 
 
-
+<!--
 ## Module I: Proteomics Data Analysis (Week 2-5)
 
 ### 1. Bioinformatics for proteomics
@@ -70,6 +70,7 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
    - Tutorials: [Identification](https://www.compomics.com/bioinformatics-for-proteomics/)
 
 
+ <!--
 
 ### 2. Statistics for Proteomics Data Analysis
    
@@ -79,33 +80,38 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
 - [Tutorial](TargetDecoyTutorial.html), [example](mzIDMsgfSwissprotExample.html)
 <!--
 - Solution: [Uniprot search](mzIDuniprotTutorial.html), [Swissprot search](mzIDswissprotTutorial.html)
-<!-- -->
+<!---->
 
+ <!--
 #### 2.2. Preprocessing & Analysis of Label Free Quantitative Proteomics Experiments with Simple Designs
   - Lecture: [html](./pda_quantification_preprocessing.html), [pdf](./pda_quantification_preprocessing.pdf)
   - Tutorial: [preprocessing](./pda_tutorialPreprocessing.html)
   - Wrap-up Peptide-based Models: [html](./pda_robustSummarisation_peptideModels.html), [pdf](./pda_robustSummarisation_peptideModels.pdf)
 
- 
+ <!--
   - Solutions: [cancer3x3](cancer3x3.html), [cancer6x6](cancer6x6.html), [cancer9x9](cancer9x9.html)
 <!---->
 
+ <!--
 #### 2.3. Statistical Inference & Analysis of Experiments with Factorial Designs
   - Lecture Differential Abundance Analysis: [html](./pda_quantification_inference.html), [pdf](./pda_quantification_inference.pdf)
   - Wrap-up Blocking: [html](./pda_blocking_wrapup.html), [pdf](./pda_blocking_wrapup.pdf)
 
+<!--
   - Technical Details: [html](./pda_technicalDetails.html), [pdf](./pda_technicalDetails.pdf)
 <!---->
 
+<!--
   - Tutorial: [Design](pda_tutorialDesign.html)
 
+<!--
   - Solution: [Heart Example](heartMainInteraction.html)
   
   - Solution: [Heart Example Homework](heartMainInteraction_HW_otherEncoding.html)
 
 <!---->
 
-
+<!--
 ## Module II: Next-generation Sequencing (Week 6-12)
   
 ### 1. Introduction to sequencing technology, QC, read mapping and count table
@@ -131,15 +137,15 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
 - Tutorial: [handout](./sequencingTutorial3_DE.html)
 
 
+<!--
 ### 5. Solutions Bulk RNA-seq Data Analysis
-
 - airway example: Mapping [html](./airwayMapping.html)
-<!---->
 - airway example: [html](./airway.html)
 - Parathyroid Example (quasi-edgeR): [html](./parathyroid.html), [pdf](./parathyroid.pdf)
 - airway transcript quantification: [html](./airway_salmon_edgeR.html)
+<!---->
 
-
+<!--
 ### 6. Introduction to Single Cell Transcriptomics (scRNA-seq) 
 
 - Lecture Intro to scRNA-seq: [html](./sequencing_singleCell.html), [pdf](./sequencing_singleCell.pdf)

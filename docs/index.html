@@ -13,7 +13,7 @@
 
 <title>Statistical Genomics Analysis</title>
 
-<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -32,8 +32,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
 <script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
-<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -256,47 +256,6 @@ $(document).ready(function () {
     <li>
       <a href="recapGeneralLinearModel.html">1.2 Recap linear model</a>
     </li>
-    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
-    <li>
-      <a href="./figs/part1_ms_basics.pdf">1.1 MS Basics</a>
-    </li>
-    <li>
-      <a href="./figs/part1_ms_basics.pdf">1.2 Identification</a>
-    </li>
-    <li>
-      <a href="TargetDecoy.html">2.1 Identification - FDR - QC</a>
-    </li>
-    <li>
-      <a href="pda_quantification_preprocessing.html">2.2.1 Quantification - Preprocessing</a>
-    </li>
-    <li>
-      <a href="pda_robustSummarisation_peptideModels.html">2.2.2 Wrap-up Preprocessing - Peptide-Level-Models</a>
-    </li>
-    <li>
-      <a href="pda_quantification_inference.html">2.3.1 Quantification - Differential Abundance Analysis</a>
-    </li>
-    <li>
-      <a href="pda_blocking_wrapup.html">2.3.2. Wrap-up DA - Blocking</a>
-    </li>
-    <li>
-      <a href="pda_technicalDetails.html">2.3.3. Technical Details</a>
-    </li>
-    <li class="dropdown-header">---- MODULE II RNA-seq ----</li>
-    <li>
-      <a href="sequencing_intro.html">1.  Introduction to RNA-seq</a>
-    </li>
-    <li>
-      <a href="sequencing_countData.html">2.  Working with count data and GLMs</a>
-    </li>
-    <li>
-      <a href="sequencing_technicalDE.html">3.  Technical Details</a>
-    </li>
-    <li>
-      <a href="https://www.biorxiv.org/content/10.1101/2023.06.29.547014v2">4. Transcript-level DE and Usage</a>
-    </li>
-    <li>
-      <a href="sequencing_singleCell.html">6. Intro to scRNA-seq</a>
-    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -311,31 +270,6 @@ $(document).ready(function () {
     <li class="dropdown-header">---- INTRODUCTION ----</li>
     <li>
       <a href="multipleRegression_KPNA2.html">1 Intro KPNA2</a>
-    </li>
-    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
-    <li>
-      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">1. Bioinformatics for Proteomics</a>
-    </li>
-    <li>
-      <a href="TargetDecoyTutorial.html">2.1. Target Decoy QC</a>
-    </li>
-    <li>
-      <a href="pda_tutorialPreprocessing.html">2.2. Quantification - Preprocessing</a>
-    </li>
-    <li>
-      <a href="pda_tutorialDesign.html">2.3. Quantification - Design</a>
-    </li>
-    <li>
-      <a href="sequencingTutorial1_mapping.html">1. Read mapping</a>
-    </li>
-    <li>
-      <a href="sequencingTutorial2_DE.html">2. Working with Count Data</a>
-    </li>
-    <li>
-      <a href="sequencingTutorial3_DE.html">4. Transcript-level DE and Usage</a>
-    </li>
-    <li>
-      <a href="scRNA-seq-Tutorial.html">6. Tutorial scRNA-seq</a>
     </li>
   </ul>
 </li>
@@ -431,152 +365,94 @@ href="./recapGeneralLinearModel.pdf">PDF</a></li>
 href="https://raw.githubusercontent.com/statOmics/SGA/master/figures.tar.gz">Download
 figures</a></li>
 </ul>
-</div>
-<div id="module-i-proteomics-data-analysis-week-2-5"
-class="section level2">
-<h2>Module I: Proteomics Data Analysis (Week 2-5)</h2>
-<div id="bioinformatics-for-proteomics" class="section level3">
-<h3>1. Bioinformatics for proteomics</h3>
-<ul>
-<li>Lecture MS-Basics: <a href="./figs/part1_ms_basics.pdf">PDF</a></li>
-<li>Lecture Identification: <a
-href="./figs/part2_identification.pdf">PDF</a></li>
-<li>Tutorials: <a
-href="https://www.compomics.com/bioinformatics-for-proteomics/">Identification</a></li>
-</ul>
-</div>
-<div id="statistics-for-proteomics-data-analysis"
-class="section level3">
-<h3>2. Statistics for Proteomics Data Analysis</h3>
-<div id="identification" class="section level4">
-<h4>2.1. Identification</h4>
-<ul>
-<li><a href="TargetDecoy.html">Target Decoy QC</a></li>
-<li><a href="TargetDecoyTutorial.html">Tutorial</a>, <a
-href="mzIDMsgfSwissprotExample.html">example</a> <!--
+<!--
+## Module I: Proteomics Data Analysis (Week 2-5)
+
+### 1. Bioinformatics for proteomics
+   
+   - Lecture MS-Basics: [PDF](./figs/part1_ms_basics.pdf)
+   - Lecture Identification: [PDF](./figs/part2_identification.pdf)
+   - Tutorials: [Identification](https://www.compomics.com/bioinformatics-for-proteomics/)
+
+
+ <!--
+
+### 2. Statistics for Proteomics Data Analysis
+   
+#### 2.1. Identification
+
+- [Target Decoy QC](TargetDecoy.html)
+- [Tutorial](TargetDecoyTutorial.html), [example](mzIDMsgfSwissprotExample.html)
+<!--
 - Solution: [Uniprot search](mzIDuniprotTutorial.html), [Swissprot search](mzIDswissprotTutorial.html)
-<!-- --></li>
-</ul>
-</div>
-<div
-id="preprocessing-analysis-of-label-free-quantitative-proteomics-experiments-with-simple-designs"
-class="section level4">
-<h4>2.2. Preprocessing &amp; Analysis of Label Free Quantitative
-Proteomics Experiments with Simple Designs</h4>
-<ul>
-<li><p>Lecture: <a
-href="./pda_quantification_preprocessing.html">html</a>, <a
-href="./pda_quantification_preprocessing.pdf">pdf</a></p></li>
-<li><p>Tutorial: <a
-href="./pda_tutorialPreprocessing.html">preprocessing</a></p></li>
-<li><p>Wrap-up Peptide-based Models: <a
-href="./pda_robustSummarisation_peptideModels.html">html</a>, <a
-href="./pda_robustSummarisation_peptideModels.pdf">pdf</a></p></li>
-<li><p>Solutions: <a href="cancer3x3.html">cancer3x3</a>, <a
-href="cancer6x6.html">cancer6x6</a>, <a
-href="cancer9x9.html">cancer9x9</a> <!----></p></li>
-</ul>
-</div>
-<div
-id="statistical-inference-analysis-of-experiments-with-factorial-designs"
-class="section level4">
-<h4>2.3. Statistical Inference &amp; Analysis of Experiments with
-Factorial Designs</h4>
-<ul>
-<li><p>Lecture Differential Abundance Analysis: <a
-href="./pda_quantification_inference.html">html</a>, <a
-href="./pda_quantification_inference.pdf">pdf</a></p></li>
-<li><p>Wrap-up Blocking: <a href="./pda_blocking_wrapup.html">html</a>,
-<a href="./pda_blocking_wrapup.pdf">pdf</a></p></li>
-<li><p>Technical Details: <a
-href="./pda_technicalDetails.html">html</a>, <a
-href="./pda_technicalDetails.pdf">pdf</a> <!----></p></li>
-<li><p>Tutorial: <a href="pda_tutorialDesign.html">Design</a></p></li>
-<li><p>Solution: <a href="heartMainInteraction.html">Heart
-Example</a></p></li>
-<li><p>Solution: <a
-href="heartMainInteraction_HW_otherEncoding.html">Heart Example
-Homework</a></p></li>
-</ul>
 <!---->
-</div>
-</div>
-</div>
-<div id="module-ii-next-generation-sequencing-week-6-12"
-class="section level2">
-<h2>Module II: Next-generation Sequencing (Week 6-12)</h2>
-<div
-id="introduction-to-sequencing-technology-qc-read-mapping-and-count-table"
-class="section level3">
-<h3>1. Introduction to sequencing technology, QC, read mapping and count
-table</h3>
-<ul>
-<li>Lecture Introduction to Sequencing: <a
-href="./sequencing_intro.html">html</a>,<a
-href="./sequencing_intro.pdf">pdf</a></li>
-<li>Tutorial: <a href="./sequencingTutorial1_mapping.html">handout</a>,
-<a href="./elegansAlignmentCountTable.html">C. elegans Example</a></li>
-</ul>
-</div>
-<div id="introduction-to-count-data-and-glms" class="section level3">
-<h3>2. Introduction to count data and GLMs</h3>
-<ul>
-<li>Lecture Working with count data and GLMs: <a
-href="./sequencing_countData.html">html</a>, <a
-href="./sequencing_countData.pdf">pdf</a></li>
-<li>Tutorial: <a href="sequencingTutorial2_DE.html">handout</a>, <a
-href="./elegansDE.html">C. elegans example</a></li>
-</ul>
-</div>
-<div id="technical-details-on-rna-seq-de-analysis"
-class="section level3">
-<h3>3. Technical details on RNA-seq DE analysis</h3>
-<ul>
-<li>Lecture: <a href="./sequencing_technicalDE.html">html</a>, <a
-href="./sequencing_technicalDE.pdf">pdf</a></li>
-</ul>
-</div>
-<div id="de-and-usage-analysis-upon-transcript-level-quantification"
-class="section level3">
-<h3>4. DE and usage analysis upon transcript-level quantification</h3>
-<ul>
-<li><a href="https://f1000research.com/articles/4-1521/v2">Soneson et
-al. 2016</a></li>
-<li><a href="./images_sequencing/DTU_jeroen.pdf">Differential Usage
-Background</a></li>
-<li><a
-href="https://www.biorxiv.org/content/10.1101/2023.06.29.547014v2">Differential
-Usage</a></li>
-<li>Tutorial: <a href="./sequencingTutorial3_DE.html">handout</a></li>
-</ul>
-</div>
-<div id="solutions-bulk-rna-seq-data-analysis" class="section level3">
-<h3>5. Solutions Bulk RNA-seq Data Analysis</h3>
-<ul>
-<li>airway example: Mapping <a href="./airwayMapping.html">html</a>
-<!----></li>
-<li>airway example: <a href="./airway.html">html</a></li>
-<li>Parathyroid Example (quasi-edgeR): <a
-href="./parathyroid.html">html</a>, <a
-href="./parathyroid.pdf">pdf</a></li>
-<li>airway transcript quantification: <a
-href="./airway_salmon_edgeR.html">html</a></li>
-</ul>
-</div>
-<div id="introduction-to-single-cell-transcriptomics-scrna-seq"
-class="section level3">
-<h3>6. Introduction to Single Cell Transcriptomics (scRNA-seq)</h3>
-<ul>
-<li>Lecture Intro to scRNA-seq: <a
-href="./sequencing_singleCell.html">html</a>, <a
-href="./sequencing_singleCell.pdf">pdf</a></li>
-<li>Tutorial on scRNA-seq: <a
-href="./scRNA-seq-Tutorial.html">handout</a></li>
-<li>Solution: <a href="./singleCell_MacoskoWorkflow.html">Macosko
-workflow</a></li>
-</ul>
+<p><!--
+#### 2.2. Preprocessing & Analysis of Label Free Quantitative Proteomics Experiments with Simple Designs
+  - Lecture: [html](./pda_quantification_preprocessing.html), [pdf](./pda_quantification_preprocessing.pdf)
+  - Tutorial: [preprocessing](./pda_tutorialPreprocessing.html)
+  - Wrap-up Peptide-based Models: [html](./pda_robustSummarisation_peptideModels.html), [pdf](./pda_robustSummarisation_peptideModels.pdf)
+
+ <!--
+  - Solutions: [cancer3x3](cancer3x3.html), [cancer6x6](cancer6x6.html), [cancer9x9](cancer9x9.html)
+<!----></p>
+<p><!--
+#### 2.3. Statistical Inference & Analysis of Experiments with Factorial Designs
+  - Lecture Differential Abundance Analysis: [html](./pda_quantification_inference.html), [pdf](./pda_quantification_inference.pdf)
+  - Wrap-up Blocking: [html](./pda_blocking_wrapup.html), [pdf](./pda_blocking_wrapup.pdf)
+
+<!--
+  - Technical Details: [html](./pda_technicalDetails.html), [pdf](./pda_technicalDetails.pdf)
+<!----></p>
+<!--
+  - Tutorial: [Design](pda_tutorialDesign.html)
+
+<!--
+  - Solution: [Heart Example](heartMainInteraction.html)
+  
+  - Solution: [Heart Example Homework](heartMainInteraction_HW_otherEncoding.html)
+
 <!---->
-</div>
+<!--
+## Module II: Next-generation Sequencing (Week 6-12)
+  
+### 1. Introduction to sequencing technology, QC, read mapping and count table
+
+- Lecture Introduction to Sequencing: [html](./sequencing_intro.html),[pdf](./sequencing_intro.pdf)
+- Tutorial: [handout](./sequencingTutorial1_mapping.html), [C. elegans Example](./elegansAlignmentCountTable.html)
+
+
+### 2. Introduction to count data and GLMs
+
+- Lecture Working with count data and GLMs: [html](./sequencing_countData.html), [pdf](./sequencing_countData.pdf)
+- Tutorial: [handout](sequencingTutorial2_DE.html), [C. elegans example](./elegansDE.html)
+
+### 3. Technical details on RNA-seq DE analysis
+
+- Lecture: [html](./sequencing_technicalDE.html), [pdf](./sequencing_technicalDE.pdf)
+
+### 4. DE and usage analysis upon transcript-level quantification
+
+- [Soneson et al. 2016](https://f1000research.com/articles/4-1521/v2)
+- [Differential Usage Background](./images_sequencing/DTU_jeroen.pdf)
+- [Differential Usage](https://www.biorxiv.org/content/10.1101/2023.06.29.547014v2)
+- Tutorial: [handout](./sequencingTutorial3_DE.html)
+
+
+<!--
+### 5. Solutions Bulk RNA-seq Data Analysis
+- airway example: Mapping [html](./airwayMapping.html)
+- airway example: [html](./airway.html)
+- Parathyroid Example (quasi-edgeR): [html](./parathyroid.html), [pdf](./parathyroid.pdf)
+- airway transcript quantification: [html](./airway_salmon_edgeR.html)
+<!---->
+<!--
+### 6. Introduction to Single Cell Transcriptomics (scRNA-seq) 
+
+- Lecture Intro to scRNA-seq: [html](./sequencing_singleCell.html), [pdf](./sequencing_singleCell.pdf)
+- Tutorial on scRNA-seq: [handout](./scRNA-seq-Tutorial.html)
+- Solution: [Macosko workflow](./singleCell_MacoskoWorkflow.html)
+
+<!---->
 </div>
 </div>
 

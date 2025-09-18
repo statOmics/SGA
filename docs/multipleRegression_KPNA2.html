@@ -62,7 +62,7 @@
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -73,7 +73,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -444,47 +444,6 @@ div.tocify {
     <li>
       <a href="recapGeneralLinearModel.html">1.2 Recap linear model</a>
     </li>
-    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
-    <li>
-      <a href="./figs/part1_ms_basics.pdf">1.1 MS Basics</a>
-    </li>
-    <li>
-      <a href="./figs/part1_ms_basics.pdf">1.2 Identification</a>
-    </li>
-    <li>
-      <a href="TargetDecoy.html">2.1 Identification - FDR - QC</a>
-    </li>
-    <li>
-      <a href="pda_quantification_preprocessing.html">2.2.1 Quantification - Preprocessing</a>
-    </li>
-    <li>
-      <a href="pda_robustSummarisation_peptideModels.html">2.2.2 Wrap-up Preprocessing - Peptide-Level-Models</a>
-    </li>
-    <li>
-      <a href="pda_quantification_inference.html">2.3.1 Quantification - Differential Abundance Analysis</a>
-    </li>
-    <li>
-      <a href="pda_blocking_wrapup.html">2.3.2. Wrap-up DA - Blocking</a>
-    </li>
-    <li>
-      <a href="pda_technicalDetails.html">2.3.3. Technical Details</a>
-    </li>
-    <li class="dropdown-header">---- MODULE II RNA-seq ----</li>
-    <li>
-      <a href="sequencing_intro.html">1.  Introduction to RNA-seq</a>
-    </li>
-    <li>
-      <a href="sequencing_countData.html">2.  Working with count data and GLMs</a>
-    </li>
-    <li>
-      <a href="sequencing_technicalDE.html">3.  Technical Details</a>
-    </li>
-    <li>
-      <a href="https://www.biorxiv.org/content/10.1101/2023.06.29.547014v2">4. Transcript-level DE and Usage</a>
-    </li>
-    <li>
-      <a href="sequencing_singleCell.html">6. Intro to scRNA-seq</a>
-    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -499,31 +458,6 @@ div.tocify {
     <li class="dropdown-header">---- INTRODUCTION ----</li>
     <li>
       <a href="multipleRegression_KPNA2.html">1 Intro KPNA2</a>
-    </li>
-    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
-    <li>
-      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">1. Bioinformatics for Proteomics</a>
-    </li>
-    <li>
-      <a href="TargetDecoyTutorial.html">2.1. Target Decoy QC</a>
-    </li>
-    <li>
-      <a href="pda_tutorialPreprocessing.html">2.2. Quantification - Preprocessing</a>
-    </li>
-    <li>
-      <a href="pda_tutorialDesign.html">2.3. Quantification - Design</a>
-    </li>
-    <li>
-      <a href="sequencingTutorial1_mapping.html">1. Read mapping</a>
-    </li>
-    <li>
-      <a href="sequencingTutorial2_DE.html">2. Working with Count Data</a>
-    </li>
-    <li>
-      <a href="sequencingTutorial3_DE.html">4. Transcript-level DE and Usage</a>
-    </li>
-    <li>
-      <a href="scRNA-seq-Tutorial.html">6. Tutorial scRNA-seq</a>
     </li>
   </ul>
 </li>
@@ -856,9 +790,9 @@ Linear Hypotheses:
                            Estimate Std. Error t value Pr(&gt;|t|)    
 grade3 == 0                  1.6675     0.1827   9.127  &lt; 0.001 ***
 grade3 + grade3:node1 == 0   0.8928     0.1827   4.886  &lt; 0.001 ***
-node1 == 0                   0.6577     0.1827   3.600  0.00714 ** 
-node1 + grade3:node1 == 0   -0.1170     0.1827  -0.640  0.89814    
-grade3:node1 == 0           -0.7748     0.2584  -2.998  0.02669 *  
+node1 == 0                   0.6577     0.1827   3.600  0.00728 ** 
+node1 + grade3:node1 == 0   -0.1170     0.1827  -0.640  0.89818    
+grade3:node1 == 0           -0.7748     0.2584  -2.998  0.02649 *  
 ---
 Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 (Adjusted p values reported -- single-step method)</code></pre>
@@ -868,31 +802,31 @@ Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&
 
 Fit: lm(formula = gene %&gt;% log2 ~ grade * node, data = kpna2)
 
-Quantile = 2.7003
+Quantile = 2.6967
 95% family-wise confidence level
  
 
 Linear Hypotheses:
-                           Estimate lwr     upr    
-grade3 == 0                 1.6675   1.1742  2.1609
-grade3 + grade3:node1 == 0  0.8928   0.3994  1.3862
-node1 == 0                  0.6577   0.1643  1.1511
-node1 + grade3:node1 == 0  -0.1170  -0.6104  0.3764
-grade3:node1 == 0          -0.7748  -1.4725 -0.0770</code></pre>
+                           Estimate lwr      upr     
+grade3 == 0                 1.66754  1.17482  2.16026
+grade3 + grade3:node1 == 0  0.89279  0.40007  1.38551
+node1 == 0                  0.65773  0.16501  1.15045
+node1 + grade3:node1 == 0  -0.11702 -0.60974  0.37570
+grade3:node1 == 0          -0.77475 -1.47156 -0.07794</code></pre>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="dv">2</span><span class="sc">^</span><span class="fu">confint</span>(fitGlht)<span class="sc">$</span>confint</span></code></pre></div>
 <pre><code>                       Estimate       lwr       upr
-grade3                3.1767209 2.2571225 4.4709829
-grade3 + grade3:node1 1.8567602 1.3192645 2.6132428
-node1                 1.5775997 1.1209155 2.2203466
-node1 + grade3:node1  0.9220906 0.6551634 1.2977694
-grade3:node1          0.5844896 0.3604737 0.9477197
+grade3                3.1767209 2.2574945 4.4702461
+grade3 + grade3:node1 1.8567602 1.3194820 2.6128122
+node1                 1.5775997 1.1211003 2.2199807
+node1 + grade3:node1  0.9220906 0.6552714 1.2975556
+grade3:node1          0.5844896 0.3605577 0.9474989
 attr(,&quot;conf.level&quot;)
 [1] 0.95
 attr(,&quot;calpha&quot;)
-[1] 2.698528</code></pre>
+[1] 2.697226</code></pre>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="dv">2</span><span class="sc">^-</span><span class="fu">confint</span>(fitGlht)<span class="sc">$</span>confint[<span class="st">&quot;grade3:node1&quot;</span>,]</span></code></pre></div>
 <pre><code>Estimate      lwr      upr 
-1.710895 2.773652 1.055345 </code></pre>
+1.710895 2.775147 1.054777 </code></pre>
 </div>
 <div id="conclusion" class="section level1" number="5">
 <h1><span class="header-section-number">5</span> Conclusion</h1>
@@ -908,7 +842,7 @@ histological grade 3 tumors than patients with histological grade 1
 tumors (95% CI [1.32, 2.61]).</p></li>
 <li><p>The association between the KPNA2 expression with the lymph node
 status in grade 1 patients is very significant (<span
-class="math inline">\(p=\)</span> 0.007).<br />
+class="math inline">\(p=\)</span> 0.0071).<br />
 The KPNA2 expression in histological grade 1 patients with affected
 lymph nodes is on average 1.58 times higher than for grade 1 patients
 with unaffected lymph nodes (95% CI [1.12, 2.22]). In grade 3 patients,
@@ -917,7 +851,7 @@ class="math inline">\(p=\)</span> 0.9, 95% CI [0.66, 1.3] ).</p></li>
 <li><p>There is also a significant interaction between the hystological
 grade and the lymph node status. So the association between the KPNA2
 expression and the histological grade depends on the lymph node status
-and vice versa (<span class="math inline">\(p=\)</span> 0.026). The fold
+and vice versa (<span class="math inline">\(p=\)</span> 0.027). The fold
 change corresponding to histological grade is on average 1.71 times
 lower in patients with affected lymph nodes as compared to patients with
 unaffected lymph node (95% CI [1.06, 2.77]). (Similarly, the fold change
