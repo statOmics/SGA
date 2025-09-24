@@ -60,7 +60,7 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
    - link to a compressed figures directory: [Download figures](https://raw.githubusercontent.com/statOmics/SGA/master/figures.tar.gz)
 
 
-<!--
+
 ## Module I: Proteomics Data Analysis (Week 2-5)
 
 ### 1. Bioinformatics for proteomics
