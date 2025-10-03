@@ -790,7 +790,7 @@ heatmap(assay(pe[["protein"]])[sigNames, ])
 for (protName in sigNames)
     {
         pePlot <- pe[protName, , c("peptideNorm", "protein")]
-        pePlotDf <- data.frame(longFormat(pePlot))
+        pePlotDf <- data.frame(longForm(pePlot))
         pePlotDf$assay <- factor(pePlotDf$assay,
             levels = c("peptideNorm", "protein")
         )

@@ -62,7 +62,7 @@
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -73,7 +73,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -166,6 +166,7 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
 .hanging div.csl-entry {
   margin-left:2em;
@@ -488,25 +489,6 @@ div.tocify {
     <li>
       <a href="pda_blocking_wrapup.html">2.3.2. Wrap-up DA - Blocking</a>
     </li>
-    <li>
-      <a href="pda_technicalDetails.html">2.3.3. Technical Details</a>
-    </li>
-    <li class="dropdown-header">---- MODULE II RNA-seq ----</li>
-    <li>
-      <a href="sequencing_intro.html">1.  Introduction to RNA-seq</a>
-    </li>
-    <li>
-      <a href="sequencing_countData.html">2.  Working with count data and GLMs</a>
-    </li>
-    <li>
-      <a href="sequencing_technicalDE.html">3.  Technical Details</a>
-    </li>
-    <li>
-      <a href="https://www.biorxiv.org/content/10.1101/2023.06.29.547014v2">4. Transcript-level DE and Usage</a>
-    </li>
-    <li>
-      <a href="sequencing_singleCell.html">6. Intro to scRNA-seq</a>
-    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -534,18 +516,6 @@ div.tocify {
     </li>
     <li>
       <a href="pda_tutorialDesign.html">2.3. Quantification - Design</a>
-    </li>
-    <li>
-      <a href="sequencingTutorial1_mapping.html">1. Read mapping</a>
-    </li>
-    <li>
-      <a href="sequencingTutorial2_DE.html">2. Working with Count Data</a>
-    </li>
-    <li>
-      <a href="sequencingTutorial3_DE.html">4. Transcript-level DE and Usage</a>
-    </li>
-    <li>
-      <a href="scRNA-seq-Tutorial.html">6. Tutorial scRNA-seq</a>
     </li>
   </ul>
 </li>
@@ -791,6 +761,7 @@ with the intensity data with the code below:</li>
 <pre><code>## Loading data as a &#39;SummarizedExperiment&#39; object.</code></pre>
 <pre><code>## Formatting sample annotations (colData).</code></pre>
 <pre><code>## Formatting data as a &#39;QFeatures&#39; object.</code></pre>
+<pre><code>## Setting assay rownames.</code></pre>
 </p>
 </details>
 </div>
@@ -805,7 +776,7 @@ Click to see background and code
 <li>The rowData contains information on the features (peptides) in the
 assay. E.g. Sequence, protein, …</li>
 </ul>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">rowData</span>(pe[[<span class="st">&quot;peptideRaw&quot;</span>]])</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">rowData</span>(pe[[<span class="st">&quot;peptideRaw&quot;</span>]])</span></code></pre></div>
 <pre><code>## DataFrame with 11466 rows and 143 columns
 ##                          Sequence N.term.cleavage.window C.term.cleavage.window
 ##                       &lt;character&gt;            &lt;character&gt;            &lt;character&gt;
@@ -1460,12 +1431,12 @@ assay. E.g. Sequence, protein, …</li>
 <ul>
 <li>The colData contains information on the samples</li>
 </ul>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">colData</span>(pe)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">colData</span>(pe)</span></code></pre></div>
 <pre><code>## DataFrame with 45 rows and 0 columns</code></pre>
 <ul>
 <li>No information is stored yet on the design.</li>
 </ul>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>pe <span class="sc">%&gt;%</span> colnames</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>pe <span class="sc">%&gt;%</span> colnames</span></code></pre></div>
 <pre><code>## CharacterList of length 1
 ## [[&quot;peptideRaw&quot;]] Intensity.6A_1 Intensity.6A_2 ... Intensity.6E_9</code></pre>
 <ul>
@@ -1479,13 +1450,13 @@ condition.</p></li>
 </ul></li>
 <li><p>We update the colData with information on the design</p></li>
 </ul>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">colData</span>(pe)<span class="sc">$</span>lab <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">rep</span>(<span class="fu">paste0</span>(<span class="st">&quot;lab&quot;</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>),<span class="at">each=</span><span class="dv">3</span>),<span class="dv">5</span>) <span class="sc">%&gt;%</span> as.factor</span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="fu">colData</span>(pe)<span class="sc">$</span>condition <span class="ot">&lt;-</span> pe[[<span class="st">&quot;peptideRaw&quot;</span>]] <span class="sc">%&gt;%</span> colnames <span class="sc">%&gt;%</span> <span class="fu">substr</span>(<span class="dv">12</span>,<span class="dv">12</span>) <span class="sc">%&gt;%</span> as.factor</span>
-<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="fu">colData</span>(pe)<span class="sc">$</span>spikeConcentration <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="at">A =</span> <span class="fl">0.25</span>, <span class="at">B =</span> <span class="fl">0.74</span>, <span class="at">C =</span> <span class="fl">2.22</span>, <span class="at">D =</span> <span class="fl">6.67</span>, <span class="at">E =</span> <span class="dv">20</span>),<span class="at">each =</span> <span class="dv">9</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">colData</span>(pe)<span class="sc">$</span>lab <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">rep</span>(<span class="fu">paste0</span>(<span class="st">&quot;lab&quot;</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>),<span class="at">each=</span><span class="dv">3</span>),<span class="dv">5</span>) <span class="sc">%&gt;%</span> as.factor</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="fu">colData</span>(pe)<span class="sc">$</span>condition <span class="ot">&lt;-</span> pe[[<span class="st">&quot;peptideRaw&quot;</span>]] <span class="sc">%&gt;%</span> colnames <span class="sc">%&gt;%</span> <span class="fu">substr</span>(<span class="dv">12</span>,<span class="dv">12</span>) <span class="sc">%&gt;%</span> as.factor</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="fu">colData</span>(pe)<span class="sc">$</span>spikeConcentration <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="at">A =</span> <span class="fl">0.25</span>, <span class="at">B =</span> <span class="fl">0.74</span>, <span class="at">C =</span> <span class="fl">2.22</span>, <span class="at">D =</span> <span class="fl">6.67</span>, <span class="at">E =</span> <span class="dv">20</span>),<span class="at">each =</span> <span class="dv">9</span>)</span></code></pre></div>
 <ul>
 <li>We explore the colData again</li>
 </ul>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">colData</span>(pe)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">colData</span>(pe)</span></code></pre></div>
 <pre><code>## DataFrame with 45 rows and 3 columns
 ##                     lab condition spikeConcentration
 ##                &lt;factor&gt;  &lt;factor&gt;          &lt;numeric&gt;
@@ -1524,17 +1495,17 @@ from lab1.</p>
 Click to see code to make plot
 </summary>
 <p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>subset <span class="ot">&lt;-</span> pe[<span class="st">&quot;AALEELVK&quot;</span>,<span class="fu">colData</span>(pe)<span class="sc">$</span>lab<span class="sc">==</span><span class="st">&quot;lab1&quot;</span>]</span>
-<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>plotWhyLog <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">concentration =</span> <span class="fu">colData</span>(subset)<span class="sc">$</span>spikeConcentration,</span>
-<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>           <span class="at">y =</span> <span class="fu">assay</span>(subset[[<span class="st">&quot;peptideRaw&quot;</span>]]) <span class="sc">%&gt;%</span> c</span>
-<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>           ) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(concentration, y)) <span class="sc">+</span></span>
-<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;concentration (fmol/l)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;peptide AALEELVK in lab1&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>subset <span class="ot">&lt;-</span> pe[<span class="st">&quot;AALEELVK&quot;</span>,<span class="fu">colData</span>(pe)<span class="sc">$</span>lab<span class="sc">==</span><span class="st">&quot;lab1&quot;</span>]</span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>plotWhyLog <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">concentration =</span> <span class="fu">colData</span>(subset)<span class="sc">$</span>spikeConcentration,</span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a>           <span class="at">y =</span> <span class="fu">assay</span>(subset[[<span class="st">&quot;peptideRaw&quot;</span>]]) <span class="sc">%&gt;%</span> c</span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a>           ) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(concentration, y)) <span class="sc">+</span></span>
+<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;concentration (fmol/l)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;peptide AALEELVK in lab1&quot;</span>)</span></code></pre></div>
 </p>
 </details>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>plotWhyLog</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>plotWhyLog</span></code></pre></div>
 <p><img src="pda_quantification_preprocessing_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <ul>
 <li>Variance increases with the mean <span
@@ -1546,18 +1517,18 @@ structure</li>
 Click to see code to make plot
 </summary>
 <p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>plotLog <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">concentration =</span> <span class="fu">colData</span>(subset)<span class="sc">$</span>spikeConcentration,</span>
-<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>           <span class="at">y =</span> <span class="fu">assay</span>(subset[[<span class="st">&quot;peptideRaw&quot;</span>]]) <span class="sc">%&gt;%</span> c</span>
-<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a>           ) <span class="sc">%&gt;%</span> </span>
-<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(concentration, y)) <span class="sc">+</span></span>
-<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
-<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans=</span><span class="st">&#39;log2&#39;</span>) <span class="sc">+</span> </span>
-<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans=</span><span class="st">&#39;log2&#39;</span>) <span class="sc">+</span></span>
-<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;concentration (fmol/l)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;peptide AALEELVK in lab1 with axes on log scale&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>plotLog <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">concentration =</span> <span class="fu">colData</span>(subset)<span class="sc">$</span>spikeConcentration,</span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>           <span class="at">y =</span> <span class="fu">assay</span>(subset[[<span class="st">&quot;peptideRaw&quot;</span>]]) <span class="sc">%&gt;%</span> c</span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>           ) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(concentration, y)) <span class="sc">+</span></span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans=</span><span class="st">&#39;log2&#39;</span>) <span class="sc">+</span> </span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans=</span><span class="st">&#39;log2&#39;</span>) <span class="sc">+</span></span>
+<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;concentration (fmol/l)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;peptide AALEELVK in lab1 with axes on log scale&quot;</span>)</span></code></pre></div>
 </p>
 </details>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>plotLog</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a>plotLog</span></code></pre></div>
 <p><img src="pda_quantification_preprocessing_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 <ul>
 <li>Data seems to be homoscedastic on log-scale <span
@@ -1591,16 +1562,16 @@ Click to see code to log-transfrom the data
 <li>We calculate how many non zero intensities we have for each peptide
 and this can be useful for filtering.</li>
 </ul>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="fu">rowData</span>(pe[[<span class="st">&quot;peptideRaw&quot;</span>]])<span class="sc">$</span>nNonZero <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(<span class="fu">assay</span>(pe[[<span class="st">&quot;peptideRaw&quot;</span>]]) <span class="sc">&gt;</span> <span class="dv">0</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="fu">rowData</span>(pe[[<span class="st">&quot;peptideRaw&quot;</span>]])<span class="sc">$</span>nNonZero <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(<span class="fu">assay</span>(pe[[<span class="st">&quot;peptideRaw&quot;</span>]]) <span class="sc">&gt;</span> <span class="dv">0</span>)</span></code></pre></div>
 <ul>
 <li>Peptides with zero intensities are missing peptides and should be
 represent with a <code>NA</code> value rather than <code>0</code>.</li>
 </ul>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">zeroIsNA</span>(pe, <span class="st">&quot;peptideRaw&quot;</span>) <span class="co"># convert 0 to NA</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">zeroIsNA</span>(pe, <span class="st">&quot;peptideRaw&quot;</span>) <span class="co"># convert 0 to NA</span></span></code></pre></div>
 <ul>
 <li>Logtransform data with base 2</li>
 </ul>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">logTransform</span>(pe, <span class="at">base =</span> <span class="dv">2</span>, <span class="at">i =</span> <span class="st">&quot;peptideRaw&quot;</span>, <span class="at">name =</span> <span class="st">&quot;peptideLog&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">logTransform</span>(pe, <span class="at">base =</span> <span class="dv">2</span>, <span class="at">i =</span> <span class="st">&quot;peptideRaw&quot;</span>, <span class="at">name =</span> <span class="st">&quot;peptideLog&quot;</span>)</span></code></pre></div>
 </p>
 </details>
 <hr />
@@ -1632,25 +1603,25 @@ Click to see code to filter the data
 </ol>
 <p>In our approach a peptide can map to multiple proteins, as long as
 there is none of these proteins present in a smaller subgroup.</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe, <span class="sc">~</span> Proteins <span class="sc">%in%</span> <span class="fu">smallestUniqueGroups</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;peptideLog&quot;</span>]])<span class="sc">$</span>Proteins))</span></code></pre></div>
-<pre><code>## &#39;Proteins&#39; found in 2 out of 2 assay(s)</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe, <span class="sc">~</span> Proteins <span class="sc">%in%</span> <span class="fu">smallestUniqueGroups</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;peptideLog&quot;</span>]])<span class="sc">$</span>Proteins))</span></code></pre></div>
+<pre><code>## &#39;Proteins&#39; found in 2 out of 2 assay(s).</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>Remove reverse sequences (decoys) and contaminants</li>
 </ol>
 <p>We now remove the contaminants, peptides that map to decoy sequences,
 and proteins which were only identified by peptides with
 modifications.</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe,<span class="sc">~</span>Reverse <span class="sc">!=</span> <span class="st">&quot;+&quot;</span>)</span></code></pre></div>
-<pre><code>## &#39;Reverse&#39; found in 2 out of 2 assay(s)</code></pre>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe,<span class="sc">~</span> Potential.contaminant <span class="sc">!=</span> <span class="st">&quot;+&quot;</span>)</span></code></pre></div>
-<pre><code>## &#39;Potential.contaminant&#39; found in 2 out of 2 assay(s)</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe,<span class="sc">~</span>Reverse <span class="sc">!=</span> <span class="st">&quot;+&quot;</span>)</span></code></pre></div>
+<pre><code>## &#39;Reverse&#39; found in 2 out of 2 assay(s).</code></pre>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe,<span class="sc">~</span> Potential.contaminant <span class="sc">!=</span> <span class="st">&quot;+&quot;</span>)</span></code></pre></div>
+<pre><code>## &#39;Potential.contaminant&#39; found in 2 out of 2 assay(s).</code></pre>
 <ol start="3" style="list-style-type: decimal">
 <li>Drop peptides that were only identified in one sample</li>
 </ol>
 <p>We keep peptides that were observed at last twice.</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe,<span class="sc">~</span> nNonZero <span class="sc">&gt;=</span><span class="dv">2</span>)</span></code></pre></div>
-<pre><code>## &#39;nNonZero&#39; found in 2 out of 2 assay(s)</code></pre>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="fu">nrow</span>(pe[[<span class="st">&quot;peptideLog&quot;</span>]])</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe,<span class="sc">~</span> nNonZero <span class="sc">&gt;=</span><span class="dv">2</span>)</span></code></pre></div>
+<pre><code>## &#39;nNonZero&#39; found in 2 out of 2 assay(s).</code></pre>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="fu">nrow</span>(pe[[<span class="st">&quot;peptideLog&quot;</span>]])</span></code></pre></div>
 <pre><code>## [1] 10478</code></pre>
 We keep 10478 peptides upon filtering.
 </p>
@@ -1666,30 +1637,30 @@ We keep 10478 peptides upon filtering.
 Click to see code to make plot
 </summary>
 <p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a>densityConditionD <span class="ot">&lt;-</span> pe[[<span class="st">&quot;peptideLog&quot;</span>]][,<span class="fu">colData</span>(pe)<span class="sc">$</span>condition<span class="sc">==</span><span class="st">&quot;D&quot;</span>] <span class="sc">%&gt;%</span> </span>
-<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a>  assay <span class="sc">%&gt;%</span></span>
-<span id="cb35-3"><a href="#cb35-3" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb35-4"><a href="#cb35-4" tabindex="-1"></a>  <span class="fu">gather</span>(sample, intensity) <span class="sc">%&gt;%</span> </span>
-<span id="cb35-5"><a href="#cb35-5" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lab =</span> <span class="fu">colData</span>(pe)[sample,<span class="st">&quot;lab&quot;</span>]) <span class="sc">%&gt;%</span></span>
-<span id="cb35-6"><a href="#cb35-6" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>intensity,<span class="at">group=</span>sample,<span class="at">color=</span>lab)) <span class="sc">+</span> </span>
-<span id="cb35-7"><a href="#cb35-7" tabindex="-1"></a>    <span class="fu">geom_density</span>() <span class="sc">+</span></span>
-<span id="cb35-8"><a href="#cb35-8" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="st">&quot;condition D&quot;</span>)</span>
-<span id="cb35-9"><a href="#cb35-9" tabindex="-1"></a></span>
-<span id="cb35-10"><a href="#cb35-10" tabindex="-1"></a>densityLab2 <span class="ot">&lt;-</span> pe[[<span class="st">&quot;peptideLog&quot;</span>]][,<span class="fu">colData</span>(pe)<span class="sc">$</span>lab<span class="sc">==</span><span class="st">&quot;lab2&quot;</span>] <span class="sc">%&gt;%</span> </span>
-<span id="cb35-11"><a href="#cb35-11" tabindex="-1"></a>  assay <span class="sc">%&gt;%</span></span>
-<span id="cb35-12"><a href="#cb35-12" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb35-13"><a href="#cb35-13" tabindex="-1"></a>  <span class="fu">gather</span>(sample, intensity) <span class="sc">%&gt;%</span> </span>
-<span id="cb35-14"><a href="#cb35-14" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">condition =</span> <span class="fu">colData</span>(pe)[sample,<span class="st">&quot;condition&quot;</span>]) <span class="sc">%&gt;%</span></span>
-<span id="cb35-15"><a href="#cb35-15" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>intensity,<span class="at">group=</span>sample,<span class="at">color=</span>condition)) <span class="sc">+</span> </span>
-<span id="cb35-16"><a href="#cb35-16" tabindex="-1"></a>    <span class="fu">geom_density</span>() <span class="sc">+</span></span>
-<span id="cb35-17"><a href="#cb35-17" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="st">&quot;lab2&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a>densityConditionD <span class="ot">&lt;-</span> pe[[<span class="st">&quot;peptideLog&quot;</span>]][,<span class="fu">colData</span>(pe)<span class="sc">$</span>condition<span class="sc">==</span><span class="st">&quot;D&quot;</span>] <span class="sc">%&gt;%</span> </span>
+<span id="cb36-2"><a href="#cb36-2" tabindex="-1"></a>  assay <span class="sc">%&gt;%</span></span>
+<span id="cb36-3"><a href="#cb36-3" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb36-4"><a href="#cb36-4" tabindex="-1"></a>  <span class="fu">gather</span>(sample, intensity) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-5"><a href="#cb36-5" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lab =</span> <span class="fu">colData</span>(pe)[sample,<span class="st">&quot;lab&quot;</span>]) <span class="sc">%&gt;%</span></span>
+<span id="cb36-6"><a href="#cb36-6" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>intensity,<span class="at">group=</span>sample,<span class="at">color=</span>lab)) <span class="sc">+</span> </span>
+<span id="cb36-7"><a href="#cb36-7" tabindex="-1"></a>    <span class="fu">geom_density</span>() <span class="sc">+</span></span>
+<span id="cb36-8"><a href="#cb36-8" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="st">&quot;condition D&quot;</span>)</span>
+<span id="cb36-9"><a href="#cb36-9" tabindex="-1"></a></span>
+<span id="cb36-10"><a href="#cb36-10" tabindex="-1"></a>densityLab2 <span class="ot">&lt;-</span> pe[[<span class="st">&quot;peptideLog&quot;</span>]][,<span class="fu">colData</span>(pe)<span class="sc">$</span>lab<span class="sc">==</span><span class="st">&quot;lab2&quot;</span>] <span class="sc">%&gt;%</span> </span>
+<span id="cb36-11"><a href="#cb36-11" tabindex="-1"></a>  assay <span class="sc">%&gt;%</span></span>
+<span id="cb36-12"><a href="#cb36-12" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb36-13"><a href="#cb36-13" tabindex="-1"></a>  <span class="fu">gather</span>(sample, intensity) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-14"><a href="#cb36-14" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">condition =</span> <span class="fu">colData</span>(pe)[sample,<span class="st">&quot;condition&quot;</span>]) <span class="sc">%&gt;%</span></span>
+<span id="cb36-15"><a href="#cb36-15" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>intensity,<span class="at">group=</span>sample,<span class="at">color=</span>condition)) <span class="sc">+</span> </span>
+<span id="cb36-16"><a href="#cb36-16" tabindex="-1"></a>    <span class="fu">geom_density</span>() <span class="sc">+</span></span>
+<span id="cb36-17"><a href="#cb36-17" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="st">&quot;lab2&quot;</span>)</span></code></pre></div>
 </p>
 </details>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a>densityConditionD</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a>densityConditionD</span></code></pre></div>
 <pre><code>## Warning: Removed 39179 rows containing non-finite outside the scale range
 ## (`stat_density()`).</code></pre>
 <p><img src="pda_quantification_preprocessing_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a>densityLab2</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a>densityLab2</span></code></pre></div>
 <pre><code>## Warning: Removed 44480 rows containing non-finite outside the scale range
 ## (`stat_density()`).</code></pre>
 <p><img src="pda_quantification_preprocessing_files/figure-html/unnamed-chunk-29-1.png" width="672" />
@@ -1746,10 +1717,10 @@ class="math inline">\(i\)</span>.</p>
 Click to see R-code to normalize the data
 </summary>
 <p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">normalize</span>(pe, </span>
-<span id="cb40-2"><a href="#cb40-2" tabindex="-1"></a>                <span class="at">i =</span> <span class="st">&quot;peptideLog&quot;</span>, </span>
-<span id="cb40-3"><a href="#cb40-3" tabindex="-1"></a>                <span class="at">name =</span> <span class="st">&quot;peptideNorm&quot;</span>, </span>
-<span id="cb40-4"><a href="#cb40-4" tabindex="-1"></a>                <span class="at">method =</span> <span class="st">&quot;center.median&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">normalize</span>(pe, </span>
+<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a>                <span class="at">i =</span> <span class="st">&quot;peptideLog&quot;</span>, </span>
+<span id="cb41-3"><a href="#cb41-3" tabindex="-1"></a>                <span class="at">name =</span> <span class="st">&quot;peptideNorm&quot;</span>, </span>
+<span id="cb41-4"><a href="#cb41-4" tabindex="-1"></a>                <span class="at">method =</span> <span class="st">&quot;center.median&quot;</span>)</span></code></pre></div>
 </p>
 </details>
 </div>
@@ -1762,30 +1733,30 @@ data</h3>
 Click to see code to make plot
 </summary>
 <p>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a>densityConditionDNorm <span class="ot">&lt;-</span> pe[[<span class="st">&quot;peptideNorm&quot;</span>]][,<span class="fu">colData</span>(pe)<span class="sc">$</span>condition<span class="sc">==</span><span class="st">&quot;D&quot;</span>] <span class="sc">%&gt;%</span> </span>
-<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a>  assay <span class="sc">%&gt;%</span></span>
-<span id="cb41-3"><a href="#cb41-3" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb41-4"><a href="#cb41-4" tabindex="-1"></a>  <span class="fu">gather</span>(sample, intensity) <span class="sc">%&gt;%</span> </span>
-<span id="cb41-5"><a href="#cb41-5" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lab =</span> <span class="fu">colData</span>(pe)[sample,<span class="st">&quot;lab&quot;</span>]) <span class="sc">%&gt;%</span></span>
-<span id="cb41-6"><a href="#cb41-6" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>intensity,<span class="at">group=</span>sample,<span class="at">color=</span>lab)) <span class="sc">+</span> </span>
-<span id="cb41-7"><a href="#cb41-7" tabindex="-1"></a>    <span class="fu">geom_density</span>() <span class="sc">+</span></span>
-<span id="cb41-8"><a href="#cb41-8" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="st">&quot;condition D&quot;</span>)</span>
-<span id="cb41-9"><a href="#cb41-9" tabindex="-1"></a></span>
-<span id="cb41-10"><a href="#cb41-10" tabindex="-1"></a>densityLab2Norm <span class="ot">&lt;-</span> pe[[<span class="st">&quot;peptideNorm&quot;</span>]][,<span class="fu">colData</span>(pe)<span class="sc">$</span>lab<span class="sc">==</span><span class="st">&quot;lab2&quot;</span>] <span class="sc">%&gt;%</span> </span>
-<span id="cb41-11"><a href="#cb41-11" tabindex="-1"></a>  assay <span class="sc">%&gt;%</span></span>
-<span id="cb41-12"><a href="#cb41-12" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb41-13"><a href="#cb41-13" tabindex="-1"></a>  <span class="fu">gather</span>(sample, intensity) <span class="sc">%&gt;%</span> </span>
-<span id="cb41-14"><a href="#cb41-14" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">condition =</span> <span class="fu">colData</span>(pe)[sample,<span class="st">&quot;condition&quot;</span>]) <span class="sc">%&gt;%</span></span>
-<span id="cb41-15"><a href="#cb41-15" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>intensity,<span class="at">group=</span>sample,<span class="at">color=</span>condition)) <span class="sc">+</span> </span>
-<span id="cb41-16"><a href="#cb41-16" tabindex="-1"></a>    <span class="fu">geom_density</span>() <span class="sc">+</span></span>
-<span id="cb41-17"><a href="#cb41-17" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="st">&quot;lab2&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" tabindex="-1"></a>densityConditionDNorm <span class="ot">&lt;-</span> pe[[<span class="st">&quot;peptideNorm&quot;</span>]][,<span class="fu">colData</span>(pe)<span class="sc">$</span>condition<span class="sc">==</span><span class="st">&quot;D&quot;</span>] <span class="sc">%&gt;%</span> </span>
+<span id="cb42-2"><a href="#cb42-2" tabindex="-1"></a>  assay <span class="sc">%&gt;%</span></span>
+<span id="cb42-3"><a href="#cb42-3" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb42-4"><a href="#cb42-4" tabindex="-1"></a>  <span class="fu">gather</span>(sample, intensity) <span class="sc">%&gt;%</span> </span>
+<span id="cb42-5"><a href="#cb42-5" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lab =</span> <span class="fu">colData</span>(pe)[sample,<span class="st">&quot;lab&quot;</span>]) <span class="sc">%&gt;%</span></span>
+<span id="cb42-6"><a href="#cb42-6" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>intensity,<span class="at">group=</span>sample,<span class="at">color=</span>lab)) <span class="sc">+</span> </span>
+<span id="cb42-7"><a href="#cb42-7" tabindex="-1"></a>    <span class="fu">geom_density</span>() <span class="sc">+</span></span>
+<span id="cb42-8"><a href="#cb42-8" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="st">&quot;condition D&quot;</span>)</span>
+<span id="cb42-9"><a href="#cb42-9" tabindex="-1"></a></span>
+<span id="cb42-10"><a href="#cb42-10" tabindex="-1"></a>densityLab2Norm <span class="ot">&lt;-</span> pe[[<span class="st">&quot;peptideNorm&quot;</span>]][,<span class="fu">colData</span>(pe)<span class="sc">$</span>lab<span class="sc">==</span><span class="st">&quot;lab2&quot;</span>] <span class="sc">%&gt;%</span> </span>
+<span id="cb42-11"><a href="#cb42-11" tabindex="-1"></a>  assay <span class="sc">%&gt;%</span></span>
+<span id="cb42-12"><a href="#cb42-12" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb42-13"><a href="#cb42-13" tabindex="-1"></a>  <span class="fu">gather</span>(sample, intensity) <span class="sc">%&gt;%</span> </span>
+<span id="cb42-14"><a href="#cb42-14" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">condition =</span> <span class="fu">colData</span>(pe)[sample,<span class="st">&quot;condition&quot;</span>]) <span class="sc">%&gt;%</span></span>
+<span id="cb42-15"><a href="#cb42-15" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>intensity,<span class="at">group=</span>sample,<span class="at">color=</span>condition)) <span class="sc">+</span> </span>
+<span id="cb42-16"><a href="#cb42-16" tabindex="-1"></a>    <span class="fu">geom_density</span>() <span class="sc">+</span></span>
+<span id="cb42-17"><a href="#cb42-17" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="st">&quot;lab2&quot;</span>)</span></code></pre></div>
 </p>
 </details>
-<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" tabindex="-1"></a>densityConditionDNorm</span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a>densityConditionDNorm</span></code></pre></div>
 <pre><code>## Warning: Removed 39179 rows containing non-finite outside the scale range
 ## (`stat_density()`).</code></pre>
 <p><img src="pda_quantification_preprocessing_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" tabindex="-1"></a>densityLab2Norm</span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a>densityLab2Norm</span></code></pre></div>
 <pre><code>## Warning: Removed 44480 rows containing non-finite outside the scale range
 ## (`stat_density()`).</code></pre>
 <p><img src="pda_quantification_preprocessing_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
@@ -1822,24 +1793,24 @@ class="math display">\[y_{ip}^\text{norm} = \frac{y_{ip} -
 Click to see code to make plot
 </summary>
 <p>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" tabindex="-1"></a>summaryPlot <span class="ot">&lt;-</span> pe[[<span class="st">&quot;peptideNorm&quot;</span>]][</span>
-<span id="cb46-2"><a href="#cb46-2" tabindex="-1"></a>    <span class="fu">rowData</span>(pe[[<span class="st">&quot;peptideNorm&quot;</span>]])<span class="sc">$</span>Proteins <span class="sc">==</span> <span class="st">&quot;P12081ups|SYHC_HUMAN_UPS&quot;</span>,</span>
-<span id="cb46-3"><a href="#cb46-3" tabindex="-1"></a>    <span class="fu">colData</span>(pe)<span class="sc">$</span>lab<span class="sc">==</span><span class="st">&quot;lab2&quot;</span><span class="sc">&amp;</span><span class="fu">colData</span>(pe)<span class="sc">$</span>condition <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>,<span class="st">&quot;E&quot;</span>)] <span class="sc">%&gt;%</span></span>
-<span id="cb46-4"><a href="#cb46-4" tabindex="-1"></a>  assay <span class="sc">%&gt;%</span></span>
-<span id="cb46-5"><a href="#cb46-5" tabindex="-1"></a>  as.data.frame <span class="sc">%&gt;%</span></span>
-<span id="cb46-6"><a href="#cb46-6" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">&quot;peptide&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb46-7"><a href="#cb46-7" tabindex="-1"></a>  <span class="fu">gather</span>(sample, intensity, <span class="sc">-</span>peptide) <span class="sc">%&gt;%</span> </span>
-<span id="cb46-8"><a href="#cb46-8" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">condition =</span> <span class="fu">colData</span>(pe)[sample,<span class="st">&quot;condition&quot;</span>]) <span class="sc">%&gt;%</span></span>
-<span id="cb46-9"><a href="#cb46-9" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> peptide, <span class="at">y =</span> intensity, <span class="at">color =</span> sample, <span class="at">group =</span> sample, <span class="at">label =</span> condition), <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb46-10"><a href="#cb46-10" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb46-11"><a href="#cb46-11" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb46-12"><a href="#cb46-12" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb46-13"><a href="#cb46-13" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">vjust =</span> <span class="fl">0.5</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb46-14"><a href="#cb46-14" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Peptide&quot;</span>) <span class="sc">+</span> </span>
-<span id="cb46-15"><a href="#cb46-15" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Intensity (log2)&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" tabindex="-1"></a>summaryPlot <span class="ot">&lt;-</span> pe[[<span class="st">&quot;peptideNorm&quot;</span>]][</span>
+<span id="cb47-2"><a href="#cb47-2" tabindex="-1"></a>    <span class="fu">rowData</span>(pe[[<span class="st">&quot;peptideNorm&quot;</span>]])<span class="sc">$</span>Proteins <span class="sc">==</span> <span class="st">&quot;P12081ups|SYHC_HUMAN_UPS&quot;</span>,</span>
+<span id="cb47-3"><a href="#cb47-3" tabindex="-1"></a>    <span class="fu">colData</span>(pe)<span class="sc">$</span>lab<span class="sc">==</span><span class="st">&quot;lab2&quot;</span><span class="sc">&amp;</span><span class="fu">colData</span>(pe)<span class="sc">$</span>condition <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>,<span class="st">&quot;E&quot;</span>)] <span class="sc">%&gt;%</span></span>
+<span id="cb47-4"><a href="#cb47-4" tabindex="-1"></a>  assay <span class="sc">%&gt;%</span></span>
+<span id="cb47-5"><a href="#cb47-5" tabindex="-1"></a>  as.data.frame <span class="sc">%&gt;%</span></span>
+<span id="cb47-6"><a href="#cb47-6" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">&quot;peptide&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb47-7"><a href="#cb47-7" tabindex="-1"></a>  <span class="fu">gather</span>(sample, intensity, <span class="sc">-</span>peptide) <span class="sc">%&gt;%</span> </span>
+<span id="cb47-8"><a href="#cb47-8" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">condition =</span> <span class="fu">colData</span>(pe)[sample,<span class="st">&quot;condition&quot;</span>]) <span class="sc">%&gt;%</span></span>
+<span id="cb47-9"><a href="#cb47-9" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> peptide, <span class="at">y =</span> intensity, <span class="at">color =</span> sample, <span class="at">group =</span> sample, <span class="at">label =</span> condition), <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb47-10"><a href="#cb47-10" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb47-11"><a href="#cb47-11" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb47-12"><a href="#cb47-12" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb47-13"><a href="#cb47-13" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">vjust =</span> <span class="fl">0.5</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb47-14"><a href="#cb47-14" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Peptide&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb47-15"><a href="#cb47-15" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Intensity (log2)&quot;</span>)</span></code></pre></div>
 </p>
 </details>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" tabindex="-1"></a>summaryPlot</span></code></pre></div>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" tabindex="-1"></a>summaryPlot</span></code></pre></div>
 <pre><code>## Warning: Removed 10 rows containing missing values or values outside the scale range
 ## (`geom_line()`).</code></pre>
 <pre><code>## Warning: Removed 90 rows containing missing values or values outside the scale range
@@ -1874,14 +1845,15 @@ Click to see R-code to aggregate the data
 <p>
 <p>We use the standard sumarization in aggregateFeatures, which is
 robust model based summarization.</p>
-<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">aggregateFeatures</span>(pe,</span>
-<span id="cb50-2"><a href="#cb50-2" tabindex="-1"></a>    <span class="at">i =</span> <span class="st">&quot;peptideNorm&quot;</span>, </span>
-<span id="cb50-3"><a href="#cb50-3" tabindex="-1"></a>    <span class="at">fcol =</span> <span class="st">&quot;Proteins&quot;</span>, </span>
-<span id="cb50-4"><a href="#cb50-4" tabindex="-1"></a>    <span class="at">na.rm =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb50-5"><a href="#cb50-5" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;protein&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">aggregateFeatures</span>(pe,</span>
+<span id="cb51-2"><a href="#cb51-2" tabindex="-1"></a>    <span class="at">i =</span> <span class="st">&quot;peptideNorm&quot;</span>, </span>
+<span id="cb51-3"><a href="#cb51-3" tabindex="-1"></a>    <span class="at">fcol =</span> <span class="st">&quot;Proteins&quot;</span>, </span>
+<span id="cb51-4"><a href="#cb51-4" tabindex="-1"></a>    <span class="at">na.rm =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb51-5"><a href="#cb51-5" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;protein&quot;</span>)</span></code></pre></div>
 <pre><code>## Your quantitative and row data contain missing values. Please read the
 ## relevant section(s) in the aggregateFeatures manual page regarding the
 ## effects of missing values on data aggregation.</code></pre>
+<pre><code>## Aggregated: 1/1</code></pre>
 <p>Other summarization methods can be implemented by using the
 <code>fun</code> argument in the <code>aggregateFeatures</code>
 function.</p>
@@ -1983,7 +1955,8 @@ the GUI/shinyApp msqrob2gui</h2>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="unnumbered">References</h1>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
 <div id="ref-goeminne2020" class="csl-entry">
 Goeminne, L. J. E., A. Sticker, L. Martens, K. Gevaert, and L. Clement.
 2020. <span>“<span

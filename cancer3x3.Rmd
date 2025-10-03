@@ -334,7 +334,7 @@ We make detail plots for the top 10 proteins. Note, however that their fold chan
 for (protName in orderProt[1:10])
 {
 pePlot <- pe[protName, , c("peptideNorm","protein")]
-pePlotDf <- data.frame(longFormat(pePlot))
+pePlotDf <- data.frame(longForm(pePlot))
 pePlotDf$assay <- factor(pePlotDf$assay,
                         levels = c("peptideNorm", "protein"))
 pePlotDf$prognosis <- as.factor(colData(pePlot)[pePlotDf$colname, "prognosis"])

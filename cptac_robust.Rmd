@@ -376,7 +376,7 @@ We first extract the normalized peptideRaw expression values for a particular pr
 for (protName in sigNames)
 {
 pePlot <- pe[protName, , c("peptideNorm","protein")]
-pePlotDf <- data.frame(longFormat(pePlot))
+pePlotDf <- data.frame(longForm(pePlot))
 pePlotDf$assay <- factor(pePlotDf$assay,
                         levels = c("peptideNorm", "protein"))
 pePlotDf$condition <- as.factor(colData(pePlot)[pePlotDf$colname, "condition"])

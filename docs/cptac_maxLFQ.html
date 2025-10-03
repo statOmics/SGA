@@ -62,7 +62,7 @@
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -73,7 +73,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -466,25 +466,6 @@ div.tocify {
     <li>
       <a href="pda_blocking_wrapup.html">2.3.2. Wrap-up DA - Blocking</a>
     </li>
-    <li>
-      <a href="pda_technicalDetails.html">2.3.3. Technical Details</a>
-    </li>
-    <li class="dropdown-header">---- MODULE II RNA-seq ----</li>
-    <li>
-      <a href="sequencing_intro.html">1.  Introduction to RNA-seq</a>
-    </li>
-    <li>
-      <a href="sequencing_countData.html">2.  Working with count data and GLMs</a>
-    </li>
-    <li>
-      <a href="sequencing_technicalDE.html">3.  Technical Details</a>
-    </li>
-    <li>
-      <a href="https://www.biorxiv.org/content/10.1101/2023.06.29.547014v2">4. Transcript-level DE and Usage</a>
-    </li>
-    <li>
-      <a href="sequencing_singleCell.html">6. Intro to scRNA-seq</a>
-    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -512,18 +493,6 @@ div.tocify {
     </li>
     <li>
       <a href="pda_tutorialDesign.html">2.3. Quantification - Design</a>
-    </li>
-    <li>
-      <a href="sequencingTutorial1_mapping.html">1. Read mapping</a>
-    </li>
-    <li>
-      <a href="sequencingTutorial2_DE.html">2. Working with Count Data</a>
-    </li>
-    <li>
-      <a href="sequencingTutorial3_DE.html">4. Transcript-level DE and Usage</a>
-    </li>
-    <li>
-      <a href="scRNA-seq-Tutorial.html">6. Tutorial scRNA-seq</a>
     </li>
   </ul>
 </li>
@@ -628,42 +597,43 @@ proteinGroups.txt file.</p>
 <pre><code>## Loading data as a &#39;SummarizedExperiment&#39; object.</code></pre>
 <pre><code>## Formatting sample annotations (colData).</code></pre>
 <pre><code>## Formatting data as a &#39;QFeatures&#39; object.</code></pre>
+<pre><code>## Setting assay rownames.</code></pre>
 <p>The QFeatures object pe currently contains a single assay, named
 proteinRaw.</p>
 <p>We extract the column names from the proteinRaw assay and see that
 this contains information about the spike-in condition.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">colnames</span>(pe[[<span class="st">&quot;proteinRaw&quot;</span>]])</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">colnames</span>(pe[[<span class="st">&quot;proteinRaw&quot;</span>]])</span></code></pre></div>
 <pre><code>## [1] &quot;LFQ.intensity.6A_7&quot; &quot;LFQ.intensity.6A_8&quot; &quot;LFQ.intensity.6A_9&quot;
 ## [4] &quot;LFQ.intensity.6B_7&quot; &quot;LFQ.intensity.6B_8&quot; &quot;LFQ.intensity.6B_9&quot;</code></pre>
 <p>We rename the colnames by dropping the “LFQ.intensity.” from the
 name.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>(newNames <span class="ot">&lt;-</span>  <span class="fu">sub</span>(</span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">&quot;LFQ</span><span class="sc">\\</span><span class="st">.intensity</span><span class="sc">\\</span><span class="st">.&quot;</span>, </span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">replacement =</span> <span class="st">&quot;&quot;</span>,</span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="fu">colnames</span>(pe[[<span class="st">&quot;proteinRaw&quot;</span>]]))</span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a> )</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>(newNames <span class="ot">&lt;-</span>  <span class="fu">sub</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">&quot;LFQ</span><span class="sc">\\</span><span class="st">.intensity</span><span class="sc">\\</span><span class="st">.&quot;</span>, </span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="at">replacement =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="fu">colnames</span>(pe[[<span class="st">&quot;proteinRaw&quot;</span>]]))</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a> )</span></code></pre></div>
 <pre><code>## [1] &quot;6A_7&quot; &quot;6A_8&quot; &quot;6A_9&quot; &quot;6B_7&quot; &quot;6B_8&quot; &quot;6B_9&quot;</code></pre>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">renameColname</span>(pe, </span>
-<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>                    <span class="at">i =</span> <span class="st">&quot;proteinRaw&quot;</span>,</span>
-<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>                    newNames)</span>
-<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">renamePrimary</span>(pe, newNames)</span>
-<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="fu">colnames</span>(pe[[<span class="st">&quot;proteinRaw&quot;</span>]])</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">renameColname</span>(pe, </span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>                    <span class="at">i =</span> <span class="st">&quot;proteinRaw&quot;</span>,</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>                    newNames)</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">renamePrimary</span>(pe, newNames)</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="fu">colnames</span>(pe[[<span class="st">&quot;proteinRaw&quot;</span>]])</span></code></pre></div>
 <pre><code>## [1] &quot;6A_7&quot; &quot;6A_8&quot; &quot;6A_9&quot; &quot;6B_7&quot; &quot;6B_8&quot; &quot;6B_9&quot;</code></pre>
 <p>In the following code chunk, we add the spikein condition that we can
 read in the raw file name to the colData.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">colData</span>(pe)<span class="sc">$</span>condition <span class="ot">&lt;-</span>  </span>
-<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>  <span class="fu">colnames</span>(pe[[<span class="st">&quot;proteinRaw&quot;</span>]]) <span class="sc">%&gt;%</span></span>
-<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>  <span class="fu">substr</span>(<span class="at">start =</span> <span class="dv">2</span>, <span class="at">stop =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>  as.factor</span>
-<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="fu">colData</span>(pe)<span class="sc">$</span>condition</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">colData</span>(pe)<span class="sc">$</span>condition <span class="ot">&lt;-</span>  </span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>  <span class="fu">colnames</span>(pe[[<span class="st">&quot;proteinRaw&quot;</span>]]) <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>  <span class="fu">substr</span>(<span class="at">start =</span> <span class="dv">2</span>, <span class="at">stop =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>  as.factor</span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="fu">colData</span>(pe)<span class="sc">$</span>condition</span></code></pre></div>
 <pre><code>## [1] A A A B B B
 ## Levels: A B</code></pre>
 <p>We calculate how many non zero intensities we have per protein and
 this will be useful for filtering.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRaw&quot;</span>]])<span class="sc">$</span>nNonZero <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(<span class="fu">assay</span>(pe[[<span class="st">&quot;proteinRaw&quot;</span>]]) <span class="sc">&gt;</span> <span class="dv">0</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">rowData</span>(pe[[<span class="st">&quot;proteinRaw&quot;</span>]])<span class="sc">$</span>nNonZero <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(<span class="fu">assay</span>(pe[[<span class="st">&quot;proteinRaw&quot;</span>]]) <span class="sc">&gt;</span> <span class="dv">0</span>)</span></code></pre></div>
 <p>Proteins with zero intensities are missing and should be represent
 with a <code>NA</code> value rather than <code>0</code>.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">zeroIsNA</span>(pe, <span class="st">&quot;proteinRaw&quot;</span>) <span class="co"># convert 0 to NA</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">zeroIsNA</span>(pe, <span class="st">&quot;proteinRaw&quot;</span>) <span class="co"># convert 0 to NA</span></span></code></pre></div>
 <div id="data-exploration" class="section level2" number="3.1">
 <h2><span class="header-section-number">3.1</span> Data exploration</h2>
 <p>45% of all peptide intensities are missing and for some proteins we
@@ -681,7 +651,7 @@ include</p>
 <div id="log-transform-the-data" class="section level2" number="4.1">
 <h2><span class="header-section-number">4.1</span> Log transform the
 data</h2>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">logTransform</span>(pe, <span class="at">base =</span> <span class="dv">2</span>, <span class="at">i =</span> <span class="st">&quot;proteinRaw&quot;</span>, <span class="at">name =</span> <span class="st">&quot;proteinLog&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">logTransform</span>(pe, <span class="at">base =</span> <span class="dv">2</span>, <span class="at">i =</span> <span class="st">&quot;proteinRaw&quot;</span>, <span class="at">name =</span> <span class="st">&quot;proteinLog&quot;</span>)</span></code></pre></div>
 </div>
 <div id="filtering" class="section level2" number="4.2">
 <h2><span class="header-section-number">4.2</span> Filtering</h2>
@@ -689,10 +659,10 @@ data</h2>
 <li>Remove reverse sequences (decoys) and contaminants</li>
 </ol>
 <p>We now remove the contaminants and proteins that map to decoys.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe,<span class="sc">~</span> Reverse <span class="sc">!=</span> <span class="st">&quot;+&quot;</span>)</span></code></pre></div>
-<pre><code>## &#39;Reverse&#39; found in 2 out of 2 assay(s)</code></pre>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe,<span class="sc">~</span> Potential.contaminant <span class="sc">!=</span> <span class="st">&quot;+&quot;</span>)</span></code></pre></div>
-<pre><code>## &#39;Potential.contaminant&#39; found in 2 out of 2 assay(s)</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe,<span class="sc">~</span> Reverse <span class="sc">!=</span> <span class="st">&quot;+&quot;</span>)</span></code></pre></div>
+<pre><code>## &#39;Reverse&#39; found in 2 out of 2 assay(s).</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">filterFeatures</span>(pe,<span class="sc">~</span> Potential.contaminant <span class="sc">!=</span> <span class="st">&quot;+&quot;</span>)</span></code></pre></div>
+<pre><code>## &#39;Potential.contaminant&#39; found in 2 out of 2 assay(s).</code></pre>
 <p>We keep 1537 peptides upon filtering.</p>
 </div>
 <div id="normalize-the-data-using-median-centering"
@@ -707,30 +677,30 @@ intensity for peptide <span class="math inline">\(p\)</span> in a sample
 <p>with <span class="math inline">\(\hat\mu_i\)</span> the median
 intensity over all observed peptides in sample <span
 class="math inline">\(i\)</span>.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">normalize</span>(pe, </span>
-<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>                <span class="at">i =</span> <span class="st">&quot;proteinLog&quot;</span>, </span>
-<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a>                <span class="at">name =</span> <span class="st">&quot;protein&quot;</span>, </span>
-<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a>                <span class="at">method =</span> <span class="st">&quot;center.median&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">normalize</span>(pe, </span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>                <span class="at">i =</span> <span class="st">&quot;proteinLog&quot;</span>, </span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>                <span class="at">name =</span> <span class="st">&quot;protein&quot;</span>, </span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>                <span class="at">method =</span> <span class="st">&quot;center.median&quot;</span>)</span></code></pre></div>
 </div>
 <div id="explore-normalized-data" class="section level2" number="4.4">
 <h2><span class="header-section-number">4.4</span> Explore normalized
 data</h2>
 <p>Upon the normalisation the density curves are nicely registered</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a>pe[[<span class="st">&quot;protein&quot;</span>]] <span class="sc">%&gt;%</span> </span>
-<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>  assay <span class="sc">%&gt;%</span></span>
-<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>  <span class="fu">gather</span>(sample, intensity) <span class="sc">%&gt;%</span> </span>
-<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">condition =</span> <span class="fu">colData</span>(pe)[sample,<span class="st">&quot;condition&quot;</span>]) <span class="sc">%&gt;%</span></span>
-<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> intensity,<span class="at">group =</span> sample,<span class="at">color =</span> condition)) <span class="sc">+</span> </span>
-<span id="cb23-7"><a href="#cb23-7" tabindex="-1"></a>    <span class="fu">geom_density</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a>pe[[<span class="st">&quot;protein&quot;</span>]] <span class="sc">%&gt;%</span> </span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>  assay <span class="sc">%&gt;%</span></span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a>  <span class="fu">gather</span>(sample, intensity) <span class="sc">%&gt;%</span> </span>
+<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">condition =</span> <span class="fu">colData</span>(pe)[sample,<span class="st">&quot;condition&quot;</span>]) <span class="sc">%&gt;%</span></span>
+<span id="cb24-6"><a href="#cb24-6" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> intensity,<span class="at">group =</span> sample,<span class="at">color =</span> condition)) <span class="sc">+</span> </span>
+<span id="cb24-7"><a href="#cb24-7" tabindex="-1"></a>    <span class="fu">geom_density</span>()</span></code></pre></div>
 <pre><code>## Warning: Removed 4052 rows containing non-finite outside the scale range
 ## (`stat_density()`).</code></pre>
 <p><img src="cptac_maxLFQ_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <p>We can visualize our data using a Multi Dimensional Scaling plot, eg.
 as provided by the <code>limma</code> package.</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>pe[[<span class="st">&quot;protein&quot;</span>]] <span class="sc">%&gt;%</span> </span>
-<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>  assay <span class="sc">%&gt;%</span></span>
-<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>  limma<span class="sc">::</span><span class="fu">plotMDS</span>(<span class="at">col =</span> <span class="fu">as.numeric</span>(<span class="fu">colData</span>(pe)<span class="sc">$</span>condition))</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a>pe[[<span class="st">&quot;protein&quot;</span>]] <span class="sc">%&gt;%</span> </span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>  assay <span class="sc">%&gt;%</span></span>
+<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a>  limma<span class="sc">::</span><span class="fu">plotMDS</span>(<span class="at">col =</span> <span class="fu">as.numeric</span>(<span class="fu">colData</span>(pe)<span class="sc">$</span>condition))</span></code></pre></div>
 <p><img src="cptac_maxLFQ_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <p>Note that the samples show a clear separation according to the
 spike-in condition in the second dimension of the MDS plot.</p>
@@ -748,19 +718,19 @@ incoded in the variable <code>condition</code> of the colData. We can
 specify this model by using a formula with the factor condition as its
 predictor: <code>formula = ~condition</code>.</p>
 <p>Note, that a formula always starts with a symbol ‘~’.</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">msqrob</span>(<span class="at">object =</span> pe, <span class="at">i =</span> <span class="st">&quot;protein&quot;</span>, <span class="at">formula =</span> <span class="sc">~</span>condition)</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">msqrob</span>(<span class="at">object =</span> pe, <span class="at">i =</span> <span class="st">&quot;protein&quot;</span>, <span class="at">formula =</span> <span class="sc">~</span>condition)</span></code></pre></div>
 </div>
 <div id="inference" class="section level2" number="5.2">
 <h2><span class="header-section-number">5.2</span> Inference</h2>
 <p>First, we extract the parameter names of the model by looking at the
 first model. The models are stored in the row data of the assay under
 the default name msqrobModels.</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="fu">getCoef</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;protein&quot;</span>]])<span class="sc">$</span>msqrobModels[[<span class="dv">1</span>]])</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="fu">getCoef</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;protein&quot;</span>]])<span class="sc">$</span>msqrobModels[[<span class="dv">1</span>]])</span></code></pre></div>
 <pre><code>## [1] NA</code></pre>
 <p>We can also explore the design of the model that we specified using
 the the package <code>ExploreModelMatrix</code></p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="fu">library</span>(ExploreModelMatrix)</span>
-<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a><span class="fu">VisualizeDesign</span>(<span class="fu">colData</span>(pe),<span class="sc">~</span>condition)<span class="sc">$</span>plotlist[[<span class="dv">1</span>]]</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="fu">library</span>(ExploreModelMatrix)</span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a><span class="fu">VisualizeDesign</span>(<span class="fu">colData</span>(pe),<span class="sc">~</span>condition)<span class="sc">$</span>plotlist[[<span class="dv">1</span>]]</span></code></pre></div>
 <p><img src="cptac_maxLFQ_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 <p>Spike-in condition <code>A</code> is the reference class. So the mean
 log2 expression for samples from condition A is ‘(Intercept). The mean
@@ -768,18 +738,18 @@ log2 expression for samples from condition B is’(Intercept)+conditionB’.
 Hence, the average log2 fold change between condition b and condition a
 is modelled using the parameter ‘conditionB’. Thus, we assess the
 contrast ‘conditionB = 0’ with our statistical test.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="fu">makeContrast</span>(<span class="st">&quot;conditionB=0&quot;</span>, <span class="at">parameterNames =</span> <span class="fu">c</span>(<span class="st">&quot;conditionB&quot;</span>))</span>
-<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">hypothesisTest</span>(<span class="at">object =</span> pe, <span class="at">i =</span> <span class="st">&quot;protein&quot;</span>, <span class="at">contrast =</span> L)</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="fu">makeContrast</span>(<span class="st">&quot;conditionB=0&quot;</span>, <span class="at">parameterNames =</span> <span class="fu">c</span>(<span class="st">&quot;conditionB&quot;</span>))</span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">hypothesisTest</span>(<span class="at">object =</span> pe, <span class="at">i =</span> <span class="st">&quot;protein&quot;</span>, <span class="at">contrast =</span> L)</span></code></pre></div>
 </div>
 <div id="plots" class="section level2" number="5.3">
 <h2><span class="header-section-number">5.3</span> Plots</h2>
 <div id="volcano-plot" class="section level3" number="5.3.1">
 <h3><span class="header-section-number">5.3.1</span> Volcano-plot</h3>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a>volcano <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;protein&quot;</span>]])<span class="sc">$</span>conditionB,</span>
-<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a>                  <span class="fu">aes</span>(<span class="at">x =</span> logFC, <span class="at">y =</span> <span class="sc">-</span><span class="fu">log10</span>(pval), <span class="at">color =</span> adjPval <span class="sc">&lt;</span> <span class="fl">0.05</span>)) <span class="sc">+</span></span>
-<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">cex =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
-<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">alpha</span>(<span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="sc">+</span> <span class="fu">theme_minimal</span>()</span>
-<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a>volcano</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a>volcano <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="fu">rowData</span>(pe[[<span class="st">&quot;protein&quot;</span>]])<span class="sc">$</span>conditionB,</span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a>                  <span class="fu">aes</span>(<span class="at">x =</span> logFC, <span class="at">y =</span> <span class="sc">-</span><span class="fu">log10</span>(pval), <span class="at">color =</span> adjPval <span class="sc">&lt;</span> <span class="fl">0.05</span>)) <span class="sc">+</span></span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">cex =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
+<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">alpha</span>(<span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="sc">+</span> <span class="fu">theme_minimal</span>()</span>
+<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a>volcano</span></code></pre></div>
 <p><img src="cptac_maxLFQ_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <p>Note, that only 7 proteins are found to be differentially
 abundant.</p>
@@ -788,11 +758,11 @@ abundant.</p>
 <h3><span class="header-section-number">5.3.2</span> Heatmap</h3>
 <p>We first select the names of the proteins that were declared
 signficant.</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a>sigNames <span class="ot">&lt;-</span> <span class="fu">rowData</span>(pe[[<span class="st">&quot;protein&quot;</span>]])<span class="sc">$</span>conditionB <span class="sc">%&gt;%</span></span>
-<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="st">&quot;protein&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a>  <span class="fu">filter</span>(adjPval<span class="sc">&lt;</span><span class="fl">0.05</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a>  <span class="fu">pull</span>(protein)</span>
-<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a><span class="fu">heatmap</span>(<span class="fu">assay</span>(pe[[<span class="st">&quot;protein&quot;</span>]])[sigNames, ])</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a>sigNames <span class="ot">&lt;-</span> <span class="fu">rowData</span>(pe[[<span class="st">&quot;protein&quot;</span>]])<span class="sc">$</span>conditionB <span class="sc">%&gt;%</span></span>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="st">&quot;protein&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a>  <span class="fu">filter</span>(adjPval<span class="sc">&lt;</span><span class="fl">0.05</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a>  <span class="fu">pull</span>(protein)</span>
+<span id="cb33-5"><a href="#cb33-5" tabindex="-1"></a><span class="fu">heatmap</span>(<span class="fu">assay</span>(pe[[<span class="st">&quot;protein&quot;</span>]])[sigNames, ])</span></code></pre></div>
 <p><img src="cptac_maxLFQ_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 <p>The majority of the proteins are indeed UPS proteins. 1 yeast protein
 is returned. Note, that the yeast protein indeed shows evidence for
@@ -802,32 +772,32 @@ differential abundance.</p>
 <h3><span class="header-section-number">5.3.3</span> Boxplots</h3>
 <p>We make boxplot of the log2 FC and stratify according to the whether
 a protein is spiked or not.</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="fu">rowData</span>(pe[[<span class="st">&quot;protein&quot;</span>]])<span class="sc">$</span>conditionB <span class="sc">%&gt;%</span></span>
-<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">&quot;protein&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">grepl</span>(<span class="st">&quot;UPS&quot;</span>,protein),<span class="at">y=</span>logFC)) <span class="sc">+</span></span>
-<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb33-5"><a href="#cb33-5" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;UPS&quot;</span>) <span class="sc">+</span></span>
-<span id="cb33-6"><a href="#cb33-6" tabindex="-1"></a>  <span class="fu">geom_segment</span>(</span>
-<span id="cb33-7"><a href="#cb33-7" tabindex="-1"></a>    <span class="at">x =</span> <span class="fl">1.5</span>,</span>
-<span id="cb33-8"><a href="#cb33-8" tabindex="-1"></a>    <span class="at">xend =</span> <span class="fl">2.5</span>,</span>
-<span id="cb33-9"><a href="#cb33-9" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">log2</span>(<span class="fl">0.74</span><span class="sc">/</span><span class="fl">0.25</span>),</span>
-<span id="cb33-10"><a href="#cb33-10" tabindex="-1"></a>    <span class="at">yend =</span> <span class="fu">log2</span>(<span class="fl">0.74</span><span class="sc">/</span><span class="fl">0.25</span>),</span>
-<span id="cb33-11"><a href="#cb33-11" tabindex="-1"></a>    <span class="at">colour=</span><span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
-<span id="cb33-12"><a href="#cb33-12" tabindex="-1"></a>  <span class="fu">geom_segment</span>(</span>
-<span id="cb33-13"><a href="#cb33-13" tabindex="-1"></a>    <span class="at">x =</span> <span class="fl">0.5</span>,</span>
-<span id="cb33-14"><a href="#cb33-14" tabindex="-1"></a>    <span class="at">xend =</span> <span class="fl">1.5</span>,</span>
-<span id="cb33-15"><a href="#cb33-15" tabindex="-1"></a>    <span class="at">y =</span> <span class="dv">0</span>,</span>
-<span id="cb33-16"><a href="#cb33-16" tabindex="-1"></a>    <span class="at">yend =</span> <span class="dv">0</span>,</span>
-<span id="cb33-17"><a href="#cb33-17" tabindex="-1"></a>    <span class="at">colour=</span><span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
-<span id="cb33-18"><a href="#cb33-18" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
-<span id="cb33-19"><a href="#cb33-19" tabindex="-1"></a>    <span class="st">&quot;text&quot;</span>,</span>
-<span id="cb33-20"><a href="#cb33-20" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),</span>
-<span id="cb33-21"><a href="#cb33-21" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="fu">log2</span>(<span class="fl">0.74</span><span class="sc">/</span><span class="fl">0.25</span>))<span class="sc">+</span>.<span class="dv">1</span>,</span>
-<span id="cb33-22"><a href="#cb33-22" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">c</span>(</span>
-<span id="cb33-23"><a href="#cb33-23" tabindex="-1"></a>      <span class="st">&quot;log2 FC Ecoli = 0&quot;</span>,</span>
-<span id="cb33-24"><a href="#cb33-24" tabindex="-1"></a>      <span class="fu">paste0</span>(<span class="st">&quot;log2 FC UPS = &quot;</span>,<span class="fu">round</span>(<span class="fu">log2</span>(<span class="fl">0.74</span><span class="sc">/</span><span class="fl">0.25</span>),<span class="dv">2</span>))</span>
-<span id="cb33-25"><a href="#cb33-25" tabindex="-1"></a>      ),</span>
-<span id="cb33-26"><a href="#cb33-26" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="fu">rowData</span>(pe[[<span class="st">&quot;protein&quot;</span>]])<span class="sc">$</span>conditionB <span class="sc">%&gt;%</span></span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">&quot;protein&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">grepl</span>(<span class="st">&quot;UPS&quot;</span>,protein),<span class="at">y=</span>logFC)) <span class="sc">+</span></span>
+<span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;UPS&quot;</span>) <span class="sc">+</span></span>
+<span id="cb34-6"><a href="#cb34-6" tabindex="-1"></a>  <span class="fu">geom_segment</span>(</span>
+<span id="cb34-7"><a href="#cb34-7" tabindex="-1"></a>    <span class="at">x =</span> <span class="fl">1.5</span>,</span>
+<span id="cb34-8"><a href="#cb34-8" tabindex="-1"></a>    <span class="at">xend =</span> <span class="fl">2.5</span>,</span>
+<span id="cb34-9"><a href="#cb34-9" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">log2</span>(<span class="fl">0.74</span><span class="sc">/</span><span class="fl">0.25</span>),</span>
+<span id="cb34-10"><a href="#cb34-10" tabindex="-1"></a>    <span class="at">yend =</span> <span class="fu">log2</span>(<span class="fl">0.74</span><span class="sc">/</span><span class="fl">0.25</span>),</span>
+<span id="cb34-11"><a href="#cb34-11" tabindex="-1"></a>    <span class="at">colour=</span><span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
+<span id="cb34-12"><a href="#cb34-12" tabindex="-1"></a>  <span class="fu">geom_segment</span>(</span>
+<span id="cb34-13"><a href="#cb34-13" tabindex="-1"></a>    <span class="at">x =</span> <span class="fl">0.5</span>,</span>
+<span id="cb34-14"><a href="#cb34-14" tabindex="-1"></a>    <span class="at">xend =</span> <span class="fl">1.5</span>,</span>
+<span id="cb34-15"><a href="#cb34-15" tabindex="-1"></a>    <span class="at">y =</span> <span class="dv">0</span>,</span>
+<span id="cb34-16"><a href="#cb34-16" tabindex="-1"></a>    <span class="at">yend =</span> <span class="dv">0</span>,</span>
+<span id="cb34-17"><a href="#cb34-17" tabindex="-1"></a>    <span class="at">colour=</span><span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
+<span id="cb34-18"><a href="#cb34-18" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb34-19"><a href="#cb34-19" tabindex="-1"></a>    <span class="st">&quot;text&quot;</span>,</span>
+<span id="cb34-20"><a href="#cb34-20" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),</span>
+<span id="cb34-21"><a href="#cb34-21" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="fu">log2</span>(<span class="fl">0.74</span><span class="sc">/</span><span class="fl">0.25</span>))<span class="sc">+</span>.<span class="dv">1</span>,</span>
+<span id="cb34-22"><a href="#cb34-22" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">c</span>(</span>
+<span id="cb34-23"><a href="#cb34-23" tabindex="-1"></a>      <span class="st">&quot;log2 FC Ecoli = 0&quot;</span>,</span>
+<span id="cb34-24"><a href="#cb34-24" tabindex="-1"></a>      <span class="fu">paste0</span>(<span class="st">&quot;log2 FC UPS = &quot;</span>,<span class="fu">round</span>(<span class="fu">log2</span>(<span class="fl">0.74</span><span class="sc">/</span><span class="fl">0.25</span>),<span class="dv">2</span>))</span>
+<span id="cb34-25"><a href="#cb34-25" tabindex="-1"></a>      ),</span>
+<span id="cb34-26"><a href="#cb34-26" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">&quot;red&quot;</span>)</span></code></pre></div>
 <pre><code>## Warning: Removed 746 rows containing non-finite outside the scale range
 ## (`stat_boxplot()`).</code></pre>
 <p><img src="cptac_maxLFQ_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
@@ -840,10 +810,10 @@ a protein is spiked or not.</p>
 <p>With respect to reproducibility, it is highly recommended to include
 a session info in your script so that readers of your output can see
 your particular setup of R.</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
 <pre><code>## R version 4.4.0 RC (2024-04-16 r86468)
 ## Platform: aarch64-apple-darwin20
-## Running under: macOS Big Sur 11.6
+## Running under: macOS 15.6
 ## 
 ## Matrix products: default
 ## BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib 
@@ -861,18 +831,18 @@ your particular setup of R.</p>
 ## 
 ## other attached packages:
 ##  [1] ExploreModelMatrix_1.16.0   plotly_4.10.4              
-##  [3] msqrob2_1.12.0              QFeatures_1.14.2           
-##  [5] MultiAssayExperiment_1.30.3 SummarizedExperiment_1.34.0
+##  [3] msqrob2_1.15.1              QFeatures_1.19.3           
+##  [5] MultiAssayExperiment_1.34.0 SummarizedExperiment_1.34.0
 ##  [7] Biobase_2.64.0              GenomicRanges_1.56.1       
 ##  [9] GenomeInfoDb_1.40.1         IRanges_2.38.1             
-## [11] S4Vectors_0.42.1            BiocGenerics_0.50.0        
-## [13] MatrixGenerics_1.16.0       matrixStats_1.4.1          
-## [15] limma_3.60.6                lubridate_1.9.3            
-## [17] forcats_1.0.0               stringr_1.5.1              
-## [19] dplyr_1.1.4                 purrr_1.0.2                
-## [21] readr_2.1.5                 tidyr_1.3.1                
-## [23] tibble_3.2.1                ggplot2_3.5.1              
-## [25] tidyverse_2.0.0            
+## [11] S4Vectors_0.42.1            BiocGenerics_0.54.0        
+## [13] generics_0.1.3              MatrixGenerics_1.16.0      
+## [15] matrixStats_1.4.1           limma_3.60.6               
+## [17] lubridate_1.9.3             forcats_1.0.0              
+## [19] stringr_1.5.1               dplyr_1.1.4                
+## [21] purrr_1.0.2                 readr_2.1.5                
+## [23] tidyr_1.3.1                 tibble_3.2.1               
+## [25] ggplot2_3.5.1               tidyverse_2.0.0            
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] rlang_1.1.4             magrittr_2.0.3          shinydashboard_0.7.2   
@@ -887,24 +857,24 @@ your particular setup of R.</p>
 ## [28] parallel_4.4.0          cluster_2.1.6           R6_2.5.1               
 ## [31] bslib_0.8.0             stringi_1.8.4           boot_1.3-31            
 ## [34] jquerylib_0.1.4         Rcpp_1.0.13-1           knitr_1.48             
-## [37] BiocBaseUtils_1.6.0     httpuv_1.6.15           Matrix_1.7-0           
+## [37] BiocBaseUtils_1.10.0    httpuv_1.6.15           Matrix_1.7-0           
 ## [40] splines_4.4.0           igraph_2.0.3            timechange_0.3.0       
 ## [43] tidyselect_1.2.1        rstudioapi_0.16.0       abind_1.4-8            
 ## [46] yaml_2.3.10             codetools_0.2-20        lattice_0.22-6         
 ## [49] plyr_1.8.9              shiny_1.9.1             withr_3.0.1            
 ## [52] evaluate_1.0.0          pillar_1.9.0            DT_0.33                
-## [55] shinyjs_2.1.0           generics_0.1.3          hms_1.1.3              
-## [58] munsell_0.5.1           scales_1.3.0            minqa_1.2.8            
-## [61] xtable_1.8-4            glue_1.8.0              lazyeval_0.2.2         
-## [64] tools_4.4.0             data.table_1.16.0       lme4_1.1-35.5          
-## [67] cowplot_1.1.3           grid_4.4.0              MsCoreUtils_1.16.1     
-## [70] colorspace_2.1-1        nlme_3.1-166            GenomeInfoDbData_1.2.12
-## [73] cli_3.6.3               fansi_1.0.6             S4Arrays_1.4.1         
-## [76] viridisLite_0.4.2       AnnotationFilter_1.28.0 gtable_0.3.5           
-## [79] rintrojs_0.3.4          sass_0.4.9              digest_0.6.37          
-## [82] SparseArray_1.4.8       htmlwidgets_1.6.4       farver_2.1.2           
-## [85] htmltools_0.5.8.1       lifecycle_1.0.4         httr_1.4.7             
-## [88] mime_0.12               statmod_1.5.0           MASS_7.3-61</code></pre>
+## [55] shinyjs_2.1.0           hms_1.1.3               munsell_0.5.1          
+## [58] scales_1.3.0            minqa_1.2.8             xtable_1.8-4           
+## [61] glue_1.8.0              lazyeval_0.2.2          tools_4.4.0            
+## [64] data.table_1.17.6       lme4_1.1-35.5           cowplot_1.1.3          
+## [67] grid_4.4.0              MsCoreUtils_1.16.1      colorspace_2.1-1       
+## [70] nlme_3.1-166            GenomeInfoDbData_1.2.12 cli_3.6.3              
+## [73] fansi_1.0.6             S4Arrays_1.4.1          viridisLite_0.4.2      
+## [76] AnnotationFilter_1.28.0 gtable_0.3.5            rintrojs_0.3.4         
+## [79] sass_0.4.9              digest_0.6.37           SparseArray_1.4.8      
+## [82] htmlwidgets_1.6.4       farver_2.1.2            htmltools_0.5.8.1      
+## [85] lifecycle_1.0.4         httr_1.4.7              mime_0.12              
+## [88] statmod_1.5.0           MASS_7.3-61</code></pre>
 </div>
 
 <div id="rmd-source-code">LS0tCnRpdGxlOiAiSW50cm9kdWN0aW9uIHRvIHByb3Rlb21pY3MgZGF0YSBhbmFseXNpczogbWF4TEZRIHN1bW1hcml6YXRpb24iCmF1dGhvcjogIkxpZXZlbiBDbGVtZW50IgpkYXRlOiAic3RhdE9taWNzLCBHaGVudCBVbml2ZXJzaXR5IChodHRwczovL3N0YXRvbWljcy5naXRodWIuaW8pIgpvdXRwdXQ6CiAgICBodG1sX2RvY3VtZW50OgogICAgICBjb2RlX2Rvd25sb2FkOiB0cnVlCiAgICAgIHRoZW1lOiBmbGF0bHkKICAgICAgdG9jOiB0cnVlCiAgICAgIHRvY19mbG9hdDogdHJ1ZQogICAgICBoaWdobGlnaHQ6IHRhbmdvCiAgICAgIG51bWJlcl9zZWN0aW9uczogdHJ1ZQogICAgcGRmX2RvY3VtZW50OgogICAgICB0b2M6IHRydWUKICAgICAgbnVtYmVyX3NlY3Rpb25zOiB0cnVlCmxpbmtjb2xvcjogYmx1ZQp1cmxjb2xvcjogYmx1ZQpjaXRlY29sb3I6IGJsdWUKCmJpYmxpb2dyYXBoeTogbXNxcm9iMi5iaWIKCi0tLQoKPGEgcmVsPSJsaWNlbnNlIiBocmVmPSJodHRwczovL2NyZWF0aXZlY29tbW9ucy5vcmcvbGljZW5zZXMvYnktbmMtc2EvNC4wIj48aW1nIGFsdD0iQ3JlYXRpdmUgQ29tbW9ucyBMaWNlbnNlIiBzdHlsZT0iYm9yZGVyLXdpZHRoOjAiIHNyYz0iaHR0cHM6Ly9pLmNyZWF0aXZlY29tbW9ucy5vcmcvbC9ieS1uYy1zYS80LjAvODh4MzEucG5nIiAvPjwvYT4KClRoaXMgaXMgcGFydCBvZiB0aGUgb25saW5lIGNvdXJzZSBbUHJvdGVvbWljcyBEYXRhIEFuYWx5c2lzIChQREEpXShodHRwczovL3N0YXRvbWljcy5naXRodWIuaW8vUERBMjJHVFBCLykKCiMgQmFja2dyb3VuZApUaGlzIGNhc2Utc3R1ZHkgaXMgYSBzdWJzZXQgb2YgdGhlIGRhdGEgb2YgdGhlIDZ0aCBzdHVkeSBvZiB0aGUgQ2xpbmljYWwKUHJvdGVvbWljIFRlY2hub2xvZ3kgQXNzZXNzbWVudCBmb3IgQ2FuY2VyIChDUFRBQykuCkluIHRoaXMgZXhwZXJpbWVudCwgdGhlIGF1dGhvcnMgc3Bpa2VkIHRoZSBTaWdtYSBVbml2ZXJzYWwgUHJvdGVpbiBTdGFuZGFyZAptaXh0dXJlIDEgKFVQUzEpIGNvbnRhaW5pbmcgNDggZGlmZmVyZW50IGh1bWFuIHByb3RlaW5zIGluIGEgcHJvdGVpbiBiYWNrZ3JvdW5kCm9mIDYwIG5nLyRcbXUkTCBTYWNjaGFyb215Y2VzIGNlcmV2aXNpYWUgc3RyYWluIEJZNDc0MS4KVHdvIGRpZmZlcmVudCBzcGlrZS1pbiBjb25jZW50cmF0aW9ucyB3ZXJlIHVzZWQ6CjZBICgwLjI1IGZtb2wgVVBTMSBwcm90ZWlucy8kXG11JEwpIGFuZCA2QiAoMC43NCBmbW9sIFVQUzEgcHJvdGVpbnMvJFxtdSRMKSBbNV0uCldlIGxpbWl0ZWQgb3Vyc2VsdmVzIHRvIHRoZSBkYXRhIG9mIExUUS1PcmJpdHJhcCBXIGF0IHNpdGUgNTYuClRoZSBkYXRhIHdlcmUgc2VhcmNoZWQgd2l0aCBNYXhRdWFudCB2ZXJzaW9uIDEuNS4yLjgsIGFuZApkZXRhaWxlZCBzZWFyY2ggc2V0dGluZ3Mgd2VyZSBkZXNjcmliZWQgaW4gR29lbWlubmUgZXQgYWwuICgyMDE2KSBbMV0uClRocmVlIHJlcGxpY2F0ZXMgYXJlIGF2YWlsYWJsZSBmb3IgZWFjaCBjb25jZW50cmF0aW9uLgoKCi0gTk9URSBUSEFUIG1heExGUSBTVU1NQVJJU0FUSU9OIElTIFNVQk9QVElNQUwhIAotIFRISVMgSVMgRk9SIERJREFDVElDQUwgUFVSUE9TRVMgT05MWS4KCiMgRGF0YQoKV2UgZmlyc3QgaW1wb3J0IHRoZSBkYXRhIGZyb20gcHJvdGVpbkdyb3Vwcy50eHQgZmlsZS4gVGhpcyBpcyB0aGUgZmlsZSBjb250YWluaW5nCm1heExGUSBzdW1tYXJpemVkIHByb3RlaW4tbGV2ZWwgaW50ZW5zaXRpZXMuIEZvciBhIE1heFF1YW50IHNlYXJjaCBbNl0sCnRoaXMgcHJvdGVpbkdyb3Vwcy50eHQgZmlsZSBjYW4gYmUgZm91bmQgYnkgZGVmYXVsdCBpbiB0aGUKInBhdGhfdG9fcmF3X2ZpbGVzL2NvbWJpbmVkL3R4dC8iIGZvbGRlciBmcm9tIHRoZSBNYXhRdWFudCBvdXRwdXQsCndpdGggInBhdGhfdG9fcmF3X2ZpbGVzIiB0aGUgZm9sZGVyIHdoZXJlIHRoZSByYXcgZmlsZXMgd2VyZSBzYXZlZC4KSW4gdGhpcyB2aWduZXR0ZSwgd2UgdXNlIGEgTWF4UXVhbnQgcHJvdGVpblJhd3MgZmlsZSB3aGljaCBpcyBhIHN1YnNldApvZiB0aGUgY3B0YWMgc3R1ZHkuIApUbyBpbXBvcnQgdGhlIGRhdGEgd2UgdXNlIHRoZSBgUUZlYXR1cmVzYCBwYWNrYWdlLgoKV2UgZ2VuZXJhdGUgdGhlIG9iamVjdCBwcm90ZWluUmF3RmlsZSB3aXRoIHRoZSBwYXRoIHRvIHRoZSBwcm90ZWluR3JvdXBzLnR4dCBmaWxlLgpVc2luZyB0aGUgYGdyZXBFY29sc2AgZnVuY3Rpb24sIHdlIGZpbmQgdGhlIGNvbHVtbnMgdGhhdCBjb250YWluIHRoZSBMRlEgZXhwcmVzc2lvbgpkYXRhIG9mIHRoZSBwcm90ZWluUmF3cyBpbiB0aGUgcHJvdGVpbkdyb3Vwcy50eHQgZmlsZS4KCgojIERhdGEKCldlIGZpcnN0IGltcG9ydCB0aGUgZGF0YSBmcm9tIHByb3RlaW5Hcm91cHMudHh0IGZpbGUuIFRoaXMgaXMgdGhlIGZpbGUgY29udGFpbmluZyBtYXhMRlEgc3VtbWFyaXplZCBwcm90ZWluLWxldmVsIGludGVuc2l0aWVzLiBGb3IgYSBNYXhRdWFudCBzZWFyY2ggWzZdLCB0aGlzIHByb3RlaW5Hcm91cHMudHh0IGZpbGUgY2FuIGJlIGZvdW5kIGJ5IGRlZmF1bHQgaW4gdGhlIOKAnHBhdGhfdG9fcmF3X2ZpbGVzL2NvbWJpbmVkL3R4dC/igJ0gZm9sZGVyIGZyb20gdGhlIE1heFF1YW50IG91dHB1dCwgd2l0aCDigJxwYXRoX3RvX3Jhd19maWxlc+KAnSB0aGUgZm9sZGVyIHdoZXJlIHRoZSByYXcgZmlsZXMgd2VyZSBzYXZlZC4gSW4gdGhpcyB2aWduZXR0ZSwgd2UgdXNlIGEgTWF4UXVhbnQgcHJvdGVpblJhd3MgZmlsZSB3aGljaCBpcyBhIHN1YnNldCBvZiB0aGUgY3B0YWMgc3R1ZHkuIFRvIGltcG9ydCB0aGUgZGF0YSB3ZSB1c2UgdGhlIFFGZWF0dXJlcyBwYWNrYWdlLgoKV2UgZ2VuZXJhdGUgdGhlIG9iamVjdCBwcm90ZWluUmF3RmlsZSB3aXRoIHRoZSBwYXRoIHRvIHRoZSBwcm90ZWluR3JvdXBzLnR4dCBmaWxlLiBVc2luZyB0aGUgZ3JlcEVjb2xzIGZ1bmN0aW9uLCB3ZSBmaW5kIHRoZSBjb2x1bW5zIHRoYXQgY29udGFpbiB0aGUgTEZRIGV4cHJlc3Npb24gZGF0YSBvZiB0aGUgcHJvdGVpblJhd3MgaW4gdGhlIHByb3RlaW5Hcm91cHMudHh0IGZpbGUuCgpgYGB7ciwgd2FybmluZz1GQUxTRSwgbWVzc2FnZT1GQUxTRX0KbGlicmFyeSh0aWR5dmVyc2UpCmxpYnJhcnkobGltbWEpCmxpYnJhcnkoUUZlYXR1cmVzKQpsaWJyYXJ5KG1zcXJvYjIpCmxpYnJhcnkocGxvdGx5KQpwcm90ZWluc0ZpbGUgPC0gImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9zdGF0T21pY3MvUERBMjJHVFBCL2RhdGEvcXVhbnRpZmljYXRpb24vY3B0YWNBdnNCX2xhYjMvcHJvdGVpbkdyb3Vwcy50eHQiCgplY29scyA8LSBncmVwKCJMRlFcXC5pbnRlbnNpdHlcXC4iLCBuYW1lcyhyZWFkLmRlbGltKHByb3RlaW5zRmlsZSkpKQpgYGAKCk5leHQsIHdlIHJlYWQgdGhlIGRhdGEgYW5kIHN0b3JlIGl0IGluIFFGZWF0dXJlcyBvYmplY3QKCmBgYHtyfQpwZSA8LSByZWFkUUZlYXR1cmVzKAogIGFzc2F5RGF0YSA9IHJlYWQuZGVsaW0ocHJvdGVpbnNGaWxlKSwgCiAgZm5hbWVzID0gMSwgCiAgcXVhbnRDb2xzID0gZWNvbHMsCiAgbmFtZSA9ICJwcm90ZWluUmF3IgopCmBgYAoKVGhlIFFGZWF0dXJlcyBvYmplY3QgcGUgY3VycmVudGx5IGNvbnRhaW5zIGEgc2luZ2xlIGFzc2F5LCBuYW1lZCBwcm90ZWluUmF3LgoKV2UgZXh0cmFjdCB0aGUgY29sdW1uIG5hbWVzIGZyb20gdGhlIHByb3RlaW5SYXcgYXNzYXkgYW5kIHNlZSB0aGF0IHRoaXMgY29udGFpbnMgaW5mb3JtYXRpb24gYWJvdXQgdGhlIHNwaWtlLWluIGNvbmRpdGlvbi4KCmBgYHtyfQpjb2xuYW1lcyhwZVtbInByb3RlaW5SYXciXV0pCmBgYAoKV2UgcmVuYW1lIHRoZSBjb2xuYW1lcyBieSBkcm9wcGluZyB0aGUgIkxGUS5pbnRlbnNpdHkuIiBmcm9tIHRoZSBuYW1lLgoKYGBge3J9CihuZXdOYW1lcyA8LSAgc3ViKAogIHBhdHRlcm4gPSAiTEZRXFwuaW50ZW5zaXR5XFwuIiwgCiAgcmVwbGFjZW1lbnQgPSAiIiwKICBjb2xuYW1lcyhwZVtbInByb3RlaW5SYXciXV0pKQogKQpgYGAKCmBgYHtyfQpwZSA8LSByZW5hbWVDb2xuYW1lKHBlLCAKICAgICAgICAgICAgICAgICAgICBpID0gInByb3RlaW5SYXciLAogICAgICAgICAgICAgICAgICAgIG5ld05hbWVzKQpwZSA8LSByZW5hbWVQcmltYXJ5KHBlLCBuZXdOYW1lcykKY29sbmFtZXMocGVbWyJwcm90ZWluUmF3Il1dKQpgYGAKCkluIHRoZSBmb2xsb3dpbmcgY29kZSBjaHVuaywgd2UgYWRkIHRoZSBzcGlrZWluIGNvbmRpdGlvbiB0aGF0IHdlIGNhbiByZWFkIGluIHRoZSByYXcgZmlsZSBuYW1lIHRvIHRoZSBjb2xEYXRhLgoKYGBge3J9CmNvbERhdGEocGUpJGNvbmRpdGlvbiA8LSAgCiAgY29sbmFtZXMocGVbWyJwcm90ZWluUmF3Il1dKSAlPiUKICBzdWJzdHIoc3RhcnQgPSAyLCBzdG9wID0gMikgJT4lCiAgYXMuZmFjdG9yCmNvbERhdGEocGUpJGNvbmRpdGlvbgpgYGAKCgoKCldlIGNhbGN1bGF0ZSBob3cgbWFueSBub24gemVybyBpbnRlbnNpdGllcyB3ZSBoYXZlIHBlciBwcm90ZWluIGFuZCB0aGlzCndpbGwgYmUgdXNlZnVsIGZvciBmaWx0ZXJpbmcuCgpgYGB7cn0Kcm93RGF0YShwZVtbInByb3RlaW5SYXciXV0pJG5Ob25aZXJvIDwtIHJvd1N1bXMoYXNzYXkocGVbWyJwcm90ZWluUmF3Il1dKSA+IDApCmBgYAoKClByb3RlaW5zIHdpdGggemVybyBpbnRlbnNpdGllcyBhcmUgbWlzc2luZyBhbmQgc2hvdWxkIGJlIHJlcHJlc2VudAp3aXRoIGEgYE5BYCB2YWx1ZSByYXRoZXIgdGhhbiBgMGAuCmBgYHtyfQpwZSA8LSB6ZXJvSXNOQShwZSwgInByb3RlaW5SYXciKSAjIGNvbnZlcnQgMCB0byBOQQpgYGAKCgojIyBEYXRhIGV4cGxvcmF0aW9uCgpgciBmb3JtYXQobWVhbihpcy5uYShhc3NheShwZVtbInByb3RlaW5SYXciXV0pKSkqMTAwLGRpZ2l0cz0yKWAlIG9mIGFsbCBwZXB0aWRlCmludGVuc2l0aWVzIGFyZSBtaXNzaW5nIGFuZCBmb3Igc29tZSBwcm90ZWlucyB3ZSBkbyBub3QgZXZlbiBtZWFzdXJlIGEgc2lnbmFsCmluIGFueSBzYW1wbGUuCgoKIyBQcmVwcm9jZXNzaW5nCgpUaGlzIHNlY3Rpb24gcHJlZm9ybXMgcHJlcHJvY2Vzc2luZyBmb3IgdGhlIHBlcHRpZGUgZGF0YS4gClRoaXMgaW5jbHVkZSAKCi0gbG9nIHRyYW5zZm9ybWF0aW9uLCAKLSBmaWx0ZXJpbmcgCgojIyBMb2cgdHJhbnNmb3JtIHRoZSBkYXRhCgpgYGB7cn0KcGUgPC0gbG9nVHJhbnNmb3JtKHBlLCBiYXNlID0gMiwgaSA9ICJwcm90ZWluUmF3IiwgbmFtZSA9ICJwcm90ZWluTG9nIikKYGBgCgojIyBGaWx0ZXJpbmcKCjEuIFJlbW92ZSByZXZlcnNlIHNlcXVlbmNlcyAoZGVjb3lzKSBhbmQgY29udGFtaW5hbnRzCgpXZSBub3cgcmVtb3ZlIHRoZSBjb250YW1pbmFudHMgYW5kIHByb3RlaW5zIHRoYXQgbWFwIHRvIGRlY295cy4KCmBgYHtyfQpwZSA8LSBmaWx0ZXJGZWF0dXJlcyhwZSx+IFJldmVyc2UgIT0gIisiKQpwZSA8LSBmaWx0ZXJGZWF0dXJlcyhwZSx+IFBvdGVudGlhbC5jb250YW1pbmFudCAhPSAiKyIpCmBgYApXZSBrZWVwIGByIG5yb3cocGVbWyJwcm90ZWluTG9nIl1dKWAgcGVwdGlkZXMgdXBvbiBmaWx0ZXJpbmcuCgoKIyMgTm9ybWFsaXplIHRoZSBkYXRhIHVzaW5nIG1lZGlhbiBjZW50ZXJpbmcgCgpXZSBub3JtYWxpemUgdGhlIGRhdGEgYnkgc3Vic3RyYWN0aW5nIHRoZSBzYW1wbGUgbWVkaWFuIGZyb20gZXZlcnkgaW50ZW5zaXR5IGZvciBwZXB0aWRlICRwJCAgaW4gYSBzYW1wbGUgJGkkOiAKCiQkeV97aXB9Xlx0ZXh0e25vcm19ID0geV97aXB9IC0gXGhhdFxtdV9pJCQgCgp3aXRoICRcaGF0XG11X2kkIHRoZSBtZWRpYW4gaW50ZW5zaXR5IG92ZXIgYWxsIG9ic2VydmVkIHBlcHRpZGVzIGluIHNhbXBsZSAkaSQuCgpgYGB7cn0KcGUgPC0gbm9ybWFsaXplKHBlLCAKICAgICAgICAgICAgICAgIGkgPSAicHJvdGVpbkxvZyIsIAogICAgICAgICAgICAgICAgbmFtZSA9ICJwcm90ZWluIiwgCiAgICAgICAgICAgICAgICBtZXRob2QgPSAiY2VudGVyLm1lZGlhbiIpCmBgYAoKCiMjIEV4cGxvcmUgIG5vcm1hbGl6ZWQgZGF0YQoKVXBvbiB0aGUgbm9ybWFsaXNhdGlvbiB0aGUgZGVuc2l0eSBjdXJ2ZXMgYXJlIG5pY2VseSByZWdpc3RlcmVkCgpgYGB7cn0KcGVbWyJwcm90ZWluIl1dICU+JSAKICBhc3NheSAlPiUKICBhcy5kYXRhLmZyYW1lKCkgJT4lCiAgZ2F0aGVyKHNhbXBsZSwgaW50ZW5zaXR5KSAlPiUgCiAgbXV0YXRlKGNvbmRpdGlvbiA9IGNvbERhdGEocGUpW3NhbXBsZSwiY29uZGl0aW9uIl0pICU+JQogIGdncGxvdChhZXMoeCA9IGludGVuc2l0eSxncm91cCA9IHNhbXBsZSxjb2xvciA9IGNvbmRpdGlvbikpICsgCiAgICBnZW9tX2RlbnNpdHkoKQpgYGAKCldlIGNhbiB2aXN1YWxpemUgb3VyIGRhdGEgdXNpbmcgYSBNdWx0aSBEaW1lbnNpb25hbCBTY2FsaW5nIHBsb3QsCmVnLiBhcyBwcm92aWRlZCBieSB0aGUgYGxpbW1hYCBwYWNrYWdlLgoKYGBge3J9CnBlW1sicHJvdGVpbiJdXSAlPiUgCiAgYXNzYXkgJT4lCiAgbGltbWE6OnBsb3RNRFMoY29sID0gYXMubnVtZXJpYyhjb2xEYXRhKHBlKSRjb25kaXRpb24pKQpgYGAKCk5vdGUgdGhhdCB0aGUgc2FtcGxlcyBzaG93IGEgY2xlYXIgc2VwYXJhdGlvbiBhY2NvcmRpbmcgdG8gdGhlIHNwaWtlLWluIGNvbmRpdGlvbiBpbiB0aGUgc2Vjb25kIGRpbWVuc2lvbiBvZiB0aGUgTURTIHBsb3QuCgojIERhdGEgQW5hbHlzaXMKCiMjIEVzdGltYXRpb24KCldlIG1vZGVsIHRoZSBwcm90ZWluIGxldmVsIGV4cHJlc3Npb24gdmFsdWVzIHVzaW5nIGBtc3Fyb2JgLgpCeSBkZWZhdWx0IGBtc3Fyb2IyYCBlc3RpbWF0ZXMgdGhlIG1vZGVsIHBhcmFtZXRlcnMgdXNpbmcgcm9idXN0IHJlZ3Jlc3Npb24uCgpXZSB3aWxsIG1vZGVsIHRoZSBkYXRhIHdpdGggYSBkaWZmZXJlbnQgZ3JvdXAgbWVhbi4gClRoZSBncm91cCBpcyBpbmNvZGVkIGluIHRoZSB2YXJpYWJsZSBgY29uZGl0aW9uYCBvZiB0aGUgY29sRGF0YS4gCldlIGNhbiBzcGVjaWZ5IHRoaXMgbW9kZWwgYnkgdXNpbmcgYSBmb3JtdWxhIHdpdGggdGhlIGZhY3RvciBjb25kaXRpb24gYXMgaXRzIHByZWRpY3RvcjogCmBmb3JtdWxhID0gfmNvbmRpdGlvbmAuCgpOb3RlLCB0aGF0IGEgZm9ybXVsYSBhbHdheXMgc3RhcnRzIHdpdGggYSBzeW1ib2wgJ34nLgoKYGBge3IsIHdhcm5pbmc9RkFMU0V9CnBlIDwtIG1zcXJvYihvYmplY3QgPSBwZSwgaSA9ICJwcm90ZWluIiwgZm9ybXVsYSA9IH5jb25kaXRpb24pCmBgYAoKIyMgSW5mZXJlbmNlCgpGaXJzdCwgd2UgZXh0cmFjdCB0aGUgcGFyYW1ldGVyIG5hbWVzIG9mIHRoZSBtb2RlbCBieSBsb29raW5nIGF0IHRoZSBmaXJzdCBtb2RlbC4gClRoZSBtb2RlbHMgYXJlIHN0b3JlZCBpbiB0aGUgcm93IGRhdGEgb2YgdGhlIGFzc2F5IHVuZGVyIHRoZSBkZWZhdWx0IG5hbWUgbXNxcm9iTW9kZWxzLiAKCmBgYHtyfQpnZXRDb2VmKHJvd0RhdGEocGVbWyJwcm90ZWluIl1dKSRtc3Fyb2JNb2RlbHNbWzFdXSkKYGBgCgpXZSBjYW4gYWxzbyBleHBsb3JlIHRoZSBkZXNpZ24gb2YgdGhlIG1vZGVsIHRoYXQgd2Ugc3BlY2lmaWVkIHVzaW5nIHRoZSB0aGUgcGFja2FnZSBgRXhwbG9yZU1vZGVsTWF0cml4YCAKCmBgYHtyfQpsaWJyYXJ5KEV4cGxvcmVNb2RlbE1hdHJpeCkKVmlzdWFsaXplRGVzaWduKGNvbERhdGEocGUpLH5jb25kaXRpb24pJHBsb3RsaXN0W1sxXV0KYGBgCgpTcGlrZS1pbiBjb25kaXRpb24gYEFgIGlzIHRoZSByZWZlcmVuY2UgY2xhc3MuIFNvIHRoZSBtZWFuIGxvZzIgZXhwcmVzc2lvbgpmb3Igc2FtcGxlcyBmcm9tIGNvbmRpdGlvbiBBIGlzICcoSW50ZXJjZXB0KS4KVGhlIG1lYW4gbG9nMiBleHByZXNzaW9uIGZvciBzYW1wbGVzIGZyb20gY29uZGl0aW9uIEIgaXMgJyhJbnRlcmNlcHQpK2NvbmRpdGlvbkInLgpIZW5jZSwgdGhlIGF2ZXJhZ2UgbG9nMiBmb2xkIGNoYW5nZSBiZXR3ZWVuIGNvbmRpdGlvbiBiIGFuZApjb25kaXRpb24gYSBpcyBtb2RlbGxlZCB1c2luZyB0aGUgcGFyYW1ldGVyICdjb25kaXRpb25CJy4KVGh1cywgd2UgYXNzZXNzIHRoZSBjb250cmFzdCAnY29uZGl0aW9uQiA9IDAnIHdpdGggb3VyIHN0YXRpc3RpY2FsIHRlc3QuCgpgYGB7cn0KTCA8LSBtYWtlQ29udHJhc3QoImNvbmRpdGlvbkI9MCIsIHBhcmFtZXRlck5hbWVzID0gYygiY29uZGl0aW9uQiIpKQpwZSA8LSBoeXBvdGhlc2lzVGVzdChvYmplY3QgPSBwZSwgaSA9ICJwcm90ZWluIiwgY29udHJhc3QgPSBMKQpgYGAKCgojIyBQbG90cwoKIyMjIFZvbGNhbm8tcGxvdAoKCmBgYHtyLHdhcm5pbmc9RkFMU0V9CnZvbGNhbm8gPC0gZ2dwbG90KHJvd0RhdGEocGVbWyJwcm90ZWluIl1dKSRjb25kaXRpb25CLAogICAgICAgICAgICAgICAgICBhZXMoeCA9IGxvZ0ZDLCB5ID0gLWxvZzEwKHB2YWwpLCBjb2xvciA9IGFkalB2YWwgPCAwLjA1KSkgKwogIGdlb21fcG9pbnQoY2V4ID0gMi41KSArCiAgc2NhbGVfY29sb3JfbWFudWFsKHZhbHVlcyA9IGFscGhhKGMoImJsYWNrIiwgInJlZCIpLCAwLjUpKSArIHRoZW1lX21pbmltYWwoKQp2b2xjYW5vCmBgYAoKTm90ZSwgdGhhdCBvbmx5IGByIHN1bShyb3dEYXRhKHBlW1sicHJvdGVpbiJdXSkkY29uZGl0aW9uQiRhZGpQdmFsIDwgMC4wNSwgbmEucm0gPSBUUlVFKWAgcHJvdGVpbnMgYXJlIGZvdW5kIHRvIGJlIGRpZmZlcmVudGlhbGx5IGFidW5kYW50LgoKIyMjIEhlYXRtYXAKCldlIGZpcnN0IHNlbGVjdCB0aGUgbmFtZXMgb2YgdGhlIHByb3RlaW5zIHRoYXQgd2VyZSBkZWNsYXJlZCBzaWduZmljYW50LgoKYGBge3J9CnNpZ05hbWVzIDwtIHJvd0RhdGEocGVbWyJwcm90ZWluIl1dKSRjb25kaXRpb25CICU+JQogIHJvd25hbWVzX3RvX2NvbHVtbigicHJvdGVpbiIpICU+JQogIGZpbHRlcihhZGpQdmFsPDAuMDUpICU+JQogIHB1bGwocHJvdGVpbikKaGVhdG1hcChhc3NheShwZVtbInByb3RlaW4iXV0pW3NpZ05hbWVzLCBdKQpgYGAKClRoZSBtYWpvcml0eSBvZiB0aGUgcHJvdGVpbnMgYXJlIGluZGVlZCBVUFMgcHJvdGVpbnMuIAoxIHllYXN0IHByb3RlaW4gaXMgcmV0dXJuZWQuIApOb3RlLCB0aGF0IHRoZSB5ZWFzdCBwcm90ZWluIGluZGVlZCBzaG93cyBldmlkZW5jZSBmb3IgZGlmZmVyZW50aWFsIGFidW5kYW5jZS4gCgojIyMgQm94cGxvdHMKCldlIG1ha2UgYm94cGxvdCBvZiB0aGUgbG9nMiBGQyBhbmQgc3RyYXRpZnkgYWNjb3JkaW5nIHRvIHRoZSB3aGV0aGVyIGEgcHJvdGVpbiBpcyBzcGlrZWQgb3Igbm90LgoKYGBge3J9CnJvd0RhdGEocGVbWyJwcm90ZWluIl1dKSRjb25kaXRpb25CICU+JQogIHJvd25hbWVzX3RvX2NvbHVtbih2YXIgPSAicHJvdGVpbiIpICU+JQogIGdncGxvdChhZXMoeD1ncmVwbCgiVVBTIixwcm90ZWluKSx5PWxvZ0ZDKSkgKwogIGdlb21fYm94cGxvdCgpICsKICB4bGFiKCJVUFMiKSArCiAgZ2VvbV9zZWdtZW50KAogICAgeCA9IDEuNSwKICAgIHhlbmQgPSAyLjUsCiAgICB5ID0gbG9nMigwLjc0LzAuMjUpLAogICAgeWVuZCA9IGxvZzIoMC43NC8wLjI1KSwKICAgIGNvbG91cj0icmVkIikgKwogIGdlb21fc2VnbWVudCgKICAgIHggPSAwLjUsCiAgICB4ZW5kID0gMS41LAogICAgeSA9IDAsCiAgICB5ZW5kID0gMCwKICAgIGNvbG91cj0icmVkIikgKwogIGFubm90YXRlKAogICAgInRleHQiLAogICAgeCA9IGMoMSwyKSwKICAgIHkgPSBjKDAsbG9nMigwLjc0LzAuMjUpKSsuMSwKICAgIGxhYmVsID0gYygKICAgICAgImxvZzIgRkMgRWNvbGkgPSAwIiwKICAgICAgcGFzdGUwKCJsb2cyIEZDIFVQUyA9ICIscm91bmQobG9nMigwLjc0LzAuMjUpLDIpKQogICAgICApLAogICAgY29sb3VyID0gInJlZCIpCmBgYAoKV2hhdCBkbyB5b3Ugb2JzZXJ2ZT8KCiMgU2Vzc2lvbiBJbmZvCgpXaXRoIHJlc3BlY3QgdG8gcmVwcm9kdWNpYmlsaXR5LCBpdCBpcyBoaWdobHkgcmVjb21tZW5kZWQgdG8gaW5jbHVkZSBhIHNlc3Npb24gaW5mbyBpbiB5b3VyIHNjcmlwdCBzbyB0aGF0IHJlYWRlcnMgb2YgeW91ciBvdXRwdXQgY2FuIHNlZSB5b3VyIHBhcnRpY3VsYXIgc2V0dXAgb2YgUi4gCgpgYGB7cn0Kc2Vzc2lvbkluZm8oKQpgYGAK</div>

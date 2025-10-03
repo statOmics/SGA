@@ -70,7 +70,7 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
    - Tutorials: [Identification](https://www.compomics.com/bioinformatics-for-proteomics/)
 
 
- <!--
+ 
 
 ### 2. Statistics for Proteomics Data Analysis
    
@@ -78,11 +78,10 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
 
 - [Target Decoy QC](TargetDecoy.html)
 - [Tutorial](TargetDecoyTutorial.html), [example](mzIDMsgfSwissprotExample.html)
-<!--
 - Solution: [Uniprot search](mzIDuniprotTutorial.html), [Swissprot search](mzIDswissprotTutorial.html)
 <!---->
 
- <!--
+
 #### 2.2. Preprocessing & Analysis of Label Free Quantitative Proteomics Experiments with Simple Designs
   - Lecture: [html](./pda_quantification_preprocessing.html), [pdf](./pda_quantification_preprocessing.pdf)
   - Tutorial: [preprocessing](./pda_tutorialPreprocessing.html)
@@ -92,7 +91,7 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
   - Solutions: [cancer3x3](cancer3x3.html), [cancer6x6](cancer6x6.html), [cancer9x9](cancer9x9.html)
 <!---->
 
- <!--
+
 #### 2.3. Statistical Inference & Analysis of Experiments with Factorial Designs
   - Lecture Differential Abundance Analysis: [html](./pda_quantification_inference.html), [pdf](./pda_quantification_inference.pdf)
   - Wrap-up Blocking: [html](./pda_blocking_wrapup.html), [pdf](./pda_blocking_wrapup.pdf)
