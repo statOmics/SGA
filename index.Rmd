@@ -94,6 +94,7 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
 
 #### 2.3. Statistical Inference & Analysis of Experiments with Factorial Designs
   - Lecture Differential Abundance Analysis: [html](./pda_quantification_inference.html), [pdf](./pda_quantification_inference.pdf)
+  - Tutorial: [Design](pda_tutorialDesign.html)
   - Wrap-up Blocking: [html](./pda_blocking_wrapup.html), [pdf](./pda_blocking_wrapup.pdf)
 
 <!--
