@@ -1,0 +1,357 @@
+---
+title: "Introduction to proteomics data analysis: robust summarization"
+author: "Lieven Clement"
+date: "statOmics, Ghent University (https://statomics.github.io)"
+output:
+    html_document:
+      code_download: true
+      theme: cosmo
+      toc: true
+      toc_float: true
+      highlight: tango
+      number_sections: true
+    pdf_document:
+      toc: true
+      number_sections: true
+linkcolor: blue
+urlcolor: blue
+citecolor: blue
+
+bibliography: msqrob2.bib
+
+---
+
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
+
+This is part of the online course [Statistical Genomics Analysis (SGA)](https://statomics.github.io/SGA/)
+
+# Background
+A study on the facultative pathogen Francisella tularensis was conceived by Ramond et al. (2015) [12]. F. tularensis enters the cells of its host by phagocytosis. The authors showed that F. tularensis is arginine deficient and imports arginine from the host cell via an arginine transporter, ArgP, in order to efficiently escape from the phagosome and reach the cytosolic compartment, where it can actively multiply. In their study, they compared the proteome of wild type F. tularensis (WT) to ArgP-gene deleted F. tularensis (knock-out, D8). For this exercise, we use a subset of the F. tularensis dataset where bacterial cultures were grown in biological quadruplicate and each biorep was run in technical triplicate on a nanoRSLC-Q Exactive PLUS instrument. The data were searched with MaxQuant version 1.4.1.2. and are available on the PRIDE repository: [PXD001584](https://www.ebi.ac.uk/pride/archive/projects/PXD001584).
+
+
+# Data
+
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(limma)
+library(QFeatures)
+library(msqrob2)
+library(plotly)
+
+peptidesFile <- "https://raw.githubusercontent.com/statOmics/MSqRobSumPaper/master/Francisella/data/maxquant/peptides.txt"
+
+ecols <- grep(
+  "Intensity\\.", 
+  names(read.delim(peptidesFile))
+  )
+
+pe <- readQFeatures(
+  assayData = read.delim(peptidesFile),
+  quantCols = ecols,
+  name = "peptideRaw")
+
+colnames(pe)
+```
+
+The annotation can be derived from the file name. 
+
+```{r}
+colData(pe)$genotype <- substr(colnames(pe[[1]]),12,13) %>%
+                          as.factor
+colData(pe)$biorep  <- paste(
+  substr(colnames(pe[[1]]),12,13),
+  substr(colnames(pe[[1]]),21,22),
+  sep="_") %>% as.factor
+
+```
+
+We calculate how many non zero intensities we have per peptide and this is often useful for filtering.
+
+```{r}
+rowData(pe[["peptideRaw"]])$nNonZero <- rowSums(assay(pe[["peptideRaw"]]) > 0)
+```
+
+Because every biorep is assessed in technical triplicate, we will also calculate the number of biorepeats in which each peptide is observed. 
+
+```{r}
+rowData(pe[["peptideRaw"]])$nNonZeroBiorep <- apply(
+  assay(pe[["peptideRaw"]]), 
+  1, 
+  function(intensity) 
+    colData(pe)$biorep[intensity>0] %>%
+    unique %>%
+    length)
+```
+
+Peptides with zero intensities are missing peptides and should be represent
+with a `NA` value rather than `0`.
+```{r}
+pe <- zeroIsNA(pe, "peptideRaw") # convert 0 to NA
+```
+
+
+## Data exploration
+
+`r format(mean(is.na(assay(pe[["peptideRaw"]])))*100,digits=2)`% of all peptide
+intensities are missing.
+
+
+# Preprocessing
+
+This section preforms preprocessing for the peptide data. 
+This include 
+
+- log transformation, 
+- filtering and 
+- summarisation of the data.
+
+## Log transform the data
+
+```{r}
+pe <- logTransform(pe, base = 2, i = "peptideRaw", name = "peptideLog")
+```
+
+## Filtering
+
+1. Handling overlapping protein groups
+
+In our approach a peptide can map to multiple proteins, as long as there is
+none of these proteins present in a smaller subgroup.
+
+```{r}
+pe[["peptideLog"]] <-
+ pe[["peptideLog"]][rowData(pe[["peptideLog"]])$Proteins
+ %in% smallestUniqueGroups(rowData(pe[["peptideLog"]])$Proteins),]
+```
+
+2. Remove reverse sequences (decoys) and contaminants
+
+We now remove the contaminants and peptides that map to decoy sequences.
+
+```{r}
+pe[["peptideLog"]] <- pe[["peptideLog"]][rowData(pe[["peptideLog"]])$Reverse != "+", ]
+pe[["peptideLog"]] <- pe[["peptideLog"]][rowData(pe[["peptideLog"]])$
+    Contaminant != "+", ]
+```
+
+3. Drop peptides that were only identified in a single biorepeat
+
+Note, that in experiments without technical repeats we filter on the number of samples in which a peptide is picked up. Here, we will require that a peptide is picked up in at least two biorepeats. 
+
+```{r}
+pe[["peptideLog"]] <- pe[["peptideLog"]][rowData(pe[["peptideLog"]])$nNonZeroBiorep >= 2, ]
+nrow(pe[["peptideLog"]])
+```
+
+We keep `r nrow(pe[["peptideLog"]])` peptides upon filtering.
+
+
+## Normalize the data using median centering 
+
+We normalize the data by substracting the sample median from every intensity for peptide $p$  in a sample $i$: 
+
+$$y_{ip}^\text{norm} = y_{ip} - \hat\mu_i$$ 
+
+with $\hat\mu_i$ the median intensity over all observed peptides in sample $i$.
+
+```{r}
+pe <- normalize(pe, 
+                i = "peptideLog", 
+                name = "peptideNorm", 
+                method = "center.median")
+```
+
+
+## Explore  normalized data
+
+Upon the normalisation the density curves are nicely registered
+
+```{r}
+pe[["peptideNorm"]] %>% 
+  assay %>%
+  as.data.frame() %>%
+  gather(sample, intensity) %>% 
+  mutate(biorep = colData(pe)[sample,"biorep"]) %>%
+  ggplot(aes(x = intensity,group = sample,color = biorep)) + 
+    geom_density()
+```
+
+We can visualize our data using a Multi Dimensional Scaling plot,
+eg. as provided by the `limma` package.
+
+```{r}
+pe[["peptideNorm"]] %>% 
+  assay %>%
+  limma::plotMDS(col = as.numeric(colData(pe)$genotype),label=colData(pe)$biorep)
+```
+
+The first axis in the plot is showing the leading log fold changes
+(differences on the log scale) between the samples.
+As expected the samples of the three MS-runs from the same biorepeat cluster together, indicating that biorepeat is a leading source of variability. 
+
+
+
+## Summarization to protein level
+
+- By default robust summarization is used:  `fun = MsCoreUtils::robustSummary()`
+
+```{r,warning=FALSE}
+pe <- aggregateFeatures(pe,
+  i = "peptideNorm",
+  fcol = "Proteins",
+  na.rm = TRUE,
+  name = "protein")
+```
+
+
+
+```{r}
+pe[["protein"]]%>% 
+  assay %>%
+  limma::plotMDS(col = as.numeric(colData(pe)$genotype),label=colData(pe)$biorep)
+```
+
+Note that the samples upon robust summarisation show a clear separation according to the genotype in the first dimension of the MDS plot and shows again that the samples from the different MS-runs for the same biorepeat cluster together.  
+
+# Data Analysis
+
+```{r}
+library(ExploreModelMatrix)
+VisualizeDesign(colData(pe),~ genotype + biorep)$plotlist
+```
+
+Unlike the mouse example, we cannot correct for biorepeat using a randomized complete block analysis. Indeed, once we condition on biorepeat, we also condition on the genotype. Hence, when infering on the treatment effect we should correct for both the variability both within and between biorepeat. 
+
+In the original paper, the authors simply ignored the correlation in the data according to biorepeat and INCORRECTLY act as if each technical repeat was an independent sample. So they act as if they have a 9 by 9 group comparison instead of correctly accounting that they only have three independent biorepeats for each genotype. 
+
+We will fit this WRONG model to see how this impacts the data analysis. 
+```{r}
+VisualizeDesign(colData(pe),~ genotype)$plotlist
+```
+
+```{r warning=FALSE, message = FALSE}
+pe <- msqrob(object = pe, i = "protein", formula = ~ genotype,overwrite=TRUE, modelColumnName="wrongModel")
+```
+
+Statistical inference: log2FC between WT and D8 is quantified by `genotypeWT`.
+
+```{r}
+L <- makeContrast("genotypeWT=0", parameterNames = c("genotypeWT"))
+pe <- hypothesisTest(object = pe, i = "protein", contrast = L, overwrite = TRUE, modelColumn = "wrongModel", resultsColumnNamePrefix = "wrongModel-")
+```
+
+```{r,warning=FALSE}
+volcano <- ggplot(rowData(pe[["protein"]])$`wrongModel-genotypeWT`,
+                  aes(x = logFC, y = -log10(pval), color = adjPval < 0.05)) +
+  geom_point(cex = 2.5) +
+  scale_color_manual(values = alpha(c("black", "red"), 0.5)) + theme_minimal()
+volcano
+```
+
+Note, that `r sum(rowData(pe[["protein"]])[["wrongModel-genotypeWT"]][,"adjPval"] < 0.05, na.rm = TRUE)` proteins are found to be differentially abundant according to the WRONG DATA ANALYSIS that ignores that fact that intensities from technical repeats (MS-runs) from the same biorepeat are correlated.
+
+As the analysis acts as if there are 9 independent repeats for each genotype, we can expect the analysis to be overly liberal. So we can expect many false positive results. 
+
+
+## Correct Data analysis 
+
+We model the protein level expression values using `msqrob`.
+By default `msqrob2` estimates the model parameters using robust regression.
+
+We will model the data with a different group mean. 
+The group is incoded in the variable `genotype` of the colData.
+We will also have to include a random effect for bio-repeat to address the pseudo-replication in the experiment. 
+Indeed, the data from the same bio-repeat will be correlated!
+
+We can specify this model by using a formula with the factor `genotype` as a fixed effect and as the factor `biorep` a random effect: 
+`formula = ~genotype + (1|biorep)`.
+
+```{r}
+pe <- msqrob(object = pe, i = "protein", formula = ~ genotype + (1|biorep),overwrite=TRUE)
+```
+
+For this model we can also use the same contrast. Indeed, the model now contains a parameter for the intercept, genotype and a random intercept for each biorepeat.
+
+```{r}
+getCoef(rowData(pe[["protein"]])$msqrobModels[[1]])
+pe <- hypothesisTest(object = pe, i = "protein", contrast = L,overwrite=TRUE)
+```
+
+```{r,warning=FALSE}
+volcano <- ggplot(rowData(pe[["protein"]])$`genotypeWT`,
+                  aes(x = logFC, y = -log10(pval), color = adjPval < 0.05)) +
+  geom_point(cex = 2.5) +
+  scale_color_manual(values = alpha(c("black", "red"), 0.5)) + theme_minimal()
+volcano
+```
+
+Note, that `r sum(rowData(pe[["protein"]])[["genotypeWT"]][,"adjPval"] < 0.05, na.rm = TRUE)` proteins are found to be differentially abundant.
+Hence, when we address the correlation structure in the data, we can indeed see that the analysis returns way less DA proteins than with the incorrect analysis of the original authors who acted as if all technical replicates where independent repeats. 
+
+We indeed see that the mixed model is addressing the correlation structure in the data by . 
+$$
+\left\{
+\begin{array}{rcl}
+y_i &=& \beta_o + \beta_{WT} x_{WT,i} + u_1 z_{b1,i} + u_2 z_{b2,i} + u_1 z_{b3,i} + u_4 z_{b4,i} + u_5z_{b5,i} + u_6z_{b6,i} + \epsilon_i\\
+u_j &\sim& N(0, \sigma_u^2)\\
+\epsilon_i &\sim& N(0,\sigma_\epsilon^2)
+\end{array}
+\right.,
+$$
+with $u_j$ random effects that model the correlation in the intensities from technical repeats (MS-runs) the originate from the same bio-repeat. These random intercepts are assumed to be i.i.d. normally distributed with mean 0 and variance $\sigma^2_u$. Hence, $\sigma^2_u$ models the between biorepeat variability and $\sigma^2_\epsilon$ the within biorepeat variability. 
+
+We can also write the data in matrix form 
+
+$$
+\mathbf{Y} = \mathbf{X}\boldsymbol{\beta} + \mathbf{Zu} + \boldsymbol{\epsilon}
+$$
+with 
+$$\mathbf{Y}=\left[\begin{array}{c} y_1 \\\vdots\\ y_{18}\end{array}\right], \mathbf{X}=\left[\begin{array}{cc}1&x_{WT,1}\\\vdots&\vdots\\1&x_{WT,18}\end{array}\right],
+\boldsymbol{\beta}=\left[\begin{array}{c} \beta_0 \\ \beta_{WT} \end{array}\right],
+\mathbf{Z}=\left[\begin{array}{ccc}z_{b1,1}&\ldots&z_{b6,1}\\\vdots&&\vdots\\z_{b1,18}&\ldots&z_{b6,18}\end{array}\right], \mathbf{u}=\left[\begin{array}{c} u_1 \\\vdots\\ u_{6}\end{array}\right]$$ 
+
+Hence, with the mixed model, the variance covariance matrix of the intensities becomes
+$$
+\begin{array}{rcl}
+\boldsymbol{\Sigma}_\mathbf{Y} &=& \text{var}\left(\mathbf{Y}\right) \\
+&=& \text{var}\left(\mathbf{X}\boldsymbol{\beta} + \mathbf{Zu} + \boldsymbol{\epsilon}\right) \\
+&=& \mathbf{Z}\text{var}\left(\mathbf{u}\right)\mathbf{Z}^T + \mathbf{I}\sigma_\epsilon^2\\
+&=& \mathbf{Z}\mathbf{Z}^T\sigma^2_u + \mathbf{I}\sigma_\epsilon^2
+\end{array}
+$$
+
+```{r}
+X <- model.matrix(~genotype,colData(pe))
+Z <- model.matrix(~-1+biorep,colData(pe))
+rownames(Z) <- paste0("b",rep(1:6,each=3),",",rep(1:3,6))
+Z%*%t(Z)
+```
+
+So, we see that the correlation of the data from the same biological repeat are correctly addressed and that the data from distinct biorepeats are assumed to be independent. 
+Hence, the variance-covariance matrix of $\mathbf{Y}$ has a block diagonal structure, with as variance $\sigma_u^2 + \sigma_\epsilon^2$ and the covariance between intensities from the same biorepeat equals $\sigma_u^2$. 
+
+$$
+\boldsymbol{\Sigma}_\mathbf{Y} = \left[\begin{array}{cccccccccc}\sigma^2_u+\sigma^2_\epsilon&\sigma^2_u&\sigma^2_u&0&0&0&\ldots&0&0&0\\
+\sigma^2_u&\sigma^2_u+\sigma^2_\epsilon&\sigma^2_u&0&0&0&\ldots&0&0&0\\
+\sigma^2_u&\sigma^2_u&\sigma^2_u+\sigma^2_\epsilon&0&0&0&\ldots&0&0&0\\
+0&0&0&\sigma^2_u+\sigma^2_\epsilon&\sigma^2_u&\sigma^2_u&\ldots&0&0&0\\
+0&0&0&\sigma^2_u&\sigma^2_u+\sigma^2_\epsilon&\sigma^2_u&\ldots&0&0&0\\
+0&0&0&\sigma^2_u&\sigma^2_u&\sigma^2_u+\sigma^2_\epsilon&\ldots&0&0&0\\
+0&0&0&0&0&0&\dots&\sigma^2_u+\sigma^2_\epsilon&\sigma^2_u&\sigma^2_u\\
+0&0&0&0&0&0&\dots&\sigma^2_u&\sigma^2_u+\sigma^2_\epsilon&\sigma^2_u\\
+0&0&0&0&0&0&\dots&\sigma^2_u&\sigma^2_u&\sigma^2_u+\sigma^2_\epsilon\\
+\end{array}\right]
+$$
+
+
+# Session Info
+
+With respect to reproducibility, it is highly recommended to include a session info in your script so that readers of your output can see your particular setup of R. 
+
+```{r}
+sessionInfo()
+```
+
+
+# References

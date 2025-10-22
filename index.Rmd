@@ -95,6 +95,7 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
   - Wrap-up Blocking: [html](./pda_blocking_wrapup.html), [pdf](./pda_blocking_wrapup.pdf)
   - Solution: [Heart Example](heartMainInteraction.html)
   - Technical Details: [html](./pda_technicalDetails.html), [pdf](./pda_technicalDetails.pdf)
+  - Mixed Models:[html](./francisellaMixedModel.html)
 <!---->
 
 <!--
