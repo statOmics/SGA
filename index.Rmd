@@ -1,4 +1,4 @@
-§2---
+---
 title: "Statistical Genomics Analysis"
 output:
     html_document:
@@ -94,18 +94,7 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
   - Tutorial: [Design](pda_tutorialDesign.html)
   - Wrap-up Blocking: [html](./pda_blocking_wrapup.html), [pdf](./pda_blocking_wrapup.pdf)
   - Solution: [Heart Example](heartMainInteraction.html)
-
-<!--
   - Technical Details: [html](./pda_technicalDetails.html), [pdf](./pda_technicalDetails.pdf)
-<!---->
-
-<!--
-  - Tutorial: [Design](pda_tutorialDesign.html)
-
-<!--
-  
-  - Solution: [Heart Example Homework](heartMainInteraction_HW_otherEncoding.html)
-
 <!---->
 
 <!--

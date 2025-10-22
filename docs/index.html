@@ -11,9 +11,9 @@
 
 
 
-<title>index.knit</title>
+<title>Statistical Genomics Analysis</title>
 
-<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -29,16 +29,11 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
-<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
-<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<script src="site_libs/navigation-1.1/codefolding.js"></script>
-<script src="site_libs/navigation-1.1/sourceembed.js"></script>
 <link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
 <script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
-<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -53,11 +48,6 @@
 
 
 
-<style type="text/css">
-#rmd-source-code {
-  display: none;
-}
-</style>
 
 
 
@@ -218,73 +208,7 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
-<style type="text/css">
-.code-folding-btn { margin-bottom: 4px; }
-</style>
 
-
-
-<style type="text/css">
-
-#TOC {
-  margin: 25px 0px 20px 0px;
-}
-@media (max-width: 768px) {
-#TOC {
-  position: relative;
-  width: 100%;
-}
-}
-
-@media print {
-.toc-content {
-  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
-  float: right;
-}
-}
-
-.toc-content {
-  padding-left: 30px;
-  padding-right: 40px;
-}
-
-div.main-container {
-  max-width: 1200px;
-}
-
-div.tocify {
-  width: 20%;
-  max-width: 260px;
-  max-height: 85%;
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-  div.tocify {
-    width: 25%;
-  }
-}
-
-@media (max-width: 767px) {
-  div.tocify {
-    width: 100%;
-    max-width: none;
-  }
-}
-
-.tocify ul, .tocify li {
-  line-height: 20px;
-}
-
-.tocify-subheader .tocify-item {
-  font-size: 0.90em;
-}
-
-.tocify .list-group-item {
-  border-radius: 0px;
-}
-
-
-</style>
 
 
 
@@ -294,16 +218,6 @@ div.tocify {
 
 
 <div class="container-fluid main-container">
-
-
-<!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row">
-<div class="col-xs-12 col-sm-4 col-md-3">
-<div id="TOC" class="tocify">
-</div>
-</div>
-
-<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -404,25 +318,16 @@ div.tocify {
 
 <div id="header">
 
-<div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
-<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
-<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
-</ul>
-</div>
 
 
-
+<h1 class="title toc-ignore">Statistical Genomics Analysis</h1>
 
 </div>
 
 
-<p>§2— title: “Statistical Genomics Analysis” output: html_document:
-code_download: false toc: false number_sections: false code_folding:
-“none” —</p>
 <p><img src="figures/wpGraph.jpeg" width="986" /></p>
-<div id="course-description" class="section level1" number="1">
-<h1><span class="header-section-number">1</span> Course Description</h1>
+<div id="course-description" class="section level1">
+<h1>Course Description</h1>
 <p>High-throughput ’omics studies generate ever larger datasets and, as
 a consequence, complex data interpretation challenges. This course
 focusses on statistical concepts involved in preprocessing,
@@ -439,14 +344,14 @@ perspectives to those already familiar with standard data analysis
 workflows for proteomics and next-generation sequencing
 applications.</p>
 </div>
-<div id="target-audience" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> Target Audience</h1>
+<div id="target-audience" class="section level1">
+<h1>Target Audience</h1>
 <p>This course is oriented towards biologists and bioinformaticians with
 a particular interest in differential analysis for quantitative ’omics
 data.</p>
 </div>
-<div id="prerequisites" class="section level1" number="3">
-<h1><span class="header-section-number">3</span> Prerequisites</h1>
+<div id="prerequisites" class="section level1">
+<h1>Prerequisites</h1>
 <p>The prerequisites for the Statistical Genomics Analysis course are
 the successful completion of a basic course of statistics that covers
 topics on data exploration and descriptive statistics, statistical
@@ -468,8 +373,8 @@ href="https://dodona.ugent.be/nl/courses/345/"
 class="uri">https://dodona.ugent.be/nl/courses/345/</a></li>
 </ul>
 </div>
-<div id="software" class="section level1" number="4">
-<h1><span class="header-section-number">4</span> Software</h1>
+<div id="software" class="section level1">
+<h1>Software</h1>
 <ul>
 <li><p>Participants are required to bring their own laptop with <a
 href="https://www.r-project.org/">R</a> version 4.2 or greater.</p></li>
@@ -480,11 +385,10 @@ copy and paste this line of code in your R console.</p></li>
 </ul>
 <pre><code>source(&quot;https://raw.githubusercontent.com/statOmics/SGA/master/install.R&quot;)</code></pre>
 </div>
-<div id="detailed-program" class="section level1" number="5">
-<h1><span class="header-section-number">5</span> Detailed Program</h1>
-<div id="introduction-week-1" class="section level2" number="5.1">
-<h2><span class="header-section-number">5.1</span> 1. Introduction (Week
-1)</h2>
+<div id="detailed-program" class="section level1">
+<h1>Detailed Program</h1>
+<div id="introduction-week-1" class="section level2">
+<h2>1. Introduction (Week 1)</h2>
 <p>1.1. Position of the course: <a href="./intro.html">HTML</a></p>
 <p>1.2. Recap Linear Models</p>
 <ul>
@@ -498,13 +402,10 @@ figures</a></li>
 </ul>
 </div>
 <div id="module-i-proteomics-data-analysis-week-2-5"
-class="section level2" number="5.2">
-<h2><span class="header-section-number">5.2</span> Module I: Proteomics
-Data Analysis (Week 2-5)</h2>
-<div id="bioinformatics-for-proteomics" class="section level3"
-number="5.2.1">
-<h3><span class="header-section-number">5.2.1</span> 1. Bioinformatics
-for proteomics</h3>
+class="section level2">
+<h2>Module I: Proteomics Data Analysis (Week 2-5)</h2>
+<div id="bioinformatics-for-proteomics" class="section level3">
+<h3>1. Bioinformatics for proteomics</h3>
 <ul>
 <li>Lecture MS-Basics: <a href="./figs/part1_ms_basics.pdf">PDF</a></li>
 <li>Lecture Identification: <a
@@ -513,13 +414,11 @@ href="./figs/part2_identification.pdf">PDF</a></li>
 href="https://www.compomics.com/bioinformatics-for-proteomics/">Identification</a></li>
 </ul>
 </div>
-<div id="statistics-for-proteomics-data-analysis" class="section level3"
-number="5.2.2">
-<h3><span class="header-section-number">5.2.2</span> 2. Statistics for
-Proteomics Data Analysis</h3>
-<div id="identification" class="section level4" number="5.2.2.1">
-<h4><span class="header-section-number">5.2.2.1</span> 2.1.
-Identification</h4>
+<div id="statistics-for-proteomics-data-analysis"
+class="section level3">
+<h3>2. Statistics for Proteomics Data Analysis</h3>
+<div id="identification" class="section level4">
+<h4>2.1. Identification</h4>
 <ul>
 <li><a href="TargetDecoy.html">Target Decoy QC</a></li>
 <li><a href="TargetDecoyTutorial.html">Tutorial</a>, <a
@@ -530,10 +429,9 @@ href="mzIDswissprotTutorial.html">Swissprot search</a> <!----></li>
 </div>
 <div
 id="preprocessing-analysis-of-label-free-quantitative-proteomics-experiments-with-simple-designs"
-class="section level4" number="5.2.2.2">
-<h4><span class="header-section-number">5.2.2.2</span> 2.2.
-Preprocessing &amp; Analysis of Label Free Quantitative Proteomics
-Experiments with Simple Designs</h4>
+class="section level4">
+<h4>2.2. Preprocessing &amp; Analysis of Label Free Quantitative
+Proteomics Experiments with Simple Designs</h4>
 <ul>
 <li>Lecture: <a href="./pda_quantification_preprocessing.html">html</a>,
 <a href="./pda_quantification_preprocessing.pdf">pdf</a></li>
@@ -549,9 +447,9 @@ href="cancer9x9.html">cancer9x9</a></li>
 </div>
 <div
 id="statistical-inference-analysis-of-experiments-with-factorial-designs"
-class="section level4" number="5.2.2.3">
-<h4><span class="header-section-number">5.2.2.3</span> 2.3. Statistical
-Inference &amp; Analysis of Experiments with Factorial Designs</h4>
+class="section level4">
+<h4>2.3. Statistical Inference &amp; Analysis of Experiments with
+Factorial Designs</h4>
 <ul>
 <li>Lecture Differential Abundance Analysis: <a
 href="./pda_quantification_inference.html">html</a>, <a
@@ -560,18 +458,9 @@ href="./pda_quantification_inference.pdf">pdf</a></li>
 <li>Wrap-up Blocking: <a href="./pda_blocking_wrapup.html">html</a>, <a
 href="./pda_blocking_wrapup.pdf">pdf</a></li>
 <li>Solution: <a href="heartMainInteraction.html">Heart Example</a></li>
+<li>Technical Details: <a href="./pda_technicalDetails.html">html</a>,
+<a href="./pda_technicalDetails.pdf">pdf</a> <!----></li>
 </ul>
-<!--
-  - Technical Details: [html](./pda_technicalDetails.html), [pdf](./pda_technicalDetails.pdf)
-<!---->
-<!--
-  - Tutorial: [Design](pda_tutorialDesign.html)
-
-<!--
-  
-  - Solution: [Heart Example Homework](heartMainInteraction_HW_otherEncoding.html)
-
-<!---->
 <!--
 ## Module II: Next-generation Sequencing (Week 6-12)
   
@@ -618,11 +507,8 @@ href="./pda_blocking_wrapup.pdf">pdf</a></li>
 </div>
 </div>
 
-<div id="rmd-source-code">wqcyLS0tCnRpdGxlOiAiU3RhdGlzdGljYWwgR2Vub21pY3MgQW5hbHlzaXMiCm91dHB1dDoKICAgIGh0bWxfZG9jdW1lbnQ6CiAgICAgICAgY29kZV9kb3dubG9hZDogZmFsc2UKICAgICAgICB0b2M6IGZhbHNlCiAgICAgICAgbnVtYmVyX3NlY3Rpb25zOiBmYWxzZQogICAgICAgIGNvZGVfZm9sZGluZzogIm5vbmUiCi0tLQoKCmBgYHtyIGVjaG89RkFMU0UsIHdhcm5pbmc9RkFMU0UsIG1lc3NhZ2U9RkFMU0V9CmtuaXRyOjppbmNsdWRlX2dyYXBoaWNzKCIuL2ZpZ3VyZXMvd3BHcmFwaC5qcGVnIikKYGBgCgoKIyBDb3Vyc2UgRGVzY3JpcHRpb24KCkhpZ2gtdGhyb3VnaHB1dCAnb21pY3Mgc3R1ZGllcyBnZW5lcmF0ZSBldmVyIGxhcmdlciBkYXRhc2V0cyBhbmQsIGFzIGEgY29uc2VxdWVuY2UsIGNvbXBsZXggZGF0YSBpbnRlcnByZXRhdGlvbiBjaGFsbGVuZ2VzLiBUaGlzIGNvdXJzZSBmb2N1c3NlcyBvbiBzdGF0aXN0aWNhbCBjb25jZXB0cyBpbnZvbHZlZCBpbiBwcmVwcm9jZXNzaW5nLCBxdWFudGlmaWNhdGlvbiBhbmQgZGlmZmVyZW50aWFsIGFuYWx5c2lzIG9mIGhpZ2gtdGhyb3VnaHB1dCAnb21pY3MgZGF0YS4gVGhlIGNvcmUgZm9jdXMgd2lsbCBiZSBvbiBzaG90Z3VuIHByb3Rlb21pY3MgYW5kIChidWxrIGFuZCBzaW5nbGUtY2VsbCkgUk5BLXNlcXVlbmNpbmcuIEV4cGVyaW1lbnRhbCBkZXNpZ24gaXMgZXNzZW50aWFsIHRvIGFsbG93IGZvciBjb3JyZWN0IGludGVycHJldGF0aW9uIGluIGFsbCAnb21pY3Mgc3R1ZGllcywgYW5kIHdlIHdpbGwgY292ZXIgaG93IHRvIGRlc2lnbiBhIHN0YXRpc3RpY2FsbHkgZWZmaWNpZW50IGV4cGVyaW1lbnQsIGFzIHdlbGwgYXMgZGlzY3VzcyB0aGUgaW1wYWN0IGV4cGVyaW1lbnRhbCBkZXNpZ24gaGFzIG9uIGhvdyB3ZSBtb2RlbCAnb21pY3MgZGF0YSwgaW50cm9kdWNpbmcgY29uY2VwdHMgc3VjaCBhcyBibG9ja2luZy4gVGhlIGNvdXJzZSB3aWxsIHJlbHkgZXhjbHVzaXZlbHkgb24gZnJlZSBhbmQgdXNlci1mcmllbmRseSBvcGVuLXNvdXJjZSB0b29scyBpbiBSL0Jpb2NvbmR1Y3Rvci4gV2UgaG9wZSB0aGF0IHRoaXMgd2lsbCBwcm92aWRlIGEgc29saWQgYmFzaXMgZm9yIGJlZ2lubmVycywgYnV0IHdpbGwgYWxzbyBicmluZyBuZXcgcGVyc3BlY3RpdmVzIHRvIHRob3NlIGFscmVhZHkgZmFtaWxpYXIgd2l0aCBzdGFuZGFyZCBkYXRhIGFuYWx5c2lzIHdvcmtmbG93cyBmb3IgcHJvdGVvbWljcyBhbmQgbmV4dC1nZW5lcmF0aW9uIHNlcXVlbmNpbmcgYXBwbGljYXRpb25zLgoKIyBUYXJnZXQgQXVkaWVuY2UKClRoaXMgY291cnNlIGlzIG9yaWVudGVkIHRvd2FyZHMgYmlvbG9naXN0cyBhbmQgYmlvaW5mb3JtYXRpY2lhbnMgd2l0aCBhIHBhcnRpY3VsYXIgaW50ZXJlc3QgaW4gZGlmZmVyZW50aWFsIGFuYWx5c2lzIGZvciBxdWFudGl0YXRpdmUgJ29taWNzIGRhdGEuCgojIFByZXJlcXVpc2l0ZXMKClRoZSBwcmVyZXF1aXNpdGVzIGZvciB0aGUgU3RhdGlzdGljYWwgR2Vub21pY3MgQW5hbHlzaXMgY291cnNlIGFyZSB0aGUgc3VjY2Vzc2Z1bCBjb21wbGV0aW9uIG9mIGEgYmFzaWMgY291cnNlIG9mIHN0YXRpc3RpY3MgdGhhdCBjb3ZlcnMgdG9waWNzIG9uIGRhdGEgZXhwbG9yYXRpb24gYW5kIGRlc2NyaXB0aXZlIHN0YXRpc3RpY3MsIHN0YXRpc3RpY2FsIG1vZGVsaW5nLCBhbmQgaW5mZXJlbmNlOiBsaW5lYXIgbW9kZWxzLCBjb25maWRlbmNlIGludGVydmFscywgdC10ZXN0cywgRi10ZXN0cywgYW5vdmEsIGNoaS1zcXVhcmVkIHRlc3QuClRoZSBiYXNpcyBjb25jZXB0cyBtYXkgYmUgcmV2aXNpdGVkIGluIHRoZSBvbmxpbmUgY291cnNlIGF0IGh0dHBzOi8vc3RhdG9taWNzLmdpdGh1Yi5pby9QU0xTLyAoRW5nbGlzaCkgYW5kIGluIGh0dHBzOi8vc3RhdG9taWNzLmdpdGh1Yi5pby9zYmMvIChEdXRjaCkuCgpJbiBhZGRpdGlvbiwga25vd2xlZGdlIG9mIHByb2dyYW1taW5nIGluIGBSYCBpcyBwcmVmZXJyZWQuIEEgcHJpbWVyIHRvIGBSYCBhbmQgRGF0YSB2aXN1YWxpemF0aW9uIGluIGBSYCBjYW4gYmUgZm91bmQgYXQ6CgogLSBgUmAgQmFzaWNzOiBodHRwczovL2RvZG9uYS51Z2VudC5iZS9ubC9jb3Vyc2VzLzMzNS8KIC0gYFJgIERhdGEgRXhwbG9yYXRpb246IGh0dHBzOi8vZG9kb25hLnVnZW50LmJlL25sL2NvdXJzZXMvMzQ1LwoKCiMgU29mdHdhcmUgCgotIFBhcnRpY2lwYW50cyBhcmUgcmVxdWlyZWQgdG8gYnJpbmcgdGhlaXIgb3duIGxhcHRvcCB3aXRoIFtSXShodHRwczovL3d3dy5yLXByb2plY3Qub3JnLykgdmVyc2lvbiA0LjIgb3IgZ3JlYXRlci4gCgotIFdlIGFsc28gcmVjb21tZW5kIHRvIGFsc28gaW5zdGFsbCB0aGUgbGF0ZXN0IHZlcnNpb24gb2YgW1JTdHVkaW9dKGh0dHBzOi8vd3d3LnJzdHVkaW8uY29tL3Byb2R1Y3RzL3JzdHVkaW8vZG93bmxvYWQvKS4KCi0gSW5zdGFsbGF0aW9uIHNjcmlwdDogdG8gaW5zdGFsbCBhbGwgcmVxdWlyZWQgcGFja2FnZXMsIHBsZWFzZSBjb3B5IGFuZCBwYXN0ZSB0aGlzIGxpbmUgb2YgY29kZSBpbiB5b3VyIFIgY29uc29sZS4KCmBgYApzb3VyY2UoImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9zdGF0T21pY3MvU0dBL21hc3Rlci9pbnN0YWxsLlIiKQpgYGAKCgoKIyBEZXRhaWxlZCBQcm9ncmFtCgojIyAxLiBJbnRyb2R1Y3Rpb24gKFdlZWsgMSkKCjEuMS4gUG9zaXRpb24gb2YgdGhlIGNvdXJzZTogW0hUTUxdKC4vaW50cm8uaHRtbCkgCgoxLjIuIFJlY2FwIExpbmVhciBNb2RlbHMKCiAgIC0gTGVjdHVyZTogW0hUTUxdKC4vcmVjYXBHZW5lcmFsTGluZWFyTW9kZWwuaHRtbCksIFtQREZdKC4vcmVjYXBHZW5lcmFsTGluZWFyTW9kZWwucGRmKQogICAtIFR1dG9yaWFsIEtQTkEyOiBbSFRNTF0oLi9tdWx0aXBsZVJlZ3Jlc3Npb25fS1BOQTIuaHRtbCksICBbUERGXSguL211bHRpcGxlUmVncmVzc2lvbl9LUE5BMi5wZGYpCiAgIC0gbGluayB0byBhIGNvbXByZXNzZWQgZmlndXJlcyBkaXJlY3Rvcnk6IFtEb3dubG9hZCBmaWd1cmVzXShodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vc3RhdE9taWNzL1NHQS9tYXN0ZXIvZmlndXJlcy50YXIuZ3opCgoKCiMjIE1vZHVsZSBJOiBQcm90ZW9taWNzIERhdGEgQW5hbHlzaXMgKFdlZWsgMi01KQoKIyMjIDEuIEJpb2luZm9ybWF0aWNzIGZvciBwcm90ZW9taWNzCiAgIAogICAtIExlY3R1cmUgTVMtQmFzaWNzOiBbUERGXSguL2ZpZ3MvcGFydDFfbXNfYmFzaWNzLnBkZikKICAgLSBMZWN0dXJlIElkZW50aWZpY2F0aW9uOiBbUERGXSguL2ZpZ3MvcGFydDJfaWRlbnRpZmljYXRpb24ucGRmKQogICAtIFR1dG9yaWFsczogW0lkZW50aWZpY2F0aW9uXShodHRwczovL3d3dy5jb21wb21pY3MuY29tL2Jpb2luZm9ybWF0aWNzLWZvci1wcm90ZW9taWNzLykKCgogCgojIyMgMi4gU3RhdGlzdGljcyBmb3IgUHJvdGVvbWljcyBEYXRhIEFuYWx5c2lzCiAgIAojIyMjIDIuMS4gSWRlbnRpZmljYXRpb24KCi0gW1RhcmdldCBEZWNveSBRQ10oVGFyZ2V0RGVjb3kuaHRtbCkKLSBbVHV0b3JpYWxdKFRhcmdldERlY295VHV0b3JpYWwuaHRtbCksIFtleGFtcGxlXShteklETXNnZlN3aXNzcHJvdEV4YW1wbGUuaHRtbCkKLSBTb2x1dGlvbjogW1VuaXByb3Qgc2VhcmNoXShteklEdW5pcHJvdFR1dG9yaWFsLmh0bWwpLCBbU3dpc3Nwcm90IHNlYXJjaF0obXpJRHN3aXNzcHJvdFR1dG9yaWFsLmh0bWwpCjwhLS0tLT4KCgojIyMjIDIuMi4gUHJlcHJvY2Vzc2luZyAmIEFuYWx5c2lzIG9mIExhYmVsIEZyZWUgUXVhbnRpdGF0aXZlIFByb3Rlb21pY3MgRXhwZXJpbWVudHMgd2l0aCBTaW1wbGUgRGVzaWducwogIC0gTGVjdHVyZTogW2h0bWxdKC4vcGRhX3F1YW50aWZpY2F0aW9uX3ByZXByb2Nlc3NpbmcuaHRtbCksIFtwZGZdKC4vcGRhX3F1YW50aWZpY2F0aW9uX3ByZXByb2Nlc3NpbmcucGRmKQogIC0gVHV0b3JpYWw6IFtwcmVwcm9jZXNzaW5nXSguL3BkYV90dXRvcmlhbFByZXByb2Nlc3NpbmcuaHRtbCkKICAtIFdyYXAtdXAgUGVwdGlkZS1iYXNlZCBNb2RlbHM6IFtodG1sXSguL3BkYV9yb2J1c3RTdW1tYXJpc2F0aW9uX3BlcHRpZGVNb2RlbHMuaHRtbCksIFtwZGZdKC4vcGRhX3JvYnVzdFN1bW1hcmlzYXRpb25fcGVwdGlkZU1vZGVscy5wZGYpCiAgLSBTb2x1dGlvbnM6IFtjYW5jZXIzeDNdKGNhbmNlcjN4My5odG1sKSwgW2NhbmNlcjZ4Nl0oY2FuY2VyNng2Lmh0bWwpLCBbY2FuY2VyOXg5XShjYW5jZXI5eDkuaHRtbCkKCgojIyMjIDIuMy4gU3RhdGlzdGljYWwgSW5mZXJlbmNlICYgQW5hbHlzaXMgb2YgRXhwZXJpbWVudHMgd2l0aCBGYWN0b3JpYWwgRGVzaWducwogIC0gTGVjdHVyZSBEaWZmZXJlbnRpYWwgQWJ1bmRhbmNlIEFuYWx5c2lzOiBbaHRtbF0oLi9wZGFfcXVhbnRpZmljYXRpb25faW5mZXJlbmNlLmh0bWwpLCBbcGRmXSguL3BkYV9xdWFudGlmaWNhdGlvbl9pbmZlcmVuY2UucGRmKQogIC0gVHV0b3JpYWw6IFtEZXNpZ25dKHBkYV90dXRvcmlhbERlc2lnbi5odG1sKQogIC0gV3JhcC11cCBCbG9ja2luZzogW2h0bWxdKC4vcGRhX2Jsb2NraW5nX3dyYXB1cC5odG1sKSwgW3BkZl0oLi9wZGFfYmxvY2tpbmdfd3JhcHVwLnBkZikKICAtIFNvbHV0aW9uOiBbSGVhcnQgRXhhbXBsZV0oaGVhcnRNYWluSW50ZXJhY3Rpb24uaHRtbCkKCjwhLS0KICAtIFRlY2huaWNhbCBEZXRhaWxzOiBbaHRtbF0oLi9wZGFfdGVjaG5pY2FsRGV0YWlscy5odG1sKSwgW3BkZl0oLi9wZGFfdGVjaG5pY2FsRGV0YWlscy5wZGYpCjwhLS0tLT4KCjwhLS0KICAtIFR1dG9yaWFsOiBbRGVzaWduXShwZGFfdHV0b3JpYWxEZXNpZ24uaHRtbCkKCjwhLS0KICAKICAtIFNvbHV0aW9uOiBbSGVhcnQgRXhhbXBsZSBIb21ld29ya10oaGVhcnRNYWluSW50ZXJhY3Rpb25fSFdfb3RoZXJFbmNvZGluZy5odG1sKQoKPCEtLS0tPgoKPCEtLQojIyBNb2R1bGUgSUk6IE5leHQtZ2VuZXJhdGlvbiBTZXF1ZW5jaW5nIChXZWVrIDYtMTIpCiAgCiMjIyAxLiBJbnRyb2R1Y3Rpb24gdG8gc2VxdWVuY2luZyB0ZWNobm9sb2d5LCBRQywgcmVhZCBtYXBwaW5nIGFuZCBjb3VudCB0YWJsZQoKLSBMZWN0dXJlIEludHJvZHVjdGlvbiB0byBTZXF1ZW5jaW5nOiBbaHRtbF0oLi9zZXF1ZW5jaW5nX2ludHJvLmh0bWwpLFtwZGZdKC4vc2VxdWVuY2luZ19pbnRyby5wZGYpCi0gVHV0b3JpYWw6IFtoYW5kb3V0XSguL3NlcXVlbmNpbmdUdXRvcmlhbDFfbWFwcGluZy5odG1sKSwgW0MuIGVsZWdhbnMgRXhhbXBsZV0oLi9lbGVnYW5zQWxpZ25tZW50Q291bnRUYWJsZS5odG1sKQoKCiMjIyAyLiBJbnRyb2R1Y3Rpb24gdG8gY291bnQgZGF0YSBhbmQgR0xNcwoKLSBMZWN0dXJlIFdvcmtpbmcgd2l0aCBjb3VudCBkYXRhIGFuZCBHTE1zOiBbaHRtbF0oLi9zZXF1ZW5jaW5nX2NvdW50RGF0YS5odG1sKSwgW3BkZl0oLi9zZXF1ZW5jaW5nX2NvdW50RGF0YS5wZGYpCi0gVHV0b3JpYWw6IFtoYW5kb3V0XShzZXF1ZW5jaW5nVHV0b3JpYWwyX0RFLmh0bWwpLCBbQy4gZWxlZ2FucyBleGFtcGxlXSguL2VsZWdhbnNERS5odG1sKQoKIyMjIDMuIFRlY2huaWNhbCBkZXRhaWxzIG9uIFJOQS1zZXEgREUgYW5hbHlzaXMKCi0gTGVjdHVyZTogW2h0bWxdKC4vc2VxdWVuY2luZ190ZWNobmljYWxERS5odG1sKSwgW3BkZl0oLi9zZXF1ZW5jaW5nX3RlY2huaWNhbERFLnBkZikKCiMjIyA0LiBERSBhbmQgdXNhZ2UgYW5hbHlzaXMgdXBvbiB0cmFuc2NyaXB0LWxldmVsIHF1YW50aWZpY2F0aW9uCgotIFtTb25lc29uIGV0IGFsLiAyMDE2XShodHRwczovL2YxMDAwcmVzZWFyY2guY29tL2FydGljbGVzLzQtMTUyMS92MikKLSBbRGlmZmVyZW50aWFsIFVzYWdlIEJhY2tncm91bmRdKC4vaW1hZ2VzX3NlcXVlbmNpbmcvRFRVX2plcm9lbi5wZGYpCi0gW0RpZmZlcmVudGlhbCBVc2FnZV0oaHR0cHM6Ly93d3cuYmlvcnhpdi5vcmcvY29udGVudC8xMC4xMTAxLzIwMjMuMDYuMjkuNTQ3MDE0djIpCi0gVHV0b3JpYWw6IFtoYW5kb3V0XSguL3NlcXVlbmNpbmdUdXRvcmlhbDNfREUuaHRtbCkKCgo8IS0tCiMjIyA1LiBTb2x1dGlvbnMgQnVsayBSTkEtc2VxIERhdGEgQW5hbHlzaXMKLSBhaXJ3YXkgZXhhbXBsZTogTWFwcGluZyBbaHRtbF0oLi9haXJ3YXlNYXBwaW5nLmh0bWwpCi0gYWlyd2F5IGV4YW1wbGU6IFtodG1sXSguL2FpcndheS5odG1sKQotIFBhcmF0aHlyb2lkIEV4YW1wbGUgKHF1YXNpLWVkZ2VSKTogW2h0bWxdKC4vcGFyYXRoeXJvaWQuaHRtbCksIFtwZGZdKC4vcGFyYXRoeXJvaWQucGRmKQotIGFpcndheSB0cmFuc2NyaXB0IHF1YW50aWZpY2F0aW9uOiBbaHRtbF0oLi9haXJ3YXlfc2FsbW9uX2VkZ2VSLmh0bWwpCjwhLS0tLT4KCjwhLS0KIyMjIDYuIEludHJvZHVjdGlvbiB0byBTaW5nbGUgQ2VsbCBUcmFuc2NyaXB0b21pY3MgKHNjUk5BLXNlcSkgCgotIExlY3R1cmUgSW50cm8gdG8gc2NSTkEtc2VxOiBbaHRtbF0oLi9zZXF1ZW5jaW5nX3NpbmdsZUNlbGwuaHRtbCksIFtwZGZdKC4vc2VxdWVuY2luZ19zaW5nbGVDZWxsLnBkZikKLSBUdXRvcmlhbCBvbiBzY1JOQS1zZXE6IFtoYW5kb3V0XSguL3NjUk5BLXNlcS1UdXRvcmlhbC5odG1sKQotIFNvbHV0aW9uOiBbTWFjb3NrbyB3b3JrZmxvd10oLi9zaW5nbGVDZWxsX01hY29za29Xb3JrZmxvdy5odG1sKQoKPCEtLS0tPgo=</div>
 
 
-</div>
-</div>
 
 </div>
 
@@ -654,41 +540,7 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
-<script>
-$(document).ready(function () {
-  window.initializeSourceEmbed("index.Rmd");
-});
-</script>
 
-<script>
-$(document).ready(function ()  {
-
-    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
-    $('.unlisted.unnumbered').addClass('toc-ignore')
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2,h3",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = true;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
