@@ -21,6 +21,14 @@ bibliography: msqrob2.bib
 
 ---
 
+```{r setup, echo = FALSE}
+knitr::opts_chunk$set(
+    warning = FALSE,
+    message = FALSE
+)
+```
+
+
 <a rel="license"
 href="https://creativecommons.org/licenses/by-nc-sa/4.0"><img
 alt="Creative Commons License" style="border-width:0"
@@ -53,15 +61,14 @@ samples within a single run. The labelling strategy that allows the
 highest multiplexing is the tandem mass tag (TMT) labelling and will
 be the focus of the current tutorial.
 
-### TMT workflow{#sec-lfq_workflow}
+### TMT workflow
 
 TMT-based workflow highly overlap with [label-free
 workflows](https://statomics.github.io/SGA/pda_quantification_preprocessing.html#11_MS-based_workflow).
 However, TMT-based workflows have an additional sample preparation
 step, where the digested peptides from each sample are labelled with a
 TMT reagent and samples with different TMT reagents are pooled in a
-single TMT mixture^[Depending on the reagents used, 6, 10, 11 up to 18
-samples can be pooled in one mixture]. The signal processing is also
+single TMT mixture. The signal processing is also
 slightly affected since the quantification no longer occurs in the MS1
 space but at the MS2 level. It is important to understand that TMT
 reagent are isobaric, meaning that the same peptide with different TMT
@@ -80,7 +87,7 @@ peptide across multiple samples. This leads to a signal boost for low
 abundant peptides and hence should improve data sensitivity and
 consistency.
 
-```{r, echo = FALSE, out.width = "40%", fig.cap = "Overview of an TMT-based proteomics workflow."}
+```{r, echo = FALSE, out.width = "75%", fig.cap = "Overview of an TMT-based proteomics workflow."}
 knitr::include_graphics("figs/tmt_workflow.png")
 ```
 
@@ -100,14 +107,13 @@ detector, hence leading to a huge variability in intensity among
 different peptide species, even when they originate from the same
 protein.
 - The identification step is not trivial and prone to 
-errors^[Improving peptide identification is outside the scope of
-this tutorial]. PSM misidentification leads to the assignment of a
+errors. PSM misidentification leads to the assignment of a
 quantitative values from another peptide with likely another
 ionisation efficiency and relative abundance. Hence this misassigned
 value will become an outlier.
 - Moreover, the ion selection for MS2 depends on its
-intensity^[Recall that only the top most intense ion peaks are send
-for MS2]. Therefore, the chance to measure and, subsequently, 
+intensity (recall that only the top most intense ion peaks are send
+for MS2). Therefore, the chance to measure and, subsequently, 
 identify a peptide will depend on its abundance. Non identified
 peptides will lead to data missingness, which is related to the
 underlying quantification value. This phenomenon is known as
@@ -202,7 +208,7 @@ annotFile <- bfcrpath(bfc, "https://zenodo.org/records/14767905/files/spikein1_a
 Now the files are downloaded, we can load the two tables. 
 
 
-### PSM table{#sec-psm_table}
+### PSM table
 
 An MS experiment generates spectra. Each MS2 spectra are used to infer 
 the peptide identity thanks to a search engine. When
@@ -810,7 +816,7 @@ variation in the data.
 
 We can now convert the biological question "does the spike-in
 condition affect the protein intensities?" into a statistical
-hypothesis. In other words, we need to define the [contrast](#sec-inference).
+hypothesis. In other words, we need to define the contrast.
 We plot an overview of the model parameters.
 
 ```{r}
@@ -862,7 +868,7 @@ ggplot(inference) +
       values = c("grey20", "firebrick"), name = "",
       labels = c("HeLA background", "UPS standard")
     ) +
-    ggtitle("Statistical inference for all pairwise comparisons") 
+    ggtitle("Statistical inference the 1x - 0.5x comparison") 
 ```
 
 ### Fold change distributions
@@ -884,11 +890,11 @@ ggplot(inference) +
     ggtitle("Distribution of the log2 fold changes")
 ```
 
-The estimated log2 fold changes for HeLa proteins are closely distributed
-around 0, as expected. log2 fold changes for UPS standard proteins are
-distributed toward 1, but it has underestimated due to ion suppression
-effects that are characteristic of data set with high spike-in
-concentrations.
+The estimated log2 fold changes for HeLa proteins are closely
+distributed around 0, as expected. log2 fold changes for UPS standard
+proteins are distributed toward 1, but it has been underestimated due
+to ion suppression effects that are characteristic of data set with
+high spike-in concentrations.
 
 ## Exercise: the mouse diet use case
 
@@ -1155,77 +1161,6 @@ table(mouse$Mixture)
 length(unique(mouse$Run))
 ```
 
-Proteomics data contain several sources of variation that need to be
-accounted for by the model:
-
-1. **Treatment of interest**: we model the source of variation induced
-   by the experimental treatment of interest as a **fixed effect**.
-   Fixed effects are effect that are considered non-random, i.e. the
-   treatment effect is assumed to be the same and reproducible across
-   repeated experiments, but it is unknown and has to be estimated. We
-   will include `Diet` as a fixed effect that models the fact that a
-   change in diet type can induce changes in protein abundance.
-   Similarly, we also include `Duration` as a fixed effect to model
-   the change in protein abundance induces by the diet duration.
-   Finally, we will also include an interaction between the two
-   variables allowing that the changes in protein abundance induced by
-   diet type can be different whether the mice were fed for a short or
-   long duration.
-
-2. **Biological replicate effect**: the experiment involves biological
-   replication as the adipose tissue extracts were sampled from 20
-   mice (5 mice per Diet x Duration combination). Replicate-specific
-   effects occurs due to uncontrollable factors, such as social
-   behavior, feeding behavior, physical activity, occasional
-   injury,... Two mice will never provide exactly the same sample material,
-   even were they genetically identical and manipulated identically.
-   These effects are typically modelled as random effects which are
-   considered as a random sample from the population of all possible
-   mice and are assumed to be i.i.d normally distributed with mean 0
-   and constant variance, $u_{mouse} \sim
-   N(0,\sigma^{2,\text{mouse}})$. The use of random effects thus
-   models the correlation in the data, explicitly. We expect that
-   intensities from the same mouse are more alike than intensities
-   between mice.
-
-```{r}
-length(unique(mouse$BioReplicate))
-```
-
-3. **Labelling effects**: the 20 mouse adipose tissue samples have been
-   labelled using 18-plex TMT. We can expect that samples measured
-   within the same TMT label may be more similar than samples
-   measured within different TMT labels. Since these effects may not
-   be reproducible from one experiment to another, for instance
-   because each TMT kit may potentially contain different impurity
-   ratios, we can account for this correlation using a random effect
-   for TMT label.
-
-```{r}
-length(unique(mouse$Label))
-```
-
-4. **Mixture effects**: the 20 mouse samples were assigned to one out
-   of 3 mixtures. Again, we expect protein intensities from the same
-   mixture will be more alike than those of different mixtures. Hence,
-   we will add a random effect for mixture.
-
-```{r}
-table(mouse$Mixture)
-```
-
-5. **Run effects**: protein intensities that are measured within the 
-   same run will be more similar than protein intensities between
-   runs. We will use a random effect for run to explicitly model this
-   correlation in the data. Note that each sample has been acquired in
-   9 fractions, each fraction being measured in a separate run.
-   Accounting for the effects of run will also absorb the effects of
-   fraction.
-
-```{r}
-length(unique(mouse$Run))
-```
-
 We will model the main effects for `Diet` and `Duration`, and a
 `Diet:Duration` interaction, to account for proteins for which the
 `Diet` effect changes according to `Duration`, and vice versa, which
@@ -1362,7 +1297,7 @@ ggplot(inference) +
             paste("Hypothesis test:", colnames(L), "= 0"))
 ```
 
-#### Interaction: does the diet effect change according to duration?
+**Interaction: does the diet effect change according to duration?**
 
 We will now explore whether the effect of diet on protein abundance
 may be affected by duration, i.e. we want to infer on the difference
