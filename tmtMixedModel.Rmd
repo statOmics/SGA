@@ -847,7 +847,8 @@ model stored in `proteins`.
 
 ```{r}
 spikein <- hypothesisTest(spikein, i = "proteins", contrast = L)
-(inference <- rowData(spikein[["proteins"]])[, colnames(L)])
+inference <- rowData(spikein[["proteins"]])[, colnames(L)]
+head(inference)
 ```
 
 ### Volcano plots
@@ -1027,7 +1028,7 @@ to answer the following questions:
   an interaction between diet and duration?)
 
 Note that you should use `Diet` and `Duration` as the experimental
-variables of interest, and you can explore the available covariation
+variables of interest, and you can explore the available variables
 for modelling using `colData(mouse)`. Recall that you can also explore
 your data using MDS and colour for the potential sources of variation.
 
@@ -1221,7 +1222,7 @@ model column is named after the column names of the contrast matrix `L`.
 
 ```{r}
 inference <- rowData(mouse[["proteins"]])[[colnames(L)]]
-head(inference, 10)
+head(inference)
 ```
 
 The table contains the hypothesis testing results for every protein.
@@ -1283,7 +1284,8 @@ L <- makeContrast(
     parameterNames = c("DietLF", "DietLF:DurationShort")
 )
 mouse <- hypothesisTest(mouse, i = "proteins", L)
-(inference <- rowData(mouse[["proteins"]])[[colnames(L)]])
+inference <- rowData(mouse[["proteins"]])[[colnames(L)]]
+head(inference)
 ```
 
 And we plot the results.
@@ -1313,7 +1315,8 @@ L <- makeContrast(
     parameterNames = "DietLF:DurationShort"
 )
 mouse <- hypothesisTest(mouse, i = "proteins", L)
-(inference <- rowData(mouse[["proteins"]])[[colnames(L)]])
+inference <- rowData(mouse[["proteins"]])[[colnames(L)]]
+head(inference)
 ```
 
 And we plot the results.
