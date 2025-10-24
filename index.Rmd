@@ -98,7 +98,7 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
   - Mixed Models:[html](./francisellaMixedModel.html)
 <!---->
 
-<!--
+
 ## Module II: Next-generation Sequencing (Week 6-12)
   
 ### 1. Introduction to sequencing technology, QC, read mapping and count table
@@ -116,6 +116,7 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
 
 - Lecture: [html](./sequencing_technicalDE.html), [pdf](./sequencing_technicalDE.pdf)
 
+<!--
 ### 4. DE and usage analysis upon transcript-level quantification
 
 - [Soneson et al. 2016](https://f1000research.com/articles/4-1521/v2)
