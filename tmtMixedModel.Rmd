@@ -1,6 +1,6 @@
 ---
-title: "Advanced statistical analysis with msqrob2"
-author: "Christophe Vanderaa"
+title: "Mixed Models for labelled proteomics:"
+author: "Christophe Vanderaa and Lieven Clement"
 date: "statOmics, Ghent University (https://statomics.github.io)"
 output:
     html_document:
@@ -843,7 +843,7 @@ L <- makeContrast(
 ```
 
 We test our null hypotheses using `hypothesisTest()` and the estimated
-ion-level model stored in `proteins_msqrob`.
+model stored in `proteins`.
 
 ```{r}
 spikein <- hypothesisTest(spikein, i = "proteins", contrast = L)
