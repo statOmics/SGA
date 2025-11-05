@@ -367,14 +367,14 @@ Newton Raphson algorithm to find the root of the score function.
 We have to implement an interative algorithm for optimisation. To make things tractable we will act as if $\mathbf{A}$ is known and fix it using the current values of $\boldsymbol{\beta}^k$. Note, that for Poisson regression $\mathbf{A}=\mathbf{I}$.
 
 \begin{eqnarray*}
-\frac{\partial S(\boldsymbol{\beta})}{\partial \boldsymbol{\beta}} &=& \frac{ \mathbf{X}^T\mathbf{A} \left\{\mathbf{Y}-\boldsymbol{\mu}\right\}}{\partial \boldsymbol{\beta}}\\
-&=& - \mathbf{X}^T \mathbf{A}\left[
+\frac{\partial S(\boldsymbol{\beta})}{\partial \boldsymbol{\beta}} &=& \frac{\partial \mathbf{X}^T\mathbf{A} \left\{\mathbf{Y}-\boldsymbol{\mu}\right\}}{\partial \boldsymbol{\beta}}\\
+&\approx& - \mathbf{X}^T \mathbf{A}\left[
 \begin{array}{cccc} \frac{\partial \mu_1}{\partial \eta_1} &0&\ldots&0\\
  0&\frac{\partial \mu_2}{\partial \eta_2} &\ldots&0\\
 \vdots&\vdots&\vdots&\vdots\\
 0&0&\ldots& \frac{\partial \mu_n}{\partial \eta_n}\\
 \end{array}\right] \frac{\partial \boldsymbol{\eta}}{\partial \boldsymbol{\beta}}\\
-&=&-\mathbf{X}^T\mathbf{WX}
+&\approx&-\mathbf{X}^T\mathbf{WX}
 \end{eqnarray*}
 
 #### Define equation of Tangent Line (Plane)
@@ -792,10 +792,10 @@ A common filtering strategy is to remove genes with a generally low expression, 
 Implementation in edgeR. 
 
 ```{r}
-?filterByExpr
+?edgeR::filterByExpr
 ```
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 suppressPackageStartupMessages({
   library(limma)
   library(edgeR)
@@ -851,7 +851,7 @@ include_graphics("./images_sequencing/independentFiltering2.png")
   
 Let's try a couple of examples to get some intuition using simulated data.
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 suppressPackageStartupMessages(library(DESeq2))
 set.seed(24)
 dds <- DESeq2::makeExampleDESeqDataSet()
@@ -1066,8 +1066,7 @@ $$
 $$
 and ${\cal G}^*$ represents the set of genes after trimming those with the most extreme average expression. The weights serve to account for the fact that fold-changes for genes with lower read counts are more variable.
 
-The procedure only takes genes into account where both $Y_{gi}>0$ and $Y_{gr}>0$. By default, TMM trims genes with the $30\%$ most extreme $M$-values and $5\%$ most extreme average gene expression, and chooses as reference $r$ the sample whose upper-quartile is closest to the across-sample average upper-quartile. The normalized counts are then given by $\tilde{Y}_{gi} = Y_{gi} / N_i^s$, where 
-$$N_i^s = \frac{N_i F_i^{(r)}}{\sum_{i=1}^n N_i F_i^{(r)}/n}.$$
+The procedure only takes genes into account where both $Y_{gi}>0$ and $Y_{gr}>0$. By default, TMM trims genes with the $30\%$ most extreme $M$-values and $5\%$ most extreme average gene expression, and chooses as reference $r$ the sample whose upper-quartile is closest to the across-sample average upper-quartile. 
 
 TMM normalization may be performed from the `calcNormFactors` function implemented in `edgeR`:
 
