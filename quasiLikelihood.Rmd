@@ -1,0 +1,262 @@
+---
+title: 'Quasi-likelihood'
+author: "Lieven Clement"
+date: "Last edited on `r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+  pdf_document:
+    toc: true
+    number_sections: true
+    latex_engine: xelatex
+always_allow_html: true
+linkcolor: blue
+urlcolor: blue 
+citecolor: blue
+link-citations: yes
+
+---
+
+# Exponential Family
+
+$$
+f(y_i\vert \theta_i,\phi)=\exp\left\{ \frac{y_i\theta_i- b(\theta_i)}{a(\phi)}+c(y_i,\phi)\right\}
+$$
+
+likelihood to observe $y_1, \ldots, y_n$ independent observations 
+$$L(\boldsymbol{\theta},\phi\vert \boldsymbol{y})=\prod\limits_{i=1}^n f(y_i,\theta_i,\phi)$$
+
+log-likelihood
+$$
+l(\boldsymbol{\theta},\phi\vert \boldsymbol{y}) =  \sum\limits_{i=1}^n \log  f(y_i,\theta_i,\phi)
+$$
+
+Log-likelihood for one observation: 
+$$
+l(\theta_i,\phi\vert y_i)=\left\{ \frac{y_i\theta_i- b(\theta_i)}{a(\phi)}+c(y_i,\phi)\right\}
+$$
+
+- $E[y_i]=\mu_i=b^\prime(\theta_i)$
+- $\text{var}[y_i]=b^{\prime\prime}(\theta_i) a(\phi) =V(\mu_i)$
+
+e.g. for Poisson data: 
+$\text{var}[y_i] = \mu_i$ and for negative binomial data $\text{var}[y_i] = \mu_i + \phi \mu_i^2$.
+
+## Parameter Estimation: Maximum Likelihood
+
+$$
+S(\boldsymbol{\beta}) = \frac{\partial  l(\boldsymbol{\mu} \vert \mathbf{y})}{
+\partial{\boldsymbol{\beta}}} = 0
+$$
+
+$$
+S_i(\boldsymbol{\beta})= \frac{y_i-\mu_i}{\text{var}[y_i]}\frac{\partial\mu}{\partial\eta}\mathbf{x}_i
+$$
+
+
+There are only two moments involved in the estimation equations of the mean model parameters: 
+the mean and the variance! 
+
+$$
+S(\boldsymbol{\beta})=\mathbf{X}^T\mathbf{A}\left(\mathbf{y}-\boldsymbol{\mu}\right) = 0
+$$
+
+We can solve this set of score equations iteratively to estimate the model parameters: 
+$$
+\mathbf{\beta}^{k+1} = (\mathbf{X}^T\mathbf{W}^k\mathbf{X})^{-1}\mathbf{X}^T\mathbf{W}^kz^{k}
+$$
+
+with  pseudodata 
+
+$$
+z^k = \eta^k + \left.\frac{\partial \eta}{\partial \mu}\right\vert_k (\mathbf{y} - \boldsymbol{\mu}^k) 
+$$
+
+
+# Quasi-likelihood 
+
+We no longer define the full distribution but only two moments: the mean and the variance of $y_i$. 
+
+- We typically define these based on an existing distribution.
+- However we make the variance more flexible, i.e. we rescale it with an additional model parameter. 
+
+- Hence, we can model data that are over or under disperse with respect to a known distribution. 
+
+$$
+\left\{ \begin{array}{rcl}
+E[Y_i\vert x_i] &=& \mu_i\\
+g(\mu_i) &=& \eta_i\\
+\eta_i &=& \mathbf{x}_i^T\boldsymbol{\beta}\\
+\text{var}[Y_i] &=& \sigma^2 V(\mu_i)
+\end{array}\right.
+$$
+
+
+e.g. quasi poisson
+
+$$
+\left\{ \begin{array}{rcl}
+E[Y_i\vert x_i] &=& \mu_i\\
+g(\mu_i) &=& \eta_i\\
+\eta_i &=& \mathbf{x}_i^T\boldsymbol{\beta}\\
+\text{var}[Y_i] &=& \sigma^2 \mu_i
+\end{array}\right.
+$$
+
+e.g. quasi-negative binomial
+
+$$
+\left\{ \begin{array}{rcl}
+E[Y_i\vert x_i] &=& \mu_i\\
+g(\mu_i) &=& \eta_i\\
+\eta_i &=& \mathbf{x}_i^T\boldsymbol{\beta}\\
+\text{var}[Y_i] &=& \sigma^2 (\mu_i + \phi \mu_i^2)
+\end{array}\right.
+$$
+
+## Parameter Estimation
+
+Note, that this leads to the following estimation equations:
+
+$$
+U_i(\boldsymbol{\beta})= \frac{y_i-\mu_i}{\sigma^2V(\mu_i)}\frac{\partial\mu}{\partial\eta}\mathbf{x}_i
+$$
+ 
+
+$$
+\begin{array}{rcccc}
+U(\boldsymbol{\beta})&=&\left[\mathbf{X}^T\mathbf{A}\left(\mathbf{y}-\boldsymbol{\mu}\right)\right]/\sigma^2 &=& 0\\
+&&\Updownarrow\\
+&&\mathbf{X}^T\mathbf{A}\left(\mathbf{y}-\boldsymbol{\mu}\right) &=& 0
+\end{array}
+$$
+Hence, the estimating equations for the mean model parameters remain the same as those for the conventional distribution where the quasi-likelihood is derived from. 
+
+The variance covariance matrix of the mean model parameters then becomes: 
+$$
+\Sigma_{\hat{\boldsymbol{\beta}}}= (\mathbf{X}^T\mathbf{WX})^{-1}\sigma^2
+$$
+
+We can estimate $\sigma^2$ using a moment estimator on the residual vector $\mathbf{y}-\boldsymbol{\mu}$, i.e. 
+
+$$
+\hat{\sigma}^2 = \frac{1}{n-p} \sum_\limits{i=1}^n \frac{(y_i-\hat\mu_i)^2}{V(\hat\mu_i)}
+$$
+
+
+
+Note, that 
+$$e_i^p=\frac{(y_i-\hat\mu_i)}{\sqrt{V(\hat\mu_i)}}$$ are also referred to as the Pearson residuals. 
+
+Another type of residuals for GLMs are deviance residuals, i.e. 
+
+$$e_i^d = \text{sign}(y_i-\hat\mu_i)\sqrt{2[l(y_i,y_i)-l(y_i,\hat\mu_i)]}
+$$
+So another estimator is 
+
+$$\hat{\sigma}^2 = \frac{\sum_\limits{i=1}^n(e_i^d)^2}{n-p} = \frac{D}{n-p}
+$$
+with D the deviance statistic: the LRT test between the saturated model (a model that provides a perfect fit) and the current model:
+
+$$
+D = 2 \sum\limits_{i=1}^n [l(y_i,y_i,\phi)- l(y_i,\hat{\mu}_i,\phi)]
+$$
+
+So the standard errors on the model parameters under quasi-likelihood become: 
+
+$$
+\hat{\text{se}}_{\mathbf{L}^T\hat{\boldsymbol{\beta}}}^{QL} = \hat{\text{se}}_{\mathbf{L}^T\hat{\boldsymbol{\beta}}}^{ML}\times \hat{\sigma}$$
+
+## Hypothesis tests
+
+An approximate t-test statistic can be defined as
+
+$$
+t = \frac{\mathbf{L}^T\hat{\boldsymbol{\beta}}}{\hat{\text{se}}_{\mathbf{L}^T\hat{\boldsymbol{\beta}}}^{QL}} \approx t_{n-p}\vert H_0
+$$
+
+And an approximate F-test statistic can be defined as: 
+
+$$F = \frac{\frac{\text{LRT}^{ML}}{c}}{\hat\sigma^2}  \approx F_{c,n-p} \vert H_0,$$
+with c the degrees of freedom of the LRT statistic.
+
+## Example 
+
+```{r}
+## quasipoisson.
+counts <- c(18,17,15,20,10,20,25,13,12)
+outcome <- gl(3,1,9)
+treatment <- gl(3,3)
+d.AD <- data.frame(treatment, outcome, counts)
+d.AD
+```
+
+```{r}
+glm.pois <- glm(counts ~ outcome + treatment, family = poisson())
+summary(glm.pois)
+```
+
+```{r}
+glm.qpois <- glm(counts ~ outcome+treatment, family = quasipoisson())
+summary(glm.qpois)
+```
+
+Estimate dispersion ourselves? 
+We first calculate the Pearson residuals. 
+
+```{r}
+ep <- (counts - glm.pois$fitted)/sqrt(glm.pois$fitted)
+range(ep - resid(glm.pois,type="pearson"))
+```
+
+Now, we can estimate the quasi-dispersion parameter
+```{r}
+n <- length(counts)
+p <- length(coef(glm.pois))
+sigma2 <- sum(ep^2)/(n-p)
+sigma2
+```
+
+```{r}
+poisRes <- summary(glm.pois)$coef
+poisRes
+qlRes <- summary(glm.qpois)$coef
+qlRes
+cbind(ql=qlRes[,2],pois=poisRes[,2],qlself=poisRes[,2]*sqrt(sigma2))
+```
+
+### Approximate F-test
+
+LR -test with Poisson regression: 
+
+```{r}
+library(car)
+Anova(glm.pois)
+```
+We check that the approximate F-statistic equals LRT/df/sigma2 
+
+```{r}
+Anova(glm.qpois, test="F")
+Anova(glm.qpois, test="F")[1,1]/Anova(glm.qpois, test="F")[1,2]/sigma2
+```
+
+
+### Deviance
+
+```{r}
+deviance(glm.pois)
+lsat <- sum(dpois(counts,counts,log = TRUE))
+lcur <- sum(dpois(counts,glm.pois$fitted.values,log = TRUE))
+2*(lsat-lcur)
+```
+
+Deviance residuals
+
+```{r}
+lsat.i <-  dpois(counts,counts,log = TRUE)
+lcur.i <- dpois(counts,glm.pois$fitted.values,log = TRUE)
+e.dev <- sign(counts-glm.pois$fitted) * sqrt(2*(lsat.i-lcur.i))
+e.dev
+resid(glm.pois,type="deviance")
+```

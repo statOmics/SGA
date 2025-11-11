@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Lieven Clement" />
+
+
+<title>Quasi-likelihood</title>
+
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #204a87; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #8f5902; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #204a87; font-weight: bold; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SGA</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-chalkboard-teacher"></span>
+     
+    Lectures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">---- INTRODUCTION ----</li>
+    <li>
+      <a href="intro.html">1.1 Position</a>
+    </li>
+    <li>
+      <a href="recapGeneralLinearModel.html">1.2 Recap linear model</a>
+    </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="./figs/part1_ms_basics.pdf">1.1 MS Basics</a>
+    </li>
+    <li>
+      <a href="./figs/part1_ms_basics.pdf">1.2 Identification</a>
+    </li>
+    <li>
+      <a href="TargetDecoy.html">2.1 Identification - FDR - QC</a>
+    </li>
+    <li>
+      <a href="pda_quantification_preprocessing.html">2.2.1 Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_robustSummarisation_peptideModels.html">2.2.2 Wrap-up Preprocessing - Peptide-Level-Models</a>
+    </li>
+    <li>
+      <a href="pda_quantification_inference.html">2.3.1 Quantification - Differential Abundance Analysis</a>
+    </li>
+    <li>
+      <a href="pda_blocking_wrapup.html">2.3.2. Wrap-up DA - Blocking</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-laptop"></span>
+     
+    tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">---- INTRODUCTION ----</li>
+    <li>
+      <a href="multipleRegression_KPNA2.html">1 Intro KPNA2</a>
+    </li>
+    <li class="dropdown-header">---- MODULE I PROTEOMICS ----</li>
+    <li>
+      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">1. Bioinformatics for Proteomics</a>
+    </li>
+    <li>
+      <a href="TargetDecoyTutorial.html">2.1. Target Decoy QC</a>
+    </li>
+    <li>
+      <a href="pda_tutorialPreprocessing.html">2.2. Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_tutorialDesign.html">2.3. Quantification - Design</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Quasi-likelihood</h1>
+<h4 class="author">Lieven Clement</h4>
+<h4 class="date">Last edited on 11 November, 2025</h4>
+
+</div>
+
+
+<div id="exponential-family" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Exponential Family</h1>
+<p><span class="math display">\[
+f(y_i\vert \theta_i,\phi)=\exp\left\{ \frac{y_i\theta_i-
+b(\theta_i)}{a(\phi)}+c(y_i,\phi)\right\}
+\]</span></p>
+<p>likelihood to observe <span class="math inline">\(y_1, \ldots,
+y_n\)</span> independent observations <span
+class="math display">\[L(\boldsymbol{\theta},\phi\vert
+\boldsymbol{y})=\prod\limits_{i=1}^n f(y_i,\theta_i,\phi)\]</span></p>
+<p>log-likelihood <span class="math display">\[
+l(\boldsymbol{\theta},\phi\vert \boldsymbol{y}) =  \sum\limits_{i=1}^n
+\log  f(y_i,\theta_i,\phi)
+\]</span></p>
+<p>Log-likelihood for one observation: <span class="math display">\[
+l(\theta_i,\phi\vert y_i)=\left\{ \frac{y_i\theta_i-
+b(\theta_i)}{a(\phi)}+c(y_i,\phi)\right\}
+\]</span></p>
+<ul>
+<li><span
+class="math inline">\(E[y_i]=\mu_i=b^\prime(\theta_i)\)</span></li>
+<li><span
+class="math inline">\(\text{var}[y_i]=b^{\prime\prime}(\theta_i) a(\phi)
+=V(\mu_i)\)</span></li>
+</ul>
+<p>e.g. for Poisson data: <span class="math inline">\(\text{var}[y_i] =
+\mu_i\)</span> and for negative binomial data <span
+class="math inline">\(\text{var}[y_i] = \mu_i + \phi
+\mu_i^2\)</span>.</p>
+<div id="parameter-estimation-maximum-likelihood" class="section level2"
+number="1.1">
+<h2><span class="header-section-number">1.1</span> Parameter Estimation:
+Maximum Likelihood</h2>
+<p><span class="math display">\[
+S(\boldsymbol{\beta}) = \frac{\partial  l(\boldsymbol{\mu} \vert
+\mathbf{y})}{
+\partial{\boldsymbol{\beta}}} = 0
+\]</span></p>
+<p><span class="math display">\[
+S_i(\boldsymbol{\beta})=
+\frac{y_i-\mu_i}{\text{var}[y_i]}\frac{\partial\mu}{\partial\eta}\mathbf{x}_i
+\]</span></p>
+<p>There are only two moments involved in the estimation equations of
+the mean model parameters: the mean and the variance!</p>
+<p><span class="math display">\[
+S(\boldsymbol{\beta})=\mathbf{X}^T\mathbf{A}\left(\mathbf{y}-\boldsymbol{\mu}\right)
+= 0
+\]</span></p>
+<p>We can solve this set of score equations iteratively to estimate the
+model parameters: <span class="math display">\[
+\mathbf{\beta}^{k+1} =
+(\mathbf{X}^T\mathbf{W}^k\mathbf{X})^{-1}\mathbf{X}^T\mathbf{W}^kz^{k}
+\]</span></p>
+<p>with pseudodata</p>
+<p><span class="math display">\[
+z^k = \eta^k + \left.\frac{\partial \eta}{\partial \mu}\right\vert_k
+(\mathbf{y} - \boldsymbol{\mu}^k)
+\]</span></p>
+</div>
+</div>
+<div id="quasi-likelihood" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Quasi-likelihood</h1>
+<p>We no longer define the full distribution but only two moments: the
+mean and the variance of <span class="math inline">\(y_i\)</span>.</p>
+<ul>
+<li><p>We typically define these based on an existing
+distribution.</p></li>
+<li><p>However we make the variance more flexible, i.e. we rescale it
+with an additional model parameter.</p></li>
+<li><p>Hence, we can model data that are over or under disperse with
+respect to a known distribution.</p></li>
+</ul>
+<p><span class="math display">\[
+\left\{ \begin{array}{rcl}
+E[Y_i\vert x_i] &amp;=&amp; \mu_i\\
+g(\mu_i) &amp;=&amp; \eta_i\\
+\eta_i &amp;=&amp; \mathbf{x}_i^T\boldsymbol{\beta}\\
+\text{var}[Y_i] &amp;=&amp; \sigma^2 V(\mu_i)
+\end{array}\right.
+\]</span></p>
+<p>e.g. quasi poisson</p>
+<p><span class="math display">\[
+\left\{ \begin{array}{rcl}
+E[Y_i\vert x_i] &amp;=&amp; \mu_i\\
+g(\mu_i) &amp;=&amp; \eta_i\\
+\eta_i &amp;=&amp; \mathbf{x}_i^T\boldsymbol{\beta}\\
+\text{var}[Y_i] &amp;=&amp; \sigma^2 \mu_i
+\end{array}\right.
+\]</span></p>
+<p>e.g. quasi-negative binomial</p>
+<p><span class="math display">\[
+\left\{ \begin{array}{rcl}
+E[Y_i\vert x_i] &amp;=&amp; \mu_i\\
+g(\mu_i) &amp;=&amp; \eta_i\\
+\eta_i &amp;=&amp; \mathbf{x}_i^T\boldsymbol{\beta}\\
+\text{var}[Y_i] &amp;=&amp; \sigma^2 (\mu_i + \phi \mu_i^2)
+\end{array}\right.
+\]</span></p>
+<div id="parameter-estimation" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Parameter
+Estimation</h2>
+<p>Note, that this leads to the following estimation equations:</p>
+<p><span class="math display">\[
+U_i(\boldsymbol{\beta})=
+\frac{y_i-\mu_i}{\sigma^2V(\mu_i)}\frac{\partial\mu}{\partial\eta}\mathbf{x}_i
+\]</span></p>
+<p><span class="math display">\[
+\begin{array}{rcccc}
+U(\boldsymbol{\beta})&amp;=&amp;\left[\mathbf{X}^T\mathbf{A}\left(\mathbf{y}-\boldsymbol{\mu}\right)\right]/\sigma^2
+&amp;=&amp; 0\\
+&amp;&amp;\Updownarrow\\
+&amp;&amp;\mathbf{X}^T\mathbf{A}\left(\mathbf{y}-\boldsymbol{\mu}\right)
+&amp;=&amp; 0
+\end{array}
+\]</span> Hence, the estimating equations for the mean model parameters
+remain the same as those for the conventional distribution where the
+quasi-likelihood is derived from.</p>
+<p>The variance covariance matrix of the mean model parameters then
+becomes: <span class="math display">\[
+\Sigma_{\hat{\boldsymbol{\beta}}}=
+(\mathbf{X}^T\mathbf{WX})^{-1}\sigma^2
+\]</span></p>
+<p>We can estimate <span class="math inline">\(\sigma^2\)</span> using a
+moment estimator on the residual vector <span
+class="math inline">\(\mathbf{y}-\boldsymbol{\mu}\)</span>, i.e. </p>
+<p><span class="math display">\[
+\hat{\sigma}^2 = \frac{1}{n-p} \sum_\limits{i=1}^n
+\frac{(y_i-\hat\mu_i)^2}{V(\hat\mu_i)}
+\]</span></p>
+<p>Note, that <span
+class="math display">\[e_i^p=\frac{(y_i-\hat\mu_i)}{\sqrt{V(\hat\mu_i)}}\]</span>
+are also referred to as the Pearson residuals.</p>
+<p>Another type of residuals for GLMs are deviance residuals, i.e. </p>
+<p><span class="math display">\[e_i^d =
+\text{sign}(y_i-\hat\mu_i)\sqrt{2[l(y_i,y_i)-l(y_i,\hat\mu_i)]}
+\]</span> So another estimator is</p>
+<p><span class="math display">\[\hat{\sigma}^2 =
+\frac{\sum_\limits{i=1}^n(e_i^d)^2}{n-p} = \frac{D}{n-p}
+\]</span> with D the deviance statistic: the LRT test between the
+saturated model (a model that provides a perfect fit) and the current
+model:</p>
+<p><span class="math display">\[
+D = 2 \sum\limits_{i=1}^n [l(y_i,y_i,\phi)- l(y_i,\hat{\mu}_i,\phi)]
+\]</span></p>
+<p>So the standard errors on the model parameters under quasi-likelihood
+become:</p>
+<p><span class="math display">\[
+\hat{\text{se}}_{\mathbf{L}^T\hat{\boldsymbol{\beta}}}^{QL} =
+\hat{\text{se}}_{\mathbf{L}^T\hat{\boldsymbol{\beta}}}^{ML}\times
+\hat{\sigma}\]</span></p>
+</div>
+<div id="hypothesis-tests" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Hypothesis tests</h2>
+<p>An approximate t-test statistic can be defined as</p>
+<p><span class="math display">\[
+t =
+\frac{\mathbf{L}^T\hat{\boldsymbol{\beta}}}{\hat{\text{se}}_{\mathbf{L}^T\hat{\boldsymbol{\beta}}}^{QL}}
+\approx t_{n-p}\vert H_0
+\]</span></p>
+<p>And an approximate F-test statistic can be defined as:</p>
+<p><span class="math display">\[F =
+\frac{\frac{\text{LRT}^{ML}}{c}}{\hat\sigma^2}  \approx F_{c,n-p} \vert
+H_0,\]</span> with c the degrees of freedom of the LRT statistic.</p>
+</div>
+<div id="example" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Example</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="do">## quasipoisson.</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>counts <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">18</span>,<span class="dv">17</span>,<span class="dv">15</span>,<span class="dv">20</span>,<span class="dv">10</span>,<span class="dv">20</span>,<span class="dv">25</span>,<span class="dv">13</span>,<span class="dv">12</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>outcome <span class="ot">&lt;-</span> <span class="fu">gl</span>(<span class="dv">3</span>,<span class="dv">1</span>,<span class="dv">9</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>treatment <span class="ot">&lt;-</span> <span class="fu">gl</span>(<span class="dv">3</span>,<span class="dv">3</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>d.AD <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(treatment, outcome, counts)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>d.AD</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["treatment"],"name":[1],"type":["fct"],"align":["left"]},{"label":["outcome"],"name":[2],"type":["fct"],"align":["left"]},{"label":["counts"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"1","3":"18"},{"1":"1","2":"2","3":"17"},{"1":"1","2":"3","3":"15"},{"1":"2","2":"1","3":"20"},{"1":"2","2":"2","3":"10"},{"1":"2","2":"3","3":"20"},{"1":"3","2":"1","3":"25"},{"1":"3","2":"2","3":"13"},{"1":"3","2":"3","3":"12"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>glm.pois <span class="ot">&lt;-</span> <span class="fu">glm</span>(counts <span class="sc">~</span> outcome <span class="sc">+</span> treatment, <span class="at">family =</span> <span class="fu">poisson</span>())</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">summary</span>(glm.pois)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## glm(formula = counts ~ outcome + treatment, family = poisson())
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  3.045e+00  1.709e-01  17.815   &lt;2e-16 ***
+## outcome2    -4.543e-01  2.022e-01  -2.247   0.0246 *  
+## outcome3    -2.930e-01  1.927e-01  -1.520   0.1285    
+## treatment2   1.398e-16  2.000e-01   0.000   1.0000    
+## treatment3  -2.416e-16  2.000e-01   0.000   1.0000    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 10.5814  on 8  degrees of freedom
+## Residual deviance:  5.1291  on 4  degrees of freedom
+## AIC: 56.761
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>glm.qpois <span class="ot">&lt;-</span> <span class="fu">glm</span>(counts <span class="sc">~</span> outcome<span class="sc">+</span>treatment, <span class="at">family =</span> <span class="fu">quasipoisson</span>())</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">summary</span>(glm.qpois)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## glm(formula = counts ~ outcome + treatment, family = quasipoisson())
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  3.045e+00  1.944e-01  15.665  9.7e-05 ***
+## outcome2    -4.543e-01  2.299e-01  -1.976    0.119    
+## outcome3    -2.930e-01  2.192e-01  -1.337    0.252    
+## treatment2   1.398e-16  2.274e-01   0.000    1.000    
+## treatment3  -2.416e-16  2.274e-01   0.000    1.000    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for quasipoisson family taken to be 1.2933)
+## 
+##     Null deviance: 10.5814  on 8  degrees of freedom
+## Residual deviance:  5.1291  on 4  degrees of freedom
+## AIC: NA
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p>Estimate dispersion ourselves? We first calculate the Pearson
+residuals.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>ep <span class="ot">&lt;-</span> (counts <span class="sc">-</span> glm.pois<span class="sc">$</span>fitted)<span class="sc">/</span><span class="fu">sqrt</span>(glm.pois<span class="sc">$</span>fitted)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">range</span>(ep <span class="sc">-</span> <span class="fu">resid</span>(glm.pois,<span class="at">type=</span><span class="st">&quot;pearson&quot;</span>))</span></code></pre></div>
+<pre><code>## [1] 0 0</code></pre>
+<p>Now, we can estimate the quasi-dispersion parameter</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(counts)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">coef</span>(glm.pois))</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>sigma2 <span class="ot">&lt;-</span> <span class="fu">sum</span>(ep<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>(n<span class="sc">-</span>p)</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>sigma2</span></code></pre></div>
+<pre><code>## [1] 1.2933</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>poisRes <span class="ot">&lt;-</span> <span class="fu">summary</span>(glm.pois)<span class="sc">$</span>coef</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>poisRes</span></code></pre></div>
+<pre><code>##                  Estimate Std. Error       z value     Pr(&gt;|z|)
+## (Intercept)  3.044522e+00  0.1708987  1.781478e+01 5.426767e-71
+## outcome2    -4.542553e-01  0.2021708 -2.246889e+00 2.464711e-02
+## outcome3    -2.929871e-01  0.1927423 -1.520097e+00 1.284865e-01
+## treatment2   1.397701e-16  0.2000000  6.988506e-16 1.000000e+00
+## treatment3  -2.415657e-16  0.2000000 -1.207829e-15 1.000000e+00</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>qlRes <span class="ot">&lt;-</span> <span class="fu">summary</span>(glm.qpois)<span class="sc">$</span>coef</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>qlRes</span></code></pre></div>
+<pre><code>##                  Estimate Std. Error       t value     Pr(&gt;|t|)
+## (Intercept)  3.044522e+00  0.1943517  1.566502e+01 9.698855e-05
+## outcome2    -4.542553e-01  0.2299154 -1.975750e+00 1.193809e-01
+## outcome3    -2.929871e-01  0.2191931 -1.336662e+00 2.522944e-01
+## treatment2   1.397701e-16  0.2274467  6.145180e-16 1.000000e+00
+## treatment3  -2.415657e-16  0.2274467 -1.062076e-15 1.000000e+00</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">cbind</span>(<span class="at">ql=</span>qlRes[,<span class="dv">2</span>],<span class="at">pois=</span>poisRes[,<span class="dv">2</span>],<span class="at">qlself=</span>poisRes[,<span class="dv">2</span>]<span class="sc">*</span><span class="fu">sqrt</span>(sigma2))</span></code></pre></div>
+<pre><code>##                    ql      pois    qlself
+## (Intercept) 0.1943517 0.1708987 0.1943517
+## outcome2    0.2299154 0.2021708 0.2299154
+## outcome3    0.2191931 0.1927423 0.2191931
+## treatment2  0.2274467 0.2000000 0.2274467
+## treatment3  0.2274467 0.2000000 0.2274467</code></pre>
+<div id="approximate-f-test" class="section level3" number="2.3.1">
+<h3><span class="header-section-number">2.3.1</span> Approximate
+F-test</h3>
+<p>LR -test with Poisson regression:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">library</span>(car)</span></code></pre></div>
+<pre><code>## Warning: package &#39;car&#39; was built under R version 4.4.1</code></pre>
+<pre><code>## Loading required package: carData</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="fu">Anova</span>(glm.pois)</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["LR Chisq"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Df"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Pr(>Chisq)"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"5.452305e+00","2":"2","3":"0.06547071","_rn_":"outcome"},{"1":"6.217249e-15","2":"2","3":"1.00000000","_rn_":"treatment"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>We check that the approximate F-statistic equals LRT/df/sigma2</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="fu">Anova</span>(glm.qpois, <span class="at">test=</span><span class="st">&quot;F&quot;</span>)</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Sum Sq"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Df"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["F value"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Pr(>F)"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"5.452305e+00","2":"2","3":"2.107903e+00","4":"0.2370389","_rn_":"outcome"},{"1":"6.217249e-15","2":"2","3":"2.403637e-15","4":"1.0000000","_rn_":"treatment"},{"1":"5.173202e+00","2":"4","3":"NA","4":"NA","_rn_":"Residuals"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="fu">Anova</span>(glm.qpois, <span class="at">test=</span><span class="st">&quot;F&quot;</span>)[<span class="dv">1</span>,<span class="dv">1</span>]<span class="sc">/</span><span class="fu">Anova</span>(glm.qpois, <span class="at">test=</span><span class="st">&quot;F&quot;</span>)[<span class="dv">1</span>,<span class="dv">2</span>]<span class="sc">/</span>sigma2</span></code></pre></div>
+<pre><code>## [1] 2.107903</code></pre>
+</div>
+<div id="deviance" class="section level3" number="2.3.2">
+<h3><span class="header-section-number">2.3.2</span> Deviance</h3>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="fu">deviance</span>(glm.pois)</span></code></pre></div>
+<pre><code>## [1] 5.129141</code></pre>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>lsat <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">dpois</span>(counts,counts,<span class="at">log =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>lcur <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">dpois</span>(counts,glm.pois<span class="sc">$</span>fitted.values,<span class="at">log =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a><span class="dv">2</span><span class="sc">*</span>(lsat<span class="sc">-</span>lcur)</span></code></pre></div>
+<pre><code>## [1] 5.129141</code></pre>
+<p>Deviance residuals</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a>lsat.i <span class="ot">&lt;-</span>  <span class="fu">dpois</span>(counts,counts,<span class="at">log =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a>lcur.i <span class="ot">&lt;-</span> <span class="fu">dpois</span>(counts,glm.pois<span class="sc">$</span>fitted.values,<span class="at">log =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a>e.dev <span class="ot">&lt;-</span> <span class="fu">sign</span>(counts<span class="sc">-</span>glm.pois<span class="sc">$</span>fitted) <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="dv">2</span><span class="sc">*</span>(lsat.i<span class="sc">-</span>lcur.i))</span>
+<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a>e.dev</span></code></pre></div>
+<pre><code>##           1           2           3           4           5           6 
+## -0.67124923  0.96272360 -0.16964662 -0.21998507 -0.95552353  1.04938637 
+##           7           8           9 
+##  0.84715368 -0.09167147 -0.96656372</code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="fu">resid</span>(glm.pois,<span class="at">type=</span><span class="st">&quot;deviance&quot;</span>)</span></code></pre></div>
+<pre><code>##           1           2           3           4           5           6 
+## -0.67124923  0.96272360 -0.16964662 -0.21998507 -0.95552353  1.04938637 
+##           7           8           9 
+##  0.84715368 -0.09167147 -0.96656372</code></pre>
+</div>
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAnUXVhc2ktbGlrZWxpaG9vZCcKYXV0aG9yOiAiTGlldmVuIENsZW1lbnQiCmRhdGU6ICJMYXN0IGVkaXRlZCBvbiBgciBmb3JtYXQoU3lzLnRpbWUoKSwgJyVkICVCLCAlWScpYCIKb3V0cHV0OiAKICBodG1sX2RvY3VtZW50OgogICAgdG9jOiB0cnVlCiAgICB0b2NfZmxvYXQ6IHRydWUKICBwZGZfZG9jdW1lbnQ6CiAgICB0b2M6IHRydWUKICAgIG51bWJlcl9zZWN0aW9uczogdHJ1ZQogICAgbGF0ZXhfZW5naW5lOiB4ZWxhdGV4CmFsd2F5c19hbGxvd19odG1sOiB0cnVlCmxpbmtjb2xvcjogYmx1ZQp1cmxjb2xvcjogYmx1ZSAKY2l0ZWNvbG9yOiBibHVlCmxpbmstY2l0YXRpb25zOiB5ZXMKCi0tLQoKIyBFeHBvbmVudGlhbCBGYW1pbHkKCiQkCmYoeV9pXHZlcnQgXHRoZXRhX2ksXHBoaSk9XGV4cFxsZWZ0XHsgXGZyYWN7eV9pXHRoZXRhX2ktIGIoXHRoZXRhX2kpfXthKFxwaGkpfStjKHlfaSxccGhpKVxyaWdodFx9CiQkCgpsaWtlbGlob29kIHRvIG9ic2VydmUgJHlfMSwgXGxkb3RzLCB5X24kIGluZGVwZW5kZW50IG9ic2VydmF0aW9ucyAKJCRMKFxib2xkc3ltYm9se1x0aGV0YX0sXHBoaVx2ZXJ0IFxib2xkc3ltYm9se3l9KT1ccHJvZFxsaW1pdHNfe2k9MX1ebiBmKHlfaSxcdGhldGFfaSxccGhpKSQkCgpsb2ctbGlrZWxpaG9vZAokJApsKFxib2xkc3ltYm9se1x0aGV0YX0sXHBoaVx2ZXJ0IFxib2xkc3ltYm9se3l9KSA9ICBcc3VtXGxpbWl0c197aT0xfV5uIFxsb2cgIGYoeV9pLFx0aGV0YV9pLFxwaGkpCiQkCgpMb2ctbGlrZWxpaG9vZCBmb3Igb25lIG9ic2VydmF0aW9uOiAKJCQKbChcdGhldGFfaSxccGhpXHZlcnQgeV9pKT1cbGVmdFx7IFxmcmFje3lfaVx0aGV0YV9pLSBiKFx0aGV0YV9pKX17YShccGhpKX0rYyh5X2ksXHBoaSlccmlnaHRcfQokJAoKLSAkRVt5X2ldPVxtdV9pPWJeXHByaW1lKFx0aGV0YV9pKSQKLSAkXHRleHR7dmFyfVt5X2ldPWJee1xwcmltZVxwcmltZX0oXHRoZXRhX2kpIGEoXHBoaSkgPVYoXG11X2kpJAoKZS5nLiBmb3IgUG9pc3NvbiBkYXRhOiAKJFx0ZXh0e3Zhcn1beV9pXSA9IFxtdV9pJCBhbmQgZm9yIG5lZ2F0aXZlIGJpbm9taWFsIGRhdGEgJFx0ZXh0e3Zhcn1beV9pXSA9IFxtdV9pICsgXHBoaSBcbXVfaV4yJC4KCiMjIFBhcmFtZXRlciBFc3RpbWF0aW9uOiBNYXhpbXVtIExpa2VsaWhvb2QKCiQkClMoXGJvbGRzeW1ib2x7XGJldGF9KSA9IFxmcmFje1xwYXJ0aWFsICBsKFxib2xkc3ltYm9se1xtdX0gXHZlcnQgXG1hdGhiZnt5fSl9ewpccGFydGlhbHtcYm9sZHN5bWJvbHtcYmV0YX19fSA9IDAKJCQKCiQkClNfaShcYm9sZHN5bWJvbHtcYmV0YX0pPSBcZnJhY3t5X2ktXG11X2l9e1x0ZXh0e3Zhcn1beV9pXX1cZnJhY3tccGFydGlhbFxtdX17XHBhcnRpYWxcZXRhfVxtYXRoYmZ7eH1faQokJAoKClRoZXJlIGFyZSBvbmx5IHR3byBtb21lbnRzIGludm9sdmVkIGluIHRoZSBlc3RpbWF0aW9uIGVxdWF0aW9ucyBvZiB0aGUgbWVhbiBtb2RlbCBwYXJhbWV0ZXJzOiAKdGhlIG1lYW4gYW5kIHRoZSB2YXJpYW5jZSEgCgokJApTKFxib2xkc3ltYm9se1xiZXRhfSk9XG1hdGhiZntYfV5UXG1hdGhiZntBfVxsZWZ0KFxtYXRoYmZ7eX0tXGJvbGRzeW1ib2x7XG11fVxyaWdodCkgPSAwCiQkCgpXZSBjYW4gc29sdmUgdGhpcyBzZXQgb2Ygc2NvcmUgZXF1YXRpb25zIGl0ZXJhdGl2ZWx5IHRvIGVzdGltYXRlIHRoZSBtb2RlbCBwYXJhbWV0ZXJzOiAKJCQKXG1hdGhiZntcYmV0YX1ee2srMX0gPSAoXG1hdGhiZntYfV5UXG1hdGhiZntXfV5rXG1hdGhiZntYfSleey0xfVxtYXRoYmZ7WH1eVFxtYXRoYmZ7V31ea3pee2t9CiQkCgp3aXRoICBwc2V1ZG9kYXRhIAoKJCQKel5rID0gXGV0YV5rICsgXGxlZnQuXGZyYWN7XHBhcnRpYWwgXGV0YX17XHBhcnRpYWwgXG11fVxyaWdodFx2ZXJ0X2sgKFxtYXRoYmZ7eX0gLSBcYm9sZHN5bWJvbHtcbXV9XmspIAokJAoKCiMgUXVhc2ktbGlrZWxpaG9vZCAKCldlIG5vIGxvbmdlciBkZWZpbmUgdGhlIGZ1bGwgZGlzdHJpYnV0aW9uIGJ1dCBvbmx5IHR3byBtb21lbnRzOiB0aGUgbWVhbiBhbmQgdGhlIHZhcmlhbmNlIG9mICR5X2kkLiAKCi0gV2UgdHlwaWNhbGx5IGRlZmluZSB0aGVzZSBiYXNlZCBvbiBhbiBleGlzdGluZyBkaXN0cmlidXRpb24uCi0gSG93ZXZlciB3ZSBtYWtlIHRoZSB2YXJpYW5jZSBtb3JlIGZsZXhpYmxlLCBpLmUuIHdlIHJlc2NhbGUgaXQgd2l0aCBhbiBhZGRpdGlvbmFsIG1vZGVsIHBhcmFtZXRlci4gCgotIEhlbmNlLCB3ZSBjYW4gbW9kZWwgZGF0YSB0aGF0IGFyZSBvdmVyIG9yIHVuZGVyIGRpc3BlcnNlIHdpdGggcmVzcGVjdCB0byBhIGtub3duIGRpc3RyaWJ1dGlvbi4gCgokJApcbGVmdFx7IFxiZWdpbnthcnJheX17cmNsfQpFW1lfaVx2ZXJ0IHhfaV0gJj0mIFxtdV9pXFwKZyhcbXVfaSkgJj0mIFxldGFfaVxcClxldGFfaSAmPSYgXG1hdGhiZnt4fV9pXlRcYm9sZHN5bWJvbHtcYmV0YX1cXApcdGV4dHt2YXJ9W1lfaV0gJj0mIFxzaWdtYV4yIFYoXG11X2kpClxlbmR7YXJyYXl9XHJpZ2h0LgokJAoKCmUuZy4gcXVhc2kgcG9pc3NvbgoKJCQKXGxlZnRceyBcYmVnaW57YXJyYXl9e3JjbH0KRVtZX2lcdmVydCB4X2ldICY9JiBcbXVfaVxcCmcoXG11X2kpICY9JiBcZXRhX2lcXApcZXRhX2kgJj0mIFxtYXRoYmZ7eH1faV5UXGJvbGRzeW1ib2x7XGJldGF9XFwKXHRleHR7dmFyfVtZX2ldICY9JiBcc2lnbWFeMiBcbXVfaQpcZW5ke2FycmF5fVxyaWdodC4KJCQKCmUuZy4gcXVhc2ktbmVnYXRpdmUgYmlub21pYWwKCiQkClxsZWZ0XHsgXGJlZ2lue2FycmF5fXtyY2x9CkVbWV9pXHZlcnQgeF9pXSAmPSYgXG11X2lcXApnKFxtdV9pKSAmPSYgXGV0YV9pXFwKXGV0YV9pICY9JiBcbWF0aGJme3h9X2leVFxib2xkc3ltYm9se1xiZXRhfVxcClx0ZXh0e3Zhcn1bWV9pXSAmPSYgXHNpZ21hXjIgKFxtdV9pICsgXHBoaSBcbXVfaV4yKQpcZW5ke2FycmF5fVxyaWdodC4KJCQKCiMjIFBhcmFtZXRlciBFc3RpbWF0aW9uCgpOb3RlLCB0aGF0IHRoaXMgbGVhZHMgdG8gdGhlIGZvbGxvd2luZyBlc3RpbWF0aW9uIGVxdWF0aW9uczoKCiQkClVfaShcYm9sZHN5bWJvbHtcYmV0YX0pPSBcZnJhY3t5X2ktXG11X2l9e1xzaWdtYV4yVihcbXVfaSl9XGZyYWN7XHBhcnRpYWxcbXV9e1xwYXJ0aWFsXGV0YX1cbWF0aGJme3h9X2kKJCQKIAoKJCQKXGJlZ2lue2FycmF5fXtyY2NjY30KVShcYm9sZHN5bWJvbHtcYmV0YX0pJj0mXGxlZnRbXG1hdGhiZntYfV5UXG1hdGhiZntBfVxsZWZ0KFxtYXRoYmZ7eX0tXGJvbGRzeW1ib2x7XG11fVxyaWdodClccmlnaHRdL1xzaWdtYV4yICY9JiAwXFwKJiZcVXBkb3duYXJyb3dcXAomJlxtYXRoYmZ7WH1eVFxtYXRoYmZ7QX1cbGVmdChcbWF0aGJme3l9LVxib2xkc3ltYm9se1xtdX1ccmlnaHQpICY9JiAwClxlbmR7YXJyYXl9CiQkCkhlbmNlLCB0aGUgZXN0aW1hdGluZyBlcXVhdGlvbnMgZm9yIHRoZSBtZWFuIG1vZGVsIHBhcmFtZXRlcnMgcmVtYWluIHRoZSBzYW1lIGFzIHRob3NlIGZvciB0aGUgY29udmVudGlvbmFsIGRpc3RyaWJ1dGlvbiB3aGVyZSB0aGUgcXVhc2ktbGlrZWxpaG9vZCBpcyBkZXJpdmVkIGZyb20uIAoKVGhlIHZhcmlhbmNlIGNvdmFyaWFuY2UgbWF0cml4IG9mIHRoZSBtZWFuIG1vZGVsIHBhcmFtZXRlcnMgdGhlbiBiZWNvbWVzOiAKJCQKXFNpZ21hX3tcaGF0e1xib2xkc3ltYm9se1xiZXRhfX19PSAoXG1hdGhiZntYfV5UXG1hdGhiZntXWH0pXnstMX1cc2lnbWFeMgokJAoKV2UgY2FuIGVzdGltYXRlICRcc2lnbWFeMiQgdXNpbmcgYSBtb21lbnQgZXN0aW1hdG9yIG9uIHRoZSByZXNpZHVhbCB2ZWN0b3IgJFxtYXRoYmZ7eX0tXGJvbGRzeW1ib2x7XG11fSQsIGkuZS4gCgokJApcaGF0e1xzaWdtYX1eMiA9IFxmcmFjezF9e24tcH0gXHN1bV9cbGltaXRze2k9MX1ebiBcZnJhY3soeV9pLVxoYXRcbXVfaSleMn17VihcaGF0XG11X2kpfQokJAoKCgpOb3RlLCB0aGF0IAokJGVfaV5wPVxmcmFjeyh5X2ktXGhhdFxtdV9pKX17XHNxcnR7VihcaGF0XG11X2kpfX0kJCBhcmUgYWxzbyByZWZlcnJlZCB0byBhcyB0aGUgUGVhcnNvbiByZXNpZHVhbHMuIAoKQW5vdGhlciB0eXBlIG9mIHJlc2lkdWFscyBmb3IgR0xNcyBhcmUgZGV2aWFuY2UgcmVzaWR1YWxzLCBpLmUuIAoKJCRlX2leZCA9IFx0ZXh0e3NpZ259KHlfaS1caGF0XG11X2kpXHNxcnR7MltsKHlfaSx5X2kpLWwoeV9pLFxoYXRcbXVfaSldfQokJApTbyBhbm90aGVyIGVzdGltYXRvciBpcyAKCiQkXGhhdHtcc2lnbWF9XjIgPSBcZnJhY3tcc3VtX1xsaW1pdHN7aT0xfV5uKGVfaV5kKV4yfXtuLXB9ID0gXGZyYWN7RH17bi1wfQokJAp3aXRoIEQgdGhlIGRldmlhbmNlIHN0YXRpc3RpYzogdGhlIExSVCB0ZXN0IGJldHdlZW4gdGhlIHNhdHVyYXRlZCBtb2RlbCAoYSBtb2RlbCB0aGF0IHByb3ZpZGVzIGEgcGVyZmVjdCBmaXQpIGFuZCB0aGUgY3VycmVudCBtb2RlbDoKCiQkCkQgPSAyIFxzdW1cbGltaXRzX3tpPTF9Xm4gW2woeV9pLHlfaSxccGhpKS0gbCh5X2ksXGhhdHtcbXV9X2ksXHBoaSldCiQkCgpTbyB0aGUgc3RhbmRhcmQgZXJyb3JzIG9uIHRoZSBtb2RlbCBwYXJhbWV0ZXJzIHVuZGVyIHF1YXNpLWxpa2VsaWhvb2QgYmVjb21lOiAKCiQkClxoYXR7XHRleHR7c2V9fV97XG1hdGhiZntMfV5UXGhhdHtcYm9sZHN5bWJvbHtcYmV0YX19fV57UUx9ID0gXGhhdHtcdGV4dHtzZX19X3tcbWF0aGJme0x9XlRcaGF0e1xib2xkc3ltYm9se1xiZXRhfX19XntNTH1cdGltZXMgXGhhdHtcc2lnbWF9JCQKCiMjIEh5cG90aGVzaXMgdGVzdHMKCkFuIGFwcHJveGltYXRlIHQtdGVzdCBzdGF0aXN0aWMgY2FuIGJlIGRlZmluZWQgYXMKCiQkCnQgPSBcZnJhY3tcbWF0aGJme0x9XlRcaGF0e1xib2xkc3ltYm9se1xiZXRhfX19e1xoYXR7XHRleHR7c2V9fV97XG1hdGhiZntMfV5UXGhhdHtcYm9sZHN5bWJvbHtcYmV0YX19fV57UUx9fSBcYXBwcm94IHRfe24tcH1cdmVydCBIXzAKJCQKCkFuZCBhbiBhcHByb3hpbWF0ZSBGLXRlc3Qgc3RhdGlzdGljIGNhbiBiZSBkZWZpbmVkIGFzOiAKCiQkRiA9IFxmcmFje1xmcmFje1x0ZXh0e0xSVH1ee01MfX17Y319e1xoYXRcc2lnbWFeMn0gIFxhcHByb3ggRl97YyxuLXB9IFx2ZXJ0IEhfMCwkJAp3aXRoIGMgdGhlIGRlZ3JlZXMgb2YgZnJlZWRvbSBvZiB0aGUgTFJUIHN0YXRpc3RpYy4KCiMjIEV4YW1wbGUgCgpgYGB7cn0KIyMgcXVhc2lwb2lzc29uLgpjb3VudHMgPC0gYygxOCwxNywxNSwyMCwxMCwyMCwyNSwxMywxMikKb3V0Y29tZSA8LSBnbCgzLDEsOSkKdHJlYXRtZW50IDwtIGdsKDMsMykKZC5BRCA8LSBkYXRhLmZyYW1lKHRyZWF0bWVudCwgb3V0Y29tZSwgY291bnRzKQpkLkFECmBgYAoKYGBge3J9CmdsbS5wb2lzIDwtIGdsbShjb3VudHMgfiBvdXRjb21lICsgdHJlYXRtZW50LCBmYW1pbHkgPSBwb2lzc29uKCkpCnN1bW1hcnkoZ2xtLnBvaXMpCmBgYAoKYGBge3J9CmdsbS5xcG9pcyA8LSBnbG0oY291bnRzIH4gb3V0Y29tZSt0cmVhdG1lbnQsIGZhbWlseSA9IHF1YXNpcG9pc3NvbigpKQpzdW1tYXJ5KGdsbS5xcG9pcykKYGBgCgpFc3RpbWF0ZSBkaXNwZXJzaW9uIG91cnNlbHZlcz8gCldlIGZpcnN0IGNhbGN1bGF0ZSB0aGUgUGVhcnNvbiByZXNpZHVhbHMuIAoKYGBge3J9CmVwIDwtIChjb3VudHMgLSBnbG0ucG9pcyRmaXR0ZWQpL3NxcnQoZ2xtLnBvaXMkZml0dGVkKQpyYW5nZShlcCAtIHJlc2lkKGdsbS5wb2lzLHR5cGU9InBlYXJzb24iKSkKYGBgCgpOb3csIHdlIGNhbiBlc3RpbWF0ZSB0aGUgcXVhc2ktZGlzcGVyc2lvbiBwYXJhbWV0ZXIKYGBge3J9Cm4gPC0gbGVuZ3RoKGNvdW50cykKcCA8LSBsZW5ndGgoY29lZihnbG0ucG9pcykpCnNpZ21hMiA8LSBzdW0oZXBeMikvKG4tcCkKc2lnbWEyCmBgYAoKYGBge3J9CnBvaXNSZXMgPC0gc3VtbWFyeShnbG0ucG9pcykkY29lZgpwb2lzUmVzCnFsUmVzIDwtIHN1bW1hcnkoZ2xtLnFwb2lzKSRjb2VmCnFsUmVzCmNiaW5kKHFsPXFsUmVzWywyXSxwb2lzPXBvaXNSZXNbLDJdLHFsc2VsZj1wb2lzUmVzWywyXSpzcXJ0KHNpZ21hMikpCmBgYAoKIyMjIEFwcHJveGltYXRlIEYtdGVzdAoKTFIgLXRlc3Qgd2l0aCBQb2lzc29uIHJlZ3Jlc3Npb246IAoKYGBge3J9CmxpYnJhcnkoY2FyKQpBbm92YShnbG0ucG9pcykKYGBgCldlIGNoZWNrIHRoYXQgdGhlIGFwcHJveGltYXRlIEYtc3RhdGlzdGljIGVxdWFscyBMUlQvZGYvc2lnbWEyIAoKYGBge3J9CkFub3ZhKGdsbS5xcG9pcywgdGVzdD0iRiIpCkFub3ZhKGdsbS5xcG9pcywgdGVzdD0iRiIpWzEsMV0vQW5vdmEoZ2xtLnFwb2lzLCB0ZXN0PSJGIilbMSwyXS9zaWdtYTIKYGBgCgoKIyMjIERldmlhbmNlCgpgYGB7cn0KZGV2aWFuY2UoZ2xtLnBvaXMpCmxzYXQgPC0gc3VtKGRwb2lzKGNvdW50cyxjb3VudHMsbG9nID0gVFJVRSkpCmxjdXIgPC0gc3VtKGRwb2lzKGNvdW50cyxnbG0ucG9pcyRmaXR0ZWQudmFsdWVzLGxvZyA9IFRSVUUpKQoyKihsc2F0LWxjdXIpCmBgYAoKRGV2aWFuY2UgcmVzaWR1YWxzCgpgYGB7cn0KbHNhdC5pIDwtICBkcG9pcyhjb3VudHMsY291bnRzLGxvZyA9IFRSVUUpCmxjdXIuaSA8LSBkcG9pcyhjb3VudHMsZ2xtLnBvaXMkZml0dGVkLnZhbHVlcyxsb2cgPSBUUlVFKQplLmRldiA8LSBzaWduKGNvdW50cy1nbG0ucG9pcyRmaXR0ZWQpICogc3FydCgyKihsc2F0LmktbGN1ci5pKSkKZS5kZXYKcmVzaWQoZ2xtLnBvaXMsdHlwZT0iZGV2aWFuY2UiKQpgYGA=</div>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("quasiLikelihood.Rmd");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

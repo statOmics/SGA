@@ -116,6 +116,7 @@ source("https://raw.githubusercontent.com/statOmics/SGA/master/install.R")
 ### 3. Technical details on RNA-seq DE analysis
 
 - Lecture: [html](./sequencing_technicalDE.html), [pdf](./sequencing_technicalDE.pdf)
+- Quasilikelihood: [html](./quasiLikelihood.html)
 
 
 ### 4. DE and usage analysis upon transcript-level quantification
