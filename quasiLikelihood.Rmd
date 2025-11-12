@@ -223,7 +223,7 @@ poisRes <- summary(glm.pois)$coef
 poisRes
 qlRes <- summary(glm.qpois)$coef
 qlRes
-cbind(ql=qlRes[,2],pois=poisRes[,2],qlself=poisRes[,2]*sqrt(sigma2))
+cbind(ql.se=qlRes[,2],pois.se=poisRes[,2],qlself.se=poisRes[,2]*sqrt(sigma2))
 ```
 
 ### Approximate F-test
@@ -238,7 +238,7 @@ We check that the approximate F-statistic equals LRT/df/sigma2
 
 ```{r}
 Anova(glm.qpois, test="F")
-Anova(glm.qpois, test="F")[1,1]/Anova(glm.qpois, test="F")[1,2]/sigma2
+Anova(glm.pois)[1,1]/Anova(glm.pois)[1,2]/sigma2
 ```
 
 
@@ -259,4 +259,21 @@ lcur.i <- dpois(counts,glm.pois$fitted.values,log = TRUE)
 e.dev <- sign(counts-glm.pois$fitted) * sqrt(2*(lsat.i-lcur.i))
 e.dev
 resid(glm.pois,type="deviance")
+```
+
+```{r}
+glm.pois.out.null <- glm(counts ~  treatment, family = poisson())
+anova(glm.pois.out.null,glm.pois)
+lrtfull <- logLik(glm.pois)
+lrtout0 <- logLik(glm.pois.out.null)
+2*(lrtfull-lrtout0)
+```
+
+### Approximate F-test 2
+
+```{r}
+glm.qpois.out.null <- glm(counts ~  treatment, family = quasipoisson())
+anova(glm.qpois,glm.qpois.out.null,test = "F")
+2*(lrtfull-lrtout0)
+2*(lrtfull-lrtout0)/2/sigma2
 ```
