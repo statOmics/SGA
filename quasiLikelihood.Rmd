@@ -70,7 +70,7 @@ $$
 with  pseudodata 
 
 $$
-z^k = \eta^k + \left.\frac{\partial \eta}{\partial \mu}\right\vert_k (\mathbf{y} - \boldsymbol{\mu}^k) 
+z^k_i = \eta^k_i + \left.\frac{\partial \eta_i}{\partial \mu_i}\right\vert_k (y_i - \mu^k_i) 
 $$
 
 
