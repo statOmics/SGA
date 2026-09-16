@@ -1,0 +1,83 @@
+project:
+  type: website
+  output-dir: docs
+  render:
+    - "*.qmd"
+    - "!forllustrationInCourse/"
+    
+  resources:
+    - mathjax-local/
+    - figs/part1_ms_basics.pdf
+    - figs/part2_identification.pdf
+
+website:
+  favicon: figs/msqrob2.png
+  navbar:
+    left:
+      - icon: fa-home
+        href: index.qmd
+
+      - text: "Lectures"
+        icon: fa-chalkboard-teacher
+        menu:
+        - text: "---- INTRODUCTION ----"
+        - text: 1 Position of the course
+          href: intro.html
+        - text: 2 Recap linear model
+          href: recapGeneralLinearModel.html
+        - text: "---- MODULE I: PROTEOMICS ----"
+        - text: 1.1 MS Basics
+          href: ./figs/part1_ms_basics.pdf
+        - text: 1.2 Identification
+          href: ./figs/part2_identification.pdf
+        - text: 2.1.1 Data Processing - Basic concepts
+          href: 01-dataprocessing.html
+        - text: 2.1.1 Wrap-up Data Processing
+          href: 02-workflow-optimisation.html
+        - text: 2.2.1 Statistical Inference
+          href: 03-inference.html
+        - text: 2.2.2 Wrap-up Blocking
+          href: 03-blocking-wrapup.html
+
+      - text: "Tutorials"
+        icon: fa-laptop
+        menu:
+        - text: "---- INTRODUCTION ----"
+        - text: 1 Tutorial KPNA2
+          href: multipleRegression_KPNA2.html
+        - text: "---- MODULE I: PROTEOMICS ----"
+        - text: 1 Bioinformatics for Proteomics
+          href: https://compomics.com/tutorials/posts/2026-06-01-bioinformatics-for-proteomics.html
+        - text: 2.1 Tutorial Data Processing
+          href: 01-tutorial-data-processing.html
+        - text: 2.2 Tutorial Differential Analysis and Design
+          href: 03-tutorial-Design.html
+
+
+bibliography: references.bib
+
+execute:
+  freeze: auto
+
+format:
+  html:
+    embed-resources: true
+    html-math-method:
+      method: mathjax
+      url: "mathjax-local/tex-chtml-full.js"
+    theme:
+      - cosmo
+      - custom.scss
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    number-sections: true
+    number-depth: 3
+    code-copy: true
+
+author:
+  - name: Lieven Clement
+    orcid: 0000-0002-9050-4370
+    affiliation: 
+      - name: Ghent University
+

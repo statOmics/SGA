@@ -1,0 +1,551 @@
+@ARTICLE{Huang2020-lu,
+  title    = "{MSstatsTMT}: Statistical Detection of Differentially Abundant
+              Proteins in Experiments with Isobaric Labeling and Multiple
+              Mixtures",
+  author   = "Huang, Ting and Choi, Meena and Tzouros, Manuel and Golling,
+              Sabrina and Pandya, Nikhil Janak and Banfai, Balazs and Dunkley,
+              Tom and Vitek, Olga",
+  journal  = "Mol. Cell. Proteomics",
+  volume   =  19,
+  number   =  10,
+  pages    = "1706--1723",
+  abstract = "Tandem mass tag (TMT) is a multiplexing technology widely-used in
+              proteomic research. It enables relative quantification of proteins
+              from multiple biological samples in a single MS run with high
+              efficiency and high throughput. However, experiments often require
+              more biological replicates or conditions than can be accommodated
+              by a single run, and involve multiple TMT mixtures and multiple
+              runs. Such larger-scale experiments combine sources of biological
+              and technical variation in patterns that are complex, unique to
+              TMT-based workflows, and challenging for the downstream
+              statistical analysis. These patterns cannot be adequately
+              characterized by statistical methods designed for other
+              technologies, such as label-free proteomics or transcriptomics.
+              This manuscript proposes a general statistical approach for
+              relative protein quantification in MS- based experiments with TMT
+              labeling. It is applicable to experiments with multiple
+              conditions, multiple biological replicate runs and multiple
+              technical replicate runs, and unbalanced designs. It is based on a
+              flexible family of linear mixed-effects models that handle complex
+              patterns of technical artifacts and missing values. The approach
+              is implemented in MSstatsTMT, a freely available open-source
+              R/Bioconductor package compatible with data processing tools such
+              as Proteome Discoverer, MaxQuant, OpenMS, and SpectroMine.
+              Evaluation on a controlled mixture, simulated datasets, and three
+              biological investigations with diverse designs demonstrated that
+              MSstatsTMT balanced the sensitivity and the specificity of
+              detecting differentially abundant proteins, in large-scale
+              experiments with multiple biological mixtures.",
+  month    =  oct,
+  year     =  2020,
+  keywords = "Mass spectrometry; TMT; bioinformatics software; hypothesis
+              testing; mathematical modeling; multiple mixtures; protein
+              quantification; quantification; statistics",
+  language = "en"
+}
+
+@ARTICLE{Goeminne2016-tr,
+  title    = "Peptide-level Robust Ridge Regression Improves Estimation,
+              Sensitivity, and Specificity in Data-dependent Quantitative
+              Label-free Shotgun Proteomics",
+  author   = "Goeminne, Ludger J E and Gevaert, Kris and Clement, Lieven",
+  journal  = "Mol. Cell. Proteomics",
+  volume   =  15,
+  number   =  2,
+  pages    = "657--668",
+  abstract = "Peptide intensities from mass spectra are increasingly used for
+              relative quantitation of proteins in complex samples. However,
+              numerous issues inherent to the mass spectrometry workflow turn
+              quantitative proteomic data analysis into a crucial challenge. We
+              and others have shown that modeling at the peptide level
+              outperforms classical summarization-based approaches, which
+              typically also discard a lot of proteins at the data preprocessing
+              step. Peptide-based linear regression models, however, still
+              suffer from unbalanced datasets due to missing peptide
+              intensities, outlying peptide intensities and overfitting. Here,
+              we further improve upon peptide-based models by three modular
+              extensions: ridge regression, improved variance estimation by
+              borrowing information across proteins with empirical Bayes and
+              M-estimation with Huber weights. We illustrate our method on the
+              CPTAC spike-in study and on a study comparing wild-type and ArgP
+              knock-out Francisella tularensis proteomes. We show that the fold
+              change estimates of our robust approach are more precise and more
+              accurate than those from state-of-the-art summarization-based
+              methods and peptide-based regression models, which leads to an
+              improved sensitivity and specificity. We also demonstrate that
+              ionization competition effects come already into play at very low
+              spike-in concentrations and confirm that analyses with
+              peptide-based regression methods on peptide intensity values
+              aggregated by charge state and modification status (e.g.
+              MaxQuant's peptides.txt file) are slightly superior to analyses on
+              raw peptide intensity values (e.g. MaxQuant's evidence.txt file).",
+  month    =  feb,
+  year     =  2016,
+  language = "en"
+}
+
+@ARTICLE{Sticker2020-rl,
+  title    = "Robust Summarization and Inference in Proteome-wide Label-free
+              Quantification",
+  author   = "Sticker, Adriaan and Goeminne, Ludger and Martens, Lennart and
+              Clement, Lieven",
+  journal  = "Mol. Cell. Proteomics",
+  volume   =  19,
+  number   =  7,
+  pages    = "1209--1219",
+  abstract = "Label-Free Quantitative mass spectrometry based workflows for
+              differential expression (DE) analysis of proteins impose important
+              challenges on the data analysis because of peptide-specific
+              effects and context dependent missingness of peptide intensities.
+              Peptide-based workflows, like MSqRob, test for DE directly from
+              peptide intensities and outperform summarization methods which
+              first aggregate MS1 peptide intensities to protein intensities
+              before DE analysis. However, these methods are computationally
+              expensive, often hard to understand for the non-specialized
+              end-user, and do not provide protein summaries, which are
+              important for visualization or downstream processing. In this
+              work, we therefore evaluate state-of-the-art summarization
+              strategies using a benchmark spike-in dataset and discuss why and
+              when these fail compared with the state-of-the-art peptide based
+              model, MSqRob. Based on this evaluation, we propose a novel
+              summarization strategy, MSqRobSum, which estimates MSqRob's model
+              parameters in a two-stage procedure circumventing the drawbacks of
+              peptide-based workflows. MSqRobSum maintains MSqRob's superior
+              performance, while providing useful protein expression summaries
+              for plotting and downstream analysis. Summarizing peptide to
+              protein intensities considerably reduces the computational
+              complexity, the memory footprint and the model complexity, and
+              makes it easier to disseminate DE inferred on protein summaries.
+              Moreover, MSqRobSum provides a highly modular analysis framework,
+              which provides researchers with full flexibility to develop data
+              analysis workflows tailored toward their specific applications.",
+  month    =  jul,
+  year     =  2020,
+  keywords = "Biostatistics; bioinformatics; bioinformatics software;
+              differential expression; label-free quantification; mass
+              spectrometry; ridge regression; shotgun proteomics; summarization",
+  language = "en"
+}
+
+@ARTICLE{Vandenbulcke2025-sj,
+  title     = "{Msqrob2TMT}: Robust linear mixed models for inferring
+               differential abundant proteins in labeled experiments with
+               arbitrarily complex design",
+  author    = "Vandenbulcke, Stijn and Vanderaa, Christophe and Crook, Oliver
+               and Martens, Lennart and Clement, Lieven",
+  journal   = "Mol. Cell. Proteomics",
+  publisher = "Elsevier BV",
+  volume    =  24,
+  number    =  7,
+  pages     =  101002,
+  abstract  = "Labeling strategies in mass spectrometry-based proteomics enhance
+               sample throughput by enabling the acquisition of multiplexed
+               samples within a single run. However, contemporary experiments
+               often involve increasingly complex designs, where the number of
+               samples exceeds the capacity of a single run, resulting in a
+               complex correlation structure that must be addressed for accurate
+               statistical inference and reliable biomarker discovery. To this
+               end, we introduce msqrob2TMT, a suite of mixed model-based
+               workflows specifically designed for differential abundance
+               analysis in labeled mass spectrometry-based proteomics data.
+               msqrob2TMT accommodates both sample-specific and feature-specific
+               (e.g., peptide or protein) covariates, facilitating inference in
+               experiments with arbitrarily complex designs and allowing for
+               explicit correction of feature-specific covariates. We benchmark
+               our innovative workflows against state-of-the-art tools,
+               including DEqMS, MSstatsTMT, and msTrawler, using two spike-in
+               studies. Our findings demonstrate that msqrob2TMT offers greater
+               flexibility, improved modularity, and enhanced performance,
+               particularly through the application of robust ridge regression.
+               Finally, we demonstrate the practical relevance of msqrob2TMT in
+               a real mouse study, highlighting its capacity to effectively
+               account for the complex correlation structure in the data.",
+  month     =  may,
+  year      =  2025,
+  keywords  = "TMT labeling; differential proteomics; mass spectrometry; mixed
+               models; statistics",
+  language  = "en"
+}
+
+
+@ARTICLE{Savitski2011-qi,
+  title     = "Delayed fragmentation and optimized isolation width settings for
+               improvement of protein identification and accuracy of isobaric
+               mass tag quantification on Orbitrap-type mass spectrometers",
+  author    = "Savitski, Mikhail M and Sweetman, Gavain and Askenazi, Manor and
+               Marto, Jarrod A and Lang, Manja and Zinn, Nico and Bantscheff,
+               Marcus",
+  journal   = "Anal. Chem.",
+  publisher = "American Chemical Society (ACS)",
+  volume    =  83,
+  number    =  23,
+  pages     = "8959--8967",
+  abstract  = "Fragmentation of multiple peptides in a single tandem mass scan
+               impairs accuracy of isobaric mass tag based quantification.
+               Consequently, practitioners aim at fragmenting peptide ions with
+               the highest possible purity without compromising on sensitivity
+               and coverage achieved in the experiment. Here we report the first
+               systematic study optimizing delayed fragmentation options on
+               Orbitrap instruments. We demonstrate that by delaying peptide
+               fragmentation to occur closer to the apex of the chromatographic
+               peak in liquid chromatography-tandem mass spectrometry (LC-MS/MS)
+               experiments cofragmentation is reduced by 2-fold and peptides are
+               fragmented with 2.8-fold better signal-to-noise ratios. This
+               results in significantly improved accuracy of isobaric mass tag
+               quantification. Further, we measured cofragmentation dependence
+               on isolation width. In comparison to Orbitrap XL instruments the
+               reduced space charging in the Orbitrap Velos enables isolation
+               widths as narrow as 1 Th without impairing coverage, thus
+               substantially reducing cofragmentation. When delayed peptide
+               fragmentation and narrow isolation width settings were both
+               applied, cofragmentation-induced ratio compression could be
+               reduced by 32\% on a log2 scale under otherwise identical
+               conditions.",
+  month     =  dec,
+  year      =  2011,
+  language  = "en"
+}
+
+@ARTICLE{O-Brien2024-lr,
+  title     = "A data analysis framework for combining multiple batches
+               increases the power of isobaric proteomics experiments",
+  author    = "O'Brien, Jonathon J and Raj, Anil and Gaun, Aleksandr and Waite,
+               Adam and Li, Wenzhou and Hendrickson, David G and Olsson, Niclas
+               and McAllister, Fiona E",
+  journal   = "Nat. Methods",
+  publisher = "Springer Science and Business Media LLC",
+  volume    =  21,
+  number    =  2,
+  pages     = "290--300",
+  abstract  = "We present a framework for the analysis of multiplexed mass
+               spectrometry proteomics data that reduces estimation error when
+               combining multiple isobaric batches. Variations in the number and
+               quality of observations have long complicated the analysis of
+               isobaric proteomics data. Here we show that the power to detect
+               statistical associations is substantially improved by utilizing
+               models that directly account for known sources of variation in
+               the number and quality of observations that occur across
+               batches.In a multibatch benchmarking experiment, our open-source
+               software (msTrawler) increases the power to detect changes,
+               especially in the range of less than twofold changes, while
+               simultaneously increasing quantitative proteome coverage by
+               utilizing more low-signal observations. Further analyses of
+               previously published multiplexed datasets of 4 and 23 batches
+               highlight both increased power and the ability to navigate
+               complex missing data patterns without relying on unverifiable
+               imputations or discarding reliable measurements.",
+  month     =  feb,
+  year      =  2024,
+  language  = "en"
+}
+
+@ARTICLE{Gatto2023-kk,
+  title    = "Initial recommendations for performing, benchmarking and reporting
+              single-cell proteomics experiments",
+  author   = "Gatto, Laurent and Aebersold, Ruedi and Cox, Juergen and Demichev,
+              Vadim and Derks, Jason and Emmott, Edward and Franks, Alexander M
+              and Ivanov, Alexander R and Kelly, Ryan T and Khoury, Luke and
+              Leduc, Andrew and MacCoss, Michael J and Nemes, Peter and Perlman,
+              David H and Petelski, Aleksandra A and Rose, Christopher M and
+              Schoof, Erwin M and Van Eyk, Jennifer and Vanderaa, Christophe and
+              Yates, 3rd, John R and Slavov, Nikolai",
+  journal  = "Nat. Methods",
+  volume   =  20,
+  number   =  3,
+  pages    = "375--386",
+  abstract = "Analyzing proteins from single cells by tandem mass spectrometry
+              (MS) has recently become technically feasible. While such analysis
+              has the potential to accurately quantify thousands of proteins
+              across thousands of single cells, the accuracy and reproducibility
+              of the results may be undermined by numerous factors affecting
+              experimental design, sample preparation, data acquisition and data
+              analysis. We expect that broadly accepted community guidelines and
+              standardized metrics will enhance rigor, data quality and
+              alignment between laboratories. Here we propose best practices,
+              quality controls and data-reporting recommendations to assist in
+              the broad adoption of reliable quantitative workflows for
+              single-cell proteomics. Resources and discussion forums are
+              available at https://single-cell.net/guidelines .",
+  month    =  mar,
+  year     =  2023,
+  language = "en"
+}
+
+@ARTICLE{Plubell2017-th,
+  title     = "Extended multiplexing of tandem mass tags ({TMT}) labeling
+               reveals age and high fat diet specific proteome changes in mouse
+               epididymal adipose tissue",
+  author    = "Plubell, Deanna L and Wilmarth, Phillip A and Zhao, Yuqi and
+               Fenton, Alexandra M and Minnier, Jessica and Reddy, Ashok P and
+               Klimek, John and Yang, Xia and David, Larry L and Pamir, Nathalie",
+  journal   = "Mol. Cell. Proteomics",
+  publisher = "Mol Cell Proteomics",
+  volume    =  16,
+  number    =  5,
+  pages     = "873--890",
+  abstract  = "The lack of high-throughput methods to analyze the adipose tissue
+               protein composition limits our understanding of the protein
+               networks responsible for age and diet related metabolic response.
+               We have developed an approach using multiple-dimension liquid
+               chromatography tandem mass spectrometry and extended multiplexing
+               (24 biological samples) with tandem mass tags (TMT) labeling to
+               analyze proteomes of epididymal adipose tissues isolated from
+               mice fed either low or high fat diet for a short or a long-term,
+               and from mice that aged on low versus high fat diets. The
+               peripheral metabolic health (as measured by body weight,
+               adiposity, plasma fasting glucose, insulin, triglycerides, total
+               cholesterol levels, and glucose and insulin tolerance tests)
+               deteriorated with diet and advancing age, with long-term high fat
+               diet exposure being the worst. In response to short-term high fat
+               diet, 43 proteins representing lipid metabolism (e.g. AACS,
+               ACOX1, ACLY) and red-ox pathways (e.g. CPD2, CYP2E, SOD3) were
+               significantly altered (FDR < 10\%). Long-term high fat diet
+               significantly altered 55 proteins associated with immune response
+               (e.g. IGTB2, IFIT3, LGALS1) and rennin angiotensin system (e.g.
+               ENPEP, CMA1, CPA3, ANPEP). Age-related changes on low fat diet
+               significantly altered only 18 proteins representing mainly urea
+               cycle (e.g. OTC, ARG1, CPS1), and amino acid biosynthesis (e.g.
+               GMT, AKR1C6). Surprisingly, high fat diet driven age-related
+               changes culminated with alterations in 155 proteins involving
+               primarily the urea cycle (e.g. ARG1, CPS1), immune
+               response/complement activation (e.g. C3, C4b, C8, C9, CFB, CFH,
+               FGA), extracellular remodeling (e.g. EFEMP1, FBN1, FBN2, LTBP4,
+               FERMT2, ECM1, EMILIN2, ITIH3) and apoptosis (e.g. YAP1, HIP1,
+               NDRG1, PRKCD, MUL1) pathways. Using our adipose tissue tailored
+               approach we have identified both age-related and high fat diet
+               specific proteomic signatures highlighting a pronounced
+               involvement of arginine metabolism in response to advancing age,
+               and branched chain amino acid metabolism in early response to
+               high fat feeding. Data are available via ProteomeXchange with
+               identifier PXD005953.",
+  month     =  may,
+  year      =  2017,
+  language  = "en"
+}
+
+@ARTICLE{Segers2025-ce,
+  title    = "{omicsGMF}: a multi-tool for dimensionality reduction, batch
+              correction and imputation applied to bulk- and single cell
+              proteomics data",
+  author   = "Segers, Alexandre and Castiglione, Cristian and Vanderaa,
+              Christophe and De Baere, Elfride and Martens, Lennart and Risso,
+              Davide and Clement, Lieven",
+  journal  = "bioRxiv",
+  pages    = "2025.03.24.644996",
+  abstract = "The unprecedented speed and sensitivity of mass spectrometry (MS)
+              unlocked large-scale applications of proteomics and even enabled
+              proteome profiling of single cells. However, this fast-evolving
+              field is hindered by a lack of scalable dimensionality reduction
+              tools that can compensate for substantial batch effects and
+              missingness across MS runs. Therefore, we present omicsGMF, a
+              fast, scalable, and interpretable matrix factorization method,
+              tailored for bulk and single-cell proteomics data. Unlike current
+              workflows that sequentially apply imputation, batch correction,
+              and principal component analysis, omicsGMF integrates these steps
+              into a unified framework, dramatically enhancing data processing
+              and dimensionality reduction. Additionally, omicsGMF provides
+              robust imputation of missing values, outperforming bespoke
+              state-of-the-art imputation tools. We further demonstrate how this
+              integrated approach increases statistical power to detect
+              differentially abundant proteins in the downstream data analysis.
+              Hence, omicsGMF is a highly scalable approach to dimensionality
+              reduction in proteomics, that dramatically improves many important
+              steps in proteomics data analysis. \#\#\# Competing Interest
+              Statement The authors have declared no competing interest.",
+  month    =  mar,
+  year     =  2025,
+  language = "en"
+}
+
+@article{PAULOVICH2010242,
+title = {Interlaboratory Study Characterizing a Yeast Performance Standard for Benchmarking LC-MS Platform Performance*},
+journal = {Molecular & Cellular Proteomics},
+volume = {9},
+number = {2},
+pages = {242-254},
+year = {2010},
+issn = {1535-9476},
+doi = {https://doi.org/10.1074/mcp.M900222-MCP200},
+url = {https://www.sciencedirect.com/science/article/pii/S1535947620337968},
+author = {Amanda G. Paulovich and Dean Billheimer and Amy-Joan L. Ham and Lorenzo Vega-Montoto and Paul A. Rudnick and David L. Tabb and Pei Wang and Ronald K. Blackman and David M. Bunk and Helene L. Cardasis and Karl R. Clauser and Christopher R. Kinsinger and Birgit Schilling and Tony J. Tegeler and Asokan Mulayath Variyath and Mu Wang and Jeffrey R. Whiteaker and Lisa J. Zimmerman and David Fenyo and Steven A. Carr and Susan J. Fisher and Bradford W. Gibson and Mehdi Mesri and Thomas A. Neubert and Fred E. Regnier and Henry Rodriguez and Cliff Spiegelman and Stephen E. Stein and Paul Tempst and Daniel C. Liebler},
+abstract = {Optimal performance of LC-MS/MS platforms is critical to generating high quality proteomics data. Although individual laboratories have developed quality control samples, there is no widely available performance standard of biological complexity (and associated reference data sets) for benchmarking of platform performance for analysis of complex biological proteomes across different laboratories in the community. Individual preparations of the yeast Saccharomyces cerevisiae proteome have been used extensively by laboratories in the proteomics community to characterize LC-MS platform performance. The yeast proteome is uniquely attractive as a performance standard because it is the most extensively characterized complex biological proteome and the only one associated with several large scale studies estimating the abundance of all detectable proteins. In this study, we describe a standard operating protocol for large scale production of the yeast performance standard and offer aliquots to the community through the National Institute of Standards and Technology where the yeast proteome is under development as a certified reference material to meet the long term needs of the community. Using a series of metrics that characterize LC-MS performance, we provide a reference data set demonstrating typical performance of commonly used ion trap instrument platforms in expert laboratories; the results provide a basis for laboratories to benchmark their own performance, to improve upon current methods, and to evaluate new technologies. Additionally, we demonstrate how the yeast reference, spiked with human proteins, can be used to benchmark the power of proteomics platforms for detection of differentially expressed proteins at different levels of concentration in a complex matrix, thereby providing a metric to evaluate and minimize preanalytical and analytical variation in comparative proteomics experiments.}
+}
+
+@ARTICLE{Ramond2015-rz,
+  title     = "Importance of host cell arginine uptake in Francisella phagosomal
+               escape and ribosomal protein amounts",
+  author    = "Ramond, Elodie and Gesbert, Gael and Guerrera, Ida Chiara and
+               Chhuon, Cerina and Dupuis, Marion and Rigard, Mélanie and Henry,
+               Thomas and Barel, Monique and Charbit, Alain",
+  journal   = "Mol. Cell. Proteomics",
+  publisher = "Elsevier BV",
+  volume    =  14,
+  number    =  4,
+  pages     = "870--881",
+  abstract  = "Upon entry into mammalian host cells, the pathogenic bacterium
+               Francisella must import host cell arginine to multiply actively
+               in the host cytoplasm. We identified and functionally
+               characterized an arginine transporter (hereafter designated ArgP)
+               whose inactivation considerably delayed bacterial phagosomal
+               escape and intracellular multiplication. Intramacrophagic growth
+               of the ΔargP mutant was fully restored upon supplementation of
+               the growth medium with excess arginine, in both F. tularensis
+               subsp. novicida and F. tularensis subsp. holarctica LVS,
+               demonstrating the importance of arginine acquisition in these two
+               subspecies. High-resolution mass spectrometry revealed that
+               arginine limitation reduced the amount of most of the ribosomal
+               proteins in the ΔargP mutant. In response to stresses such as
+               nutritional limitation, repression of ribosomal protein synthesis
+               has been observed in all kingdoms of life. Arginine availability
+               may thus contribute to the sensing of the intracellular stage of
+               the pathogen and to trigger phagosomal egress. All MS data have
+               been deposited in the ProteomeXchange database with identifier
+               PXD001584
+               (http://proteomecentral.proteomexchange.org/dataset/PXD001584).",
+  month     =  apr,
+  year      =  2015,
+  language  = "en"
+}
+
+@ARTICLE{Shen2018-gw,
+  title     = "{IonStar} enables high-precision, low-missing-data proteomics
+               quantification in large biological cohorts",
+  author    = "Shen, Xiaomeng and Shen, Shichen and Li, Jun and Hu, Qiang and
+               Nie, Lei and Tu, Chengjian and Wang, Xue and Poulsen, David J and
+               Orsburn, Benjamin C and Wang, Jianmin and Qu, Jun",
+  journal   = "Proc. Natl. Acad. Sci. U. S. A.",
+  publisher = "Proc Natl Acad Sci U S A",
+  volume    =  115,
+  number    =  21,
+  pages     = "E4767--E4776",
+  abstract  = "Reproducible quantification of large biological cohorts is
+               critical for clinical/pharmaceutical proteomics yet remains
+               challenging because most prevalent methods suffer from
+               drastically declined commonly quantified proteins and
+               substantially deteriorated quantitative quality as cohort size
+               expands. MS2-based data-independent acquisition approaches
+               represent tremendous advancements in reproducible protein
+               measurement, but often with limited depth. We developed IonStar,
+               an MS1-based quantitative approach enabling in-depth,
+               high-quality quantification of large cohorts by combining
+               efficient/reproducible experimental procedures with unique
+               data-processing components, such as efficient 3D chromatographic
+               alignment, sensitive and selective direct ion current extraction,
+               and stringent postfeature generation quality control. Compared
+               with several popular label-free methods, IonStar exhibited far
+               lower missing data (0.1\%), superior quantitative
+               accuracy/precision [∼5\% intragroup coefficient of variation
+               (CV)], the widest protein abundance range, and the highest
+               sensitivity/specificity for identifying protein changes (7,000
+               unique protein groups (>99.8\% without missing data across the
+               100 samples) with a low false discovery rate (FDR), two or more
+               unique peptides per protein, and high quantitative precision.
+               IonStar represents a reliable and robust solution for precise and
+               reproducible protein measurement in large cohorts.",
+  month     =  may,
+  year      =  2018,
+  keywords  = "MS1 ion current-based methods; label-free quantification;
+               large-cohort analysis; missing data; quantitative proteomics",
+  language  = "en"
+}
+
+@article{Staes2024,
+  author       = {Staes, An and Mendes Maia, Teresa and Dufour, Sara and Bouwmeester, Robbin and Gabriels, Ralf and Martens, Lennart and Gevaert, Kris and Impens, Francis and Devos, Simon},
+  title        = {Benefit of In Silico Predicted Spectral Libraries in Data‑Independent Acquisition Data Analysis Workflows},
+  journal      = {Journal of Proteome Research},
+  year         = {2024},
+  volume       = {23},
+  number       = {6},
+  pages        = {2078--2089},
+  doi          = {10.1021/acs.jproteome.4c00048},
+  pmid         = {38666436}
+}
+
+@article {VanPuyveldeEtal2026,
+	author = {Van Puyvelde, Bart and Devreese, Robbe and Chiva, Cristina and Sabid{\'o}, Eduard and Pfammatter, Sibylle and Panse, Christian and Rijal, Jeewan Babu and Keller, Charline and Batruch, Ihor and Pribil, Patrick and Vincendet, Jean-Baptiste and Fontaine, Fr{\'e}d{\'e}ric and Lefever, Lars and Magalh{\~a}es, Pedro and Deforce, Dieter and Nanni, Paolo and Ghesqui{\`e}re, Bart and Perez-Riverol, Yasset and Martens, Lennart and Carapito, Christine and Bouwmeester, Robbin and Dhaenens, Maarten},
+	title = {LFQ Benchmark Dataset - Generation Beta: Assessing Modern Proteomics Instruments and Acquisition Workflows with High-Throughput LC Gradients},
+	elocation-id = {2026.01.29.702266},
+	year = {2026},
+	doi = {10.64898/2026.01.29.702266},
+	publisher = {Cold Spring Harbor Laboratory},
+	abstract = {Recent advances in liquid chromatography{\textendash}mass spectrometry (LC-MS) have accelerated the adoption of high-throughput workflows that deliver deep proteome coverage using minimal sample amounts. This trend is largely driven by clinical and single-cell proteomics, where sensitivity and reproducibility are essential. Here, we extend our previous benchmark dataset (PXD028735) using next-generation LC-MS platforms optimized for rapid proteome analysis. We generated an extensive DDA/DIA dataset using a human-yeast-E. coli hybrid proteome. The proteome sample was distributed across multiple laboratories together with standardized analytical protocols specifying two short LC gradients (5 and 15 min) and low sample input amounts. This dataset includes data acquired on four different platforms, and features new scanning quadrupole-based implementations, extending coverage across different instruments and acquisition strategies. Our comprehensive evaluation highlights how technological advances and reduced LC gradients may affect proteome depth, quantitative precision, and cross-instrument consistency. The release of this benchmark dataset via ProteomeXchange (PXD070049 and PXD071205), allows for the acceleration of cross-platform algorithm development, enhance data mining strategies, and supports standardization of short-gradient, high-throughput LC-MS-based proteomics.Competing Interest StatementFrederic Fontaine is employed by Thermo Fisher Scientific. Ihor Batruch, Patrick Pribil and Jean-Baptiste Vincendet are employed by SCIEX. Bart Van Puyvelde joined SCIEX after the completion of this work.Research Foundation - Flanders, https://ror.org/03qtxy027, 1278023N, 1SH9O24N, G010023N, 12A6L24NGhent University Special Research Fund, BOF/PDO/2025/049, BOF21/GOA/033Horizon Europe, 101080544, 101191739CHIST-ERA, G0GDV23NEuropean Molecular Biology Laboratory, 208391/Z/17/Z, 223745/Z/21/ZBBSRC, BB/X001911/1Agence Nationale de la Recherche - French Proteomic Infrastructure (ProFI), ProFI UAR2048, ANR-10-INBS08-03, ANR-24-INBS-0015Region Grand-Est, SC-Proteomics projectITMO Cancer of Aviesanthe Interdisciplinary Thematic Institute IMSIdEx Unistra, ANR-10-IDEX-0002SFRI-STRAT{\textquoteright}US, ANR-20-SFRI-0012},
+	URL = {https://www.biorxiv.org/content/early/2026/02/09/2026.01.29.702266},
+	eprint = {https://www.biorxiv.org/content/early/2026/02/09/2026.01.29.702266.full.pdf},
+	journal = {bioRxiv}
+}
+
+@article{VanLeeneEtal2026,
+  title = {Advancing {DIA}-Based Limited Proteolysis Workflows: Introducing {DIA}-{LiPA}},
+  author = {Van Leene, Chlo{\'e} and Araftpoor, Emin and Staes, An and Argentini, Andrea and B{\"u}hler, Marcel and Clement, Lieven and Gevaert, Kris},
+  journal = {Analytical Chemistry},
+  year = {2026},
+  volume = {98},
+  number = {7},
+  pages = {5499–5512},
+  doi = {10.1021/acs.analchem.5c07014}
+}
+
+@article{AldehoffEtAl2025,
+  author  = {Aldehoff, Alix Sarah and Karkossa, Isabel and Broghammer, Hannes and Krupka, Sandra and Weiner, Jan and Goerdeler, Charlotte and Nuwayhid, Rasha and Langer, Stefan and Wabitsch, Martin and Rolle-Kampczyk, Uta and Klöting, Norbert and Blüher, Matthias and Heiker, Joachim T. and von Bergen, Martin and Schubert, Kristin},
+  title   = {Advanced Proteomics Approaches Hold Potential for the Risk Assessment of Metabolism-Disrupting Chemicals as Omics-Based NAM: A Case Study Using the Phthalate Substitute DINCH},
+  journal = {Environmental Science \& Technology},
+  year    = {2025},
+  volume  = {59},
+  number  = {31},
+  pages   = {16193--16216},
+  doi     = {10.1021/acs.est.5c01206}
+}
+
+@article{DuguetEtAl2017,
+  author  = {Duguet, Fanny and Locard-Paulet, Marie and Marcellin, Marl{\`e}ne and Chaoui, Karima and Bernard, Isabelle and Andreoletti, Olivier and Lesourne, Renaud and Burlet-Schiltz, Odile and Gonzalez de Peredo, Anne and Saoudi, Abdelhadi},
+  title   = {Proteomic Analysis of Regulatory T Cells Reveals the Importance of Themis1 in the Control of Their Suppressive Function},
+  journal = {Molecular \& Cellular Proteomics},
+  year    = {2017},
+  volume  = {16},
+  number  = {8},
+  pages   = {1416--1432},
+  doi     = {10.1074/mcp.M116.062745},
+  pmid    = {28373295}
+}
+
+@article{Goeminne2020,
+  title   = {MSqRob Takes the Missing Hurdle: Uniting Intensity- and Count-Based Proteomics},
+  author  = {Goeminne, Ludger and Sticker, Adriaan and Martens, Lennart and Gevaert, Kris and Clement, Lieven},
+  journal = {Analytical Chemistry},
+  year    = {2020},
+  volume  = {92},
+  number  = {9},
+  pages   = {6278--6287},
+  doi     = {10.1021/acs.analchem.9b04375},
+  issn    = {0003-2700},
+}
+
+@article{DemeulemeesterEtAl2024,
+  title   = {msqrob2PTM: Differential Abundance and Differential Usage Analysis of MS-Based Proteomics Data at the Posttranslational Modification and Peptidoform Level},
+  author  = {Demeulemeester, Nina and Gébelin, Marie and Caldi Gomes, Lucas and Lingor, Paul and Carapito, Christine and Martens, Lennart and Clement, Lieven},
+  journal = {Molecular \& Cellular Proteomics},
+  volume  = {23},
+  number  = {2},
+  pages   = {100708},
+  year    = {2024},
+  doi     = {10.1016/j.mcpro.2023.100708},
+  issn    = {1535-9476}
+}
+
+@book{deDuve2002,
+  title     = {Life Evolving: Molecules, Mind, and Meaning},
+  author    = {De Duve, C.},
+  isbn      = {9780195156058},
+  lccn      = {2002075407},
+  year      = {2002},
+  address   = {Oxford, UK},
+  publisher = {Oxford University Press}
+}
+
+@book{bohm1980,
+  title     = {Wholeness and the Implicate Order},
+  author    = {Bohm, D.},
+  series    = {Routledge classics},
+  year      = 1980,
+  publisher = {Routledge}
+}

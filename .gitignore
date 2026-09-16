@@ -1,0 +1,14 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# Rmd output
+*_cache/
+_site/
+
+# Don't ignore these specific files
+!footer.html
+
+/.quarto/
+**/*.quarto_ipynb

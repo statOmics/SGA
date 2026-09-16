@@ -1,0 +1,720 @@
+# Heart use case: a MaxQuant LFQ DDA dataset with a more complex design {#sec-heart}
+
+## Introduction
+
+In this chapter we show how to analyse LFQ data from an experiment
+with a more complex design. The data are a small subset of the public
+dataset PXD006675 on PRIDE.
+
+Particularly, the proteomes of the atrium and ventriculum in the left
+and the right heart region are profiled for 3 patients (identifiers 3,
+4, and 8). Hence, the design consists of a factor tissue (atrium,
+ventriculum), region (left, right) and block (patient 3,4, and 8).
+
+Suppose that researchers are mainly interested in comparing the
+ventricular to the atrial proteome. Particularly, they would like to
+compare the left atrium to the left ventricle, the right atrium to the
+right ventricle, the average ventricular vs atrial proteome and if
+ventricular vs atrial proteome shifts differ between left and right
+heart region.
+
+## Load packages
+
+First, we load the `msqrob2` package and additional packages for data
+manipulation and visualisation.
+
+```{r}
+suppressPackageStartupMessages({
+library("QFeatures")  
+library("dplyr") 
+library("tidyr")
+library("ggplot2")
+library("msqrob2")    
+library("stringr")
+library("ExploreModelMatrix")
+library("kableExtra")
+library("ComplexHeatmap")
+library("scater")
+library("patchwork")
+})
+```
+
+We also configure the [parallelisation](#sec-parallel) framework.
+
+```{r}
+library("BiocParallel")
+register(SerialParam())
+```
+
+## Load Data
+
+### Getting the data
+
+
+The data were searched with MaxQuant version 1.5.5.6 and are
+deposited on the PRIDE repository
+[PXD006675](https://www.ebi.ac.uk/pride/archive/projects/PXD006675).
+
+In this chapter we use a small subset of the data that is available on
+msqrob2data.
+
+```{r}
+library("BiocFileCache")
+bfc <- BiocFileCache()
+peptideFile <- bfcrpath(bfc, "https://github.com/statOmics/msqrob2data/raw/refs/heads/main/dda/heart/peptides.txt")
+```
+
+After downloading the files, we can load the peptide table, which is
+in ["wide format"](#sec-peptide_table). Hence, each row represents a
+single peptide and each quantification column (that starts with
+`"Intensity"`) represents a single sample.
+
+```{r, warning=FALSE, message=FALSE}
+peptides <- data.table::fread(peptideFile, check.names = TRUE, integer64 = "double")
+quantcols <- grep("Intensity[.]", names(peptides), value = TRUE)
+```
+
+```{r, echo=FALSE}
+knitr::kable(head(peptides))
+```
+
+We now extract the [sample annotations](#sec-annotation_table). We
+will build a table where each row in the annotation table contains
+information for one sample (the table below shows the first 6 rows).
+This information is extracted from the sample names.
+
+```{r}
+coldata <- data.frame(quantCols = quantcols) |>     
+  mutate(sampleId = gsub("Intensity[.]", "", quantcols), 
+         location  = substr(sampleId, 1, 1), # heart region left-right
+         tissue  = substr(sampleId, 2, 2), # tissue Atrium-Ventriculum
+         patient  = substr(sampleId, 3, 3)) # patient id
+```
+
+```{r, echo=FALSE}
+knitr::kable(head(coldata))
+```
+
+### The `QFeatures` data class
+
+We combine the two tables into a [`QFeatures` object](#sec-qfeatures).
+
+```{r}
+(pe <- readQFeatures(
+  peptides, colData = coldata, fnames = "Sequence", name = "peptides"
+))
+```
+
+We now have a `QFeatures` object with 1 set, containing `r
+nrows(pe)[[1]]` rows (peptides) and `r ncols(pe)[[1]]` columns
+(samples). 
+
+## Data preprocessing
+
+`msqrob2` relies on the `QFeatures` data structure, meaning that we
+can directly make use of `QFeatures`' data preprocessing functionality
+(see also the `QFeatures`
+[documentation](https://rformassspectrometry.github.io/QFeatures/articles/Processing.html)).
+
+### Encoding missing values
+
+Peptides with zero intensities should be
+[encoded](#sec-encode_missing) using `NA`.
+
+```{r}
+pe <- zeroIsNA(pe, "peptides")
+```
+
+We calculate how many non zero intensities we have per peptide and
+this is often useful for filtering.
+
+```{r heart_nNA_hist, fig.cap=" "}
+naResults <- nNA(pe, "peptides")
+data.frame(naResults$nNArows) |> 
+  ggplot() +
+  aes(x = nNA) +
+  geom_histogram()
+```
+
+### PSM filtering
+
+We filter features based on 3 criteria (see [PSM filtering]).
+
+1. Remove failed protein inference
+
+We remove peptides that could not be uniquely mapped to a protein.
+
+```{r}
+pe <- filterFeatures(pe,
+  ~ Proteins != "" & ## Remove failed protein inference
+    !grepl(";", Proteins)) ## Remove protein groups
+```
+
+2. Remove reverse sequences (decoys) and contaminants
+
+We remove the contaminants and peptides that map to decoy sequences.
+These features bear no information of interest and will reduce the
+statistical power upon multiple test adjustment.
+
+```{r}
+pe <- filterFeatures(pe, ~ Reverse != "+" & Potential.contaminant != "+")
+```
+
+3. Remove highly missing peptides. 
+
+We keep peptides that were observed at least 3 times out of the $n =
+12$ samples, so we tolerate the following proportion of NAs:
+$\text{pNA} = \frac{(n - 3)}{n} = 0.75$, so we keep peptides that are
+observed in at least 25% of the samples.
+
+```{r}
+nObs <- 3
+n <- ncol(pe[["peptides"]])
+(pe <- filterNA(pe, i = "peptides", pNA = (n - nObs) / n))
+```
+
+We keep `r nrow(pe[["peptides"]])` peptides upon filtering.
+
+
+### Identifications per sample 
+
+```{r}
+pe[,,"peptides"] |> 
+  longForm(colvars = colnames(colData(pe)), 
+           rowvars= c("Sequence", 
+                      "Proteins")) |>
+  data.frame() |>
+  filter(!is.na(value)) |>
+  group_by(location, tissue, sampleId) |>
+  summarise(Precursors = length(unique(Sequence)),
+            `Protein Groups` = length(unique(Proteins))) |> 
+  pivot_longer(-(1:3),
+               names_to = "Feature",
+               values_to = "IDs") |> 
+  ggplot(aes(x = sampleId, y = IDs, fill = interaction(location,tissue))) +
+  geom_col() +
+  #scale_fill_observable() +
+  facet_wrap(~Feature,
+             scales = "free_y") +
+  labs(title = "Peptide and protein group identifications per sample",
+       x = "Sample",
+       y = "Identifications") +
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+There are rather large variations in the peptide and protein identifications
+across samples. Therefore we will normalise the data using the median method
+restricted to peptides that are observed in all samples (i.e. common peptides),
+which centers each sample by subtracting its median log2 intensity computed
+over those complete-case peptides.
+
+### Standard preprocessing workflow
+
+We can now prepare the data for modelling. The workflow ensures the
+data complies to `msqrob2`'s requirements:
+
+1. Intensities are [log-transformed](#sec-log2).
+
+```{r}
+pe <- logTransform(pe, base = 2, i = "peptides", name = "peptides_log")
+```
+
+2. Normalisation with Median method of common peptides.
+
+```{r}
+pe <- sweep( #Subtract log2 norm factor column-by-column (MARGIN = 2)
+  pe,
+  MARGIN = 2,
+  STATS = nfLogMedian(na.exclude(assay(pe[["peptides_log"]]))),
+  i = "peptides_log",
+  name = "peptides_norm"
+)
+```
+
+
+Upon the normalisation the density curves should be nicely centred. To
+confirm this, we will plot the intensity distributions for each
+biorepeat (patient). `longForm()` seamlessly combines the quantification
+and annotation data into a table suitable for `ggplot2` visualisation.
+We also subset the object with the data before and after normalisation.
+
+```{r heart_after_norm, fig.cap=" "}
+longForm(pe[, , c("peptides_log", "peptides_norm")], colvar = "patient") |> 
+  ggplot() +
+  aes(x = value, group = colname, color = patient) +
+  geom_density() +
+  facet_wrap(~ assay, scale = "free")
+```
+
+3. [Summarisation](#sec-summarisation) to protein level.
+
+We use the robust summary approach to infer protein-level data from
+peptide-level data, accounting for the fact that different peptides
+have ionisation efficiencies hence leading to different intensity
+baselines.
+As the robust summarisation takes a while we shift to medianPolish in this 
+dataset.
+
+```{r,warning=FALSE}
+pe <- aggregateFeatures(
+  pe, i = "peptides_norm", fcol = "Proteins", 
+  fun = MsCoreUtils::medianPolish, 
+  na.rm = TRUE, name = "proteins"
+)
+```
+
+## Data exploration
+
+We will explore the main sources of variation in the data using
+[MDS](#sec_data_exploration).
+
+```{r heart_mds, fig.cap=" "}
+library("scater")
+se <- getWithColData(pe, "proteins") |> 
+  as("SingleCellExperiment") |> 
+  runMDS(exprs_values = 1) 
+plotMDS(se, colour_by = "tissue") +
+  plotMDS(se, colour_by = "location") +
+  plotMDS(se, colour_by = "patient")
+```
+
+Note, that the samples upon robust summarisation show a clear
+separation according to the tissue type in the first dimension and
+according to location in the second dimension.
+
+## Data modelling
+
+The preprocessed data can now be modelled to answer biologically
+relevant questions. Particularly, the protein abundance can differ
+according to tissue type (A-V) and location (L-R). Moreover, the
+effect of the tissue type can differ according to the location and
+vice versa. Hence, there can be an interaction between tissue and
+location.
+
+The samples are also not independent as four biopsies (LA, RA, LV and
+RV) were taken for each patient. Because the proteome is profiled for
+each tissue x location combination within each patient, the design is
+a randomised complete block (RCB) design.
+
+RCB designs can be correctly analysed by incorporating the block
+effect for patient either as a fixed or a random effect. The use of a
+fixed patient effect is here also possible because the effect of each
+factor combination can be estimated within block (patient).
+
+Here, we choose to account for the patient effect using fixed effects
+because mixed models are computationally more demanding and rely on
+asymptotic inference (i.e.  statistical inference is only valid for
+experiments with large sample sizes).
+
+Now we have identified the sources of variation in the experiment that
+we have to account for (tissue, location and patient id), we can
+define a model.
+
+```{r warning=FALSE}
+model <- ~ location*tissue + ## (1) fixed effects: main effects for location and tissue type, and a tissue x location interaction
+  patient  ## (2) fixed block effect for patient
+```
+
+### Estimate the model
+
+We estimate the model with `msqrob()`. Recall that
+variables defined in `model` are automatically retrieved from the
+`colData` (i.e. `"tissue"`, `"location"`, and `"patient"`). 
+
+```{r, cache=TRUE, warning = FALSE, message = FALSE}
+pe <- msqrob(
+  pe, i = "proteins", formula = model, robust = TRUE
+)
+```
+
+## Statistical inference
+
+Once the models are estimated, we can start answering biological
+questions by performing [Statistical inference]. We must translate the
+biological questions into a statistical hypotheses:
+
+ 1. Is there an effect of tissue type (V-A) in the left heart region?
+ 2. Is there an effect of tissue type (V-A) in the right heart region?
+ 3. Is there on average an effect of tissue type in the heart. 
+ 4. Does the effect of tissue type (V-A) differ according to the heart region (L-R)? 
+ 
+In other words, we must translate these questions in a linear
+combination of the model parameters, also referred to as a contrast.
+To aid defining contrasts, we will visualise the experimental design
+using the `ExploreModelMatrix` package.
+
+```{r heart_VisualizeDesign, fig.cap=" "}
+library("ExploreModelMatrix")
+vd <- VisualizeDesign(
+    sampleData =  colData(pe),
+    designFormula = ~ location*tissue + patient,
+    textSizeFitted = 4
+)
+vd$plotlist
+```
+
+### Research question 1: is there an effect of tissue in the left heart region? 
+
+From the plot we can see that the average log2 intensity for patient 3
+in the left ventriculum equals `(Intercept) + tissueV`:
+
+$$
+\mu^L_{V,3} = \beta_0 + \beta_V
+$$
+and for the left atrium `(Intercept)`:
+
+$$
+\mu^L_{A,3} = \beta_0 
+$$
+So the average $\log_2 FC$ between atrium and ventriculum for patient
+3 equals to parameter `tissueV`
+
+$$
+\log_2 FC_{V-A}^L = \mu^L_{V,3} -\mu^L_{A,3} = \beta_V
+$$
+The same can be seen for patient 4: 
+
+$$
+\log_2 FC_{V-A}^L= \mu^L_{V,4} -\mu^L_{A,4} = \beta_0 + \beta_V + \beta_4 - (\beta_0 + \beta_4) = \beta_V
+$$
+So the parameter `tissueV` has the interpretation of the average
+$\log_2 FC$ between ventriculum and atrium after correction for the
+patient effect, which quantifies the effect size for the first
+research hypothesis.
+
+### Research question 2: is there an effect of tissue in the right heart region? 
+
+When we use the same rationale for the right heart region, we can see
+that the average $\log_2 FC$ between atrium and ventriculum upon
+correction for the patient effect equals `tissueV +
+locationR:tissueV`. So, it consists of the main effect for tissue and
+the location x tissue interaction.
+
+We will illustrate this here for patient 4: 
+
+$$
+\begin{array}{rcl}
+\log_2 FC_{V-A}^R& =&\mu^R_{V,4} -\mu^R_{A,4} \\
+&=& \beta_0 + 
+\beta_R + \beta_V + \beta_{R:V} + \beta_4 - (\beta_0 + 
+\beta_R + \beta_4) \\
+&=& \beta_V + \beta_{R:V}
+\end{array}
+$$
+
+### Research question 3: is there an effect of tissue on average in the heart? 
+
+This research question can be quantified by calculating the averaging
+the $\log_2$ fold change between Ventriculum and Atrium over the left
+and right heart regions, which equals `tissueV +
+0.5*locationR:tissueV`
+
+$$
+\begin{array}{rcl}
+(\log_2 FC_{V-A}^L + \log_2 FC_{V-A}^R)/ 2 &=& (\beta_V + \beta_V + \beta_{R:V})/2 \\
+&=& \beta_V + 0.5\times\beta_{R:V}
+\end{array}
+$$
+
+### Research question 4: does the effect of tissue differ according to the heart region? 
+
+This research question can be quantified by calculating the difference
+in the $\log_2$ fold change between Ventriculum and Atrium in the
+right and left heart regions, which equals `locationR:tissueV`
+
+$$
+\begin{array}{rcl}
+\log_2 FC_{V-A}^R- \log_2 FC_{V-A}^L &=& \beta_V + \beta_{R:V}-\beta_V  \\
+&=& \beta_{R:V}
+\end{array}
+$$
+### Setting up the contrasts 
+
+We can set up the four contrasts:
+
+1. We make the design matrix so that we can easily extract all 
+   parameter names from the model 
+2. We make the contrast matrix for the four contrasts 
+
+```{r}
+L <- makeContrast(
+  c(
+    "tissueV = 0",
+    "tissueV + locationR:tissueV = 0",
+    "tissueV + 0.5*locationR:tissueV = 0",
+    "locationR:tissueV = 0"
+  ),
+  parameterNames = colnames(vd$designmatrix)
+  )
+```
+
+We can now falsify the null hypothesis of each contrast:
+
+```{r}
+pe <- hypothesisTest(
+  object = pe, i = "proteins", contrast = L
+)
+```
+
+
+### Results tables for significant proteins
+
+We first collect the results for all contrasts. 
+
+```{r}
+inferences <- 
+  msqrobCollect(pe[["proteins"]], L) 
+head(inferences)
+```
+
+Next, we will return tables of proteins for which the contrasts are significant at the 5% FDR level. 
+
+1. We set the significance level 
+2. We loop over the contrasts
+3. We filter the significant results for the contrast from the table
+4. We print the table 
+
+```{r, results='asis'}
+alpha <- 0.05 #1.
+for (contrasti in colnames(L)) #2. 
+{
+  sigList <- inferences |> 
+    filter(contrast == contrasti & adjPval < alpha) #3.
+  cat("**Contrast:**", contrasti, "= 0 (", nrow(sigList), " significant proteins)\n\n") #4.
+  print(kable(sigList, row.names = FALSE) |>
+      kable_styling(full_width = FALSE) |>
+      scroll_box(height = "250px")
+      ) #4.
+  cat("\n\n\n---\n\n") #4.
+}
+```
+
+Note, that no significant interactions are returned. 
+This is not unexpected. 
+We do not have a lot of subjects in the study and the power to pick up interaction terms is typically lower than to pick up main effects.
+
+
+### Volcanoplots 
+
+A volcano plot is a common visualisation that provides an overview of
+the hypothesis testing results, plotting the $-\log_{10}$ p-value^[Note, 
+that upon this transformation a value of 1 represents a p-value of 0.1, 2 
+a p-value of 0.01, 3 a p-value of 0.001, etc.] as a function of
+the estimated log fold change. Volcano plots can be used to highlight
+the most interesting proteins that have large fold changes and/or are
+highly significant. We can use the table above directly to build a
+volcano plot using `ggplot2` functionality. We also highlight which
+proteins are UPS standards, known to be differentially abundant by
+experimental design.
+
+Experienced users can make the plot themselves. However, in msqrob2 we also 
+provide the plotVolcano function that generates volcanoplots based on `msqrob2`
+inference tables generated with the `hypothesisTest` function. 
+
+Since the inference table contains multiple contrasts, we use the `facet_wrap` 
+function to make a separate volcano plot for each contrast. 
+
+```{r}
+volcanoplots <- inferences |> 
+  plotVolcano() +
+  facet_wrap(~contrast)
+volcanoplots
+```
+
+```{r brixenHeartVolcanoAVG}
+ inferences |> filter(contrast == "tissueV + 0.5 * locationR:tissueV") |> plotVolcano() + ggtitle("Normalisation based on complete peptides")
+```
+
+
+```{r}
+
+pn0 <- pe[, , "peptides_log"] |>
+  longForm(colvars = colnames(colData(pe))) |> 
+  data.frame() |> 
+  filter(!is.na(value)) |>
+  ggplot() + 
+  aes(x = value,
+      colour = sampleId,
+      group = colname) +
+  geom_density() +
+  theme_minimal() +
+    theme(legend.position = "NULL")+
+   labs(subtitle = "Peptide intensities\nNonnormalised log2")
+
+pn1 <- pe[, , "peptides_norm"] |>
+  longForm(colvars = colnames(colData(pe))) |> 
+  data.frame() |> 
+  filter(!is.na(value)) |>
+  ggplot() + 
+  aes(x = value,
+      colour = sampleId,
+      group = colname) +
+  geom_density() +
+  theme_minimal() +
+    theme(legend.position = "NULL")+
+   labs(subtitle = "Peptide intensities\nNormalised log2")
+
+pn1c <- 
+  filterNA(pe[,,"peptides_norm"], i = "peptides_norm", pNA = 0) |>
+  longForm(colvars = colnames(colData(pe))) |> 
+  data.frame() |> 
+  filter(!is.na(value)) |>
+  ggplot() + 
+  aes(x = value,
+      colour = sampleId,
+      group = colname) +
+  geom_density() +
+  theme_minimal() +
+    theme(legend.position = "NULL")+
+   labs(subtitle = "Peptide intensities (complete cases)\nNormalised log2 ")
+
+pn2 <-pe[, , "peptides_norm"] |>
+  longForm(colvars = colnames(colData(pe))) |> 
+  data.frame() |> 
+  filter(!is.na(value)) |>
+  ggplot() + 
+  aes(x = sampleId,
+      y = value,
+      colour = sampleId,
+      group = colname) +
+  xlab("sample") +
+  geom_boxplot() +
+  theme_minimal() +
+    theme(legend.position = "NULL")+
+   labs(subtitle = "Peptide intensities\nNormalised log2")
+
+pn2c <-
+  filterNA(pe[,,"peptides_norm"], i = "peptides_norm", pNA = 0) |>
+  longForm(colvars = colnames(colData(pe))) |> 
+  data.frame() |> 
+  filter(!is.na(value)) |>
+  ggplot() + 
+  aes(x = sampleId,
+      y = value,
+      colour = sampleId,
+      group = colname) +
+  xlab("sample") +
+  geom_boxplot() +
+  theme_minimal() +
+    theme(legend.position = "NULL")+
+   labs(subtitle = "Peptide intensities (complete cases)\nNormalised log2 ")
+
+pn3 <- pe[, , "proteins"] |>
+  longForm(colvars = colnames(colData(pe))) |> 
+  data.frame() |> 
+  filter(!is.na(value)) |>
+  ggplot() + 
+  aes(x = sampleId,
+      y = value,
+      colour = sampleId,
+      group = colname) +
+  xlab("sample") +
+  geom_boxplot() +
+  theme_minimal() +
+    theme(legend.position = "NULL")+
+   labs(subtitle = "Protein intensities\nNormalised log2")
+pn4 <- pe[,,"proteins"] |>
+  longForm(colvars = colnames(colData(pe))) |> 
+  data.frame() |> 
+  filter(!is.na(value)) |>
+  ggplot() + 
+  aes(x = value,
+      colour = sampleId,
+      group = colname) +
+  geom_density() +
+  theme_minimal() +
+  theme(legend.position = "NULL")+
+   labs(subtitle = "Protein intensities\nNormalised log2")
+
+pn4c <- filterNA(pe[,,"proteins"], i = "proteins", pNA = 0) |>
+  longForm(colvars = colnames(colData(pe))) |> 
+  data.frame() |> 
+  filter(!is.na(value)) |>
+  ggplot() + 
+  aes(x = value,
+      colour = sampleId,
+      group = colname) +
+  geom_density() +
+  theme_minimal() +
+  theme(legend.position = "NULL")+
+   labs(subtitle = "Protein intensities (complete cases)\nNormalised log2")
+```
+
+
+```{r brixenHeartNormalisationEffect}
+pn0 + pn1
+```
+
+```{r brixenHeartNormalisationExplained}
+pn1 + pn1c
+```
+
+```{r brixenHeartNormalisationExplained2}
+pn4 + pn4c
+```
+### Heatmaps
+
+We use a nominal FDR level of 0.05
+
+```{r}
+alpha <- 0.05
+```
+
+We conduct heatmaps for the significant metabolites for each contrast. 
+
+1. We first extract the assay `proteins` along with its colData. 
+2. We make an empty list `heatmaps` to store the plots.
+3. We will loop over the column names of the contrast matrix `L`
+4. We extract the names of the significant features for contrast `i`
+5. We extract the quant data for the significant metabolites
+6. We extract annotation
+7. We make the heatmap using the quants data. We do not cluster columns (samples) to keep them together according to the design.
+
+We only produce heatmaps for the first three contrasts as no DA proteins were returned for the location x tissue interaction.
+
+```{r}
+heatmaps <- lapply(colnames(L)[1:3],
+                   function(contrast, se, alpha)
+                   {
+                     sig <- rowData(se)[[contrast]] |> 
+                       filter(adjPval < alpha) |> 
+                       rownames()
+                     quants <- t(scale(t(assay(se[sig,]))))
+                     colnames(quants) <- paste0(se$location, se$tissue, se$patient)
+                     annotations <- columnAnnotation(condition = paste0(se$location, se$tissue))
+                     set.seed(1234) ## annotation colours are randomly generated by default
+                     return(
+                       Heatmap(
+                       quants, 
+                       name = "log2 intensity",
+                       top_annotation = annotations, 
+                       column_title = paste0(contrast, " = 0")
+                       )
+                     )
+                   },
+                   se = getWithColData(pe, "proteins"),
+                   alpha = alpha)
+heatmaps
+```
+
+## Conclusion
+
+In this chapter, we illustrated the analysis of a label-free
+proteomics data set with biological replication. We followed the
+workflow described in the previous chapters with minimal changes.
+
+The experiment presented in this chapter has a complex design and
+is an excellent illustration of how to model data with main effects, interactions and block effects.
+We could investigate:
+
+1. The difference in protein abundance between the atrium and 
+   ventriculum in the **left** heart compartment.
+2. The difference in protein abundance between the atrium and 
+   ventriculum in the **right** heart compartment.
+3. The difference in protein abundance between the atrium and 
+   ventriculum, **averaged** over the right and left heart compartment.
+4. The interaction, whether the difference between atrium and 
+   ventriculum is affected by whether we focus on the left heart or 
+   the right heart compartment.
+   
