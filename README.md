@@ -1,14 +1,14 @@
-#  Proteomics Data Analysis 
+#  Statistical Genomics 
 
 
-Course site for Proteomics Data Analysis
+Course site for Statistical Genomics
 
-https://statomics.github.io/PDA/
+https://statomics.github.io/SGA/
 
 
 ### Issues
 
-If you encounter any problems related to the course material (e.g. package installation problems, bugs in the code, typos, ...), please consider [posting an issue on GitHub](https://github.com/statOmics/PDA25EBI/issues).
+If you encounter any problems related to the course material (e.g. package installation problems, bugs in the code, typos, ...), please consider [posting an issue on GitHub](https://github.com/statOmics/SGA/issues).
 
 
 
