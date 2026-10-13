@@ -704,7 +704,67 @@ $$
  $$
 
 - **empirical Bayes** theory provides a formal framework for borrowing strength across proteins,
-- Implemented in popular bioconductor packages **limma** and **msqrob2**
+- Implemented in popular bioconductor packages **limma** and re-used in **msqrob2**
+
+--- 
+
+### Intermezzo: Bayesian Methods
+
+- Frequentists consider data as random and population parameters as fixed but unknown
+- In Bayesian viewpoint a person has prior beliefs about the population parameters and the uncertainty on this prior beliefs are represented by a probability distribution placed on this parameter.
+
+  - This distribution reflects the person's subjective prior opinion about plausible values of the parameter.
+  - And is referred to as the prior $g(\boldsymbol{\theta})$.
+
+- Bayesian thinking will update the prior information on the population parameters by confronting the model to data ($\mathbf{Y}$).
+
+- By using Bayes Theorem this results in a posterior distribution on the model parameters.  
+$$
+g(\boldsymbol{\theta}\vert\mathbf{Y})=\frac{f(Y\vert \boldsymbol{\theta})g(\boldsymbol{\theta})}{\int f(Y\vert \boldsymbol{\theta}) g(\boldsymbol{\theta}) d\boldsymbol{\theta}} \text{     }\left(\text{ posterior}=\frac{\text{prior} \times \text{ likelihood}}{\text{Marginal distribution}}\right)
+$$
+
+---
+
+### Limma  approach
+
+Developed for gene expression analysis with micro arrays.
+Let g be the index for gene g.
+$$
+\begin{array}{cc}
+&\beta_{gk}\vert \sigma^2_g,\beta_{gk}\neq 0 \sim N(0,v_{0k}\sigma_g^2)\\\\
+\text{Prior}\\
+&\frac{1}{\sigma^2_g}\sim s^2_0\frac{\chi^2_{d_0}}{d_0}\\\\\\\\
+&\hat \beta_{gk} | \beta_{gk} , \sigma_g^2 \sim N( \beta_{gk} , v_{gk}\sigma_g^2)\\\\\\
+\text{Data}\\
+&s_g^2\sim \sigma^2_g\frac{\chi^2_{d_g}}{d_g}\\\\
+\end{array}
+$$
+
+
+Under this assumption, it can be shown that
+
+- Posterior Mean for the variance parameter: $$\tilde{s}^2_p = \text{E}\left[\sigma^2_p\vert s_p^2\right]=\frac{d_0 s_0^2+d_ps_p^2}{d_0+d_p}$$
+
+- $$\tilde{T}_p=\frac{\mathbf{L}_k \hat{ \boldsymbol{\beta_p}}}{\mathbf{L}_k^T(\mathbf{X}^T\mathbf{WX})^{-1}\mathbf{L}_k^T \tilde{s}_p^2}
+$$
+
+is t-distributed under $H_0: \mathbf{L}_j\boldsymbol{\beta} = 0$
+
+$$\tilde{T}_p \vert H_0 \sim t(d_0 + d_p)$$
+
+---
+
+### Empirical Bayes vs Fully Bayesian
+
+- A fully Bayesian
+  - would define the prior distribution by carefully choosing the prior parameters based on prior knowledge on the process
+  - would confront the prior to the data and performs inference using the posterior distribution of the model parameters.
+- In an empirical Bayesian approach one estimates the prior parameters based on the data.
+- In **Limma** moment estimators for $s_0$ and $d_0$ are derived using the information on the gene (protein) wise variances of all genes (proteins).
+- In **Limma** one also does not work with the full posterior distribution for the variances, but with the maximum a-posterior estimate.
+
+---
+
 
 $$
   \tilde{S}_g=\sqrt{\frac{d_gS_g^2+d_0S_0^2}{d_g+d_0}},
@@ -796,18 +856,27 @@ gridExtra::grid.arrange(
 
 ### Shrinkage of the  variance and moderated t-statistics
 
-```{r echo = FALSE}
+```{r}
+# msqrob2 uses the squeezeVar function from limma
+hlp <- limma::squeezeVar(
+  var = sapply(rowData(qf[["proteins"]])$msqrobModels, getVar),
+  df = sapply(rowData(qf[["proteins"]])$msqrobModels, getDF)
+  )
+
 qplot(
   sapply(rowData(qf[["proteins"]])$msqrobModels,getSigma),
   sapply(rowData(qf[["proteins"]])$msqrobModels,getSigmaPosterior)) +
   xlab("SD") +
   ylab("moderated SD") +
   geom_abline(intercept = 0,slope = 1) +
+  geom_hline(yintercept = hlp$var.prior^.5, linetype = "dashed") +
+  annotate("text", label = "S0",
+           x = max(sapply(rowData(qf[["proteins"]])$msqrobModels,getSigma), na.rm=TRUE), y = hlp$var.prior^.5, vjust = -0.5)  +
   theme_minimal()
 ```
 
-- Small variances are shrunken towards the common variance resulting in large EB variance estimates
-- Large variances are shrunken towards the common variance resulting in smaller EB variance estimates 
+- Small variances (or SD) are shrunken towards the common variance (or S0) resulting in large EB variance estimates
+- Large variances (or SD) are shrunken towards the common variance (or S0) resulting in smaller EB variance estimates 
 - Pooled degrees of freedom of the EB variance estimator are larger because information is borrowed across proteins to estimate the variance
 
 ## Plots 
@@ -859,6 +928,222 @@ for (protName in sigNames)
         print(p2)
 }
 ```
+
+## Robust regression
+
+- With msqrob2 we perform robust regression to estimate the model parameters of the regression model
+
+- No normality assumption needed $\rightarrow$ asymptotic theory parameter estimators are approximately normally distributed when sample size gets large. 
+- (Although it is not theoretically justified, we still use t-distribution for inference as we have seen that it works better in practice in typical proteomics experiments with small sample sizes.)
+- Robust fit minimises the maximal bias of the estimators
+- CI and statistical tests are based on asymptotic theory
+- If $\epsilon$ is normal, the M-estimators have a high efficiency!
+- ordinary least squares (OLS): minimize loss function 
+$$\sum\limits_{i=1}^n (y_i-\mathbf{x}_i^T\boldsymbol{\beta})^2$$
+
+- M-estimation: minimize loss function
+$$\sum\limits_{i=1}^n  \rho\left(y_i-\mathbf{x}_i^T\boldsymbol{\beta}\right)$$
+with
+
+  - $\rho$ is symmetric, i.e. $\rho(z)=\rho(-z)$
+  - $\rho$ has a minimum at $\rho(0)=0$, is positive for all $z\neq 0$
+  - $\rho(z)$ increases as $\vert z\vert$ increases
+
+---
+
+ The estimator $\hat{\mu}$ is also the solution to the equation
+ $$
+   \sum_{i=1}^n \Psi(y_i - \mathbf{x}_i\boldsymbol{\beta}) =0,
+ $$
+ where $\Psi$ is the derivative of $\rho$. For $\hat{\beta}$ possessing the robustness property, $\Psi$ should be bounded.
+
+---
+
+ Example: least squares
+
+ - $\rho(z) = z^2$, and thus $\Psi(z)=2z$ (unbounded!). Not robust!
+
+- $\hat{\boldsymbol{\beta}}$ is the solution of
+ $$
+   \sum_{i=1}^n 2 \mathbf{x}_i (y_i - \mathbf{x}_i^T\boldsymbol{\beta}) = 0 \text{ or } \hat{\boldsymbol{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}\mathbf{y}
+ $$
+ with $\mathbf{X}=[\mathbf{x}_1 \ldots \mathbf{x}_G]^T$
+
+---
+
+ When a location and a scale parameter, say $\sigma$, have to be estimated simultaneously, we write
+ $$
+   (\hat{\boldsymbol{\beta}},\hat{\sigma}) = \text{ArgMin}_{\boldsymbol{\beta},\sigma} \sum_{i=1}^n \rho\left(\frac{y_i - \mathbf{x}_i^T\boldsymbol{\beta}}{\sigma}\right)
+   \text{ and } \sum_{i=1}^n \Psi\left(\frac{y_i - \mathbf{x}_i^T\boldsymbol{\beta}}{\sigma}\right) =0.
+ $$
+
+ Define $u_i = \frac{y_i - \mathbf{x}_i^T\boldsymbol{\beta}}{\sigma}$. The last estimation equation is equivalent to
+ $$
+   \sum_{i=1}^n w(u_i) u_i = 0 ,
+ $$
+ with weight function $w(u)=\Psi(u)/u$. This is the typical form that appears when solving the
+ *iteratively reweighted least squares problem*,
+ $$
+   (\hat{\boldsymbol{\beta}},\hat{\sigma}) = \text{ArgMin}_{\mu,\sigma} \sum_{i=1}^n w(u_i^{(k-1)}) \left(u_i^{(k)}\right)^2 ,
+ $$
+ where $k$ represents the iteration number.
+
+---
+
+### Some Examples of Robust Functions
+
+![](https://raw.githubusercontent.com/statOmics/SGA2020/gh-pages/assets/TableRobust.PNG)
+
+PhD thesis Bolstad 2004
+
+---
+
+### The $\rho$ functions
+
+![](https://raw.githubusercontent.com/statOmics/SGA2020/gh-pages/assets/RhoRobust.PNG)
+
+PhD thesis Bolstad 2004
+
+---
+
+### Common $\Psi$-Functions
+![](https://raw.githubusercontent.com/statOmics/SGA2020/gh-pages/assets/robustRegressionPsi.png)
+
+PhD thesis Bolstad 2004
+
+---
+
+### Corresponding Weight Functions
+![](https://raw.githubusercontent.com/statOmics/SGA2020/gh-pages/assets/robustRegressionWeights.png)
+
+PhD thesis Bolstad 2004
+
+### Understanding implementation of robust regression
+
+#### Simulate 20 observations from a linear model with errors that follow a normal distribution
+
+```{r}
+set.seed <- 112358
+nobs <- 20
+sdy <- 1
+xsim <- seq(0, 1, length.out = nobs)
+ysim <- 10 + 5*xsim + rnorm(nobs, sd = sdy)
+```
+
+#### add outlier at high leverage point
+
+```{r}
+ysim[nobs] <- 7
+```
+
+#### fit linear model
+
+```{r}
+ols <- lm(ysim ~ xsim)
+```
+
+#### fit robust linear model
+
+```{r}
+library(MASS)
+mEst <- rlm(ysim ~ xsim)
+```
+
+#### plot results
+
+```{r}
+plot(xsim, ysim)
+abline(ols, lwd = 2)
+abline(mEst, col = "red", lwd = 2)
+legend("topleft",
+  legend = c("OLS", "M-estimation"),
+  lwd = 2,
+  col = 1:2)
+round(mEst$w,3)
+```
+
+The plot clearly shows that the outlier has a high impact on the slope estimate.
+This is because the outlier is at a high leverage point, i.e. far from the average covariate pattern.
+
+### Implement it yourself
+#### start from ols fit
+
+```{r}
+lmMod <- ols
+```
+
+#### Use robust variance estimator to calculate the z
+
+```{r}
+res <- lmMod$res
+stdev <- mad(res)
+stdev
+median(abs(res-median(res)))*1.4826
+z <- res/stdev
+```
+
+#### Calculate weights use psi.huber function
+
+```{r}
+w <- psi.huber(z)
+plot(xsim, ysim)
+plot(xsim, lmMod$res, cex = w, pch = 19, col = "red")
+points(xsim,lmMod$res, cex = 1.5)
+```
+
+#### Perform a weighted regression use lm with weights=w
+
+```{r}
+lmMod <- lm(ysim~xsim, weights = w)
+```
+
+#### Plot results
+
+```{r}
+plot(xsim, ysim)
+abline(ols, lwd = 2)
+abline(mEst, col = "red", lwd = 2)
+abline(lmMod, col = "blue", lwd = 2)
+legend("topleft",
+  legend = c("OLS","M-estimation","Our Impl"),
+  lwd = 2,
+  col = c("black", "red", "blue"))
+```
+
+#### Repeat this many times
+```{r}
+lmMod <- ols
+for (k in 1:3)
+{
+######repeat this part several times until convergence
+#use robust variance estimator to calculate the z
+res <- lmMod$res
+stdev <- mad(res)
+median(abs(res-median(res)))*1.4826
+
+z <- res/stdev
+
+#calculate weights
+#use psi.huber function
+w <- psi.huber(z)
+
+#perform a weighted regression use lm with weights=w
+lmMod <- lm(ysim ~ xsim, weights = w)
+
+#plot results
+plot(xsim,ysim)
+abline(ols, lwd = 2)
+abline(mEst, col = "red", lwd = 2)
+abline(lmMod, col = "blue", lwd = 2)
+legend("topleft",
+  legend = c("OLS","M-estimation","Our Impl"),
+  lwd = 2,
+  col = c("black", "red", "blue")
+  )
+####################################
+}
+```
+
 
 # Experimental Design
 
