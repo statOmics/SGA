@@ -853,7 +853,6 @@ gridExtra::grid.arrange(
 
 -  Borrowing strength to estimate the variance using empirical Bayes solves the issue of returning proteins with a low fold change as significant due to a low variance. 
 
-
 ### Shrinkage of the  variance and moderated t-statistics
 
 ```{r}
@@ -879,55 +878,7 @@ qplot(
 - Large variances (or SD) are shrunken towards the common variance (or S0) resulting in smaller EB variance estimates 
 - Pooled degrees of freedom of the EB variance estimator are larger because information is borrowed across proteins to estimate the variance
 
-## Plots 
 
-```{r echo = FALSE}
-sigNames <- rowData(qf[["proteins"]])$genotypeD8 |>
-    rownames_to_column("proteins") |>
-    filter(adjPval < 0.05) |>
-    pull(proteins)
-heatmap(assay(qf[["proteins"]])[sigNames, ])
-```
-
-
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
-for (protName in sigNames)
-    {
-        qfPlot <- qf[protName, , c("peptides_norm", "proteins")]
-        qfPlotDf <- data.frame(longForm(qfPlot))
-        qfPlotDf$assay <- factor(qfPlotDf$assay,
-            levels = c("peptides_norm", "proteins")
-        )
-        qfPlotDf$genotype <- as.factor(colData(qfPlot)[qfPlotDf$colname, "genotype"])
-
-        # plotting
-        p1 <- ggplot(
-            data = qfPlotDf,
-            aes(x = colname, y = value, group = rowname)
-        ) +
-            geom_line() +
-            geom_point() +
-            facet_grid(~assay) +
-            theme(axis.text.x = element_text(angle = 70, hjust = 1, vjust = 0.5)) +
-            ggtitle(protName) + 
-          theme_minimal()
-        print(p1)
-
-        # plotting 2
-        p2 <- ggplot(qfPlotDf, aes(x = colname, y = value, fill = genotype)) +
-            geom_boxplot(outlier.shape = NA) +
-            geom_point(
-                position = position_jitter(width = .1),
-                aes(shape = rowname)
-            ) +
-            scale_shape_manual(values = 1:nrow(qfPlotDf)) +
-            labs(title = protName, x = "sample", y = "peptide intensity (log2)") +
-            theme(axis.text.x = element_text(angle = 70, hjust = 1, vjust = 0.5)) +
-            facet_grid(~assay) + 
-          theme_minimal()
-        print(p2)
-}
-```
 
 ## Robust regression
 
@@ -1144,6 +1095,55 @@ legend("topleft",
 }
 ```
 
+## Plots 
+
+```{r echo = FALSE}
+sigNames <- rowData(qf[["proteins"]])$genotypeD8 |>
+    rownames_to_column("proteins") |>
+    filter(adjPval < 0.05) |>
+    pull(proteins)
+heatmap(assay(qf[["proteins"]])[sigNames, ])
+```
+
+
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
+for (protName in sigNames)
+    {
+        qfPlot <- qf[protName, , c("peptides_norm", "proteins")]
+        qfPlotDf <- data.frame(longForm(qfPlot))
+        qfPlotDf$assay <- factor(qfPlotDf$assay,
+            levels = c("peptides_norm", "proteins")
+        )
+        qfPlotDf$genotype <- as.factor(colData(qfPlot)[qfPlotDf$colname, "genotype"])
+
+        # plotting
+        p1 <- ggplot(
+            data = qfPlotDf,
+            aes(x = colname, y = value, group = rowname)
+        ) +
+            geom_line() +
+            geom_point() +
+            facet_grid(~assay) +
+            theme(axis.text.x = element_text(angle = 70, hjust = 1, vjust = 0.5)) +
+            ggtitle(protName) + 
+          theme_minimal()
+        print(p1)
+
+        # plotting 2
+        p2 <- ggplot(qfPlotDf, aes(x = colname, y = value, fill = genotype)) +
+            geom_boxplot(outlier.shape = NA) +
+            geom_point(
+                position = position_jitter(width = .1),
+                aes(shape = rowname)
+            ) +
+            scale_shape_manual(values = 1:nrow(qfPlotDf)) +
+            labs(title = protName, x = "sample", y = "peptide intensity (log2)") +
+            theme(axis.text.x = element_text(angle = 70, hjust = 1, vjust = 0.5)) +
+            facet_grid(~assay) + 
+          theme_minimal()
+        print(p2)
+}
+```
 
 # Experimental Design
 
