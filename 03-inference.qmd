@@ -624,7 +624,9 @@ problemPlots[[i]] <- colData(qf) |>
     ggplot(aes(x=genotype,y=intensity)) +
     geom_point() + 
     ggtitle(rownames(res)[i]) +
-    ylim(c(24,27)) +
+    ylim(qf[["proteins"]][rownames(res)[2:3],] |> 
+             assay() |> 
+             range(na.rm=TRUE)) +
       theme_minimal() 
 }
 ```
@@ -743,9 +745,10 @@ $$
 
 Under this assumption, it can be shown that
 
-- Posterior Mean for the variance parameter: $$\tilde{s}^2_p = \text{E}\left[\sigma^2_p\vert s_p^2\right]=\frac{d_0 s_0^2+d_ps_p^2}{d_0+d_p}$$
+- Posterior Mean for the variance parameter: 
+$$\tilde{s}^2_p = \text{E}\left[\sigma^2_p\vert s_p^2\right]=\frac{d_0 s_0^2+d_ps_p^2}{d_0+d_p}$$
 
-- $$\tilde{T}_p=\frac{\mathbf{L}_k \hat{ \boldsymbol{\beta_p}}}{\mathbf{L}_k^T(\mathbf{X}^T\mathbf{WX})^{-1}\mathbf{L}_k^T \tilde{s}_p^2}
+- $$\tilde{T}_p=\frac{\mathbf{L}_k \hat{ \boldsymbol{\beta_p}}}{\sqrt{\mathbf{L}_k^T(\mathbf{X}^T\mathbf{WX})^{-1}\mathbf{L}_k^T\tilde{s}_p^2}}
 $$
 
 is t-distributed under $H_0: \mathbf{L}_j\boldsymbol{\beta} = 0$
@@ -761,7 +764,7 @@ $$\tilde{T}_p \vert H_0 \sim t(d_0 + d_p)$$
   - would confront the prior to the data and performs inference using the posterior distribution of the model parameters.
 - In an empirical Bayesian approach one estimates the prior parameters based on the data.
 - In **Limma** moment estimators for $s_0$ and $d_0$ are derived using the information on the gene (protein) wise variances of all genes (proteins).
-- In **Limma** one also does not work with the full posterior distribution for the variances, but with the maximum a-posterior estimate.
+- In **Limma** one also does not work with the full posterior distribution for the variances, but with the posterior means of the variances.
 
 ---
 
@@ -884,7 +887,7 @@ qplot(
 
 - With msqrob2 we perform robust regression to estimate the model parameters of the regression model
 
-- No normality assumption needed $\rightarrow$ asymptotic theory parameter estimators are approximately normally distributed when sample size gets large. 
+- No normality assumption needed $\rightarrow$ asymptotic theory: parameter estimators are approximately normally distributed when sample size gets large. 
 - (Although it is not theoretically justified, we still use t-distribution for inference as we have seen that it works better in practice in typical proteomics experiments with small sample sizes.)
 - Robust fit minimises the maximal bias of the estimators
 - CI and statistical tests are based on asymptotic theory
