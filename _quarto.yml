@@ -38,6 +38,10 @@ website:
           href: 03-inference.html
         - text: 2.2.2 Wrap-up Blocking
           href: 03-blocking-wrapup.html
+        - text: 2.2.3 Linear Mixed Models (LMMs)
+          href: mixedModels.html
+        - text: 2.2.4 LMMs for labelled proteomics
+          href: tmtMixedModel.html
 
       - text: "Tutorials"
         icon: fa-laptop

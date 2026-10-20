@@ -1,0 +1,815 @@
+---
+title: "Linear Mixed Models (LMM)"
+format:
+  html: default
+  pdf: default
+---
+
+```{r echo = FALSE}
+source("R/knitr_setup.R")
+```
+
+In this chapter we introduce linear mixed models.
+We start from simple designs in which the response is measured repeatedly on the same experimental unit and analyse them first with a **two-stage analysis**: we summarise the data of each experimental unit and analyse the summaries.
+The linear mixed model does both stages in one step.
+The last part briefly summarises the theory of Chapter 4 of @Ruppert2003; the full derivations are in [the extended version of this chapter](mixedModelsFull.html).
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(lme4)
+library(Matrix)
+library(QFeatures)
+library(BiocFileCache)
+```
+
+# Experimental and observational units
+
+Whether we need random effects depends on the design: on which unit the treatment is randomised (the **experimental unit**) and on which unit the response is measured (the **observational unit**).
+We first illustrate this with a simple example and then with one protein from two proteomics experiments that are also used in the other lectures.
+
+## Pseudo-replication: fish in tanks
+
+Researchers want to assess the effect of three diets on the weight gain of fish.
+They have 12 tanks with the same number of fish.
+Each diet is randomly assigned to 4 tanks, and at the end of the experiment the weight gain of 6 fish in each tank is recorded.
+
+
+```{r}
+fish <- data.frame(
+  diet = factor(rep(1:3, each = 24)),
+  tank = factor(rep(1:12, each = 6)),
+  wtGain = c(
+    8.8, 6.5, -1.1, 1.3, -0.6, 2.1,
+    5.7, 4, -2.1, 2.3, 2.1, 7.5,
+    -0.7, 11.2, -0.7, 11, 8.4, 5,
+    3.4, 6.7, 11.3, 4, 2.6, 2.8,
+    31, 15.7, 40.8, 33.8, 24.9, 31.4,
+    10.5, 25.3, 18.6, 19.7, 20.7, 25.2,
+    21.7, 15.9, 22.8, 21.5, 11.7, 17.7,
+    38.6, 25.7, 32.3, 28.2, 28.6, 27.2,
+    49.1, 39.7, 45.9, 48.6, 32.3, 60.2,
+    61.7, 29.1, 49.1, 59.2, 45.8, 37.8,
+    58.9, 43.2, 56.5, 47.5, 32.2, 62.4,
+    59.4, 49.4, 42.3, 47, 48.4, 51.8))
+
+ggplot(fish, aes(x = tank, y = wtGain, colour = diet)) +
+  geom_point() +
+  theme_minimal()
+```
+
+Naive data analysis: 
+
+```{r}
+naiveFish <- lm(wtGain ~ diet, data = fish)
+summary(naiveFish)$coef
+```
+
+Experimental units and observational units? 
+
+- The diet is randomised to the tanks: the 12 tanks are the experimental units.
+- The weight gain is measured on the fish: the 72 fish are the observational units.
+- Fish in the same tank share the same environment (water quality, temperature, feeding, ...): they are **pseudo-replicates**.
+Weighing more fish of the same tank does not give more independent tanks.
+
+### Two-stage analysis
+
+The diet effect has to be assessed with the variability between the experimental units, the tanks.
+A simple and correct analysis therefore works in two stages:
+
+- **Stage I**: summarise the data of each experimental unit, here the average weight gain in each tank.
+- **Stage II**: analyse the summaries with an ordinary linear model: 4 tanks per diet.
+
+```{r}
+stageIFish <- fish |>
+  group_by(tank, diet) |>
+  summarise(wtGain = mean(wtGain), .groups = "drop")
+stageIFish
+
+twoStageFish <- lm(wtGain ~ diet, data = stageIFish)
+summary(twoStageFish)$coef
+```
+
+If we act as if the 72 fish are independent, the standard errors are too small: the analysis treats the 24 fish per diet as independent repeats, while there are only 4 independent tanks per diet.
+
+Note that we cannot correct for the tanks with a fixed tank effect as in a block design: once we know the tank, we also know the diet.
+The tank effects are aliased with the diet effects.
+
+```{r}
+coef(lm(wtGain ~ diet + tank, data = fish))
+```
+
+### Linear mixed model
+
+The two-stage analysis is easy, but it has drawbacks:
+
+- Information is lost when the data of a tank are summarised by a single number.
+- It is only valid when all Stage I summaries are equally precise, i.e. when the design is balanced.
+With unequal numbers of fish per tank, or missing values, the precision of the tank averages differs, and Stage II does not account for that.
+
+A **linear mixed model** combines both stages into one model:
+
+$$
+\left\{\begin{array}{rcl}
+y_{tk} &=& \beta_0 + \beta_{d(t)} + b_t + \epsilon_{tk}\\\\
+b_t &\sim& N(0, \sigma^2_b), \\\\
+\epsilon_{tk} &\sim& N(0, \sigma^2_\epsilon)
+\end{array}\right.
+$$
+
+with $y_{tk}$ the weight gain of fish $k$ in tank $t$, $\beta_{d(t)}$ the effect of the diet of tank $t$ and $b_t$ a **random effect** for tank $t$. 
+(Note, that the random effects and errors are assumed to be independent.)
+
+- The diet effects are **fixed effects**: they are the parameters of interest.
+- The tank effects are **random effects**: the 12 tanks are a random sample of tanks, and we are not interested in the effect of these particular tanks.
+They only cost one extra parameter, the **variance component** $\sigma^2_b$, the between-tank variance.
+$\sigma^2_\epsilon$ is the within-tank variance.
+
+```{r}
+lmmFish <- lmer(wtGain ~ diet + (1|tank), data = fish)
+summary(lmmFish)
+```
+
+
+### Comparisons between analyses 
+
+```{r}
+rbind(
+  wrong = summary(naiveFish)$coef["diet2", 1:3],
+  twoStage = summary(twoStageFish)$coef["diet2", 1:3],
+  mixed = summary(lmmFish)$coef["diet2", 1:3])
+```
+
+
+The two-stage analysis and the mixed model give identical estimates, standard errors and $t$-statistics.
+For a balanced design with $m$ tanks per diet and $n$ fish per tank, the variance of a diet mean is
+
+$$
+\text{var}\left[\bar y_{d}\right] = \frac{\sigma^2_b}{m} + \frac{\sigma^2_\epsilon}{mn}.
+$$
+
+The between-tank variance is only averaged over the $m = 4$ independent tanks: weighing more fish per tank cannot reduce it.
+The mixed model accounts for both sources of variability.
+
+### Induced correlation
+
+The random tank effect induces a correlation between fish of the same tank ($k \neq k^\prime$):
+
+$$
+\text{cov}\left[y_{tk}, y_{tk^\prime}\right] = \text{var}\left[b_t\right] = \sigma^2_b, \qquad
+\text{corr}\left[y_{tk}, y_{tk^\prime}\right] = \frac{\sigma^2_b}{\sigma^2_b + \sigma^2_\epsilon}.
+$$
+
+Fish of different tanks remain independent.
+All fish of the same tank have the same variance $\sigma^2_b + \sigma^2_\epsilon$ and the same correlation: this covariance structure is called **compound symmetry**.
+It is natural here, because the fish within a tank are exchangeable.
+
+
+## Blocking: mouse T-cells
+
+In the [mouse T-cell experiment](./03-blocking-wrapup.html), regulatory (Treg) and conventional (Tconv) T-cells are purified from each of 4 mice.
+Here, the cell type varies **within** each mouse: the mouse is a **block**, a randomised complete block (RCB) design.
+
+```{r}
+bfc <- BiocFileCache()
+mouse <- readRDS(bfcrpath(bfc,"https://github.com/statOmics/msqrob2data/raw/refs/heads/main/dda/mouseTcell/qfeaturesRCB.rds"))
+
+mouseProt <- data.frame(
+  y = assay(mouse[["proteins"]])["B9EKR1", ],
+  celltype = mouse$celltype,
+  mouse = mouse$mouse)
+
+ggplot(mouseProt, aes(x = celltype, y = y, group = mouse, colour = mouse)) +
+  geom_point() +
+  geom_line() +
+  theme_minimal()
+```
+
+
+
+We compare
+
+- The two-stage analysis now summarises each mouse by the difference between its Treg and Tconv intensity (Stage I) and tests whether the average difference is zero (Stage II): a paired analysis.
+
+- ignoring the mouse effect
+
+- an RCB analysis with a fixed effect for mouse and 
+- an RCB analysis with a random intercept for mouse.
+
+```{r}
+stageIMouse <- mouseProt |>
+  pivot_wider(names_from = celltype, values_from = y) |>
+  mutate(diff = reg - con)
+twoStageMouse <- lm(diff ~ 1, data = stageIMouse)
+
+wrongMouse <- lm(y ~ celltype, data = mouseProt)
+rcbMouse <- lm(y ~ celltype + mouse, data = mouseProt)
+lmmMouse <- lmer(y ~ celltype + (1|mouse), data = mouseProt)
+
+rbind(
+  twoStage = summary(twoStageMouse)$coef[1, 1:3],
+  wrong = summary(wrongMouse)$coef[2, 1:3],
+  RCB = summary(rcbMouse)$coef[2, 1:3],
+  mixed = summary(lmmMouse)$coef[2, 1:3])
+```
+
+- The two-stage (paired) analysis, the RCB analysis with a fixed block effect and the mixed model with a random block effect give identical results.
+- Ignoring the mouse effect inflates the standard error, because the between-mouse variability then ends up in the residual variance.
+
+The cell type effect is estimated **within** each mouse.
+In the difference $y_{\text{reg}, i} - y_{\text{con}, i} = \beta_\text{reg} + \epsilon_{\text{reg}, i} - \epsilon_{\text{con}, i}$ the mouse effect $b_i$ cancels, so
+
+$$
+\text{var}\left[\bar y_\text{reg} - \bar y_\text{con}\right] = \frac{2\sigma^2_\epsilon}{m},
+$$
+
+which only involves the within-mouse variability.
+This is the advantage of blocking: the between-mouse variability is removed from the comparison.
+
+## Summary
+
+| Design | Treatment varies | Unit of the random effect | Variance of treatment effect | Without random effect |
+|---|---|---|---|---|
+| Pseudo-replication | between units | experimental unit (tank, bio-repeat) | between + within unit | SE too small: liberal |
+| Blocking (RCB) | within units | block (mouse) | within unit only | SE too large: conservative |
+
+- In both designs the random intercept induces the correlation between observations of the same unit
+- The mixed model automatically uses the correct variance for the treatment effect.
+- In balanced designs it gives the same result as the two-stage analysis, but it also works for unbalanced designs.
+
+Open issues: 
+
+- Mixed model is problematic if random effect variance is estimated to be zero. Then data are treated as independent
+- Inference relies on asymptotic theory
+- Approximate inference in small samples is possible using approximations for the degrees of freedom 
+- Unclear how to borrow strength across features for both random effect variance and error variance, and how to approximate the degrees of freedom in this context.
+
+## Pseudo-replication in proteomics 
+
+- Experiments with technical repeats for each biological repeat (see tutorials)
+
+- Inference at protein-level from peptide level data
+
+
+### Peptide level vs protein level analysis
+
+- Inference at protein level desired 
+- Observational unit: precursors/PSM level
+
+- We perform two-stage analysis: 
+
+  1. Summarisation
+  2. DA on protein summaries
+  
+- Problem: theoretically invalid due to unbalanced data due to missingness
+
+- However, shown to work well in practice
+
+
+With msqrob we started using peptide level models and explicitely addressed pseudo-replication: 
+
+$$
+y_{ip} = \beta_0 + \mathbf{x}_i\boldsymbol{\beta}^\text{design} + \beta^\text{peptide}_p + b^\text{run}_i + \epsilon_{ip}
+$$
+
+protein-level:
+
+- $\boldsymbol{\beta}^\text{design}$ $\rightarrow$ DA estimates immediately estimated at the protein level from peptide level data. 
+
+- $b^\text{run} \sim N(0,\sigma^2_{run})$: random effect addressing pseudo-replication
+
+peptide-level:
+
+- $\beta^\text{peptide}_p$
+- $\epsilon_{ip} \sim N(0,\sigma^2_\epsilon)$
+
+$\rightarrow$ Still available in msqrob2 via `msqrobAggregate()`
+
+Problems: 
+
+- Dissemination
+- No protein level summaries for plotting
+- Unclear which degrees of freedom to use
+- For some proteins random run effect variance is set at zero: then we act as if precursor/psm/peptide level data are independent
+- Computational complexity
+
+See [Sticker et al. 2020, 10.1074/mcp.RA119.001624](https://doi.org/10.1074/mcp.RA119.001624) for comparison between peptide level and protein level models, showing that summarisation based approaches work fine when appropriate summarisation is used. 
+
+![](https://www.mcponline.org/cms/10.1074/mcp.RA119.001624/asset/7245223c-8a5a-4000-9e74-5797526f0d54/main.assets/gr2_lrg.jpg)
+
+
+
+# Longitudinal data: pig weights
+
+The weight of 48 pigs was measured in 9 successive weeks [@Ruppert2003].
+Each pig is measured repeatedly over time: the data are **longitudinal**.
+
+```{r}
+pigs <- read.csv("data/pigweights.csv")
+pigs$pig <- as.factor(pigs$pig)
+
+ggplot(pigs, aes(x = week, y = weight, group = pig)) +
+  geom_point() +
+  geom_line(alpha = 0.3) +
+  theme_minimal()
+```
+
+- The growth curve of an individual pig is much less variable than the cloud of all points.
+- Each pig grows approximately linearly, but pigs differ in their weight at the start and in their growth rate.
+
+We are interested in the average growth rate of pigs in the population.
+
+## Two-stage analysis
+
+- **Stage I**: fit a regression line for each pig $i$ separately: $y_{ij} = \beta_{0i} + \beta_{1i}\text{week}_j + \epsilon_{ij}$.
+- **Stage II**: analyse the pig-specific slopes $\hat\beta_{1i}$: estimate the average slope and its standard error.
+
+```{r}
+stageIPig <- pigs |>
+  group_by(pig) |>
+  summarise(
+    intercept = coef(lm(weight ~ week))[1],
+    slope = coef(lm(weight ~ week))[2])
+
+ggplot(stageIPig, aes(x = slope)) +
+  geom_histogram(bins = 15) +
+  xlab("growth rate of a pig (kg/week)") +
+  theme_minimal()
+
+twoStagePig <- lm(slope ~ 1, data = stageIPig)
+summary(twoStagePig)$coef
+```
+
+The standard error of the average growth rate is based on the variability of the growth rates between the 48 pigs, the experimental units.
+As before, the two-stage analysis loses information and is only valid when all pigs are measured at the same time points: with drop-out, the precision of the Stage I slopes differs between pigs.
+
+## Linear mixed model with a random intercept and slope
+
+The mixed model combines both stages:
+
+$$
+y_{ij} = (\beta_0 + b_{0i}) + (\beta_1 + b_{1i}) \text{week}_j + \epsilon_{ij}, \qquad
+\left[\begin{array}{c} b_{0i} \\ b_{1i}\end{array}\right] \sim N\left(\mathbf{0}, \mathbf{D}\right), \qquad
+\epsilon_{ij} \text{ i.i.d. } N(0, \sigma^2_\epsilon),
+$$
+
+with
+
+- fixed effects $\beta_0$ and $\beta_1$: the average intercept and growth rate in the population of pigs,
+- random effects $b_{0i}$ and $b_{1i}$: the deviation of the intercept and the growth rate of pig $i$ from the population averages, independent between pigs,
+- variance components $\sigma^2_\epsilon$ and
+$\mathbf{D} = \left[\begin{array}{cc}\sigma^2_{b_0} & \sigma_{b_0b_1}\\ \sigma_{b_0b_1} & \sigma^2_{b_1}\end{array}\right]$.
+
+```{r}
+lmmPigSlope <- lmer(weight ~ week + (week|pig), data = pigs)
+summary(lmmPigSlope)
+
+rbind(
+  `two-stage` = summary(twoStagePig)$coef[1, 1:2],
+  `mixed model` = summary(lmmPigSlope)$coef["week", 1:2])
+```
+
+The mixed model gives the same estimate and standard error of the average growth rate as the two-stage analysis, because the design is balanced: every pig is weighed in the same 9 weeks.
+
+## Why not a block analysis or a random intercept only?
+
+We compare the mixed model with two simpler models that only account for the differences in level between the pigs:
+
+- **Block analysis**: a fixed intercept $\alpha_i$ for each pig: $y_{ij} = \alpha_i + \beta_1 \text{week}_j + \epsilon_{ij}$.
+- **Random intercept**: $y_{ij} = \beta_0 + b_i + \beta_1 \text{week}_j + \epsilon_{ij}$, $b_i \text{ i.i.d. } N(0, \sigma^2_b)$.
+
+```{r}
+lmFixed <- lm(weight ~ pig + week, data = pigs)
+lmmPig <- lmer(weight ~ week + (1|pig), data = pigs)
+
+rbind(
+  `block analysis: fixed pig effects` = summary(lmFixed)$coef["week", 1:2],
+  `random intercept` = summary(lmmPig)$coef["week", 1:2],
+  `two-stage: slope per pig` = summary(twoStagePig)$coef[1, 1:2],
+  `random intercept + slope` = summary(lmmPigSlope)$coef["week", 1:2])
+```
+
+- The block analysis and the random intercept model give a standard error that is less than half as large as the two-stage analysis: they are too liberal.
+- They remove the differences in level between pigs, but assume that all pigs grow at the same rate.
+- The variation of the growth rates between pigs (the pig $\times$ week interaction) then ends up in the residuals.
+- This is again a form of pseudo-replication: the 9 measurements of a pig are treated as 9 independent pieces of information on the growth rate in the population.
+
+Whenever an effect is assessed repeatedly within an experimental unit, its variation between the units has to be part of its standard error!
+
+### Residuals of the block analysis
+
+We colour the pigs according to their growth rate from Stage I of the two-stage analysis.
+
+```{r}
+pigs$resFixed <- residuals(lmFixed)
+pigs <- pigs |>
+  left_join(stageIPig |> dplyr::select(pig, slope), by = "pig")
+
+ggplot(pigs, aes(x = week, y = resFixed, group = pig, colour = slope)) +
+  geom_line(alpha = 0.6) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_colour_viridis_c(name = "growth rate\n(kg/week)") +
+  scale_x_continuous(breaks = 1:9) +
+  ylab("residual block analysis") +
+  theme_minimal()
+```
+
+- The fixed pig effects remove the differences in level between the pigs, but the residuals of a pig are not random noise around zero.
+- Pigs that grow faster than average have negative residuals in the early weeks and positive residuals in the late weeks, and vice versa for pigs that grow slowly: the pig $\times$ week interaction ends up in the residuals.
+
+```{r}
+#| fig-height: 4
+# correlation heatmap of a 9 x 9 correlation matrix
+corHeatmap <- function(corMat) {
+  tibble(
+    week1 = rep(1:9, times = 9),
+    week2 = rep(1:9, each = 9),
+    correlation = as.vector(corMat))
+}
+
+resFixedWide <- pigs |>
+  dplyr::select(pig, week, resFixed) |>
+  pivot_wider(names_from = week, values_from = resFixed)
+
+corHeatmap(cor(resFixedWide[, -1])) |>
+  ggplot(aes(x = week1, y = week2, fill = correlation)) +
+  geom_tile() +
+  geom_text(aes(label = round(correlation, 2)), size = 2.5) +
+  scale_fill_gradient2(limits = c(-1, 1)) +
+  scale_x_continuous(breaks = 1:9) +
+  scale_y_continuous(breaks = 1:9) +
+  coord_equal() +
+  xlab("week") +
+  ylab("week") +
+  theme_minimal()
+```
+
+- Residuals of the same pig in nearby weeks are positively correlated, residuals in early and late weeks are negatively correlated: the independence assumption of the block analysis is violated.
+
+- The within-pig error is not underestimated by the block analysis: its residual standard deviation, `r round(sigma(lmFixed), 2)`, is even larger than that of the random slope model, `r round(sigma(lmmPigSlope), 2)`.
+
+- The problem is that it uses the wrong error term to assess the growth rate.
+
+We see this by splitting its residual sum of squares into two parts by adding the pig $\times$ week interaction, i.e. a separate slope for each pig:
+
+```{r}
+lmPigSlopes <- lm(weight ~ pig + week + pig:week, data = pigs)
+ssTab <- anova(lmFixed, lmPigSlopes)
+
+decomp <- tibble(
+  source = c(
+    "differences in slope between pigs (pig x week)",
+    "scatter around the line of each pig",
+    "residual block analysis (pooled)"),
+  SS = c(ssTab$`Sum of Sq`[2], ssTab$RSS[2], ssTab$RSS[1]),
+  df = c(ssTab$Df[2], ssTab$Res.Df[2], ssTab$Res.Df[1])) |>
+  mutate(MS = SS / df)
+decomp
+```
+
+- The growth rate is assessed within each pig, so its standard error has to be based on how much the growth rates vary between the pigs: the first row, with `r decomp$df[1]` degrees of freedom.
+- The block analysis pools the slope differences with the scatter around the pig-specific lines and divides by `r decomp$df[3]` instead of `r decomp$df[1]` degrees of freedom: the variability of the growth rates is diluted and the error term becomes much too small.
+
+With $n = 48$ pigs and $S_{xx} = \sum_{j=1}^9 (\text{week}_j - \overline{\text{week}})^2 = 60$, the standard error of the average growth rate is $\sqrt{\text{MS}/(n S_{xx})}$:
+
+```{r}
+Sxx <- sum((1:9 - mean(1:9))^2)
+nPig <- nlevels(pigs$pig)
+c(`MS pig x week (correct)` = sqrt(decomp$MS[1] / (nPig * Sxx)),
+  `MS pooled (block analysis)` = sqrt(decomp$MS[3] / (nPig * Sxx)))
+```
+
+- With the mean square of the pig $\times$ week interaction we recover the standard error of the two-stage analysis and of the random slope model. 
+- With the pooled mean square the much too small standard error of the block analysis.
+
+- As for the fish tanks: an effect has to be assessed against the variability of the units at which it varies, here the variability of the growth rates between pigs.
+
+### Correlation between measurements of the same pig
+
+The random intercept model implies **compound symmetry**: all measurements of the same pig have the same variance $\sigma^2_b + \sigma^2_\epsilon$ and the same correlation $\sigma^2_b/(\sigma^2_b + \sigma^2_\epsilon)$, whatever the time between them.
+That is natural for fish in a tank or MS-runs of a bio-repeat, but not for repeated measurements over time when subjects grow at different rates.
+
+With a random intercept and slope, the variance and the covariance depend on the weeks at which the measurements were taken:
+
+$$
+\text{cov}\left[y_{ij}, y_{ij^\prime}\right] =
+\sigma^2_{b_0} + \sigma_{b_0b_1}(\text{week}_j + \text{week}_{j^\prime}) + \sigma^2_{b_1}\text{week}_j\text{week}_{j^\prime} + \sigma^2_\epsilon\delta_{jj^\prime},
+$$
+
+with $\delta_{jj^\prime} = 1$ if $j = j^\prime$ and 0 otherwise.
+
+We compare the observed correlation between the weights of the same pig in different weeks with the correlations implied by both models.
+
+```{r}
+#| fig-height: 3.5
+# implied correlation matrix of the 9 measurements of a pig
+impliedCor <- function(fit, Zi) {
+  D <- bdiag(VarCorr(fit)) |> as.matrix()
+  Vi <- Zi %*% D %*% t(Zi) + diag(nrow(Zi)) * sigma(fit)^2
+  cov2cor(Vi)
+}
+
+weightWide <- pigs |>
+  dplyr::select(pig, week, weight) |>
+  pivot_wider(names_from = week, values_from = weight)
+
+corMats <- list(
+  observed = cor(weightWide[, -1]),
+  `random intercept` = impliedCor(lmmPig, matrix(1, 9, 1)),
+  `random intercept + slope` = impliedCor(lmmPigSlope, cbind(1, 1:9)))
+
+corMats |>
+  map(corHeatmap) |>
+  bind_rows(.id = "matrix") |>
+  mutate(matrix = factor(matrix, levels = names(corMats))) |>
+  ggplot(aes(x = week1, y = week2, fill = correlation)) +
+  geom_tile() +
+  geom_text(aes(label = round(correlation, 2)), size = 2) +
+  scale_fill_viridis_c(limits = c(0.5, 1)) +
+  scale_x_continuous(breaks = 1:9) +
+  scale_y_continuous(breaks = 1:9) +
+  coord_equal() +
+  facet_wrap(~ matrix) +
+  xlab("week") +
+  ylab("week") +
+  theme_minimal()
+```
+
+- The random intercept model implies the same correlation for all pairs of weeks.
+- In the observed data the correlation decreases with the time between the measurements, and the random intercept and slope model captures this pattern.
+- In the early weeks the weight of a pig is mainly determined by its random intercept, in the later weeks by its random slope, whose contribution grows with time.
+Hence, measurements in the later weeks are more strongly correlated than measurements in the early weeks.
+
+# Random treatment effects in block designs
+
+The random slope for the pigs is a random treatment effect: the effect of the "treatment" (time) varies from block (pig) to block.
+Do we always need such a random block $\times$ treatment effect when we have repeated measures within a block?
+No: we need it when the residual no longer contains the variability of the treatment effect between blocks.
+This happens as soon as there is more than one observation per block $\times$ treatment combination.
+
+| Design | Example | Model | Random block $\times$ treatment effect |
+|---|---|---|---|
+| One observation per block $\times$ treatment | mouse T-cells: one Treg and one Tconv sample per mouse | y ~ treatment + (1 \| block) | not needed: confounded with $\epsilon$ |
+| Technical repeats of each block $\times$ treatment | Treg and Tconv sample of each mouse run in technical triplicate | y ~ treatment + (1 \| block) + (1 \| block:treatment) | always needed: block $\times$ treatment is the experimental unit |
+| Several experimental units per block $\times$ treatment | several mice per litter per treatment | y ~ treatment + (1 \| block) + (1 \| block:treatment) | needed when the treatment effect varies between blocks |
+| Continuous treatment within block | pig weights over time | y ~ week + (week \| pig) | random slope, needed when slopes vary between pigs |
+
+- **Technical repeats**: omitting the block $\times$ treatment effect is pseudo-replication, as in the fish tanks.
+In a balanced design, the mixed model is equivalent to averaging the technical repeats per block $\times$ treatment and an RCB analysis on these averages.
+- **Several experimental units per block $\times$ treatment**: the random effect can be omitted when its variance is zero (@sec-boundary), but with few blocks keeping it is the safe default.
+- **Peptide-level models**: the random run effect $b^\text{run}_i$ plays the role of the block $\times$ treatment effect: the peptides are repeated measures within each run.
+
+Note that a standard `lm` analysis on the observational units is never correct in these designs (unless the block $\times$ treatment variance is zero): it always tests against the residual mean square.
+In balanced designs, a two-stage analysis on the block $\times$ treatment averages, or on the block-specific slopes, gives the correct standard error.
+
+# Prediction of random effects
+
+The fixed effects and the variance components are estimated, but the random effects are **predicted**: the target is random, not a fixed parameter.
+
+## Best prediction
+
+Suppose we observe $y = v + \epsilon$ with $v \sim N(0, 1)$ and $\epsilon \sim N(0, 4)$ independent.
+What is the best guess for the unobserved $v$?
+
+The **best predictor** minimises $E\left[(\tilde v - v)^2\right]$ and equals $\tilde v = E\left[v \vert y\right]$.
+Because $v$ and $y$ are jointly normal, $E\left[v \vert y\right]$ is the regression line of $v$ on $y$:
+
+$$
+E\left[v \vert y\right] = E\left[v\right] + \frac{\text{cov}\left[v, y\right]}{\text{var}\left[y\right]}\{y - E\left[y\right]\} = \frac{1}{5} y,
+$$
+
+because $\text{cov}\left[v, y\right] = \text{var}\left[v\right] = 1$, $\text{var}\left[y\right] = \text{var}\left[v\right] + \text{var}\left[\epsilon\right] = 5$ and $E\left[v\right] = E\left[y\right] = 0$.
+Only 1/5 of the variability in $y$ comes from $v$, so we only keep 1/5 of what we observe: the prediction is a *shrunken* version of $y$.
+
+Equivalently, $\tilde v$ is a **precision-weighted average** of the prior mean $E\left[v\right] = 0$, with precision 1, and the observation $y$, with precision 1/4:
+
+$$
+\tilde v = \frac{1 \times 0 + \frac{1}{4} \times y}{1 + \frac{1}{4}} = \frac{y}{5}.
+$$
+
+The noisier the observation, the stronger the shrinkage towards the mean of $v$.
+
+## Fish tanks
+
+For the random intercept model of the fish, the best predictor of the effect of tank $t$ is
+
+$$
+\tilde b_t = \frac{n \sigma^2_b}{\sigma^2_\epsilon + n \sigma^2_b}(\bar y_{t\cdot} - \beta_0 - \beta_{d(t)}),
+$$
+
+i.e. the deviation of the tank average from its diet mean, shrunken towards 0.
+
+This is again a precision-weighted average, as for $\tilde v = y/5$.
+We have two sources of information on $b_t$:
+
+- the prior mean $E\left[b_t\right] = 0$, with precision $1/\text{var}\left[b_t\right] = 1/\sigma^2_b$,
+- the observed deviation $\bar y_{t\cdot} - \beta_0 - \beta_{d(t)} = b_t + \bar\epsilon_{t\cdot}$, with precision $1/\text{var}\left[\bar\epsilon_{t\cdot}\right] = n/\sigma^2_\epsilon$: the average of $n$ fish.
+
+Hence
+
+$$
+\tilde b_t = \frac{\frac{1}{\sigma^2_b} \times 0 + \frac{n}{\sigma^2_\epsilon}(\bar y_{t\cdot} - \beta_0 - \beta_{d(t)})}{\frac{1}{\sigma^2_b} + \frac{n}{\sigma^2_\epsilon}}
+= \frac{n \sigma^2_b}{\sigma^2_\epsilon + n \sigma^2_b}(\bar y_{t\cdot} - \beta_0 - \beta_{d(t)}).
+$$
+
+The shrinkage is strong when there are few observations per unit or when $\sigma^2_\epsilon$ is large compared to $\sigma^2_b$: then the tank average is imprecise compared to the prior information that tank effects are close to 0.
+
+```{r}
+vcFish <- as.data.frame(VarCorr(lmmFish))
+sigma2b <- vcFish$vcov[vcFish$grp == "tank"]
+sigma2EpsFish <- vcFish$vcov[vcFish$grp == "Residual"]
+nFish <- 6
+
+shrinkFish <- nFish * sigma2b / (sigma2EpsFish + nFish * sigma2b)
+shrinkFish
+
+dietMeans <- predict(lmmFish, newdata = stageIFish, re.form = NA)
+tibble(
+  tank = stageIFish$tank,
+  observed = stageIFish$wtGain - dietMeans,
+  BLUP = ranef(lmmFish)$tank[, 1]) |>
+  pivot_longer(-tank) |>
+  mutate(name = factor(name, levels = c("observed", "BLUP"))) |>
+  ggplot(aes(x = name, y = value, group = tank)) +
+  geom_point() +
+  geom_line() +
+  xlab("") +
+  ylab("tank effect") +
+  theme_minimal()
+```
+
+With only 6 fish per tank and a within-tank variance that is much larger than the between-tank variance, the tank effects are shrunken strongly towards zero.
+
+# The linear mixed model in general
+
+The theory follows @Ruppert2003, Chapter 4.
+In general, the linear mixed model (LMM) is
+
+$$
+\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \mathbf{Z}\mathbf{b} + \boldsymbol{\epsilon}, \qquad
+\mathbf{b} \sim N(\mathbf{0}, \mathbf{G}), \qquad
+\boldsymbol{\epsilon} \sim N(\mathbf{0}, \mathbf{R}),
+$$
+
+with $\mathbf{b}$ and $\boldsymbol\epsilon$ independent.
+For the pigs, $\mathbf{X}$ has a column of ones and a column with the week, $\mathbf{b}$ contains the 48 random intercepts and the 48 random slopes, $\mathbf{Z}$ contains the pig indicators and the pig indicators multiplied by the week, and $\mathbf{R} = \sigma^2_\epsilon\mathbf{I}$.
+
+The LMM can be viewed in two ways.
+
+- **Conditional model**: given the random effects, the data follow an ordinary linear model,
+$\mathbf{y} \vert \mathbf{b} \sim N(\mathbf{X}\boldsymbol\beta + \mathbf{Z}\mathbf{b}, \mathbf{R})$:
+the weights of a pig vary independently around the pig-specific growth line.
+- **Marginal model**: if we do not condition on the random effects, the data are correlated,
+$$
+\mathbf{y} \sim N(\mathbf{X}\boldsymbol\beta, \mathbf{V}), \qquad \mathbf{V} = \mathbf{Z}\mathbf{G}\mathbf{Z}^T + \mathbf{R}:
+$$
+weights of the same pig are correlated because they share the same random effects, and weights of different pigs are independent.
+
+## Estimation and prediction
+
+### Likelihood
+
+The parameters of the LMM are estimated by maximum likelihood.
+
+- We start from the observed sample and consider it as fixed and known: the observations $\mathbf{y}_1, \ldots, \mathbf{y}_m$ of the $m$ experimental units, e.g. the vectors with the 9 weights of each of the 48 pigs.
+- We view them as a realisation of random vectors $\mathbf{Y}_1, \ldots, \mathbf{Y}_m$ with a density $f(\mathbf{y}_i; \boldsymbol\theta)$ that depends on unknown parameters $\boldsymbol\theta$, e.g. a multivariate normal distribution $N(\mathbf{X}_i\boldsymbol\beta, \mathbf{V}_i)$ with $\boldsymbol\theta$ the fixed effects $\boldsymbol\beta$ and the variance components in $\mathbf{V}_i$.
+- The **likelihood** measures how probable it is to observe this sample for a given value of the parameters.
+When the experimental units are independent, it is the product of the densities of the units, viewed as a function of the parameters:
+$$
+L(\boldsymbol\theta) = \prod_{i=1}^m f(\mathbf{y}_i; \boldsymbol\theta).
+$$
+- In practice we use the **log-likelihood**, which turns the product into a sum:
+$$
+\ell(\boldsymbol\theta) = \log L(\boldsymbol\theta) = \sum_{i=1}^m \log f(\mathbf{y}_i; \boldsymbol\theta).
+$$
+- **Maximum likelihood** (ML) estimates the parameters by the values that maximise $\ell(\boldsymbol\theta)$: the parameter values under which the observed sample is most probable.
+
+**Linear model.**
+For $\mathbf{y} = \mathbf{X}\boldsymbol\beta + \boldsymbol\epsilon$ with $\boldsymbol\epsilon \sim N(\mathbf{0}, \sigma^2\mathbf{I})$, the log-likelihood is
+
+$$
+\ell(\boldsymbol\beta, \sigma^2) = -\frac{n}{2}\log(2\pi) - \frac{n}{2}\log(\sigma^2) - \frac{1}{2\sigma^2}(\mathbf{y} - \mathbf{X}\boldsymbol\beta)^T(\mathbf{y} - \mathbf{X}\boldsymbol\beta).
+$$
+
+- Setting the derivative with respect to $\boldsymbol\beta$ to zero gives $\mathbf{X}^T(\mathbf{y} - \mathbf{X}\hat{\boldsymbol\beta}) = \mathbf{0}$, i.e. the least squares estimator $\hat{\boldsymbol\beta} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}$.
+- Setting the derivative with respect to $\sigma^2$ to zero gives $\hat\sigma^2 = (\mathbf{y} - \mathbf{X}\hat{\boldsymbol\beta})^T(\mathbf{y} - \mathbf{X}\hat{\boldsymbol\beta})/n$, which is biased: it divides by $n$ instead of $n - p$.
+
+For the LMM we can write down two likelihoods, one for each view of the model.
+
+**LMM - Marginal likelihood.**
+The marginal model $\mathbf{y} \sim N(\mathbf{X}\boldsymbol\beta, \mathbf{V})$ gives
+
+$$
+\ell(\boldsymbol\beta, \mathbf{G}, \mathbf{R}) = -\frac{n}{2}\log(2\pi) - \frac{1}{2}\log\vert\mathbf{V}\vert - \frac{1}{2}(\mathbf{y} - \mathbf{X}\boldsymbol\beta)^T\mathbf{V}^{-1}(\mathbf{y} - \mathbf{X}\boldsymbol\beta),
+\qquad \mathbf{V} = \mathbf{Z}\mathbf{G}\mathbf{Z}^T + \mathbf{R}.
+$$
+
+It is used to estimate the fixed effects and the variance components.
+
+- Setting the derivative with respect to $\boldsymbol\beta$ to zero gives $\mathbf{X}^T\mathbf{V}^{-1}(\mathbf{y} - \mathbf{X}\hat{\boldsymbol\beta}) = \mathbf{0}$: the generalised least squares estimator
+$\hat{\boldsymbol\beta} = (\mathbf{X}^T\mathbf{V}^{-1}\mathbf{X})^{-1}\mathbf{X}^T\mathbf{V}^{-1}\mathbf{y}$, with $\text{var}\left[\hat{\boldsymbol\beta}\right] = (\mathbf{X}^T\mathbf{V}^{-1}\mathbf{X})^{-1}$.
+- There is no closed-form solution for the variance components in $\mathbf{G}$ and $\mathbf{R}$: the likelihood is maximised numerically.
+- As for the linear model, ML underestimates the variance components because it ignores the degrees of freedom used to estimate $\boldsymbol\beta$.
+REML corrects for this by maximising the restricted log-likelihood
+$$
+\ell_R = \ell(\hat{\boldsymbol\beta}, \mathbf{G}, \mathbf{R}) - \frac{1}{2}\log\vert\mathbf{X}^T\mathbf{V}^{-1}\mathbf{X}\vert.
+$$
+
+**LMM -Joint likelihood: Henderson's method.**
+The hierarchical model $\mathbf{y} \vert \mathbf{b} \sim N(\mathbf{X}\boldsymbol\beta + \mathbf{Z}\mathbf{b}, \mathbf{R})$ and $\mathbf{b} \sim N(\mathbf{0}, \mathbf{G})$ give the joint log-likelihood of the data and the random effects:
+
+$$
+\begin{array}{rcl}
+\ell(\boldsymbol\beta, \mathbf{b}) &=& \log f(\mathbf{y} \vert \mathbf{b}) + \log f(\mathbf{b})\\
+&=& \text{constant} - \frac{1}{2}\left\{(\mathbf{y} - \mathbf{X}\boldsymbol\beta - \mathbf{Z}\mathbf{b})^T\mathbf{R}^{-1}(\mathbf{y} - \mathbf{X}\boldsymbol\beta - \mathbf{Z}\mathbf{b}) + \mathbf{b}^T\mathbf{G}^{-1}\mathbf{b}\right\}.
+\end{array}
+$$
+
+Henderson proposed to maximise this joint likelihood over $\boldsymbol\beta$ and $\mathbf{b}$ simultaneously, for given variance components.
+This amounts to minimising
+
+$$
+(\mathbf{y} - \mathbf{X}\boldsymbol\beta - \mathbf{Z}\mathbf{b})^T\mathbf{R}^{-1}(\mathbf{y} - \mathbf{X}\boldsymbol\beta - \mathbf{Z}\mathbf{b}) + \mathbf{b}^T\mathbf{G}^{-1}\mathbf{b}.
+$$
+
+- The first term is the (generalised) least squares criterion of a linear model in which the random effects $\mathbf{b}$ are treated as fixed effects.
+- The second term penalises large random effects.
+- Hence, the BLUP is **generalised least squares with a ridge penalty on the random effects only**: the fixed effects are not penalised.
+
+With $\mathbf{C} = [\mathbf{X}\ \mathbf{Z}]$ and the penalty matrix $\mathbf{B} = \text{blockdiag}(\mathbf{0}, \mathbf{G}^{-1})$, the solution is
+
+$$
+\left[\begin{array}{c}\tilde{\boldsymbol\beta}\\ \tilde{\mathbf{b}}\end{array}\right] =
+(\mathbf{C}^T\mathbf{R}^{-1}\mathbf{C} + \mathbf{B})^{-1}\mathbf{C}^T\mathbf{R}^{-1}\mathbf{y}.
+$$
+
+Henderson showed that this gives exactly the GLS estimator $\tilde{\boldsymbol\beta}$ of the marginal likelihood and the BLUP $\tilde{\mathbf{b}} = \mathbf{G}\mathbf{Z}^T\mathbf{V}^{-1}(\mathbf{y} - \mathbf{X}\tilde{\boldsymbol\beta})$.
+Without the penalty $\mathbf{B}$, it would be the least squares fit of the model with fixed unit effects.
+
+Setting the derivative of Henderson's criterion with respect to $\mathbf{b}$ to zero shows where the shrinkage comes from.
+With $\mathbf{R} = \sigma^2_\epsilon\mathbf{I}$:
+
+$$
+\tilde{\mathbf{b}} = (\mathbf{Z}^T\mathbf{Z} + \sigma^2_\epsilon\mathbf{G}^{-1})^{-1}\mathbf{Z}^T(\mathbf{y} - \mathbf{X}\tilde{\boldsymbol\beta}).
+$$
+
+- Without the term $\sigma^2_\epsilon\mathbf{G}^{-1}$ this is the least squares solution $(\mathbf{Z}^T\mathbf{Z})^{-1}\mathbf{Z}^T(\mathbf{y} - \mathbf{X}\tilde{\boldsymbol\beta})$: for the fish, the tank averages minus the diet means; for the pigs, the Stage I regression lines minus the population line.
+The term $\sigma^2_\epsilon\mathbf{G}^{-1}$ shrinks the random effects towards zero.
+- For the fish tanks, $\mathbf{Z}^T\mathbf{Z} = n\mathbf{I}$ and $\mathbf{G} = \sigma^2_b\mathbf{I}$, so $\tilde b_t = \frac{n}{n + \sigma^2_\epsilon/\sigma^2_b}(\bar y_{t\cdot} - \beta_0 - \beta_{d(t)})$: exactly the shrinkage factor $n\sigma^2_b/(n\sigma^2_b + \sigma^2_\epsilon)$ of the fish tanks.
+
+### Estimators in practice
+
+- **Fixed effects**: generalised least squares, which accounts for the correlation in $\mathbf{V}$:
+$\tilde{\boldsymbol\beta} = (\mathbf{X}^T\mathbf{V}^{-1}\mathbf{X})^{-1}\mathbf{X}^T\mathbf{V}^{-1}\mathbf{y}$.
+- **Random effects**: the best linear unbiased predictor (BLUP), $\tilde{\mathbf{b}} = E\left[\mathbf{b} \vert \mathbf{y}\right] = \mathbf{G}\mathbf{Z}^T\mathbf{V}^{-1}(\mathbf{y} - \mathbf{X}\tilde{\boldsymbol\beta})$.
+As for the fish tanks, these are the unit-specific estimates shrunken towards zero.
+- **Variance components** in $\mathbf{G}$ and $\mathbf{R}$: maximum likelihood (ML) or restricted maximum likelihood (REML).
+REML maximises the likelihood of the residuals after fitting the fixed effects, whose distribution does not depend on $\boldsymbol\beta$.
+It therefore accounts for the degrees of freedom used to estimate the fixed effects, just like the sample variance divides by $n - 1$ instead of $n$.
+REML is preferred in small samples and is the default in `lmer`.
+
+In practice the estimated variance components are plugged in: `fixef()` and `ranef()` return these estimated BLUPs (EBLUPs).
+
+## Inference
+
+- The standard errors of the fixed effects follow from $\text{var}\left[\tilde{\boldsymbol\beta}\right] = (\mathbf{X}^T\mathbf{V}^{-1}\mathbf{X})^{-1}$ with $\hat{\mathbf{V}}$ plugged in.
+This ignores the uncertainty on the variance components, which matters in small experiments.
+Small-sample corrections approximate the degrees of freedom of the $t$-statistics, e.g. Satterthwaite or Kenward-Roger (packages `lmerTest` and `pbkrtest`).
+- Fixed effects can also be tested with a likelihood ratio test (LRT).
+Use ML, not REML, to compare models with different fixed effects: the restricted likelihood is the likelihood of the residuals after fitting the fixed effects, so it is not comparable across different fixed effects models.
+
+```{r}
+lmmPigSlopeML <- lmer(weight ~ week + (week|pig), data = pigs, REML = FALSE)
+lmmPigSlopeML0 <- lmer(weight ~ 1 + (week|pig), data = pigs, REML = FALSE)
+anova(lmmPigSlopeML0, lmmPigSlopeML)
+```
+
+### Testing a variance component {#sec-boundary}
+
+Under $H_0: \sigma^2_b = 0$ the variance is on the **boundary** of its parameter space $[0, \infty)$, so the classical $\chi^2$ approximation of the LRT does not hold.
+For a random intercept, the LRT follows a 50:50 mixture of a point mass at zero and a $\chi^2_1$ distribution [@SelfLiang1987]: in about half of the datasets $\hat\sigma^2_b = 0$.
+Using $\chi^2_1$ gives p-values that are twice too large.
+
+To test whether we need a random slope, the LRT follows a 50:50 mixture of a $\chi^2_1$ and a $\chi^2_2$ distribution (the covariance between random intercept and slope also vanishes under $H_0$).
+Both models have the same fixed effects, so we can use their restricted likelihoods.
+
+```{r}
+lrtSlope <- 2 * (as.numeric(logLik(lmmPigSlope)) - as.numeric(logLik(lmmPig)))
+c(LRT = lrtSlope,
+  pval = 0.5 * pchisq(lrtSlope, df = 1, lower.tail = FALSE) +
+    0.5 * pchisq(lrtSlope, df = 2, lower.tail = FALSE))
+```
+
+The random slope is clearly needed.
+With few subjects the mixture approximations are inaccurate and the null distribution is best obtained by simulation (parametric bootstrap).
+
+# Summary
+
+| | |
+|---|---|
+| Experimental unit | unit to which the treatment is randomised; its variability has to be part of the standard error of the treatment effect |
+| Two-stage analysis | summarise each experimental unit (Stage I), analyse the summaries (Stage II); only valid for balanced designs |
+| Pseudo-replication | treatment varies between units: random effect for the experimental unit |
+| Blocking | treatment varies within units: random or fixed block effect, and a random block $\times$ treatment effect if there are repeats within block $\times$ treatment |
+| Model | $\mathbf{y} = \mathbf{X}\boldsymbol\beta + \mathbf{Z}\mathbf{b} + \boldsymbol\epsilon$, $\text{var}\left[\mathbf{y}\right] = \mathbf{V} = \mathbf{Z}\mathbf{G}\mathbf{Z}^T + \mathbf{R}$ |
+| Estimation | GLS for $\boldsymbol\beta$, BLUP (shrinkage) for $\mathbf{b}$, REML for the variance components |
+| Inference | approximate degrees of freedom; LRT with ML for fixed effects; boundary problem for variance components |
