@@ -102,7 +102,9 @@ This parts introduces the user to the key concepts for data processing in differ
 - [Tutorial Differential Analysis and Design Aspects](03-tutorial-Design.html), [PDF](03-tutorial-Design.pdf)
 - [Wrapup Blocking](03-blocking-wrapup.html), [PDF](03-blocking-wrapup.pdf)
 
+Solutions: 
 
+- Tutorial exercise 3.a heart study with iSEE: [script](3a_heart_medianOfRatiosNorm_medianPolish.html)
 
 ## License {-}
 
