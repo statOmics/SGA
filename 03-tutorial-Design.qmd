@@ -1,4 +1,5 @@
 ---
+code-tools: true
 title: Tutorial 2 - Differential Analysis and Design
 format:
   html: default

@@ -1,4 +1,5 @@
 ---
+code-tools: true
 title:  Tutorial on data processing and msqrob2 analysis of experiments with simple designs
 format:
   html: default

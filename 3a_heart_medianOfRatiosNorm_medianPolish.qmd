@@ -1,3 +1,7 @@
+---
+code-tools: true
+---
+
 # Heart use case: a MaxQuant LFQ DDA dataset with a more complex design {#sec-heart}
 
 ## Introduction

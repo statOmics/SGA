@@ -1,4 +1,5 @@
 ---
+code-tools: true
 title: "Breastcancer Gene Expression Study: KPNA2 gene"
 format:
   html: default

@@ -1,0 +1,653 @@
+---
+code-tools: true
+title: "Tutorial: bulk RNA-seq differential expression with edgeR"
+author:
+  - name: Lieven Clement
+    orcid: 0000-0002-9050-4370
+    affiliation:
+      - name: Ghent University
+search: false
+format:
+  html: default
+  pdf: default
+---
+
+```{r echo = FALSE}
+source("R/knitr_setup.R")
+```
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(edgeR)
+library(data.table)
+library(ExploreModelMatrix)
+library(patchwork)
+```
+
+# Background
+
+Influenza A virus infects the lungs, but patients often also report neurological symptoms.
+@Blackmore2017-influenza studied how a peripheral influenza infection affects the central nervous system in mice.
+They infected 8-week-old C57BL/6 mice intranasally with influenza A and sequenced the RNA of the cerebellum and the spinal cord of
+
+- non-infected mice (day 0),
+- mice 4 days after infection, i.e. around the peak of the infection in the lungs,
+- mice 8 days after infection, i.e. when the virus is being cleared by the adaptive immune response.
+
+Both female and male mice were used.
+The data are available in GEO under accession number [GSE96870](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE96870).
+The reads were aligned to the mouse genome with STAR and the reads that map to each gene were counted.
+We use the count table of the cerebellum that the Carpentries prepared for their lesson [RNA-seq analysis with Bioconductor](https://carpentries-incubator.github.io/bioc-rnaseq/).
+
+Research questions:
+
+1. Is there an early effect of the infection (day 4 vs day 0) in female mice? And in male mice?
+2. Is there a late effect of the infection (day 8 vs day 0) in female mice? And in male mice?
+3. Does the expression change between the early and the late phase (day 8 vs day 4) in female mice? And in male mice?
+4. Do these effects differ between the sexes, i.e. is there a sex $\times$ time interaction for the early effect, for the late effect and for the change between the early and the late phase?
+5. What are the average early effect, late effect and change between the early and late phase over both sexes?
+6. Is there a difference between male and female mice before the infection (day 0)?
+
+# Data import
+
+We read the count table, the sample information and the gene annotation directly from the GitHub repository of the Carpentries lesson.
+The `fread` function of the data.table package detects the format of the file (separator, header, column types) automatically, so the same function reads both the comma-separated (`.csv`) and the tab-separated (`.tsv`) files.
+
+```{r}
+dataUrl <- paste0("https://github.com/carpentries-incubator/",
+                  "bioc-rnaseq/raw/main/episodes/data/")
+counts <- fread(paste0(dataUrl, "GSE96870_counts_cerebellum.csv"), data.table = FALSE) |>
+  column_to_rownames("gene")
+coldata <- fread(paste0(dataUrl, "GSE96870_coldata_cerebellum.csv"), data.table = FALSE)
+rowdata <- fread(paste0(dataUrl, "GSE96870_rowranges.tsv"), data.table = FALSE) |>
+  mutate(ENTREZID = as.character(ENTREZID))
+dim(counts)
+counts[1:3, 1:4]
+```
+
+```{r}
+coldata |>
+  select(sample, title, sex, infection, time, mouse) |>
+  head()
+```
+
+The columns of the count table are in the same order as the rows of the sample information.
+
+```{r}
+all(colnames(counts) == coldata$sample)
+```
+
+We make factors for sex and time and choose day 0 as the reference level for time.
+
+```{r}
+coldata <- coldata |>
+  mutate(
+    sex = factor(sex),
+    time = factor(time, levels = c("Day0", "Day4", "Day8")),
+    infection = factor(infection, levels = c("NonInfected", "InfluenzaA"))
+  )
+table(coldata$sex, coldata$time)
+table(coldata$infection, coldata$time)
+```
+
+::: {.callout-tip}
+## Question
+
+- What is the experimental unit?
+- Every mouse contributes one sample. What does this imply for the design?
+- Can we estimate the effect of the infection separately from the effect of time?
+:::
+
+- Each sample comes from a different mouse: the mouse is the experimental unit and the design is a completely randomised $2 \times 3$ factorial design with sex and time as factors.
+- There is no blocking factor, unlike the macrophage experiment in the lecture, where every donor was exposed to all four treatments.
+- All non-infected mice were sacrificed at day 0 and all infected mice at day 4 or 8: infection and time are completely confounded.
+The variable `infection` does not contain information that is not already in `time`, so we only use `time` in the model.
+The comparison day 4 vs day 0 is the effect of 4 days of infection.
+
+# Warm-up: sex differences before the infection
+
+We first get acquainted with the workflow on a simple two-group comparison: female vs male mice before the infection (day 0).
+This comparison has a known answer: genes on the Y chromosome are only expressed in males and *Xist*, which inactivates one of the two X chromosomes, only in females.
+It therefore serves as a positive control: if the workflow does not find these genes, something went wrong.
+
+## Construct the DGEList
+
+We select the day-0 mice and store their counts, sample information and gene annotation in a `DGEList` object.
+
+```{r}
+day0 <- coldata$time == "Day0"
+dge0 <- DGEList(
+  counts = counts[, day0],
+  samples = coldata[day0, ],
+  genes = rowdata[match(rownames(counts), rowdata$gene), c("gene", "seqnames", "ENTREZID")]
+)
+table(dge0$samples$sex)
+```
+
+## Library sizes
+
+```{r}
+dge0$samples |>
+  mutate(sample = colnames(dge0), libSize = lib.size / 1e6) |>
+  ggplot(aes(sample, libSize, fill = sex)) +
+  geom_col() +
+  ylab("library size (millions)") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+```
+
+## Filtering and normalisation
+
+```{r}
+design0 <- model.matrix(~ sex, data = dge0$samples)
+design0
+keep0 <- filterByExpr(dge0, design0)
+table(keep0)
+dge0 <- dge0[keep0, , keep.lib.sizes = FALSE]
+dge0 <- normLibSizes(dge0)
+```
+
+## Data exploration
+
+```{r}
+plotMDS(dge0, col = as.numeric(dge0$samples$sex), labels = NULL, pch = 16)
+legend("top", legend = levels(dge0$samples$sex), col = 1:2, pch = 16)
+```
+
+## Model and inference
+
+The model for gene $g$ in mouse $i$ is
+
+$$
+\log \mu_{gi} = \beta_{g0} + \beta_{g,\text{M}}\, x_{i,\text{M}} + \log N^{\text{eff}}_i,
+$$
+
+so $\beta_{g,\text{M}}$ is the log fold change between male and female mice.
+
+```{r}
+fit0 <- glmQLFit(dge0, design0)
+plotQLDisp(fit0)
+test0 <- glmQLFTest(fit0, coef = "sexMale")
+summary(decideTests(test0))
+topTags(test0, n = 15)$table |>
+  select(gene, seqnames, logFC, logCPM, F, FDR)
+```
+
+```{r}
+plotMD(test0)
+```
+
+::: {.callout-tip}
+## Question
+
+- Did the positive control work?
+- Why are the log fold changes of the Y-chromosomal genes and *Xist* so large?
+- Some genes on the X chromosome other than *Xist* are significantly higher in females, but with a much smaller fold change. Can you explain this?
+:::
+
+- Yes: the Y-chromosomal genes are only expressed in males, *Xist* only in females.
+- These genes have (almost) no counts in the other sex, so their fold change is essentially infinite. edgeR adds a small prior count to keep the log fold changes finite.
+- In female cells, one of the two X chromosomes is inactivated, but some genes, e.g. *Kdm6a*, *Ddx3x* and *Eif2s3x*, escape the X inactivation. They are expressed from both X chromosomes in females and from one in males.
+- With only 3 and 4 mice, the power is low: we find the genes with huge effects, but subtle sex differences are missed.
+
+# The full experiment
+
+We now analyse all mice.
+
+## Construct the DGEList
+
+We store the counts, the sample information and the gene annotation in a `DGEList` object.
+
+```{r}
+dge <- DGEList(
+  counts = counts,
+  samples = coldata,
+  genes = rowdata[match(rownames(counts), rowdata$gene),
+                  c("gene", "seqnames", "ENTREZID", "gbkey")]
+)
+dim(dge)
+head(dge$genes)
+```
+
+## Library sizes
+
+A first quality check is the sequencing depth of the samples, i.e. the total number of counts per sample.
+
+```{r}
+dge$samples |>
+  mutate(sample = colnames(dge), libSize = lib.size / 1e6) |>
+  ggplot(aes(reorder(sample, libSize), libSize, fill = time)) +
+  geom_col() +
+  facet_grid(~ sex, scales = "free_x", space = "free_x") +
+  scale_fill_manual(values = c(Day0 = "black", Day4 = "orange", Day8 = "red")) +
+  xlab("sample") +
+  ylab("library size (millions)") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 6))
+```
+
+::: {.callout-tip}
+## Question
+
+- Are there samples with a much lower sequencing depth than the others?
+- Are the library sizes related to sex or time? Why would that be a problem?
+:::
+
+- The library sizes range from `r round(min(dge$samples$lib.size) / 1e6)` to `r round(max(dge$samples$lib.size) / 1e6)` million counts: no sample stands out.
+- The library sizes are not related to sex or time. The offsets correct for differences in sequencing depth, but a strong association between depth and a factor of interest would make the depth correction critical for the conclusions and can point to technical differences between the groups, e.g. samples of one group processed in another batch.
+
+## Quality control of the sample information
+
+Mistakes in the sample annotation happen.
+The sex of a sample can be checked with the expression of *Xist*, which is only expressed in female cells, and *Ddx3y*, which is located on the Y chromosome.
+
+```{r}
+tibble(
+  sample = colnames(dge),
+  sex = dge$samples$sex,
+  Xist = cpm(dge, log = TRUE)["Xist", ],
+  Ddx3y = cpm(dge, log = TRUE)["Ddx3y", ]
+) |>
+  pivot_longer(c(Xist, Ddx3y), names_to = "gene", values_to = "logCPM") |>
+  ggplot(aes(sex, logCPM, colour = sex)) +
+  geom_jitter(width = 0.1, height = 0) +
+  facet_wrap(~ gene) +
+  theme_bw()
+```
+
+The expression of both genes agrees with the recorded sex of all mice.
+
+# Filtering and normalisation
+
+We remove genes with too few counts to be informative.
+`filterByExpr` uses the design to decide in how many samples a gene should be expressed.
+We use the design with the main effects of sex and time and their interaction, which we will discuss below.
+
+```{r}
+design <- model.matrix(~ sex * time, data = dge$samples)
+keep <- filterByExpr(dge, design)
+table(keep)
+dge <- dge[keep, , keep.lib.sizes = FALSE]
+```
+
+We correct for differences in sequencing depth and RNA composition with TMM normalisation.
+
+```{r}
+dge <- normLibSizes(dge)
+dge$samples |>
+  select(sex, time, lib.size, norm.factors)
+```
+
+::: {.callout-tip}
+## Question
+
+The normalisation factors are all close to 1. What does that tell you?
+:::
+
+# Data exploration
+
+```{r}
+timeCols <- c(Day0 = "black", Day4 = "orange", Day8 = "red")
+plotMDS(dge, col = timeCols[dge$samples$time],
+        pch = as.numeric(dge$samples$sex), labels = NULL)
+legend("topright",
+       legend = c(levels(dge$samples$time), levels(dge$samples$sex)),
+       col = c(timeCols, "grey40", "grey40"), pch = c(16, 16, 16, 1, 2), cex = 0.8)
+```
+
+::: {.callout-tip}
+## Question
+
+- Which source of variability is captured by the first dimension, and which by the second?
+- The sex effect involves only a handful of genes. Why can it still dominate a dimension of the MDS plot?
+:::
+
+- The second dimension mainly separates the day-8 mice from the others.
+- The first dimension mainly separates the female (circles) from the male (triangles) mice.
+- The distance between two samples in the MDS plot is based on the 500 genes with the largest log fold changes between them. Genes on the sex chromosomes, e.g. *Xist* and the Y-chromosomal genes, have log fold changes of about 10 between females and males, so they dominate the distance between mice of different sex.
+
+# Design
+
+We model the counts of gene $g$ in sample $i$ with a negative binomial GLM:
+
+$$
+\log \mu_{gi} = \beta_{g0} + \beta_{g,\text{M}}\, x_{i,\text{M}} + \beta_{g,\text{D4}}\, x_{i,\text{D4}} + \beta_{g,\text{D8}}\, x_{i,\text{D8}} + \beta_{g,\text{M:D4}}\, x_{i,\text{M}} x_{i,\text{D4}} + \beta_{g,\text{M:D8}}\, x_{i,\text{M}} x_{i,\text{D8}} + \log N^{\text{eff}}_i,
+$$
+
+with $x_{i,\text{M}}$, $x_{i,\text{D4}}$ and $x_{i,\text{D8}}$ indicator variables for male mice, day 4 and day 8, respectively, and $N^{\text{eff}}_i$ the effective library size.
+
+```{r}
+colnames(design)
+```
+
+```{r, fig.width = 10, fig.height = 5}
+vd <- VisualizeDesign(dge$samples, designFormula = ~ sex * time)
+vd$plotlist[[1]]
+```
+
+::: {.callout-tip}
+## Question
+
+Write each research question as a linear combination of the model parameters.
+:::
+
+The mean log expression in each of the six groups follows from the model (dropping the gene index and the offset):
+
+| | day 0 | day 4 | day 8 |
+|---|---|---|---|
+| female | $\beta_0$ | $\beta_0 + \beta_\text{D4}$ | $\beta_0 + \beta_\text{D8}$ |
+| male | $\beta_0 + \beta_\text{M}$ | $\beta_0 + \beta_\text{M} + \beta_\text{D4} + \beta_\text{M:D4}$ | $\beta_0 + \beta_\text{M} + \beta_\text{D8} + \beta_\text{M:D8}$ |
+
+The contrasts are differences between these group means:
+
+| | research question | contrast |
+|---|---|---|
+| 1 | early effect in females | $\beta_\text{D4}$ |
+| | early effect in males | $\beta_\text{D4} + \beta_\text{M:D4}$ |
+| 2 | late effect in females | $\beta_\text{D8}$ |
+| | late effect in males | $\beta_\text{D8} + \beta_\text{M:D8}$ |
+| 3 | late vs early in females | $\beta_\text{D8} - \beta_\text{D4}$ |
+| | late vs early in males | $\beta_\text{D8} + \beta_\text{M:D8} - \beta_\text{D4} - \beta_\text{M:D4}$ |
+| 4 | early effect, males vs females | $\beta_\text{M:D4}$ |
+| | late effect, males vs females | $\beta_\text{M:D8}$ |
+| | late vs early, males vs females | $\beta_\text{M:D8} - \beta_\text{M:D4}$ |
+| 5 | average early effect | $\beta_\text{D4} + \frac{1}{2}\beta_\text{M:D4}$ |
+| | average late effect | $\beta_\text{D8} + \frac{1}{2}\beta_\text{M:D8}$ |
+| | average late vs early | $\beta_\text{D8} - \beta_\text{D4} + \frac{1}{2}(\beta_\text{M:D8} - \beta_\text{M:D4})$ |
+| 6 | males vs females at day 0 | $\beta_\text{M}$ |
+
+We build the contrast matrix $\mathbf{L}$ from the sex-specific effects: the interactions are the differences and the averages the means of the effects in males and females.
+
+```{r}
+contrastNames <- c(
+  "early_F", "early_M", "late_F", "late_M", "lateVsEarly_F", "lateVsEarly_M",
+  "early_MvsF", "late_MvsF", "lateVsEarly_MvsF",
+  "early_avg", "late_avg", "lateVsEarly_avg",
+  "sex_day0"
+)
+L <- matrix(0, nrow = ncol(design), ncol = length(contrastNames),
+            dimnames = list(colnames(design), contrastNames))
+L["timeDay4", "early_F"] <- 1
+L[c("timeDay4", "sexMale:timeDay4"), "early_M"] <- 1
+L["timeDay8", "late_F"] <- 1
+L[c("timeDay8", "sexMale:timeDay8"), "late_M"] <- 1
+for (sex in c("F", "M")) {
+  L[, paste0("lateVsEarly_", sex)] <- L[, paste0("late_", sex)] - L[, paste0("early_", sex)]
+}
+for (effect in c("early", "late", "lateVsEarly")) {
+  L[, paste0(effect, "_MvsF")] <- L[, paste0(effect, "_M")] - L[, paste0(effect, "_F")]
+  L[, paste0(effect, "_avg")] <- (L[, paste0(effect, "_M")] + L[, paste0(effect, "_F")]) / 2
+}
+L["sexMale", "sex_day0"] <- 1
+t(L)
+```
+
+# Inference
+
+We estimate the dispersions and fit the quasi-likelihood model of edgeR 4.
+
+```{r}
+fit <- glmQLFit(dge, design)
+plotQLDisp(fit)
+```
+
+We assess every contrast with a QL F-test.
+
+```{r}
+tests <- lapply(colnames(L), function(contrast) glmQLFTest(fit, contrast = L[, contrast]))
+names(tests) <- colnames(L)
+countDE <- function(tests) {
+  res <- t(sapply(tests, function(test) summary(decideTests(test))))
+  colnames(res) <- c("Down", "NotSig", "Up")
+  res
+}
+countDE(tests)
+```
+
+The FDR is controlled at 5% for each contrast separately, not over all `r ncol(L)` contrasts together.
+
+## Effects of the infection in females and in males
+
+- At day 4, `r sum(decideTests(tests$early_F) != 0)` genes are DE in females and only `r sum(decideTests(tests$early_M) != 0)` in males. At day 8, thousands of genes are DE in both sexes.
+- Fewer genes are detected within one sex than for the average effects, because each sex-specific contrast is estimated with only 3 to 4 mice per group.
+
+::: {.callout-tip}
+## Question
+
+At day 4, many more genes are DE in females than in males. Can we conclude that the early response to the infection is stronger in females, or that these genes only respond in females?
+:::
+
+```{r}
+table(
+  females = decideTests(tests$early_F)[, 1],
+  males = decideTests(tests$early_M)[, 1]
+)
+deOneSex <- xor(decideTests(tests$early_F)[, 1] != 0, decideTests(tests$early_M)[, 1] != 0)
+table(significantInteraction = decideTests(tests$early_MvsF)[deOneSex, 1] != 0)
+```
+
+- No. A difference in significance is not a significant difference.
+- A gene can be just significant in one sex and just not significant in the other, while its fold changes are almost the same. With 3 to 4 mice per group, many truly responding genes are missed in each sex.
+- Whether the effect differs between the sexes has to be tested directly with the interaction contrast. None of the `r sum(deOneSex)` genes that are significant in only one sex has a significant interaction.
+- We plot the early log fold changes in females and males for these genes.
+
+```{r}
+tibble(
+  gene = tests$early_F$genes$gene,
+  females = tests$early_F$table$logFC,
+  males = tests$early_M$table$logFC,
+  deOneSex = deOneSex
+) |>
+  filter(deOneSex) |>
+  ggplot(aes(females, males)) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  geom_hline(yintercept = 0, colour = "grey60") +
+  geom_vline(xintercept = 0, colour = "grey60") +
+  geom_point() +
+  xlab("early log2 FC in females") +
+  ylab("early log2 FC in males") +
+  theme_bw()
+```
+
+- For almost all genes, the effect in males has the same sign as in females.
+- The effects in males are often somewhat smaller, but the difference is not significant: with 3 to 4 mice per group, the estimated fold changes in each sex are noisy.
+- Based on these data, we cannot claim that the early response differs between the sexes.
+
+## Sex $\times$ time interaction
+
+The interaction contrasts test whether the effects of the infection differ between males and females.
+
+```{r}
+countDE(tests[c("early_MvsF", "late_MvsF", "lateVsEarly_MvsF")])
+```
+
+The third interaction contrast is the difference between the first two: `lateVsEarly_MvsF` = `late_MvsF` $-$ `early_MvsF`.
+An omnibus test of whether the response to the infection differs between the sexes at any time point therefore has only 2 degrees of freedom: it tests whether both interaction parameters are zero.
+
+```{r}
+testInt <- glmQLFTest(fit, coef = c("sexMale:timeDay4", "sexMale:timeDay8"))
+topTags(testInt, n = 5)
+sum(p.adjust(testInt$table$PValue, method = "BH") < 0.05)
+```
+
+- We find no evidence that the response to the infection differs between female and male mice.
+- This does not prove that the responses are the same: with 3 to 4 mice per group, the power to detect interactions is low.
+- We do not drop the interaction from the model. Selecting a model based on a non-significant test uses the data twice and invalidates the p-values and the FDR of the subsequent tests. In omics, the model follows the design of the experiment and is chosen before looking at the data.
+
+## Average effects of the infection
+
+```{r}
+countDE(tests[c("early_avg", "late_avg", "lateVsEarly_avg")])
+```
+
+- The average contrasts use all mice and therefore have more power than the sex-specific contrasts.
+- They estimate the effect of the infection in a population with equal numbers of male and female mice, whether or not there is an interaction.
+- If the interaction is large, however, the average effect is not a good summary: then the effects in the two sexes should be reported separately.
+
+```{r}
+topTags(tests$early_avg, n = 10)$table |>
+  select(gene, logFC, logCPM, F, FDR)
+topTags(tests$late_avg, n = 10)$table |>
+  select(gene, logFC, logCPM, F, FDR)
+```
+
+Thousands of genes are DE at day 8, many with a small fold change.
+With TREAT we only select genes whose fold change is significantly larger than 2, i.e. $|\log_2 \text{FC}| > 1$ [@McCarthy2009-treat].
+
+```{r}
+avgContrasts <- c("early_avg", "late_avg", "lateVsEarly_avg")
+treat <- lapply(avgContrasts, function(contrast) glmTreat(fit, contrast = L[, contrast], lfc = 1))
+names(treat) <- avgContrasts
+countDE(treat)
+```
+
+::: {.callout-tip}
+## Question
+
+Compare the number of DE genes with the QL test and with TREAT. What does this tell you about the effect of the infection on the cerebellum?
+:::
+
+- Only a small fraction of the DE genes at day 8 has a fold change that is significantly larger than 2.
+- The infection takes place in the lungs: the effect on the brain is broad, but most changes are subtle.
+
+## Sex differences before the infection
+
+```{r}
+countDE(tests["sex_day0"])
+topTags(tests$sex_day0, n = 10)$table |>
+  select(gene, seqnames, logFC, logCPM, FDR)
+```
+
+The genes that differ between female and male mice before the infection are located on the sex chromosomes.
+
+::: {.callout-tip}
+## Question
+
+The contrast `sex_day0` in the full model and the warm-up analysis address the same research question with the same day-0 mice.
+The full model estimates the dispersions with all `r ncol(dge)` mice instead of `r ncol(dge0)`. Would you expect it to detect more genes? Does it?
+:::
+
+```{r}
+data.frame(
+  analysis = c("warm-up (day 0 only)", "full model"),
+  DEgenes = c(sum(decideTests(test0) != 0), sum(decideTests(tests$sex_day0) != 0)),
+  dfResidual = c(fit0$df.residual[1], fit$df.residual[1])
+)
+```
+
+- The log fold change between the sexes at day 0 only uses the day-0 mice in both analyses.
+- The full model estimates the dispersion of each gene with `r fit$df.residual[1]` instead of `r fit0$df.residual[1]` residual degrees of freedom, which should increase the power.
+- Yet the full model does not detect more genes. The extra degrees of freedom only help if the dispersion is the same in all groups. We estimate the common biological coefficient of variation (BCV, the square root of the NB dispersion) separately for each time point:
+
+```{r}
+bcvTime <- sapply(levels(dge$samples$time), function(tp) {
+  dgeTime <- normLibSizes(dge[, dge$samples$time == tp])
+  designTime <- model.matrix(~ sex, data = dgeTime$samples)
+  sqrt(estimateDisp(dgeTime, designTime)$common.dispersion)
+})
+round(bcvTime, 3)
+```
+
+- The infected mice are more variable than the non-infected mice, e.g. because the severity of the infection differs between mice.
+- The full model assumes a common dispersion for all groups. For the comparison at day 0, the pooled dispersion is too large, which costs more power than the extra degrees of freedom gain.
+- Conversely, the tests on the infected groups use a dispersion that is somewhat too small.
+- Heterogeneous variability between groups is common in omics experiments, e.g. between treated and untreated samples or between tissues. Always check it, e.g. by comparing the dispersions of separate fits per group.
+
+# Visualisation
+
+```{r, fig.width = 10, fig.height = 5}
+statusColors <- c("not significant" = "grey60", "QL test only" = "orange",
+                  "QL test and TREAT" = "red")
+deStatus <- tibble(
+  logFC = tests$late_avg$table$logFC,
+  logCPM = tests$late_avg$table$logCPM,
+  PValue = tests$late_avg$table$PValue,
+  FDR = p.adjust(tests$late_avg$table$PValue, method = "BH"),
+  FDRtreat = p.adjust(treat$late_avg$table$PValue, method = "BH")
+) |>
+  mutate(status = case_when(
+    FDRtreat < 0.05 ~ "QL test and TREAT",
+    FDR < 0.05 ~ "QL test only",
+    TRUE ~ "not significant"
+  ) |> factor(levels = names(statusColors)))
+table(deStatus$status)
+
+volcano <- ggplot(deStatus, aes(logFC, -log10(PValue), colour = status)) +
+  geom_point(size = 0.5) +
+  scale_colour_manual(values = statusColors) +
+  ylab("-log10 p-value (QL test)") +
+  theme_bw()
+md <- ggplot(deStatus, aes(logCPM, logFC, colour = status)) +
+  geom_point(size = 0.5) +
+  geom_hline(yintercept = c(-1, 1), linetype = "dashed") +
+  scale_colour_manual(values = statusColors) +
+  theme_bw()
+volcano + md + plot_layout(guides = "collect") & theme(legend.position = "bottom")
+```
+
+The heatmap shows the 30 genes with the smallest p-value in the TREAT analysis of the average late effect.
+
+```{r, fig.height = 7}
+topGenes <- rownames(topTags(treat$late_avg, n = 30))
+logCPM <- cpm(dge, log = TRUE)[topGenes, ]
+pheatmap::pheatmap(
+  logCPM - rowMeans(logCPM),
+  scale = "none",
+  annotation_col = data.frame(time = dge$samples$time, sex = dge$samples$sex,
+                              row.names = colnames(dge)),
+  show_colnames = FALSE
+)
+```
+
+::: {.callout-tip}
+## Question
+
+Do the day-4 mice cluster with the day-0 or with the day-8 mice for these genes? Is that what you expect from the number of DE genes at day 4 and at day 8?
+:::
+
+# Gene set analysis
+
+Which biological processes are affected by the infection?
+We perform an over-representation analysis of GO biological processes with `goana`, separately for up- and down-regulated genes.
+The few TREAT genes give too little information for an ORA, so we use the genes that are significant in the QL test.
+The universe consists of the genes that passed the filtering.
+
+```{r}
+goTime <- lapply(c("early_avg", "late_avg"), function(contrast) {
+  tt <- topTags(tests[[contrast]], n = Inf)$table |>
+    filter(!is.na(ENTREZID))
+  deGenes <- list(
+    Up = tt |> filter(FDR < 0.05, logFC > 0) |> pull(ENTREZID),
+    Down = tt |> filter(FDR < 0.05, logFC < 0) |> pull(ENTREZID)
+  )
+  goana(deGenes, universe = tt$ENTREZID, species = "Mm") |>
+    filter(Ont == "BP", N >= 10, N <= 500)
+})
+names(goTime) <- c("early", "late")
+```
+
+```{r}
+topGO(goTime$early, sort = "Up", number = 10, truncate.term = 45)
+topGO(goTime$early, sort = "Down", number = 10, truncate.term = 45)
+```
+
+```{r}
+topGO(goTime$late, sort = "Up", number = 10, truncate.term = 45)
+topGO(goTime$late, sort = "Down", number = 10, truncate.term = 45)
+```
+
+::: {.callout-tip}
+## Question
+
+Interpret the GO terms. How does the response of the cerebellum change between day 4 and day 8?
+:::
+
+- At day 4, the up-regulated genes are enriched for the response to type I interferons and the defence against viruses: the innate immune response.
+- At day 8, the up-regulated genes are enriched for lymphocyte and T-cell mediated immunity and cell killing: the adaptive immune response.
+- Genes involved in myelination, oligodendrocyte differentiation and cholesterol biosynthesis, which is needed to build myelin, are down-regulated.
+This agrees with @Blackmore2017-influenza, who studied whether an influenza infection can trigger demyelinating disease.
+
+# Further exercises
+
+1. Test whether male and female mice also differ at day 4 and at day 8. Which genes do you expect?
+2. We tested 13 contrasts per gene and controlled the FDR per contrast. Use a stage-wise approach instead: first an omnibus F-test of all time and interaction parameters per gene, then the individual contrasts only for the genes that pass the screening stage (see the stageR package and the [technical details chapter](05-rnaseq-technical.html)).

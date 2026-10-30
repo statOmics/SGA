@@ -96,15 +96,50 @@ This parts introduces the user to the key concepts for data processing in differ
 -  [Tutorial data processing](01-tutorial-data-processing.html), [PDF](01-tutorial-data-processing.pdf)
 -  [Wrap-up data processing](02-workflow-optimisation.html), [PDF](02-workflow-optimisation.pdf)
 
+Solutions:
+
+- Exercise 1.a Staes, `Precursor.Quantity`, median normalisation, maxLFQ: [script](1a_staes_precursorQuantity_medianNorm_maxLFQ.html)
+- Exercise 1.b Staes, `Precursor.Quantity`, `diff.median` normalisation, maxLFQ: [script](1b_staes_precursorQuantity_diffMedianNorm_maxLFQ.html)
+- Exercise 1.c Staes, `Precursor.Normalised`, no extra normalisation, maxLFQ: [script](1c_staes_precursorNormalised_noExtraNorm_maxLFQ.html)
+- Exercise 1.d Staes, `Precursor.Quantity`, median normalisation, median polish: [script](1d-i_staes_precursorQuantity_medianNorm_medianPolish.html)
+- Exercise 1.d Staes, `Precursor.Quantity`, median normalisation, median summarisation: [script](1d-ii_staes_precursorQuantity_medianNorm_medianSummarisation.html)
+- Exercise 2 breast cancer: [3 vs 3](2_breastCancer_3vs3.html), [6 vs 6](2_breastCancer_6vs6.html), [9 vs 9](2_breastCancer_9vs9.html)
+
 #### 2.2 Statistical Inference & Design concepts {-}
 
 - [Basics of Statistical Inference](03-inference.html), [PDF](03-inference.pdf)
 - [Tutorial Differential Analysis and Design Aspects](03-tutorial-Design.html), [PDF](03-tutorial-Design.pdf)
 - [Wrapup Blocking](03-blocking-wrapup.html), [PDF](03-blocking-wrapup.pdf)
 
-Solutions: 
+Solutions:
 
-- Tutorial exercise 3.a heart study with iSEE: [script](3a_heart_medianOfRatiosNorm_medianPolish.html)
+- Template script for MaxQuant DDA data (CPTAC spike-in study): [script](cptac.html)
+- Mouse T-cell example, CRD vs RCB: see [Wrapup Blocking](03-blocking-wrapup.html)
+- Heart example, median of ratios normalisation, median polish (with iSEE): [script](3a_heart_medianOfRatiosNorm_medianPolish.html)
+- Heart example, median normalisation, median polish: [script](3b_heart_medianNorm_medianPolish.html)
+- Francisella example, mixed model with random bio-repeat effect: [script](4_francisella_fullData_WTvsKO_mixedModel_randomBiorep.html)
+- TMT mouse diet example, mixed model for diet $\times$ duration: [script](5_TMT_mouseDiet_Plubell2017_mixedModel_DietxDuration.html)
+
+## Module II: Transcriptomics (Week 6-12) {-}
+
+### 1. Bulk RNA-seq Data Analysis {-}
+
+#### 1.1 Introduction to bulk RNA-seq {-}
+
+This part introduces the RNA-seq technology, from RNA molecules in a sample to a table of counts, including sequencing, quality control and read alignment or quantification with salmon.
+We then introduce generalised linear models for count data: from the Poisson distribution for technical replicates to the negative binomial and quasi-likelihood models for biological replicates.
+The concepts are illustrated with a complete differential expression workflow in edgeR on a study of human macrophages that were primed with interferon gamma and/or infected with *Salmonella*.
+
+- Lecture Introduction to bulk RNA-seq: [HTML](04-rnaseq-intro.html), [PDF](04-rnaseq-intro.pdf)
+- [Tutorial Differential Expression Analysis of Bulk RNA-seq](04-tutorial-rnaseq.html), [PDF](04-tutorial-rnaseq.pdf)
+
+#### 1.2 Technical details and transcript-level analysis {-}
+
+This part covers the statistical background of the bulk RNA-seq workflow: generalised linear models, dispersion estimation and quasi-likelihood, normalisation, filtering and the calibration of the tests under the null hypothesis.
+We also introduce differential expression and differential transcript usage analysis upon transcript-level quantification.
+
+- Lecture Technical details and transcript usage: [HTML](05-rnaseq-technical.html), [PDF](05-rnaseq-technical.pdf)
+- Background on transcript-level quantification: [Soneson et al. 2016](https://f1000research.com/articles/4-1521/v2)
 
 ## License {-}
 

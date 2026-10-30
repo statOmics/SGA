@@ -1,4 +1,5 @@
 ---
+code-tools: true
 title: Wrapup Blocking
 format:
   html: default

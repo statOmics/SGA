@@ -42,6 +42,11 @@ website:
           href: mixedModels.html
         - text: 2.2.4 LMMs for labelled proteomics
           href: tmtMixedModel.html
+        - text: "---- MODULE II: TRANSCRIPTOMICS ----"
+        - text: 1.1 Introduction to bulk RNA-seq
+          href: 04-rnaseq-intro.html
+        - text: 1.2 Bulk RNA-seq - technical details and transcript usage
+          href: 05-rnaseq-technical.html
 
       - text: "Tutorials"
         icon: fa-laptop
@@ -56,6 +61,9 @@ website:
           href: 01-tutorial-data-processing.html
         - text: 2.2 Tutorial Differential Analysis and Design
           href: 03-tutorial-Design.html
+        - text: "---- MODULE II: TRANSCRIPTOMICS ----"
+        - text: 1.1 Tutorial Differential Expression Analysis of Bulk RNA-seq
+          href: 04-tutorial-rnaseq.html
 
 
 bibliography: references.bib
@@ -78,6 +86,7 @@ format:
     number-sections: true
     number-depth: 3
     code-copy: true
+    code-tools: true
 
 author:
   - name: Lieven Clement

@@ -69,6 +69,15 @@ div.sourceCode {
   }
 }
 
+// Space around tables, also when they are part of a list
+// (table.table is needed to override the margins that Quarto sets on .table)
+table.table {
+  margin-bottom: 1.75rem;
+}
+li table.table {
+  margin-top: 0.75rem;
+}
+
 // Header numbering
 .header-section-number {
   color: $brand-green !important;

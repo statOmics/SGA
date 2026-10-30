@@ -1,0 +1,265 @@
+---
+code-tools: true
+title: Tutorial 1 - Cancer 6x6
+---
+
+```{r, echo = FALSE}
+source("R/knitr_setup.R")
+source("https://raw.githubusercontent.com/statOmics/PDA-DIA/master/R/utils.R")
+```
+
+# Load packages
+
+We load the `msqrob2` package, along with additional packages for
+data manipulation and visualisation.
+
+
+```{r load_libraries}
+library("QFeatures")  
+library("dplyr") 
+library("tidyr")
+library("ggplot2")
+library("msqrob2")    
+library("stringr")
+library("ExploreModelMatrix")
+library("MsCoreUtils") 
+library("matrixStats")
+library("patchwork")
+library("kableExtra")
+library("ComplexHeatmap")
+library("purrr")
+library("tibble")
+library("scater")
+```
+
+# Load QFeatures object
+
+```{r}
+(
+  qf <- readRDS(url("https://github.com/statOmics/PDA-DIA/raw/refs/heads/main/data/cancer6x6.rds","rb"))
+)
+```
+
+# Data exploration
+
+First assess distribution of marginal protein intensities. 
+
+```{r}
+qf[, , "proteins"] |>
+    longForm(colvars = colnames(colData(qf))) |> 
+  data.frame() |> 
+  filter(!is.na(value)) |>
+  ggplot() + 
+  aes(x = value,
+      colour = prognosis,
+      group = colname) +
+  geom_density() +
+  theme_minimal() +
+   labs(subtitle = "Normalised log2 protein intensities")
+```
+
+Data exploration aims to highlight the main sources of variation in
+the data prior to data modelling and can pinpoint to outlying or
+off-behaving samples. 
+
+A common approach for data exploration is to
+perform dimension reduction, such as Multi Dimensional Scaling (MDS).
+We will first extract the set to explore along the sample annotations
+(used for plot colouring).
+
+```{r}
+qf |> 
+  getWithColData("proteins") |> 
+  as("SingleCellExperiment") |> 
+  scater::runMDS(exprs_values = 1) |> 
+  scater::plotMDS(colour_by = "prognosis") 
+```
+
+# Data Modeling (Robust Regression){#sec-modelling}
+
+## Model estimation
+
+1. We first define the model. We only have one sources of variability in the experiment that we can model, i.e. the association with prognosis. 
+
+2. We fit the model to each protein in the `proteins` summarised experiment of the QFeatures object `qf` using the msqrob function. 
+
+```{r warning=FALSE}
+model <- ~ prognosis
+
+qf <- msqrob(
+  qf,
+  i = "proteins",
+  formula = model,
+  robust = TRUE)
+```
+
+We enabled M-estimation (`robust = TRUE`) for improved robustness
+against outliers. 
+
+The fitting results are available in the `msqrobModels` column of the
+`rowData`. More specifically, the modelling output is stored in the
+`rowData` as a `statModel` object, one model per row (protein). We
+will see in a later section how to perform statistical inference on
+the estimated parameters.
+
+```{r}
+models <- rowData(qf[["proteins"]])[["msqrobModels"]]
+models[1:3]
+```
+## Inference
+
+We can now convert the research question "do the spike-in
+conditions affect the protein intensities?" into a statistical
+hypothesis. 
+
+In other words, we need to translate this question in a null and alternative hypothesis on a single model parameter or a linear combination of model parameters, which is also referred to with a [contrast](#sec-inference).
+
+To aid defining contrasts, we will visualise the experimental design using the `ExploreModelMatrix` package.
+
+```{r}
+
+vd <- ExploreModelMatrix::VisualizeDesign(
+    sampleData =  colData(qf),
+    designFormula = model,
+    textSizeFitted = 4
+)
+vd$plotlist
+```
+
+```{r}
+contrast <- "prognosisPD = 0"
+(L <- makeContrast(
+   contrast,
+   parameterNames = colnames(vd$designmatrix)
+))
+```
+
+
+We assess the contrast for each protein. 
+
+```{r warning=FALSE}
+qf <- hypothesisTest(qf, i = "proteins", contrast = L)
+```
+
+We extract the results table from the `proteins` summarised experiment in the `qf` object. 
+
+```{r}
+inference <- 
+  msqrobCollect(qf[["proteins"]], L)
+```
+
+## Report results
+
+We report the results using a results table, volcano plots and heatmaps. 
+
+### Results table
+
+We report all results that are significant at the nominal FDR level of 5%. 
+
+1. We define the nominal FDR level 
+2. We filter the results
+3. We arrange them according to statistical significance
+
+```{r}
+alpha  <- 0.05
+inference |> 
+  filter(adjPval < alpha) |> 
+  arrange(pval) |> 
+    knitr::kable()
+```
+
+We observe that the results only contain spiked UPS proteins. 
+
+### Volcanoplots 
+
+```{r}
+volcanoplot4 <- plot_volcano(inference)
+volcanoplot4
+```
+
+Note, that the log fold changes are nicely around the real log2 fold change: $log2(4/2) = 1$
+
+### Heatmaps
+
+We make the heatmap as follows
+
+1. We select the names of the proteins that were declared significant between condition A and condition B and extract their quantitative data.
+
+2. We extract the quantitative data with `assay()` and scale by rows. 
+
+3. We will create a heatmap using the ComplexHeatmap package, which enables heatmap annotations. We will annotate the heatmap using our model variables condition and lab.
+
+4. We make the heatmap
+
+```{r}
+sig <- inference |> 
+  filter(adjPval < alpha) |> 
+  arrange(pval) |> 
+  pull(feature) #1.
+
+se <- getWithColData(qf, "proteins")
+quants <- t(scale(t(assay(se[sig,])))) #2. 
+
+annotations <- columnAnnotation(
+  condition = se$prognosis
+) #3.
+
+set.seed(1234) ## annotation colours are randomly generated by default
+heatmap <- Heatmap(
+                       quants, 
+                       name = "log2 intensity",
+                       top_annotation = annotations, 
+                       column_title = paste0(contrast, " = 0")
+                       ) #4.
+heatmap
+```
+
+### Detail plots
+
+We can explore the data for a protein to validate the statistical inference results. For example, let’s explore the normalised precursor and the summarised protein intensities for the protein with the most significant log2 fold change.
+
+```{r}
+(targetProtein <- inference |> 
+   slice(which.min(pval)) |> 
+   pull(feature)
+)
+```
+
+To obtain the required data, we perform a little data manipulation pipeline:
+
+We use the QFeatures subsetting functionality to retrieve all data related to and focusing on the peptides_log and proteins sets that contains the peptide ion data used for model fitting. We then convert the data with longForm() for plotting. Finally, we plot the log2 normalised intensities for each sample at the protein and at the peptide level. Since multiple peptides are recorded for the protein, we link peptides across samples using a grey line. Samples are colored according to E. coli spike-in condition.
+
+```{r}
+qf[targetProtein, , c("peptides_norm", "proteins")] |> #1
+  longForm(colvars = colnames(colData(qf))) |> #2
+  data.frame() |> 
+  ggplot() +
+  aes(x = colname,
+      y = value) +
+  geom_line(aes(group = rowname), linewidth = 0.1) +
+  geom_point(aes(colour = prognosis)) +
+  facet_wrap(~ assay, scales = "free") +
+  ggtitle(targetProtein) +
+  theme_minimal() +
+  theme(axis.text.x = element_blank())
+```
+
+```{r}
+qf[targetProtein, , c("peptides_norm", "proteins")] |> #1
+  longForm(colvars = colnames(colData(qf))) |> #2
+  data.frame() %>% 
+  {
+  ggplot(.) +
+  aes(x = prognosis,
+      y = value) +
+  geom_boxplot(aes(colour = prognosis)) +
+  facet_wrap(~ assay, scales = "free") +
+  geom_jitter(aes(shape = rowname)) +
+  scale_shape_manual(values = seq_len(dplyr::n_distinct(.$rowname))) +
+  ggtitle(targetProtein) +
+  theme_minimal() +
+  theme(axis.text.x = element_blank()) +
+  guides(shape = "none")
+  }
+```
+
