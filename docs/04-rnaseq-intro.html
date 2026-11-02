@@ -5215,7 +5215,7 @@ E[Y_{gi}] &amp;=&amp; \mu_{gi}\\
 \]</span></p>
 <ul>
 <li>With quasi-likelihood we only specify the <strong>first two moments</strong> of the counts: the mean, through the log link and the linear predictor, and the variance, as a function of the mean. We do not assume a full distribution for <span class="math inline">\(Y_{gi}\)</span>.</li>
-<li>The model parameters are estimated with the same score equations as in a GLM, which only depend on the mean and the variance. The NB variance, however, is more flexible and is rescaled with a gene-specific factor <span class="math inline">\(\sigma^2_g\)</span>.</li>
+<li>The model parameters are estimated with the same score equations as in a GLM, which only depend on the mean and the variance. The variance, however, is more flexible, i.e. the NB variance is rescaled with a gene-specific factor <span class="math inline">\(\sigma^2_g\)</span>.</li>
 <li><span class="math inline">\(\phi\)</span> is a single NB dispersion for all genes: it describes the global shape of the mean-variance relation.</li>
 <li><span class="math inline">\(\sigma^2_g\)</span> is a gene-specific <strong>quasi-likelihood dispersion</strong>, which captures how much more (or less) variable a gene is than the global trend.</li>
 <li><span class="math inline">\(\sigma^2_g\)</span> is estimated from the residual deviance divided by its degrees of freedom: the GLM counterpart of the residual variance <span class="math inline">\(s^2_g\)</span> in a linear model.</li>
@@ -7146,7 +7146,7 @@ Van den Berge, Koen, Katharina M Hembach, Charlotte Soneson, et al. 2019. <span>
 <span id="cb74-558"><a href="#cb74-558" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb74-559"><a href="#cb74-559" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb74-560"><a href="#cb74-560" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>With quasi-likelihood we only specify the **first two moments** of the counts: the mean, through the log link and the linear predictor, and the variance, as a function of the mean. We do not assume a full distribution for $Y_{gi}$.</span>
-<span id="cb74-561"><a href="#cb74-561" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The model parameters are estimated with the same score equations as in a GLM, which only depend on the mean and the variance. The NB variance, however, is more flexible and is rescaled with a gene-specific factor $\sigma^2_g$.</span>
+<span id="cb74-561"><a href="#cb74-561" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The model parameters are estimated with the same score equations as in a GLM, which only depend on the mean and the variance. The variance, however, is more flexible, i.e. the NB variance is rescaled with a gene-specific factor $\sigma^2_g$.</span>
 <span id="cb74-562"><a href="#cb74-562" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\phi$ is a single NB dispersion for all genes: it describes the global shape of the mean-variance relation.</span>
 <span id="cb74-563"><a href="#cb74-563" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\sigma^2_g$ is a gene-specific **quasi-likelihood dispersion**, which captures how much more (or less) variable a gene is than the global trend.</span>
 <span id="cb74-564"><a href="#cb74-564" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\sigma^2_g$ is estimated from the residual deviance divided by its degrees of freedom: the GLM counterpart of the residual variance $s^2_g$ in a linear model.</span>
