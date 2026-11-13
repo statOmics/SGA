@@ -13,3 +13,7 @@ _site/
 /.quarto/
 **/*.quarto_ipynb
 .DS_Store
+
+# Downloaded data of the transcript-level tutorial
+airwaySalmon/
+airwaySalmon.zip

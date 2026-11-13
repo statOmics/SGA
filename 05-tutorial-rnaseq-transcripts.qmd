@@ -1,0 +1,738 @@
+---
+code-tools: true
+title: "Tutorial: gene- and transcript-level analysis of the airway data"
+author:
+  - name: Lieven Clement
+    orcid: 0000-0002-9050-4370
+    affiliation:
+      - name: Ghent University
+search: false
+format:
+  html: default
+  pdf: default
+---
+
+```{r echo = FALSE}
+source("R/knitr_setup.R")
+```
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(SummarizedExperiment)
+library(edgeR)
+library(tximeta)
+library(org.Hs.eg.db)
+library(stageR)
+library(patchwork)
+```
+
+In this tutorial we apply the workflows of the [introduction to bulk RNA-seq](./04-rnaseq-intro.html) and the [technical details and transcript usage](./05-rnaseq-technical.html) lectures to a new dataset.
+We analyse the same experiment at three levels:
+
+1. **Differential gene expression (DGE)**: does the expression of a gene change?
+2. **Differential transcript expression (DTE)**: does the expression of a transcript change?
+3. **Differential transcript usage (DTU)**: does the relative contribution of the transcripts to the expression of their gene change?
+
+# Background
+
+Glucocorticoids are anti-inflammatory drugs that are used, for example, by people with asthma to reduce the inflammation of the airways.
+@Himes2014-airway studied the effect of the synthetic glucocorticoid dexamethasone on human airway smooth muscle cells.
+Cells of four cell lines were treated with 1 µM dexamethasone for 18 hours or left untreated.
+The data are available in GEO under accession number [GSE52778](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE52778).
+
+The paired-end reads of the 8 samples were quantified with salmon against the GENCODE 29 human transcriptome, with 20 Gibbs samples per sample to quantify the uncertainty of the transcript counts:
+
+```{bash, eval = FALSE}
+salmon index -t gencode.v29.transcripts.fa.gz -i salmon_gencode29_k31 -k 31 --gencode
+salmon quant -i salmon_gencode29_k31 -l A \
+  -1 SRR1039508_1.fastq.gz -2 SRR1039508_2.fastq.gz \
+  --gcBias --seqBias --numGibbsSamples 20 -o quants/SRR1039508
+```
+
+# Data import
+
+The salmon output is available as a [release of the course repository](https://github.com/statOmics/SGA/releases/tag/airway-salmon-v1) (215 MB).
+We download and unzip it once and then remove the zip file; the default time-out of `download.file` (60 seconds) is too short for a file of this size.
+
+```{r}
+zipUrl <- "https://github.com/statOmics/SGA/releases/download/airway-salmon-v1/airwaySalmon_gencode29.zip"
+if (!dir.exists("airwaySalmon")) {
+  options(timeout = 1200)
+  download.file(zipUrl, "airwaySalmon.zip", mode = "wb")
+  unzip("airwaySalmon.zip")
+  unlink("airwaySalmon.zip")
+}
+```
+
+```{r}
+coldata <- read.csv("airwaySalmon/coldata.csv") |>
+  mutate(
+    cell = factor(cell),
+    dex = factor(dex, levels = c("untrt", "trt")),
+    files = file.path("airwaySalmon/quants", names, "quant.sf.gz")
+  )
+coldata |>
+  dplyr::select(-files)
+```
+
+::: {.callout-tip}
+## Question
+
+- What is the experimental unit?
+- Which type of design is this? Which model do you propose?
+:::
+
+- Every cell line contributes an untreated and a treated sample: the cell lines are **blocks** and the design is a randomised complete block design, as the donors in the macrophage data.
+- We correct for the cell line in the model, so that the treatment effect is estimated within each cell line:
+
+```{r}
+design <- model.matrix(~ cell + dex, data = coldata)
+colnames(design)
+```
+
+tximeta imports the salmon output.
+It recognises the GENCODE 29 transcriptome from the checksum of the index, adds the transcript annotation and imports the Gibbs samples as additional assays.
+
+```{r}
+st <- tximeta(coldata)
+st
+assayNames(st) |> head()
+```
+
+```{r}
+metadata(st)$quantInfo$percent_mapped
+```
+
+# Part 1: differential gene expression
+
+## Gene-level data
+
+We summarise the transcript-level counts to the gene level and add the gene symbols.
+
+```{r}
+sg <- summarizeToGene(st)
+sg <- addIds(sg, "SYMBOL", gene = TRUE)
+```
+
+`DGEListFromTximeta` creates the `DGEList` and stores the centred log average transcript lengths as offsets (see the [introduction](./04-rnaseq-intro.html)).
+
+```{r}
+dge <- DGEListFromTximeta(sg)
+dge$samples <- cbind(dge$samples, coldata |> dplyr::select(cell, dex))
+```
+
+```{r}
+dge$samples |>
+  ggplot(aes(cell, lib.size / 1e6, fill = dex)) +
+  geom_col(position = "dodge") +
+  ylab("Library size (million fragments)") +
+  theme_bw()
+```
+
+::: {.callout-tip}
+## Question
+
+How do the library sizes differ between the samples? Is this a problem?
+:::
+
+- The library sizes range from `r round(min(dge$samples$lib.size) / 1e6)` to `r round(max(dge$samples$lib.size) / 1e6)` million fragments.
+- They are not related to the treatment, and the differences in sequencing depth are accounted for by the offsets.
+
+## Filtering and normalisation
+
+```{r}
+keep <- filterByExpr(dge, design)
+dge <- dge[keep, , keep.lib.sizes = FALSE]
+dge <- normLibSizes(dge)
+nrow(dge)
+```
+
+## Exploratory data analysis
+
+```{r}
+mds <- plotMDS(dge, top = 500, plot = FALSE)
+tibble(dim1 = mds$x, dim2 = mds$y, cell = dge$samples$cell, dex = dge$samples$dex) |>
+  ggplot(aes(dim1, dim2, color = cell, shape = dex)) +
+  geom_point(size = 3) +
+  xlab(paste0("Leading logFC dim 1 (", round(mds$var.explained[1] * 100), "%)")) +
+  ylab(paste0("Leading logFC dim 2 (", round(mds$var.explained[2] * 100), "%)")) +
+  theme_bw()
+```
+
+::: {.callout-tip}
+## Question
+
+Which sources of variability do the first two dimensions capture?
+:::
+
+- The first dimension mainly separates cell line N080611 from the other cell lines: the cell line is an important source of variability, which confirms that we have to correct for it in the model.
+- The second dimension separates the treated from the untreated samples: dexamethasone has a strong effect, which is consistent in all cell lines.
+
+## Model fit and inference
+
+```{r}
+fit <- glmQLFit(dge, design)
+plotQLDisp(fit)
+```
+
+```{r}
+qlf <- glmQLFTest(fit, coef = "dextrt")
+summary(decideTests(qlf))
+topTags(qlf, n = 10)$table |>
+  dplyr::select(SYMBOL, logFC, logCPM, F, PValue, FDR)
+```
+
+Thousands of genes are differentially expressed.
+We therefore use TREAT to focus on genes with a fold change that is significantly larger than 2.
+
+```{r}
+treat <- glmTreat(fit, coef = "dextrt", lfc = 1)
+summary(decideTests(treat))
+```
+
+```{r}
+topTags(treat, n = Inf)$table |>
+  mutate(DE = FDR < 0.05) |>
+  ggplot(aes(logFC, -log10(PValue), color = DE)) +
+  geom_point(size = 0.5) +
+  scale_color_manual(values = c("grey", "red")) +
+  ggtitle("TREAT: |logFC| > 1") +
+  theme_bw()
+```
+
+::: {.callout-tip}
+## Question
+
+Look up the top genes. Are these known targets of glucocorticoids?
+:::
+
+- The top genes include well-known glucocorticoid-responsive genes, e.g. *ZBTB16*, *FAM107A*, *DUSP1*, *MT2A* and *TSC22D3*. The latter encodes GILZ, the glucocorticoid-induced leucine zipper.
+- These genes serve as a positive control for the workflow.
+
+# Part 2: differential transcript expression
+
+## Quantification uncertainty
+
+We now analyse the counts of the individual transcripts.
+Reads that are compatible with several transcripts of the same gene are assigned with the EM algorithm, which makes the transcript counts more variable than the gene counts.
+`DGEListFromTximeta` estimates an overdispersion factor for every transcript from the Gibbs samples, and with `divide = TRUE` it returns the counts divided by this factor [@Baldoni2024-catchSalmon].
+
+Quantification uncertainty is especially an issue for transcripts.
+Most ambiguous reads are compatible with several transcripts of the same gene: the assignment of such a read changes the transcript counts, but not their sum.
+The gene counts are therefore much less affected, which is why we analysed the summed gene counts in Part 1 without accounting for the quantification uncertainty.
+
+```{r}
+txRaw <- DGEListFromTximeta(st)
+txDivided <- DGEListFromTximeta(st, divide = TRUE)
+summary(txDivided$genes$Overdispersion)
+```
+
+```{r}
+txAnnotation <- tibble(
+  tx = txDivided$genes$tx_name,
+  gene = sapply(txDivided$genes$gene_id, `[`, 1),
+  Overdispersion = txDivided$genes$Overdispersion
+) |>
+  group_by(gene) |>
+  mutate(nTx = n()) |>
+  ungroup()
+
+txAnnotation |>
+  mutate(nTx = cut(nTx, c(0, 1, 2, 5, 10, Inf), labels = c("1", "2", "3-5", "6-10", ">10"))) |>
+  ggplot(aes(nTx, Overdispersion)) +
+  geom_boxplot(outlier.size = 0.5) +
+  scale_y_log10() +
+  xlab("Number of transcripts of the gene") +
+  theme_bw()
+```
+
+::: {.callout-tip}
+## Question
+
+How does the overdispersion depend on the number of transcripts of the gene? Explain.
+:::
+
+- The overdispersion increases with the number of transcripts of the gene: the more transcripts a gene has, the more reads are compatible with several transcripts, and the larger the uncertainty on the transcript counts.
+- Transcripts of genes with one or two transcripts have the smallest overdispersions. They are not all equal to 1, because reads can also be ambiguous between genes, e.g. between paralogous genes or between a gene and its pseudogenes.
+
+## Analysis of raw and divided counts
+
+We analyse the raw and the divided transcript counts with the same edgeR pipeline.
+
+```{r}
+dteAnalysis <- function(y) {
+  y$genes <- data.frame(tx = y$genes$tx_name,
+                        gene = sapply(y$genes$gene_id, `[`, 1),
+                        Overdispersion = y$genes$Overdispersion,
+                        row.names = rownames(y))
+  keep <- filterByExpr(y, design)
+  y <- y[keep, , keep.lib.sizes = FALSE]
+  y <- normLibSizes(y)
+  fit <- glmQLFit(y, design)
+  list(y = y, fit = fit, test = glmQLFTest(fit, coef = "dextrt"))
+}
+dteRaw <- dteAnalysis(txRaw)
+dteDivided <- dteAnalysis(txDivided)
+c(raw = nrow(dteRaw$y), divided = nrow(dteDivided$y))
+```
+
+```{r, fig.width = 10, fig.height = 4.5}
+par(mfrow = c(1, 2))
+plotQLDisp(dteRaw$fit, main = "Raw counts")
+plotQLDisp(dteDivided$fit, main = "Divided counts")
+```
+
+```{r}
+c(raw = median(dteRaw$fit$s2.post), divided = median(dteDivided$fit$s2.post))
+cbind(raw = summary(decideTests(dteRaw$test)), divided = summary(decideTests(dteDivided$test)))
+```
+
+::: {.callout-tip}
+## Question
+
+- Why are fewer transcripts retained after filtering when we use the divided counts?
+- Why are the QL dispersions of the raw counts much larger than one?
+- Why do we find many more differentially expressed transcripts with the divided counts?
+:::
+
+- Dividing the counts by the overdispersion makes them smaller. Transcripts with a highly uncertain count then often fall below the filtering threshold: they carry little information.
+- The NB model of edgeR does not capture the extra variability due to the read-to-transcript ambiguity. With the raw counts, this variability ends up in the QL dispersions, which are inflated for all transcripts: the empirical Bayes moderation shrinks them towards a trend that is too high.
+- After dividing, the counts have the usual mean-variance relation again. The QL dispersions are centred around one, and transcripts with an unambiguous count are no longer penalised for the uncertainty of the other transcripts: the power increases.
+
+## Comparison with the gene-level results
+
+```{r}
+dteResults <- topTags(dteDivided$test, n = Inf)$table
+dgeSig <- rownames(dge)[decideTests(qlf) != 0]
+dteGenes <- unique(dteResults$gene[dteResults$FDR < 0.05])
+c(DTEgenes = length(dteGenes),
+  alsoDGE = sum(dteGenes %in% dgeSig),
+  notDGE = sum(!dteGenes %in% dgeSig))
+```
+
+::: {.callout-tip}
+## Question
+
+Some genes have a differentially expressed transcript, but are not differentially expressed at the gene level. How is this possible?
+:::
+
+- A gene can switch between transcripts without changing its total expression: the up- and down-regulation of its transcripts cancel out at the gene level.
+- A small transcript of a highly expressed gene can change without having a noticeable effect on the gene total.
+- Both situations point to differential transcript usage, which we study next.
+
+# Part 3: differential transcript usage
+
+Only genes with at least two transcripts can show DTU.
+We start from the filtered divided transcript counts.
+
+```{r}
+yTx <- dteDivided$y
+multiTxGenes <- yTx$genes |>
+  dplyr::count(gene) |>
+  filter(n > 1) |>
+  pull(gene)
+dtu <- yTx[yTx$genes$gene %in% multiTxGenes, ]
+c(genes = length(multiTxGenes), transcripts = nrow(dtu))
+```
+
+## Juggling offsets
+
+We replace the offset by the log of the total count of the gene, so that the model parameters describe the log usage of the transcripts [@Segers2023-juggling].
+
+We model the divided counts $\tilde Y_{gti} = Y_{gti}/c_t$, with $c_t$ the overdispersion of transcript $t$, so that the quantification uncertainty of the transcripts is accounted for.
+We model the counts conditionally on the observed gene total $Y_{g.i}$.
+Given the gene total, their mean is the usage times the gene total, divided by $c_t$:
+
+$$
+E[\tilde Y_{gti} \mid Y_{g.i}] = \frac{\pi_{gti}\, Y_{g.i}}{c_t} \quad \Rightarrow \quad \text{offset} = \log Y_{g.i} - \log c_t,
+$$
+
+with $\pi_{gti}$ the usage of transcript $t$, i.e. the fraction of the fragments of gene $g$ that come from transcript $t$.
+
+- The gene total $Y_{g.i}$ is computed from the **undivided** counts. 
+- The undivided gene total is hardly affected by the quantification uncertainty: the ambiguity between transcripts of the same gene cancels out in the sum.
+
+- The term $-\log c_t$ is the same in all samples. It only changes the intercept of the transcript, not the log fold changes.
+
+The undivided counts are the divided counts multiplied by the overdispersion.
+
+```{r}
+undivided <- dtu$counts * dtu$genes$Overdispersion
+geneTotals <- rowsum(undivided, dtu$genes$gene)[dtu$genes$gene, ]
+dtu$offset <- log(pmax(geneTotals, 1)) - log(dtu$genes$Overdispersion)
+
+fitDtu <- glmQLFit(dtu, design)
+qlfDtu <- glmQLFTest(fitDtu, coef = "dextrt")
+summary(decideTests(qlfDtu))
+fitDtu$dispersion
+```
+
+::: {.callout-tip}
+## Question
+
+- Why do we not need TMM normalisation in this model?
+- Interpret the estimated global NB dispersion.
+:::
+
+- The gene total already accounts for the sequencing depth and the composition of the library.
+- The global NB dispersion is almost zero: given the gene total, the biological variability of the expression of the gene cancels out in the usages, and the model reduces to a quasi-Poisson model on the usages.
+
+## diffSplice
+
+`diffSplice` tests whether the log fold change of a transcript differs from the log fold change of its gene [@Baldoni2025-dtu].
+`diffSplice` is a generic function: for an edgeR fit from `glmQLFit` it calls the method `diffSplice.DGEGLM` (see `?diffSplice.DGEGLM`).
+
+```{r}
+fitTx <- dteDivided$fit
+ds <- diffSplice(fitTx[fitTx$genes$gene %in% multiTxGenes, ],
+                 coef = "dextrt", geneid = "gene", exonid = "tx", verbose = FALSE)
+c(transcripts = sum(p.adjust(ds$p.value, "BH") < 0.05),
+  genesF = sum(p.adjust(ds$gene.F.p.value, "BH") < 0.05),
+  genesSimes = sum(p.adjust(ds$gene.simes.p.value, "BH") < 0.05))
+table(F = p.adjust(ds$gene.F.p.value, "BH") < 0.05,
+      Simes = p.adjust(ds$gene.simes.p.value, "BH") < 0.05)
+```
+
+::: {.callout-tip}
+## Question
+
+Compare the genes that are found with the gene-level F-test and with the Simes test. When do you expect each test to be most powerful?
+:::
+
+- Both tests largely agree, but each test also finds genes that the other test misses.
+- The F-test pools the evidence of all transcripts of the gene. It is most powerful when several transcripts change, but the evidence of a single strongly changing transcript is diluted when the gene has many transcripts that do not change.
+- The Simes test is driven by the smallest transcript-level p-values of the gene and is most powerful when one or a few transcripts stand out.
+
+## Stage-wise testing
+
+stageR [@VandenBerge2017-stageR] needs a gene-level p-value for the screening stage and transcript-level p-values for the confirmation stage.
+We perform two stage-wise analyses, each of which uses a single DTU method for both stages:
+
+1. **diffSplice**: the gene-level Simes p-values of `diffSplice` for screening and its transcript-level tests for confirmation.
+2. **Offset model**: the Simes method applied to the transcript-level p-values of the offset model for screening, and the same transcript-level p-values for confirmation.
+
+The Simes p-value of a gene with $n$ transcripts combines the ordered transcript-level p-values $p_{(1)} \leq \ldots \leq p_{(n)}$ into $\min_k n\, p_{(k)}/k$.
+Other aggregation methods exist, e.g. the minimum p-value with a Šidák correction (DEXSeq's `perGeneQValue`, which is used in the satuRn workflow) or the harmonic mean p-value [@Wilson2019-hmp], which @Gilis2025-dd used to combine dependent tests.
+
+```{r}
+simes <- function(p) min(sort(p) * length(p) / seq_along(p))
+
+stageWiseDtu <- function(pScreen, pTranscript, tx, gene) {
+  pConfirmation <- matrix(pTranscript, ncol = 1, dimnames = list(tx, "transcript"))
+  stageRObj <- stageRTx(pScreen = pScreen, pConfirmation = pConfirmation,
+                        tx2gene = data.frame(transcript = tx, gene = gene))
+  stageRObj <- stageWiseAdjustment(stageRObj, method = "dtu", alpha = 0.05)
+  getAdjustedPValues(stageRObj, order = TRUE, onlySignificantGenes = TRUE) |>
+    mutate(symbol = mapIds(org.Hs.eg.db, sub("\\..*", "", geneID), "SYMBOL", "ENSEMBL"))
+}
+
+padjDs <- stageWiseDtu(
+  pScreen = setNames(as.vector(ds$gene.simes.p.value), ds$gene.genes$gene),
+  pTranscript = as.vector(ds$p.value), tx = ds$genes$tx, gene = ds$genes$gene
+)
+padjOffset <- stageWiseDtu(
+  pScreen = c(tapply(qlfDtu$table$PValue, dtu$genes$gene, simes)),
+  pTranscript = qlfDtu$table$PValue, tx = dtu$genes$tx, gene = dtu$genes$gene
+)
+head(padjDs, 10)
+head(padjOffset, 10)
+```
+
+```{r}
+rbind(
+  diffSplice = c(genes = length(unique(padjDs$geneID)), transcripts = sum(padjDs$transcript < 0.05)),
+  offset = c(genes = length(unique(padjOffset$geneID)), transcripts = sum(padjOffset$transcript < 0.05)),
+  both = c(genes = length(intersect(padjDs$geneID, padjOffset$geneID)),
+           transcripts = length(intersect(padjDs$txID[padjDs$transcript < 0.05],
+                                          padjOffset$txID[padjOffset$transcript < 0.05])))
+)
+```
+
+::: {.callout-tip}
+## Question
+
+How does stage-wise testing control the error rates? Why is this attractive for DTU analyses?
+:::
+
+- The screening stage controls the FDR at the gene level. In the confirmation stage, the transcripts of the significant genes are tested with a family-wise error rate correction within each gene.
+- Biologists are mostly interested in the genes with DTU and in the transcripts that drive it. Stage-wise testing answers both questions while controlling the overall FDR, and the gene-level screening reduces the multiple testing burden of the transcript-level tests.
+
+::: {.callout-tip}
+## Question
+
+Compare the results of both stage-wise analyses. Which approach is the most powerful here? Can you think of reasons why?
+:::
+
+- `diffSplice` finds many more genes and transcripts than the offset model. Most genes that are found with the offset model are also found with `diffSplice`.
+- Both methods test a different quantity. `diffSplice` compares the log fold change of each transcript with that of the gene as a whole in the transcript-level DTE model, in which the biological variability of the expression is modelled for every transcript. The offset model plugs the observed gene total in as a known offset, so that it models the usage directly, and it estimates a separate QL dispersion for the usage of every transcript.
+- In the simulation study of @Baldoni2025-dtu, `diffSplice` on divided counts with Simes p-values was the most powerful method, while it controlled the FDR. On the macrophage data of the [lecture](./05-rnaseq-technical.html), however, the offset model finds more genes than `diffSplice`: which method is the most powerful depends on the data.
+
+## Visualisation
+
+We plot the usage of the transcripts of the top gene of the `diffSplice` analysis.
+
+```{r, fig.width = 10, fig.height = 6}
+plotUsage <- function(geneId) {
+  sel <- dtu$genes$gene == geneId
+  usage <- undivided[sel, , drop = FALSE] / geneTotals[sel, , drop = FALSE]
+  rownames(usage) <- dtu$genes$tx[sel]
+  usage |>
+    as_tibble(rownames = "tx") |>
+    pivot_longer(-tx, names_to = "names", values_to = "usage") |>
+    left_join(coldata, by = "names") |>
+    ggplot(aes(dex, usage, group = cell, color = cell)) +
+    geom_point() +
+    geom_line() +
+    facet_wrap(~ tx) +
+    ggtitle(paste0(geneId, " (", mapIds(org.Hs.eg.db, sub("\\..*", "", geneId), "SYMBOL", "ENSEMBL"), ")")) +
+    theme_bw()
+}
+plotUsage(padjDs$geneID[1])
+```
+
+::: {.callout-tip}
+## Question
+
+- Which transcripts of the top gene change their usage?
+- Is this gene also differentially expressed at the gene level?
+:::
+
+```{r}
+topTags(qlf, n = Inf)$table[padjDs$geneID[1], c("SYMBOL", "logFC", "FDR")]
+```
+
+- The top gene is *TSC22D3*, which encodes GILZ. Its usage shifts consistently in all cell lines: transcript ENST00000372397 accounts for about half of the expression of the gene in the untreated cells and for about 90% after the treatment, while the usage of ENST00000372390 drops from about 40-50% to almost zero.
+- Dexamethasone also strongly induces the gene as a whole: *TSC22D3* is up-regulated about 9-fold ($\log_2 \text{FC} \approx 3.2$) at the gene level. Dexamethasone thus not only induces the gene, but also shifts the usage between its transcripts.
+- A gene can thus show both DGE and DTU: the questions are complementary.
+
+```{r}
+dtuGenes <- unique(padjDs$geneID)
+c(DTUgenes = length(dtuGenes), alsoDGE = sum(dtuGenes %in% dgeSig))
+```
+
+## Fragment usage or molecular usage?
+
+The counts are numbers of fragments.
+Let $M_{gti}$ be the (unobserved) number of molecules of transcript $t$ of gene $g$ in the library of sample $i$, $M_{g.i} = \sum_{t'} M_{gt'i}$, and $M_{g\cdot i}$ the numbers of molecules of all transcripts of the gene.
+The **molecular usage** is the fraction of the molecules of the gene that are transcript $t$, $\rho_{gti} = M_{gti}/M_{g.i}$.
+
+A transcript produces fragments in proportion to its number of molecules times its effective length $l_{ti}$:
+
+$$
+E[Y_{gti} \mid M_{g\cdot i}] = k_i\, M_{gti}\, l_{ti} = \rho_{gti}\; l_{ti}\; k_i M_{g.i},
+$$
+
+with $k_i$ the expected number of sequenced fragments per molecule and per base in sample $i$. It depends on the sequencing depth and on the composition of the library, but it is the same for all transcripts in the sample.
+Dividing by the effective length and summing over the transcripts of the gene gives $\sum_{t'} E[Y_{gt'i} \mid M_{g\cdot i}]/l_{t'i} = k_i M_{g.i}$, which we estimate by the length-normalised gene total $\sum_{t'} Y_{gt'i}/l_{t'i}$.
+Hence
+
+$$
+\log \mu_{gti} = \log \rho_{gti} + \log l_{ti} + \log \sum_{t'} \frac{Y_{gt'i}}{l_{t'i}}:
+$$
+
+with $\log l_{ti} + \log \sum_{t'} Y_{gt'i}/l_{t'i}$ as offset, i.e. the length-normalised gene total multiplied by the effective length of the transcript, the model parameters describe the log molecular usage, $\log \rho_{gti} = \mathbf{x}_i^T\boldsymbol{\beta}_{gt}$.
+
+With the gene total $Y_{g.i}$ as offset, we instead model the **fragment usage**: the expected fraction of the fragments of the gene that come from transcript $t$,
+
+$$
+\pi_{gti} = \frac{\rho_{gti}\, l_{ti}}{\sum_{t'} \rho_{gt'i}\, l_{t'i}}.
+$$
+
+It also changes when the gene shifts towards longer transcripts.
+For example, consider a gene with two transcripts of 1000 and 3000 bp.
+In the control, both transcripts have the same number of molecules, but the long transcript produces three times as many fragments:
+
+| | $\rho_{g1i}$ | $\rho_{g2i}$ | $\pi_{g1i}$ | $\pi_{g2i}$ |
+|---|---|---|---|---|
+| control | 0.5 | 0.5 | 0.25 | 0.75 |
+| treatment | 0.4 | 0.6 | 0.18 | 0.82 |
+
+- Under treatment, the molecular usage of transcript 1 decreases with a factor 0.8, its fragment usage with a factor 0.73: the longer transcript, whose molecular usage increases, takes an even larger share of the fragments.
+- If a gene shifts towards longer transcripts, the fragment usage of a transcript whose molecular usage does not change, also decreases. Tests on the fragment usage can thus flag transcripts that do not change themselves.
+
+This is the offset counterpart of `countsFromAbundance = "dtuScaledTPM"` in tximport, which @Love2018-swimdown recommend for DTU analyses.
+
+- Because salmon's TPM is proportional to $Y_{gti}/l_{ti}$, the estimated molecular usage $\hat\rho_{gti} = (Y_{gti}/l_{ti})/\sum_{t'} Y_{gt'i}/l_{t'i}$ is the TPM of the transcript divided by the TPM of the gene.
+- As for the gene total, we compute the sum with the undivided counts and subtract $\log c_t$ for the divided counts.
+- We use the sample-specific effective lengths of salmon, which also account for the fragment length distribution and the sequence and GC bias of each sample.
+
+```{r}
+effLength <- assay(st, "length")[rownames(dtu), ]
+lengthNormTotals <- rowsum(undivided / effLength, dtu$genes$gene)[dtu$genes$gene, ]
+
+dtuLength <- dtu
+# as for the gene totals, the offset of a gene with zero counts in a sample is set to 0
+dtuLength$offset <- log(effLength) + log(pmax(lengthNormTotals, 1 / effLength)) -
+  log(dtu$genes$Overdispersion)
+
+fitDtuLength <- glmQLFit(dtuLength, design)
+qlfDtuLength <- glmQLFTest(fitDtuLength, coef = "dextrt")
+```
+
+Why do both analyses give different log fold changes?
+Dividing the numerator and denominator of the fragment usage by $M_{g.i}$ links both usages through the average transcript length of the gene, weighted by the number of molecules of each transcript:
+
+$$
+\pi_{gti} = \rho_{gti}\, \frac{l_{ti}}{\bar L_{gi}}, \qquad \bar L_{gi} = \sum_{t'} \rho_{gt'i}\, l_{t'i}
+\quad \Rightarrow \quad
+\log \rho_{gti} - \log \pi_{gti} = \log \bar L_{gi} - \log l_{ti}.
+$$
+
+The effective length $l_{ti}$ hardly changes between conditions, so the difference between both log fold changes of a transcript should equal the change in the log2 average transcript length of its gene, which is the same for all transcripts of the gene.
+We estimate the average transcript length with
+
+$$
+\hat{\bar L}_{gi} = \sum_{t'} \hat\rho_{gt'i}\, l_{t'i} = \frac{Y_{g.i}}{\sum_{t'} Y_{gt'i}/l_{t'i}},
+$$
+
+which is exactly the TPM-weighted average transcript length that tximport computes at the gene level.
+The hat denotes an estimate from the observed counts.
+
+
+```{r}
+avgLength <- rowsum(undivided, dtu$genes$gene) / rowsum(undivided / effLength, dtu$genes$gene)
+deltaAvgLength <- rowMeans(log2(avgLength[, coldata$dex == "trt"])) -
+  rowMeans(log2(avgLength[, coldata$dex == "untrt"]))
+
+tibble(
+  deltaAvgLength = deltaAvgLength[dtu$genes$gene],
+  logFCdifference = qlfDtuLength$table$logFC - qlfDtu$table$logFC
+) |>
+  ggplot(aes(deltaAvgLength, logFCdifference)) +
+  geom_point(alpha = 0.2, size = 0.5) +
+  geom_abline(intercept = 0, slope = 1, col = "red") +
+  xlab("Change in log2 average transcript length of the gene") +
+  ylab("logFC molecular usage - logFC fragment usage") +
+  theme_bw()
+```
+
+The points scatter closely around the identity line.
+Small deviations arise because the effective lengths differ slightly between samples and because the log fold changes are estimated with a GLM rather than computed from the average usages.
+
+We compare the transcripts that are significant in both analyses, first without and then with stage-wise testing.
+
+```{r}
+table(fragment = p.adjust(qlfDtu$table$PValue, "BH") < 0.05,
+      molecular = p.adjust(qlfDtuLength$table$PValue, "BH") < 0.05)
+```
+
+For the stage-wise analysis of the molecular usage, we again screen the genes with the Simes p-values of the transcript-level tests of the same model.
+The null hypothesis of the screening stage is the same on both scales: no DTU in terms of molecules is equivalent to no DTU in terms of fragments.
+The Simes p-values, however, combine different transcript-level tests, so the selected genes can differ.
+
+```{r}
+padjLength <- stageWiseDtu(
+  pScreen = c(tapply(qlfDtuLength$table$PValue, dtu$genes$gene, simes)),
+  pTranscript = qlfDtuLength$table$PValue, tx = dtu$genes$tx, gene = dtu$genes$gene
+)
+
+stageWise <- full_join(
+  padjOffset |> dplyr::select(txID, geneID, symbol, fragment = transcript),
+  padjLength |> dplyr::select(txID, geneID, symbol, molecular = transcript),
+  by = c("txID", "geneID", "symbol")
+)
+rbind(
+  fragment = c(genes = length(unique(padjOffset$geneID)), transcripts = sum(padjOffset$transcript < 0.05)),
+  molecular = c(genes = length(unique(padjLength$geneID)), transcripts = sum(padjLength$transcript < 0.05)),
+  both = c(genes = length(intersect(padjOffset$geneID, padjLength$geneID)),
+           transcripts = sum(stageWise$fragment < 0.05 & stageWise$molecular < 0.05, na.rm = TRUE))
+)
+```
+
+The transcripts that are significant in only one of both analyses (`NA`: the gene is not selected in the screening stage):
+
+```{r}
+stageWise |>
+  filter(xor(fragment < 0.05 & !is.na(fragment), molecular < 0.05 & !is.na(molecular))) |>
+  mutate(
+    length = round(rowMeans(effLength[txID, ])),
+    logFCfragment = qlfDtu$table[txID, "logFC"],
+    logFCmolecular = qlfDtuLength$table[txID, "logFC"]
+  ) |>
+  dplyr::select(symbol, txID, length, logFCfragment, fragment, logFCmolecular, molecular) |>
+  knitr::kable(digits = 3)
+```
+
+We look at *NLRP1* in more detail.
+
+```{r}
+nlrp1 <- dtu$genes$gene == "ENSG00000091592.15"
+data.frame(
+  length = round(rowMeans(effLength[nlrp1, ])),
+  logFCfragment = qlfDtu$table$logFC[nlrp1],
+  pFragment = qlfDtu$table$PValue[nlrp1],
+  logFCmolecular = qlfDtuLength$table$logFC[nlrp1],
+  pMolecular = qlfDtuLength$table$PValue[nlrp1],
+  row.names = dtu$genes$tx[nlrp1]
+) |>
+  knitr::kable(digits = 4)
+```
+
+We plot the fragment and the molecular usage of its transcripts.
+
+```{r, fig.width = 10, fig.height = 6}
+plotUsageScales <- function(geneId) {
+  sel <- dtu$genes$gene == geneId
+  counts <- undivided[sel, , drop = FALSE]
+  molecules <- counts / effLength[sel, , drop = FALSE]
+  bind_rows(
+    fragment = as_tibble(t(t(counts) / colSums(counts)), rownames = "tx"),
+    molecular = as_tibble(t(t(molecules) / colSums(molecules)), rownames = "tx"),
+    .id = "scale"
+  ) |>
+    mutate(tx = paste0(dtu$genes$tx[sel][match(tx, rownames(counts))],
+                       " (", round(rowMeans(effLength[tx, ])), " nt)")) |>
+    pivot_longer(-c(scale, tx), names_to = "names", values_to = "usage") |>
+    left_join(coldata, by = "names") |>
+    ggplot(aes(dex, usage, group = cell, color = cell)) +
+    geom_point() +
+    geom_line() +
+    facet_grid(scale ~ tx) +
+    ggtitle(paste0(geneId, " (", mapIds(org.Hs.eg.db, sub("\\..*", "", geneId), "SYMBOL", "ENSEMBL"), ")")) +
+    theme_bw() +
+    theme(strip.text.x = element_text(size = 7))
+}
+plotUsageScales("ENSG00000091592.15")
+```
+
+::: {.callout-tip}
+## Question
+
+- Why does the short transcript of *NLRP1* lose more usage on the fragment scale than on the molecular scale?
+- Which analysis would you report to a biologist?
+:::
+
+- Dexamethasone shifts the expression of *NLRP1* towards its long transcripts (about 5 kb). A long transcript produces about four times more fragments per molecule than the short transcript (1.2 kb). The fragment usage of the short transcript therefore decreases about twice as strongly on the log scale as its molecular usage: about half of its apparent decrease on the fragment scale is due to the shift to the long transcripts.
+- On the fragment scale, the strong decrease of the abundant short transcript provides very strong evidence for DTU. On the molecular scale, the changes are more moderate and the evidence is spread over several transcripts. Although all transcript-level p-values of the molecular analysis are below 0.05, *NLRP1* just misses the screening stage of the molecular analysis.
+- Biologists think in terms of molecules: the molecular usage, i.e. the fraction of the transcripts of the gene, is the quantity of interest. The length-corrected offset estimates exactly this quantity. Both analyses agree for most transcripts, but they differ for genes whose transcripts differ strongly in length.
+
+# Summary
+
+```{r}
+tibble(
+  analysis = c("DGE", "DGE (TREAT, |logFC| > 1)", "DTE (raw counts)", "DTE (divided counts)",
+               "DTU diffSplice (stage-wise)", "DTU offset model, fragment usage (stage-wise)",
+               "DTU offset model, molecular usage (stage-wise)"),
+  genes = c(sum(decideTests(qlf) != 0), sum(decideTests(treat) != 0), NA, NA,
+            length(unique(padjDs$geneID)), length(unique(padjOffset$geneID)),
+            length(unique(padjLength$geneID))),
+  transcripts = c(NA, NA, sum(decideTests(dteRaw$test) != 0), sum(decideTests(dteDivided$test) != 0),
+                  sum(padjDs$transcript < 0.05), sum(padjOffset$transcript < 0.05),
+                  sum(padjLength$transcript < 0.05))
+) |>
+  knitr::kable()
+```
+
+- DGE, DTE and DTU answer different biological questions and are complementary.
+- Transcript counts are more uncertain than gene counts. Dividing them by the overdispersion estimated from the Gibbs samples restores the mean-variance relation of the NB model and greatly improves the power of the transcript-level analyses.
+- DTU can be analysed with the standard edgeR pipeline by juggling the offsets, or with `diffSplice`.
+- With the gene total as offset we model the fragment usage. Adding the effective transcript length to the offset models the molecular usage, which is the quantity of biological interest and avoids transcripts being flagged because other transcripts of the gene with a different length change.
+- Stage-wise testing controls the FDR at the gene level and identifies the transcripts that drive the DTU. We used a single DTU method for both stages: `diffSplice` (Simes screening and transcript-level tests) or the offset model (Simes screening on its own transcript-level tests). On these data, `diffSplice` was much more powerful.
+
+# Further exercises
+
+1. Repeat the DTE analysis with TREAT. How many transcripts change more than twofold?
+2. Plot the usages of a few other DTU genes. Do you find genes that switch between transcripts without a change in their total expression?
+3. Perform a stage-wise DTE analysis with stageR (`method = "dte"`): screen genes with the Simes test on the transcript-level DTE p-values and confirm the transcripts. Compare the number of genes with the DGE analysis.
+
+# References

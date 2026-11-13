@@ -52,6 +52,46 @@ etaTrue <- X %*% betasTrue
 y <- rpois(100, exp(etaTrue))
 ```
 
+```{r fig.width=4, fig.height=3}
+tibble(coef = 0:2, beta = betasTrue) |>
+  ggplot(aes(coef, beta)) +
+  geom_point() +
+  geom_line() +
+  scale_x_continuous(breaks = 0:2) +
+  ylim(0, 4) +
+  xlab("parameter") +
+  ylab("true value") +
+  theme_bw()
+```
+
+The counts increase exponentially with the covariates; on the log scale the relation becomes (approximately) linear.
+
+```{r}
+simData <- tibble(x1 = X[, 2], x2 = X[, 3], y = y)
+if (knitr::is_html_output()) {
+  plot3d <- function(z, title) {
+    plotly::plot_ly(simData, x = ~x1, y = ~x2, z = z, size = 0.5) |>
+      plotly::add_markers(type = "scatter3d") |>
+      plotly::layout(title = title, scene = list(aspectmode = "cube", zaxis = list(title = title)))
+  }
+  htmltools::tagList(
+    plot3d(~y, "y"),
+    plot3d(~ log2(y + 0.5), "log2(y + 0.5)")
+  )
+} else {
+  simData |>
+    mutate(`log2(y + 0.5)` = log2(y + 0.5)) |>
+    pivot_longer(c(y, `log2(y + 0.5)`), names_to = "scale", values_to = "count") |>
+    mutate(scale = factor(scale, levels = c("y", "log2(y + 0.5)"))) |>
+    ggplot(aes(x1, count, color = x2)) +
+    geom_point() +
+    facet_wrap(~scale, scales = "free_y") +
+    scale_color_viridis_c() +
+    ylab("") +
+    theme_bw()
+}
+```
+
 ## Exponential family
 
 GLMs assume that the response follows a distribution of the exponential family:
@@ -77,8 +117,17 @@ The variance is thus a function of the mean.
 $$
 f(y_i \vert \mu_i) = \frac{\mu_i^{y_i}e^{-\mu_i}}{y_i!} = \exp\left\{y_i\log(\mu_i) - \mu_i - \log(y_i!)\right\}
 $$
-so $\theta_i = \log\mu_i$, $b(\theta_i) = \exp(\theta_i)$, $a(\phi) = 1$ and $c(y_i, \phi) = -\log(y_i!)$.
-Hence $E[y_i] = b^\prime(\theta_i) = \exp(\theta_i) = \mu_i$ and $\text{Var}[y_i] = b^{\prime\prime}(\theta_i) = \mu_i$.
+so 
+
+- $\theta_i = \log\mu_i$, 
+- $b(\theta_i) = \exp(\theta_i)$, 
+- $a(\phi) = 1$ and 
+- $c(y_i, \phi) = -\log(y_i!)$.
+
+Hence 
+
+- $E[y_i] = b^\prime(\theta_i) = \exp(\theta_i) = \mu_i$ and 
+- $\text{Var}[y_i] = b^{\prime\prime}(\theta_i) = \mu_i$.
 
 ## Components of a GLM
 
@@ -101,7 +150,7 @@ These are the **canonical** links: with a canonical link $\theta_i = \eta_i$.
 
 ## Likelihood
 
-- The likelihood is the probability (density) to observe the sample, as a function of the model parameters:
+- The likelihood is the probability (density) to observe the sample, as a function of the model parameters (here we explicitly assume that the observations are independent):
 $$
 L(\boldsymbol{\beta}\vert \mathbf{y})=\prod\limits_{i=1}^n f(y_i\vert\theta_i,\phi)
 $$
@@ -110,11 +159,25 @@ $$
 l(\boldsymbol{\beta}\vert \mathbf{y}) =  \sum\limits_{i=1}^n \log f(y_i\vert\theta_i,\phi).
 $$
 - For the Poisson GLM with log link:
+
 $$
-l(\boldsymbol{\beta} \vert \mathbf{y}) = \sum\limits_{i=1}^n \left\{ y_i \eta_i - e^{\eta_i} - \log y_i!\right\}, \quad \eta_i = \mathbf{x}_i^T\boldsymbol{\beta}.
+l(\boldsymbol{\beta} \vert \mathbf{y}) = \sum\limits_{i=1}^n \left\{ y_i \eta_i - e^{\eta_i} - \log y_i!\right\}, \quad \theta_i = \eta_i = \mathbf{x}_i^T\boldsymbol{\beta}.
 $$
 
-```{r}
+We verify the formula on the simulated data, first for every observation and then for the full sample:
+
+```{r fig.width=4, fig.height=4}
+tibble(
+  dpois = dpois(y, exp(etaTrue), log = TRUE),
+  formula = c(y * etaTrue - exp(etaTrue) - lfactorial(y))
+) |>
+  ggplot(aes(dpois, formula)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1) +
+  xlab("log-likelihood with dpois") +
+  ylab("log-likelihood with the formula") +
+  theme_bw()
+
 c(dpois = sum(dpois(y, exp(etaTrue), log = TRUE)),
   formula = sum(y * etaTrue - exp(etaTrue) - lfactorial(y)))
 ```
@@ -130,14 +193,35 @@ $$
 With the chain rule we obtain
 
 $$
-S(\boldsymbol{\beta}) = \sum\limits_{i=1}^n \frac{y_i-\mu_i}{\text{Var}[y_i]}\frac{\partial\mu_i}{\partial\eta_i}\mathbf{x}_i = \mathbf{X}^T\mathbf{A}\left(\mathbf{y}-\boldsymbol{\mu}\right),
+\begin{aligned}
+S(\boldsymbol{\beta}) &=  \sum_{i=1}^n  \frac{\partial l(\boldsymbol{\beta} \vert{y_i})}{\partial \boldsymbol{\beta}} \\\\
+&\Updownarrow \text{ canonical link} \\\\
+&=   \sum_{i=1}^n  \frac{\partial\left\{ \frac{y_i \theta_i - b(\theta_i)}{a(\phi)}+c(y_i,\phi)\right\}}{\partial \theta_i}\frac{\partial\theta_i}{\partial \mu_i}\frac{\partial\mu_i}{\partial\eta_i}\frac{\partial\eta_i}{\partial\boldsymbol{\beta}}\\\\
+&=  \sum_{i=1}^n \frac{y_i - \mu_i}{a(\phi)}\frac{1}{b^{\prime\prime}(\theta)}\frac{\partial\mu_i}{\partial\eta_i}\mathbf{x}_i^T\\\\
+&= \sum_{i=1}^n \frac{y_i-\mu_i}{\text{Var}[y_i]}\frac{\partial\mu_i}{\partial\eta_i}\mathbf{x}_i^T\\\\
+&=  \mathbf{X}^T\mathbf{A}\left(\mathbf{y}-\boldsymbol{\mu}\right),
+\end{aligned}
 $$
+
 
 with $\mathbf{A}$ a diagonal matrix with elements $a_{ii}=\left(\text{Var}[y_i]\frac{\partial \eta_i}{\partial \mu_i}\right)^{-1}$.
 
-- For the Poisson GLM with log link: $\text{Var}[y_i] = \mu_i$ and $\partial\mu_i/\partial\eta_i = \mu_i$, so $\mathbf{A} = \mathbf{I}$ and $S(\boldsymbol{\beta}) = \mathbf{X}^T(\mathbf{y}-\boldsymbol{\mu})$.
-- The score equations are non-linear in $\boldsymbol{\beta}$ because $\boldsymbol{\mu} = \exp(\mathbf{X}\boldsymbol{\beta})$.
-- Note that only the **mean and the variance** of $y_i$ enter the score equations. This is the basis of quasi-likelihood.
+- For the Poisson GLM with log link: 
+
+    - $\text{Var}[y_i] = \mu_i$ and 
+    - $\partial\mu_i/\partial\eta_i = \mu_i$, so $\mathbf{A} = \mathbf{I}$ and
+    - $S(\boldsymbol{\beta}) = \mathbf{X}^T(\mathbf{y}-\boldsymbol{\mu})$.
+
+Note that, 
+
+-  only the **mean and the variance** of $y_i$ enter the score equations. This is the basis of quasi-likelihood.
+
+- The score equations are non-linear in $\boldsymbol{\beta}$ because $\boldsymbol{\mu} = g(\boldsymbol{\eta})$.
+
+- $a_{ii}=\left(\text{var}[y_i]\frac{\partial \eta_i}{\partial \mu_i}\right)^{-1}$
+
+$\rightarrow$ Find roots of score equation by using Newton-Raphson method.
+
 
 ### Newton-Raphson and Fisher scoring
 
@@ -146,97 +230,287 @@ We find the root of the score function iteratively with the Newton-Raphson algor
 ```{r echo=FALSE, fig.cap="Newton-Raphson: starting from an initial guess, the algorithm walks along the tangent of the score function to the point where the tangent crosses zero, and repeats this until the root is found."}
 S <- function(beta) (beta - 3)^2
 dS <- function(beta) 2 * (beta - 3)
-tangent <- function(beta, betak) dS(betak) * (beta - betak) + S(betak)
 betaSeq <- -20
-for (i in 1:4) betaSeq <- c(betaSeq, betaSeq[i] - S(betaSeq[i]) / dS(betaSeq[i]))
-p <- ggplot(tibble(beta = seq(-21, 15, length = 200)), aes(beta, S(beta))) +
+for (i in 1:5) betaSeq <- c(betaSeq, betaSeq[i] - S(betaSeq[i]) / dS(betaSeq[i]))
+k <- seq_len(length(betaSeq) - 1)
+
+# the tangent in beta_k crosses zero in beta_k+1
+tangents <- tibble(x = betaSeq[k], y = S(betaSeq[k]), xend = betaSeq[k + 1], yend = 0)
+verticals <- tibble(x = betaSeq[k + 1], y = 0, yend = S(betaSeq[k + 1]))
+
+ggplot(tibble(beta = seq(-21, 15, length = 200)), aes(beta, S(beta))) +
+  geom_hline(yintercept = 0, col = "grey") +
   geom_line() +
-  geom_hline(yintercept = 0, col = "grey")
-for (i in 1:4) {
-  seg <- tibble(beta = seq(betaSeq[i], betaSeq[i + 1], length = 50))
-  p <- p +
-    geom_line(data = seg, aes(beta, tangent(beta, betaSeq[i])), linetype = "dashed", col = "red") +
-    geom_segment(x = betaSeq[i + 1], xend = betaSeq[i + 1], y = 0, yend = S(betaSeq[i + 1]), linetype = "dashed", col = "red")
-}
-p +
-  geom_point(data = tibble(beta = betaSeq), aes(beta, S(beta)), col = "red") +
-  xlab(expression(beta)) +
-  ylab(expression(S(beta))) +
+  geom_segment(data = tangents, aes(x, y, xend = xend, yend = yend),
+               linetype = "dashed", col = "red") +
+  geom_segment(data = verticals, aes(x, y, xend = x, yend = yend),
+               linetype = "dashed", col = "red") +
+  geom_point(data = tibble(beta = betaSeq), col = "red") +
+  annotate("text", x = betaSeq[1:3], y = S(betaSeq[1:3]) + 40, col = "red", parse = TRUE,
+           label = c("S(beta[k])", "S(beta[k+1])", "S(beta[k+2])")) +
+  annotate("text", x = betaSeq[2:4], y = -40, col = "red", parse = TRUE,
+           label = paste0("beta[k+", 1:3, "]")) +
+  annotate("text", x = -20, y = 400, col = "red", parse = TRUE,
+           label = "frac(partialdiff*S, partialdiff*beta)*' |'*beta[k]") +
+  labs(x = expression(beta), y = expression(S(beta))) +
   theme_bw()
 ```
 
-The update step is
+
+Newton Raphson algorithm to find the root of the score function. 
+
+1. Choose initial parameter estimate $\boldsymbol{\beta}^k=\boldsymbol{\beta}^0$
+2. Calculate score $S(\boldsymbol{\beta})\vert_{\boldsymbol{\beta}=\boldsymbol{\beta}^k}$
+3. Calculate derivative of the function for which you want to calculate the roots
+4. Walk along first derivative until line (plane) of the derivative crosses zero
+5. Update the betas $\boldsymbol{\beta}^{k+1}$
+6. Iterate from step 2 - 5 until convergence.
+
+
+#### Derivative of Score 
+
+We have to implement an interative algorithm for optimisation. To make things tractable we will act as if $\mathbf{A}$ is known and fix it using the current values of $\boldsymbol{\beta}^k$. Note, that for Poisson regression $\mathbf{A}=\mathbf{I}$.
+
+\begin{eqnarray*}
+\frac{\partial S(\boldsymbol{\beta})}{\partial \boldsymbol{\beta}} &=& \frac{\partial \mathbf{X}^T\mathbf{A} \left\{\mathbf{Y}-\boldsymbol{\mu}\right\}}{\partial \boldsymbol{\beta}}\\
+&\approx& - \mathbf{X}^T \mathbf{A}\left[
+\begin{array}{cccc} \frac{\partial \mu_1}{\partial \eta_1} &0&\ldots&0\\
+ 0&\frac{\partial \mu_2}{\partial \eta_2} &\ldots&0\\
+\vdots&\vdots&\vdots&\vdots\\
+0&0&\ldots& \frac{\partial \mu_n}{\partial \eta_n}\\
+\end{array}\right] \frac{\partial \boldsymbol{\eta}}{\partial \boldsymbol{\beta}}\\
+&\approx&-\mathbf{X}^T\mathbf{WX}
+\end{eqnarray*}
+
+#### Define equation of Tangent Line (Plane)
+
+- We know two points of the tangent plane $(\boldsymbol{\beta}^k,S(\boldsymbol{\beta}^k))$ and $(\boldsymbol{\beta}^{k+1},0)$
+- We know the direction of the plane $S^\prime(\boldsymbol{\beta})=\frac{\partial S(\boldsymbol{\beta})}{\partial \boldsymbol{\beta}}$
+- Equation of Plane:
+$$S(\boldsymbol{\beta})={\alpha}_0+S^\prime\vert_{\boldsymbol{\beta}^k} \boldsymbol{\beta}$$
+
+- Get $\boldsymbol{\beta}_{k+1}$
+$$
+\begin{aligned}
+\mathbf{0}&= {\alpha}_0+S^\prime\vert_{\boldsymbol{\beta}^{k}} \boldsymbol{\beta}^{k+1}\\
+\boldsymbol{\beta}^{k+1}&= -\left(S^{\prime}\vert_{\boldsymbol{\beta}^{k}}\right)^{-1}{\alpha}_0
+\end{aligned}
+$$
+
+- Get ${\alpha}_0$
 
 $$
-\boldsymbol{\beta}^{k+1}=\boldsymbol{\beta}^k-\left(\left.\frac{\partial S(\boldsymbol{\beta})}{\partial \boldsymbol{\beta}}\right\vert_{\boldsymbol{\beta}^{k}}\right)^{-1}S(\boldsymbol{\beta}^k)
-= \boldsymbol{\beta}^k + \left(\mathbf{X}^T\mathbf{WX}\right)^{-1} S(\boldsymbol{\beta}^k),
+\begin{aligned}
+S(\boldsymbol{\beta}^k)&= \boldsymbol{\alpha}_0+S^\prime\vert_{\boldsymbol{\beta}^k} \boldsymbol{\beta}^k\\
+{\alpha}_0&= -S^\prime\vert_{\boldsymbol{\beta}^k} \boldsymbol{\beta}^k + S(\boldsymbol{\beta}^k)
+\end{aligned}
 $$
 
-with $\mathbf{W}$ a diagonal matrix with weights $w_{ii} = \text{Var}[y_i]^{-1}\left(\frac{\partial\mu_i}{\partial\eta_i}\right)^2$.
+- Get $\boldsymbol{\beta}_{k+1}$
+
+$$
+\begin{aligned}
+\boldsymbol{\beta}^{k+1}&= \boldsymbol{\beta}^k-\left(S^{\prime}\vert_{\boldsymbol{\beta}^{k}}\right)^{-1}S(\boldsymbol{\beta}^k)\\
+\boldsymbol{\beta}^{k+1}&= \boldsymbol{\beta}^k+ \left(\mathbf{X}^T\mathbf{WX}\right)^{-1} S(\boldsymbol{\beta}^k)
+\end{aligned}
+$$
+
 
 - $\mathbf{X}^T\mathbf{WX}$ is the Fisher information matrix.
-- With a canonical link the observed and expected Fisher information are equal, so Newton-Raphson and Fisher scoring coincide.
+- With a canonical link the observed and expected Fisher information are equal
+
+### Fisher Scoring
+
+Because we use the canonical model parameters the observed  Fisher information matrix equals the expected  Fisher information matrix $J(\boldsymbol{\beta})=I(\boldsymbol{\beta})$.
+Indeed, the observed Fisher information matrix is not depending on the observations, but only on the design and the variance of the data (via the weights).
+
+Hence, Newton-Raphson is equivalent to Fisher scoring when the canonical link function is used.
+
+Note, that the Fisher matrix, minus second derivative (or hessian) of the likelihood to the model parameters, is also the inverse of the variance covariance matrix of the model parameters. It is thus related to the precision.
+
 
 ### Iteratively reweighted least squares
 
-Rewriting the update step gives
+We can rewrite Newton Raphson or Fisher scoring as IRLS.
 
 $$
-\boldsymbol{\beta}^{k+1} = \left(\mathbf{X}^T\mathbf{WX}\right)^{-1}\mathbf{X}^T\mathbf{W}\mathbf{z}, \quad
-\mathbf{z} = \mathbf{X}\boldsymbol{\beta}^k + \frac{\partial \boldsymbol{\eta}}{\partial \boldsymbol{\mu}}\left(\mathbf{y}-\boldsymbol{\mu}\right).
+\begin{aligned}
+\boldsymbol{\beta}^{k+1}&= \boldsymbol{\beta}^k+ \left(\mathbf{X}^T\mathbf{WX}\right)^{-1} S(\boldsymbol{\beta}^k)\\
+\boldsymbol{\beta}^{k+1}&= \boldsymbol{\beta}^k+ \left(\mathbf{X}^T\mathbf{WX}\right)^{-1} \mathbf{X}^T\mathbf{A} \left(\mathbf{Y}-\boldsymbol{\mu}\right)\\
+\boldsymbol{\beta}^{k+1}&=  \left(\mathbf{X}^T\mathbf{WX}\right)^{-1}\mathbf{X}^T\mathbf{WX}\boldsymbol{\beta}^k+ \left(\boldsymbol{X}^T\mathbf{WX}\right)^{-1} \mathbf{X}^T \mathbf{W}\frac{\partial \eta}{\partial \mu}  \left(\mathbf{Y}-\boldsymbol{\mu}\right)\\
+\boldsymbol{\beta}^{k+1}&=  \left(\mathbf{X}^T\mathbf{WX}\right)^{-1}\mathbf{X}^T\mathbf{W} \left[\mathbf{X}\boldsymbol{\beta}^k + \frac{\partial \eta}{\partial \mu}  \left(\mathbf{Y}-\boldsymbol{\mu}\right)
+\right]\\
+\boldsymbol{\beta}^{k+1}&=  \left(\mathbf{X}^T\mathbf{WX}\right)^{-1}\mathbf{X}^T\mathbf{Wz}
+\end{aligned}
 $$
+
+with $\mathbf{z}=\left[\mathbf{X}\boldsymbol{\beta}^k + \frac{\partial \eta}{\partial \mu}  \left(\mathbf{Y}-\boldsymbol{\mu}\right)\right]$
+
 
 Each iteration is a **weighted least squares** fit of the working response $\mathbf{z}$ on $\mathbf{X}$, as in a linear model.
 The weights account for the mean-variance relation: observations with a smaller variance get more weight.
-This is iteratively reweighted least squares (IRLS).
-
-```{r echo=FALSE, out.width="70%", fig.cap="The IRLS algorithm."}
-knitr::include_graphics("./figs/rnaseq/irlsScheme.png")
-```
 
 For the Poisson GLM with log link: $z_i = \eta_i + e^{-\eta_i}(y_i - e^{\eta_i})$ and $w_{ii} = e^{\eta_i}$.
 
 ### IRLS in R
 
-We start from the fit of a linear model on the log counts and iterate until the deviance no longer changes (the deviance is defined below).
+#### Initial Estimate
+
+This is a very poor initial estimate used to illustrate the algorithm.
+Otherwise convergence for this simple example is way too quick
 
 ```{r}
-poisDeviance <- function(y, eta) {
-  2 * sum(ifelse(y == 0, 0, y * log(y)) - y * eta - (y - exp(eta)))
-}
-
-betas <- lm(log(y + 0.5) ~ -1 + X)$coef
-eta <- X %*% betas
-dev <- poisDeviance(y, eta)
-devOld <- Inf
-iteration <- 0
-while ((devOld - dev) / dev > 1e-8) {
-  iteration <- iteration + 1
-  z <- eta + exp(-eta) * (y - exp(eta))  # working response
-  w <- c(exp(eta))                        # weights
-  wlsFit <- lm(z ~ -1 + X, weights = w)   # weighted least squares
-  betas <- coef(wlsFit)
-  eta <- X %*% betas
-  devOld <- dev
-  dev <- poisDeviance(y, eta)
-  cat("iteration", iteration, "deviance", dev, "\n")
-}
-```
-
-The variance-covariance matrix of the estimators is the inverse of the Fisher information:
-$\boldsymbol{\Sigma}_{\hat{\boldsymbol{\beta}}}=\left(\mathbf{X}^T\mathbf{WX}\right)^{-1}$.
-
-```{r}
-w <- c(exp(eta))
-seBetas <- sqrt(diag(solve(t(X) %*% diag(w) %*% X)))
-glmFitPois <- glm(y ~ -1 + X, family = poisson)
-cbind(
-  irls = c(betas, seBetas, deviance = dev),
-  glm = c(coef(glmFitPois), summary(glmFitPois)$coef[, 2], deviance(glmFitPois))
+iteration=0
+betas<-c(log(mean(y)),0,0)
+plot(betasTrue,
+     ylab=expression(beta),
+     ylim=c(0,4),
+     pch=19,
+     type="b", 
+     main=paste0("likelihood real beta=",
+                 round(sum(dpois(y,exp(etaTrue),log=TRUE)),1),"\nlikelihood fit=", round(sum(dpois(y,exp(X%*%betas),log=TRUE)),1))
 )
+lines(betas,type="b",lty=2 )
 ```
 
-Our IRLS implementation gives the same estimates, standard errors and deviance as `glm`.
+#### Iteratively Reweighted Least Squares
+
+##### Pseudo Data
+
+$$z_i= \eta_i + \frac{\partial \eta_i}{\partial \mu_i}(y_i -\mu_i)$$
+$$z_i= \eta_i + e^{-\eta_i} y_i -1$$
+
+##### Weight Matrix?
+
+$$[w_{ii}]= var_{y_i}^{-1} \left(\frac{\partial \mu}{\partial \eta}\right)^2$$
+$$[w_{ii}]= e^{\eta_i}$$
+
+##### Run Update Step Multiple Times
+
+First 3 times (colors are black 0, red iteration 1, green iteration 2, blue iteration 3)
+
+```{r}
+plot(betasTrue,ylab=expression(beta),ylim=c(0,4),pch=19,type="b")
+lines(betas,type="b",lty=2)
+
+cat("\nlikelihood TRUE=", round(sum(dpois(y,exp(X%*%betasTrue),log=TRUE)),1))
+cat("\nlikelihood initial fit=", round(sum(dpois(y,exp(X%*%betas),log=TRUE)),1))
+
+#Calculate current eta
+eta<-X%*%betas
+
+iteration=0
+for (i in 1:3)
+{
+#start IRLS UPDATE STEP
+iteration=iteration+1
+#calculate pseudo data based on current betas
+z=eta+exp(-eta)*(y-exp(eta))
+#calculate new weights: diagonal elements
+w<-c(exp(eta))
+
+#update betas
+lmUpdate<-lm(z~-1+X,weight=w)
+#eta<-X%*%betas
+eta<-lmUpdate$fitted
+betas<-lmUpdate$coef
+lines(betas,type="b",col=iteration+1,pch=iteration,lty=2)
+cat("\nlikelihood current fit=", round(sum(dpois(y,exp(X%*%betas),log=TRUE)),1))
+}
+```
+
+
+### Comparison with GLM Function
+
+#### Smarter Initialisation
+```{r}
+z<-log(y+.5)
+betas<-lm(z~-1+X)$coef
+plot(betasTrue,ylab=expression(beta),ylim=c(0,4),pch=19,type="b")
+lines(betas,col=2,type="b",lty=2)
+#calculate current eta
+eta<-X%*%betas
+
+cat("\nlikelihood TRUE=", round(sum(dpois(y,exp(X%*%betasTrue),log=TRUE)),1))
+cat("\nlikelihood initial fit=", round(sum(dpois(y,exp(X%*%betas),log=TRUE)),1))
+```
+
+#### Evaluation Stopping Criterion
+
+- Residual deviance: Is 2 log of LR between best possible fit and current fit
+$$LR=\frac{L_\text{best}}{L_\text{current}}$$
+$$D=2 (\log L_\text{best}- \log L_\text{current})$$
+$$D=2 (l_\text{best}-l_\text{current})$$
+- Best fit: $\mu=y$
+- Optimal poisson:
+$$ l_\text{best}=\sum\left[y_i \log(y_i) - y_i - \log\left(y_i!\right)\right]$$
+- Current fit
+$$ l_\text{current}=\sum \left[y_i \eta_i -e^{\eta_i} - log\left(y_i!\right)\right]$$
+- Deviance D:
+$$D = 2 \sum \left[ y_i log(y_i) - y_i \eta_i - (y_i -e^{\eta_i})\right]$$
+- Problem to calculate it if y=0 but by apply l'Hopital's rule we know
+$$\lim_{y_i \to 0} y_i \log(y_i) =0$$
+
+```{r}
+ylogy<-function(y)
+{
+return(ifelse(y==0,rep(0,length(y)),y*log(y)))
+}
+
+deviance<-2*sum(ylogy(y)-y*eta-(y-exp(eta)))
+
+devianceOld<-1e30
+```
+
+
+#### Run Update Step until Convergence
+
+```{r}
+plot(betasTrue,ylab=expression(beta),ylim=c(0,4),pch=19,type="b")
+lines(betas,type="b",lty=2)
+
+tol<-1e-6
+iteration=0
+while(((devianceOld-deviance)/devianceOld)>tol)
+{
+#start IRLS UPDATE STEP
+iteration=iteration+1
+#calculate pseudo data based on current betas
+z=eta+exp(-eta)*(y-exp(eta))
+#calculate new weights: diagonal elements
+w<-c(exp(eta))
+
+#update betas
+lmUpdate<-lm(z~-1+X,weight=w)
+#eta<-X%*%betas
+eta<-lmUpdate$fitted
+betas<-lmUpdate$coef
+lines(betas,type="b",col=iteration+1,pch=iteration,lty=2)
+
+#criterion for convergence
+devianceOld<-deviance
+deviance<-2*sum(ylogy(y)-y*eta-(y-exp(eta)))
+cat("iteration",iteration,"Deviance Old",devianceOld,"Deviance", deviance,"\n")
+}
+```
+
+#### Variance $\beta$?
+
+$$\Sigma_{\beta}=\left(\mathbf{X}^T\mathbf{W} \mathbf{X}\right)^{-1}$$
+
+```{r}
+varBeta=solve(t(X)%*%diag(w)%*%X)
+```
+
+#### Comparison with GLM fit
+
+Use -1 because intercept is already in X
+```{r}
+glmfit=glm(y~-1+X,family=poisson)
+comp=data.frame(glmfit=c(glmfit$deviance,glmfit$coef,summary(glmfit)$coef[,2]),ourFit=c(deviance,betas,sqrt(diag(varBeta))))
+row.names(comp)=c("deviance",paste("beta",1:3,sep=""),paste("se",1:3,sep=""))
+comp
+```
 
 ## Inference
 
@@ -245,19 +519,25 @@ Our IRLS implementation gives the same estimates, standard errors and deviance a
 The maximum likelihood estimator is asymptotically normal:
 
 $$
-\hat{\boldsymbol{\beta}} \sim N\left[\boldsymbol{\beta},\left(\mathbf{X}^T\mathbf{WX}\right)^{-1}\right].
+\hat{\boldsymbol{\beta}} \stackrel{a}{\sim} N\left[\boldsymbol{\beta},\left(\mathbf{X}^T\mathbf{WX}\right)^{-1}\right].
 $$
 
-For a contrast $\mathbf{L}^T\boldsymbol{\beta}$:
+Under $H_0: \mathbf{L}^T\boldsymbol{\beta} = 0$,
 
 $$
-W = \frac{\mathbf{L}^T\hat{\boldsymbol{\beta}}}{\text{SE}_{\mathbf{L}^T\hat{\boldsymbol{\beta}}}} \approx N(0,1) \text{ under } H_0: \mathbf{L}^T\boldsymbol{\beta}=0.
+\frac{L^T\hat{\boldsymbol{\beta}}}{\widehat{\text{SE}}_{L^T\hat{\boldsymbol{\beta}}}} \xrightarrow{d} \mathcal{N}(0, 1)
 $$
+
+
+
 
 For $c$ contrasts simultaneously, $\mathbf{L}$ is a $p \times c$ matrix and
 
+Under $H_0: \mathbf{L}\boldsymbol{\beta} = \mathbf{0}$,
 $$
-W = \hat{\boldsymbol{\beta}}^T\mathbf{L}\left(\mathbf{L}^T\boldsymbol{\Sigma}_{\hat{\boldsymbol{\beta}}}\mathbf{L}\right)^{-1}\mathbf{L}^T\hat{\boldsymbol{\beta}} \approx \chi^2_c \text{ under } H_0: \mathbf{L}^T\boldsymbol{\beta}=\mathbf{0}.
+W = (\mathbf{L}\hat{\boldsymbol{\beta}})^T 
+\left(\mathbf{L}\widehat{\boldsymbol{\Sigma}}_{\hat{\boldsymbol{\beta}}}\mathbf{L}^T\right)^{-1} 
+(\mathbf{L}\hat{\boldsymbol{\beta}}) \xrightarrow{d} \chi^2_c
 $$
 
 ### Deviance and likelihood ratio test
@@ -267,9 +547,10 @@ $$
 D = 2\left[l(\mathbf{y}\vert\mathbf{y}) - l(\hat{\boldsymbol{\mu}}\vert\mathbf{y})\right].
 $$
 It plays the role of the residual sum of squares in a linear model.
+
 - The **likelihood ratio test** compares a full model with a nested reduced model, e.g. without the treatment effect:
 $$
-\text{LRT} = 2\left[l(\hat{\boldsymbol{\beta}}_\text{full}) - l(\hat{\boldsymbol{\beta}}_0)\right] = D_0 - D_\text{full} \approx \chi^2_c \text{ under } H_0,
+H_0: \text{LRT} = 2\left[l(\hat{\boldsymbol{\beta}}_\text{full}) - l(\hat{\boldsymbol{\beta}}_0)\right]  \xrightarrow{d} \chi^2_c ,
 $$
 with $c$ the number of parameters that are dropped.
 
@@ -278,9 +559,10 @@ knitr::include_graphics("./figs/rnaseq/likTests.png")
 ```
 
 **These results are asymptotic.**
-With the typical 3 to 5 biological replicates per group in bulk RNA-seq, the large sample theory does not hold.
-Moreover, the dispersion of the NB distribution has to be estimated, which adds uncertainty that the $\chi^2$ tests ignore.
-Quasi-likelihood F-tests address both issues.
+
+- With the typical 3 to 5 biological replicates per group in bulk RNA-seq, the large sample theory does not hold.
+- Moreover, the dispersion of the NB distribution has to be estimated, which adds uncertainty that the $\chi^2$ tests ignore.
+- Quasi-likelihood F-tests address both issues.
 
 # Differential expression with edgeR
 
@@ -341,8 +623,8 @@ the GLM counterpart of the residual variance $\hat\sigma^2 = \text{SSE}/(n-p)$ i
 
 ### Inference
 
-- t-test: $t = \frac{\mathbf{L}^T\hat{\boldsymbol{\beta}}}{\text{SE}^{QL}} \approx t_{n-p}$ under $H_0$, with $\text{SE}^{QL} = \hat\sigma\, \text{SE}^{ML}$.
-- F-test: $F = \frac{\text{LRT}/c}{\hat\sigma^2} \approx F_{c, n-p}$ under $H_0$.
+- t-test: $t = \frac{\mathbf{L}^T\hat{\boldsymbol{\beta}}}{\widehat{\text{SE}}^{QL}} \stackrel{a}{\sim} t_{n-p}$ under $H_0$, with $\text{SE}^{QL} = \hat\sigma\, \text{SE}^{ML}$.
+- F-test: $F = \frac{(D_0 - D_{\text{full}})/c}{\hat\sigma^2} \stackrel{a}{\sim} F_{c, n-p}$ under $H_0$.
 
 The $t$ and $F$ distributions account for the uncertainty in $\hat\sigma^2$, as in linear models.
 
@@ -420,8 +702,8 @@ getOffset(dge)[1:3, 1:4]
 
 ### Step 1: a global NB dispersion
 
-`glmQLFit` no longer needs gene-wise NB dispersions.
-It estimates a single NB dispersion $\phi$ from the most highly expressed genes, for which the Poisson noise is negligible.
+- `glmQLFit` no longer needs gene-wise NB dispersions.
+- It estimates a single NB dispersion $\phi$ from the most highly expressed genes, for which the Poisson noise is negligible.
 
 ```{r}
 fit <- glmQLFit(dge, design)
@@ -429,25 +711,42 @@ fit$dispersion
 fit$top.proportion
 ```
 
-$\phi$ = `r round(fit$dispersion, 3)` corresponds to a biological coefficient of variation of `r round(sqrt(fit$dispersion) * 100)`%.
-All gene-specific variability is captured by the QL dispersions $\sigma^2_g$.
+- $\phi$ = `r round(fit$dispersion, 3)` corresponds to a biological coefficient of variation of `r round(sqrt(fit$dispersion) * 100)`%.
+- All gene-specific variability is captured by the QL dispersions $\sigma^2_g$.
+- Older edgeR analyses first estimate trended NB dispersions with `estimateDisp` and use the classical QL theory (`glmQLFit(..., legacy = TRUE)`). For bulk RNA-seq with moderate counts, both pipelines give very similar results.
 
 ### Step 2: QL dispersions with bias-adjusted degrees of freedom
 
-The QL dispersion is estimated as $\hat\sigma^2_g = D_g/\text{df}_g$.
-For low counts the deviance does not follow a scaled $\chi^2_{n-p}$ distribution: its expected value is smaller than $n-p$, so $\hat\sigma^2_g$ would be biased downwards and low-count genes would look too stable.
-edgeR 4 therefore adjusts the deviance of each observation and uses **effective residual degrees of freedom**, which are smaller for low counts.
+- The QL dispersion is estimated as $\hat\sigma^2_g = D_g/\text{df}_g$.
+- Classical QL theory treats the deviance as a scaled $\chi^2_{n-p}$. This works well for large counts but not for small counts, where the QL dispersions are biased [@Chen2025-edgeR4].
+- edgeR 4 corrects both the deviance and the residual df for the count size, which gives nearly unbiased QL dispersions.
+- As a consequence, the residual df are fractional and gene-specific. They are used in the empirical Bayes step and in the F-test.
+
+The plot below reproduces Fig. 1 of @Chen2025-edgeR4: Poisson counts for 10 000 genes and 100 samples. Because the counts are simulated from the same variance model that is used in the fit (here Poisson, i.e. NB dispersion 0), the true QL dispersion equals 1 for every gene.
 
 ```{r}
-tibble(AveLogCPM = fit$AveLogCPM, df = fit$df.residual.adj) |>
-  ggplot(aes(AveLogCPM, df)) +
-  geom_point(alpha = 0.2, size = 0.5) +
-  geom_hline(yintercept = ncol(dge) - ncol(design), col = "red") +
-  ylab("adjusted residual df") +
+set.seed(1)
+mu <- 2^runif(10000, -4, 4)
+ySim <- matrix(rpois(10000 * 100, mu), 10000)
+designSim <- matrix(1, 100, 1)
+fitClassic <- glmQLFit(ySim, designSim, dispersion = 0, legacy = TRUE)
+fitAdj <- glmQLFit(ySim, designSim, dispersion = 0, legacy = FALSE)
+tibble(log2mu = log2(mu),
+       `classical: deviance/(n-p)` = fitClassic$deviance / fitClassic$df.residual,
+       `edgeR 4: adjusted deviance/adjusted df` = fitAdj$deviance.adj / fitAdj$df.residual.adj) |>
+  pivot_longer(-log2mu, names_to = "method", values_to = "QLdisp") |>
+  ggplot(aes(log2mu, QLdisp)) +
+  geom_point(alpha = 0.1, size = 0.3) +
+  geom_smooth(col = "red", se = FALSE) +
+  geom_hline(yintercept = 1, lty = 2) +
+  facet_wrap(~method) +
+  coord_cartesian(ylim = c(0, 2.5)) +
+  xlab("log2(expected count)") + ylab("QL dispersion (true value 1)") +
   theme_bw()
 ```
 
-The red line is the nominal $n-p$ = `r ncol(dge) - ncol(design)` residual degrees of freedom.
+- The classical estimator underestimates the QL dispersion for expected counts below about 0.5 and overestimates it around 1–2.
+- The adjusted estimator is unbiased for all count sizes and is also more precise at low counts.
 
 ### Step 3: empirical Bayes
 
@@ -467,7 +766,7 @@ fit$df.prior
 ### Step 4: moderated F-tests
 
 $$
-F_g = \frac{\text{LRT}_g/c}{\tilde\sigma^2_g} \approx F_{c, d_0 + d_g} \text{ under } H_0.
+F_g = \frac{(D_{0,g} - D_{\text{full,g}})/c}{\tilde\sigma^2_g} \stackrel{a}{\sim} F_{c, d_0 + d_g} \text{ under } H_0.
 $$
 
 For a single parameter ($c = 1$), e.g. the IFN$\gamma$ effect in uninfected cells, the F-test is equivalent to a moderated t-test:
@@ -486,69 +785,11 @@ topTags(qlfAny, n = 5)
 summary(decideTests(qlfAny))
 ```
 
-### Effect of the length correction
-
-We refit the model without the length offsets, i.e. on the summed counts with only the effective library sizes as offsets.
-
-```{r}
-dgeNoLength <- dge
-dgeNoLength$offset.prior <- NULL
-fitNoLength <- glmQLFit(dgeNoLength, design)
-qlfNoLength <- glmQLFTest(fitNoLength, coef = "ifngyes")
-summary(decideTests(qlfNoLength))
-c(withLength = median(fit$s2.post), withoutLength = median(fitNoLength$s2.post))
-```
-
-```{r}
-tibble(
-  Max2MinLength = dge$genes$Max2MinLength,
-  difference = qlf$table$logFC - qlfNoLength$table$logFC
-) |>
-  ggplot(aes(Max2MinLength, difference)) +
-  geom_point(alpha = 0.2, size = 0.5) +
-  scale_x_log10() +
-  xlab("ratio of largest to smallest average transcript length over samples") +
-  ylab("logFC with - logFC without length offset") +
-  theme_bw()
-```
-
-- The log fold changes only change noticeably for genes whose average transcript length differs between samples, i.e. genes with a change in transcript usage.
-- For these genes, part of the apparent change in the summed counts is due to the change in transcript length, as described by @Soneson2015-tx.
-- With the length offsets, the median QL dispersion is larger and fewer genes are significant. The variation of the average transcript length between samples is no longer interpreted as a change in expression.
-
-### Comparison with the legacy pipeline
-
-The original QL pipeline (`legacy = TRUE`) first estimates trended NB dispersions with `estimateDisp`, and uses the nominal residual degrees of freedom.
-
-```{r}
-dgeLegacy <- estimateDisp(dge, design)
-plotBCV(dgeLegacy)
-fitLegacy <- glmQLFit(dgeLegacy, design, legacy = TRUE)
-qlfLegacy <- glmQLFTest(fitLegacy, coef = "ifngyes")
-summary(decideTests(qlfLegacy))
-```
-
-```{r}
-tibble(
-  AveLogCPM = qlf$AveLogCPM,
-  new = -log10(qlf$table$PValue),
-  legacy = -log10(qlfLegacy$table$PValue)
-) |>
-  ggplot(aes(legacy, new, color = AveLogCPM)) +
-  geom_point(size = 0.5) +
-  geom_abline(intercept = 0, slope = 1, col = "red") +
-  scale_color_viridis_c() +
-  xlab("-log10 p-value legacy") +
-  ylab("-log10 p-value edgeR 4") +
-  theme_bw()
-```
-
-Both pipelines agree for most genes. The differences are mainly found for lowly expressed genes, for which the bias adjustment of the deviance and the degrees of freedom matters most: the legacy pipeline is conservative for these genes, and edgeR 4 gives them smaller p-values.
-
 ## limma-voom
 
 An alternative is to model log-transformed counts with linear models [@Law2014-voom].
 
+- voom computes log2 CPM values with a prior count of 0.5, so that zero counts can be log-transformed: $y_{gi} = \log_2\{(Y_{gi}+0.5)/(N_{gi}+1)\times 10^6\}$, with $N_{gi}$ the effective library size, which includes the TMM normalisation factors and the length offsets of tximeta.
 - The log2 CPM values are still heteroscedastic: low counts are more variable.
 - voom estimates the mean-variance trend of the log2 CPM values and converts it into a **precision weight** for every observation.
 - The weighted log2 CPM values are then analysed with the limma pipeline: linear models, empirical Bayes moderation with `squeezeVar` and moderated t-tests.
@@ -597,87 +838,8 @@ tibble(
   theme_bw()
 ```
 
-The log fold changes agree well.
-The Wald tests of DESeq2 do not account for the uncertainty in the dispersion estimates and can be somewhat liberal with few replicates.
-
-# Calibration under the null
-
-- With strong treatment effects, thousands of genes are significant.
-- Can we trust the p-values, or are the tests too liberal?
-- We can only check this on data for which we know that the null hypothesis holds for all genes.
-
-
-$\rightarrow$ Mock analysis! 
-
-- The naive samples of the 6 donors contain no treatment effect.
-- If we split the donors at random in two groups of 3 and test for a difference between the groups, every discovery is a false positive.
-- These **mock comparisons** keep everything that makes real data difficult: the biological variability between donors, the mean-variance relation, low counts and the correlation between genes.
-
-- There are $\binom{6}{3}/2 = 10$ different splits of the 6 donors into two groups of 3.
-- We analyse every split with edgeR 4 (QL F-test) and with the legacy NB likelihood ratio test (`glmFit` and `glmLRT`).
-
-```{r}
-naiveSamples <- sg$condition == "naive"
-dgeNaive <- DGEListFromTximeta(sg[, naiveSamples])
-dgeNaive <- dgeNaive[rownames(dge), , keep.lib.sizes = FALSE]
-dgeNaive <- normLibSizes(dgeNaive)
-donorNaive <- droplevels(sg$donor[naiveSamples])
-
-donorSplits <- combn(levels(donorNaive), 3)
-donorSplits <- donorSplits[, donorSplits[1, ] == levels(donorNaive)[1]]
-ncol(donorSplits)
-
-mockPValues <- lapply(seq_len(ncol(donorSplits)), function(split) {
-  mockGroup <- factor(donorNaive %in% donorSplits[, split])
-  mockDesign <- model.matrix(~ mockGroup)
-  fitQL <- glmQLFit(dgeNaive, mockDesign)
-  fitLRT <- glmFit(estimateDisp(dgeNaive, mockDesign), mockDesign)
-  tibble(
-    split = split,
-    `edgeR 4 QL F-test` = glmQLFTest(fitQL, coef = 2)$table$PValue,
-    `legacy NB LRT` = glmLRT(fitLRT, coef = 2)$table$PValue
-  )
-}) |>
-  bind_rows() |>
-  pivot_longer(-split, names_to = "method", values_to = "PValue")
-```
-
-```{r fig.width=10, fig.height=4}
-mockPValues |>
-  ggplot(aes(PValue)) +
-  geom_histogram(breaks = seq(0, 1, 0.05)) +
-  facet_grid(method ~ split) +
-  scale_x_continuous(breaks = c(0, 0.5, 1), labels = c("0", "0.5", "1")) +
-  theme_bw() +
-  theme(panel.spacing.x = unit(0.8, "lines"))
-```
-
-```{r}
-mockPValues |>
-  group_by(method, split) |>
-  summarise(
-    p05 = mean(PValue < 0.05),
-    p01 = mean(PValue < 0.01),
-    falseDiscoveries = sum(p.adjust(PValue, "BH") < 0.05),
-    .groups = "drop_last"
-  ) |>
-  summarise(
-    pct05 = 100 * mean(p05),
-    pct01 = 100 * mean(p01),
-    meanFD = mean(falseDiscoveries),
-    maxFD = max(falseDiscoveries)
-  ) |>
-  as.data.frame()
-```
-
-`pct05` and `pct01` are the average percentages of p-values below 0.05 and 0.01, `meanFD` and `maxFD` the average and maximum number of false discoveries at a 5% FDR over the 10 splits.
-
-- Under the null, about 5% of the p-values should be below 0.05 and 1% below 0.01, and at a 5% FDR we expect no or very few discoveries.
-- The p-value histograms of the edgeR 4 QL F-test are approximately uniform. There is some variation between the splits: in some splits the two mock groups differ by chance more than in others, e.g. because of differences in the processing of the donors.
-- The edgeR 4 QL F-test does not return a single false discovery in any of the splits.
-- The p-value histograms of the legacy LRT are not uniform: they have a peak near 0 and increase towards 1. The LRT treats the estimated dispersions as known. The dispersions are shrunken towards a trend, so for some genes they are too small and the test is liberal, while for others they are too large and the test is conservative. With few replicates, the uncertainty of the dispersions matters most.
-- The liberal tail leads to false discoveries in every split, up to more than a thousand. This is why edgeR uses QL F-tests, which account for the uncertainty in the gene-wise variability.
-
+- The log fold changes agree well.
+- The Wald tests of DESeq2 do not account for the uncertainty in the dispersion estimates and can be somewhat liberal with few replicates.
 
 # Normalisation
 
@@ -787,7 +949,7 @@ mdPlot(mdPairs(ctrlCounts, effLibSize)) +
 The median of ratios method [@Love2014-deseq2] that we used in proteomics computes a size factor for each sample with respect to a pseudo-reference sample, the geometric mean of the counts over all samples:
 
 $$
-s_i = \text{median}_{g: Y^*_{g} > 0} \frac{Y_{gi}}{Y^{*}_{g}}, \quad Y^{*}_{g} = \left( \prod_{i=1}^n Y_{gi} \right)^{1/n}.
+s_i = \text{median}_{(g: Y^*_{g} > 0)} \frac{Y_{gi}}{Y^{*}_{g}}, \quad Y^{*}_{g} = \sqrt[\textstyle n]{ \prod_{i=1}^n Y_{gi}}.
 $$
 
 ```{r}
@@ -808,52 +970,121 @@ After rescaling both to a geometric mean of one, both methods give very similar 
 - Removing them before testing can increase the number of discoveries at the same FDR.
 - But we then only test the genes that pass the filter. The FDR is only controlled if the filter does not change the distribution of the test statistic of the null genes [@Bourgon2010-filtering].
 
-```{r echo=FALSE, out.width="70%", fig.cap="Figure 1 of Bourgon et al. (2010)."}
-knitr::include_graphics("./figs/rnaseq/independentFiltering.png")
-```
 
 **Filtering is valid if the filter statistic is independent of the test statistic under the null hypothesis.**
 
-We illustrate this with simulated null data: two groups of 5 samples, no DE genes.
+- For every gene we compute two statistics: a filter statistic $S_F$ and a test statistic $S_T$.
+- Only genes that pass the filter are tested, and the p-values are adjusted for the genes that passed the filter only.
+- The second stage is thus conditional on the first. The FDR is only controlled if the conditional null distribution of $S_T$ for the genes that pass the filter equals its unconditional null distribution.
+
+
+Let's build some intuition with simulated data.
+
+- `makeExampleDESeqDataSet` simulates negative binomial counts for 1000 genes in two groups of 6 samples, without any differential expression: all genes are null genes.
+- We test every gene with a two-sample t-test.
 
 ```{r}
 set.seed(24)
-nGenes <- 5000
-group <- factor(rep(c("A", "B"), each = 5))
-mu <- 2^runif(nGenes, 0, 10)
-simCounts <- matrix(rnbinom(nGenes * 10, mu = mu, size = 5), nrow = nGenes)
-
-rowT <- function(x, group) {
-  xA <- x[, group == "A"]
-  xB <- x[, group == "B"]
-  se <- sqrt(matrixStats::rowVars(xA) / ncol(xA) + matrixStats::rowVars(xB) / ncol(xB))
-  (rowMeans(xB) - rowMeans(xA)) / se
-}
-tStat <- rowT(log2(simCounts + 1), group)
-
-filters <- tibble(
-  t = tStat,
-  `overall mean` = rowMeans(simCounts),
-  `difference in means` = abs(rowMeans(simCounts[, group == "B"]) - rowMeans(simCounts[, group == "A"]))
-) |>
-  mutate(
-    across(c(`overall mean`, `difference in means`), ~ .x > quantile(.x, 0.5))
-  )
-
-bind_rows(
-  tibble(filter = "no filter", t = filters$t),
-  tibble(filter = "overall mean", t = filters$t[filters$`overall mean`]),
-  tibble(filter = "difference in means", t = filters$t[filters$`difference in means`])
-) |>
-  ggplot(aes(t, color = filter)) +
-  geom_density() +
-  theme_bw()
+dds <- makeExampleDESeqDataSet()
+simCounts <- counts(dds)
+group <- dds$condition
+testStat <- apply(simCounts, 1, function(x) t.test(x ~ group, var.equal = TRUE)$statistic)
 ```
 
-- Filtering on the overall mean (independent of the group labels) leaves the null distribution of the test statistic unchanged.
-- Filtering on the difference in means selects genes with large test statistics: the null distribution changes and the FDR is no longer controlled.
+## A dependent filter statistic
 
-`filterByExpr` uses the counts per million, irrespective of the group labels: it keeps genes with a CPM above a threshold, corresponding to about 10 reads in a sample with the median library size, in at least as many samples as the smallest group (or more precisely, the inverse of the largest leverage of the design).
+We filter on the absolute difference in mean between the groups, which depends on the group labels.
+The red line in the histogram of the filter statistic (on the log scale) gives the cutoff.
+
+```{r fig.width=9, fig.height=3}
+filterStatEffectSize <- abs(rowMeans(simCounts[, group == "A"]) - rowMeans(simCounts[, group == "B"]))
+keepEffectSize <- filterStatEffectSize > 1
+mean(keepEffectSize)
+
+par(mfrow = c(1, 3))
+hist(log2(filterStatEffectSize + 1), breaks = 40, main = "Filter statistic", xlab = "log2(|difference in mean| + 1)")
+abline(v = log2(1 + 1), col = "red")
+plot(density(testStat, na.rm = TRUE), xlab = "Test statistic", main = "Unconditional distribution")
+plot(density(testStat[keepEffectSize], na.rm = TRUE), xlab = "Test statistic", main = "Conditional distribution")
+```
+
+- The genes that pass the filter have large test statistics: the conditional null distribution has lost its centre and is very different from the unconditional one.
+- The p-values of the genes that pass the filter are therefore too small and the FDR is no longer controlled.
+
+## An independent filter statistic
+
+We filter on the overall mean, irrespective of the group labels, and remove a similar fraction of the genes.
+
+```{r fig.width=9, fig.height=3}
+filterStatGlobalMean <- rowMeans(simCounts)
+keepGlobalMean <- filterStatGlobalMean > 5
+mean(keepGlobalMean)
+
+par(mfrow = c(1, 3))
+hist(log2(filterStatGlobalMean + 1), breaks = 40, main = "Filter statistic", xlab = "log2(overall mean + 1)")
+abline(v = log2(5 + 1), col = "red")
+plot(density(testStat, na.rm = TRUE), xlab = "Test statistic", main = "Unconditional distribution")
+plot(density(testStat[keepGlobalMean], na.rm = TRUE), xlab = "Test statistic", main = "Conditional distribution")
+```
+
+- The conditional null distribution is the same as the unconditional one: filtering on the overall mean is valid.
+- Not using the group labels is not sufficient: @Bourgon2010-filtering show that filtering on the overall variance invalidates the moderated t-test of limma, because the filter changes the distribution of the variances from which the empirical Bayes prior is estimated. Filtering on the overall mean, as `filterByExpr` does, does not have this problem.
+
+## filterByExpr
+
+```{r eval=FALSE}
+?edgeR::filterByExpr
+```
+
+::: {.callout-note collapse="true"}
+## Help page of `filterByExpr`
+
+```{r echo=FALSE, comment=""}
+tools::Rd2txt(tools::Rd_db("edgeR")[["filterByExpr.Rd"]],
+              options = list(underline_titles = FALSE))
+```
+:::
+
+`filterByExpr` uses the counts per million (CPM), irrespective of the group labels.
+We reconstruct it for the macrophage data, starting from the unfiltered counts.
+
+```{r}
+dgeAll <- DGEListFromTximeta(sg)
+keepAuto <- filterByExpr(dgeAll, design)
+```
+
+1. A gene needs a CPM corresponding to at least `min.count = 10` reads in a sample with the median library size.
+
+```{r}
+libSize <- dgeAll$samples$lib.size * dgeAll$samples$norm.factors
+cpmCutoff <- 10 / median(libSize) * 1e6
+cpmCutoff
+```
+
+2. It needs this CPM in at least as many samples as the smallest group.
+In a design with blocks and a factorial structure there are no simple groups.
+`filterByExpr` therefore uses the inverse of the largest leverage $h_{ii}$, the diagonal elements of the hat matrix $\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T$.
+For a one-way design, $1/h_{ii}$ is exactly the size of the group of sample $i$.
+
+```{r}
+leverage <- hat(design)
+table(round(1 / leverage, 2))
+minSampleSize <- 1 / max(leverage)
+```
+
+Every sample has the same leverage here, so a gene needs a sufficient CPM in at least `r round(minSampleSize, 2)`, i.e. 3, samples.
+
+3. The total count over all samples should be at least `min.total.count = 15`.
+
+```{r}
+keepManual <- rowSums(cpm(dgeAll$counts, lib.size = libSize) >= cpmCutoff) >= minSampleSize &
+  rowSums(dgeAll$counts) >= 15
+table(manual = keepManual, filterByExpr = keepAuto)
+```
+
+- The manual filter gives exactly the same genes as `filterByExpr`.
+- Note that we compute the CPM from the raw counts and the library sizes: `cpm(dgeAll)` would also use the length offsets from tximeta, while `filterByExpr` does not.
+- See `?filterByExpr` for the other arguments, e.g. `large.n` and `min.prop` for designs with large groups.
 
 # Transcript-level analysis
 
@@ -872,6 +1103,7 @@ knitr::include_graphics("./figs/rnaseq/dtuConcept.png")
 ## Transcript-level data
 
 For the transcript-level analyses we use the naive and IFN$\gamma$-primed samples of the macrophage data: a randomised complete block design with the 6 donors as blocks.
+We restrict the analysis to one contrast, the effect of IFN$\gamma$ in uninfected cells, which keeps the DTU and stage-wise analyses simple and limits the computation time: transcript-level data with Gibbs samples are much larger than gene-level data.
 The salmon quantifications of the macrophage package contain 20 Gibbs samples per sample, which we now need.
 
 ```{r}
@@ -894,6 +1126,7 @@ assayNames(macSt) |> head()
 
 - Many reads are compatible with several transcripts of the same gene. Their assignment is estimated with the EM algorithm.
 - Transcript counts therefore have an additional source of variability: **read-to-transcript ambiguity**. Transcripts that share most of their sequence with other transcripts have a much more uncertain count.
+- Quantification uncertainty is therefore especially an issue for transcripts. The assignment of an ambiguous read to one of the transcripts of a gene changes the transcript counts, but not their sum: gene counts are much less affected, and we analyse them without accounting for the quantification uncertainty.
 - Salmon and kallisto can quantify this uncertainty with bootstrap or Gibbs samples (inferential replicates), e.g. with `salmon quant ... --numGibbsSamples 20`.
 - `catchSalmon` estimates an overdispersion factor for every transcript from the inferential replicates [@Baldoni2024-catchSalmon]. If a count is $c$ times more variable than expected because of the ambiguity, dividing the count by $c$ gives a **scaled count** with the usual mean-variance relation, which can be analysed with the standard edgeR pipeline.
 
@@ -972,7 +1205,7 @@ summary(decideTests(dteScaled$test))
 
 ## Differential transcript usage
 
-The usage of transcript $t$ of gene $g$ in sample $i$ is its fraction of the gene's total count:
+The usage of transcript $t$ of gene $g$ in sample $i$ is its fraction of the gene's total count, i.e. the fraction of the fragments of the gene that come from the transcript:
 
 $$
 \pi_{gti} = \frac{E[Y_{gti}]}{E[Y_{g.i}]}, \quad Y_{g.i} = \sum_t Y_{gti}.
@@ -998,24 +1231,48 @@ For DTU we **replace this offset by the total count of the gene** [@Segers2023-j
 $$
 \left\{
 \begin{array}{lcl}
-E[Y_{gti}] &=& \mu_{gti}\\
+E[Y_{gti} \mid Y_{g.i}] &=& \mu_{gti}\\
 \log \mu_{gti} &=& \mathbf{x}_i^T\boldsymbol{\beta}_{gt} + \log Y_{g.i}\\
-\text{Var}[Y_{gti}] &=& \sigma^2_{gt}(\mu_{gti} + \phi\mu^2_{gti})
+\text{Var}[Y_{gti} \mid Y_{g.i}] &=& \sigma^2_{gt}(\mu_{gti} + \phi\mu^2_{gti})
 \end{array}
 \right.
 \quad \Rightarrow \quad
-\log \frac{\mu_{gti}}{Y_{g.i}} = \mathbf{x}_i^T\boldsymbol{\beta}_{gt}.
+\log \pi_{gti} = \log \frac{\mu_{gti}}{Y_{g.i}} = \mathbf{x}_i^T\boldsymbol{\beta}_{gt}.
 $$
 
+- We model the counts conditionally on the observed gene total.
 - The parameters now model the log usage of the transcript.
 - A condition effect in $\boldsymbol{\beta}_{gt}$ is a change in usage: DTU.
 - The gene total already accounts for the sequencing depth: no further normalisation is needed.
 - Everything else in the edgeR pipeline stays the same: QL dispersions, empirical Bayes and moderated F-tests. The same trick works with DESeq2.
 - The gene total is plugged in as known; its uncertainty is ignored.
 
+- The total count offset above would work for raw transcript counts.
+
+Here, we model the divided counts $\tilde Y_{gti} = Y_{gti}/c_t$, so that the quantification uncertainty of the transcripts is accounted for.
+
+- We model the counts conditionally on the observed gene total $Y_{g.i}$.
+
+- Given the gene total, their mean is the usage times the gene total, divided by $c_t$:
+
+$$
+E[\tilde Y_{gti} \mid Y_{g.i}] = \frac{\pi_{gti}\, Y_{g.i}}{c_t} \quad \Rightarrow \quad \text{offset} = \log Y_{g.i} - \log c_t,
+$$
+
+- with $\pi_{gti}$ the usage of transcript $t$, i.e. the fraction of the fragments of gene $g$ that come from transcript $t$.
+
+- The gene total $Y_{g.i}$ is computed from the **undivided** counts. 
+- The undivided gene total is hardly affected by the quantification uncertainty: the ambiguity between transcripts of the same gene cancels out in the sum.
+
+- The term $-\log c_t$ is the same in all samples. It only changes the intercept of the transcript, not the log fold changes.
+
+The undivided counts are the divided counts multiplied by the overdispersion.
+
+
 ```{r}
-geneTotals <- rowsum(dtu$counts, dtu$genes$gene)[dtu$genes$gene, ]
-dtu$offset <- log(pmax(geneTotals, 1))
+undivided <- dtu$counts * dtu$genes$Overdispersion
+geneTotals <- rowsum(undivided, dtu$genes$gene)[dtu$genes$gene, ]
+dtu$offset <- log(pmax(geneTotals, 1)) - log(dtu$genes$Overdispersion)
 
 fitDtu <- glmQLFit(dtu, macDesign)
 qlfDtu <- glmQLFTest(fitDtu, coef = "conditionIFNg")
@@ -1029,15 +1286,98 @@ The estimated global NB dispersion is close to zero:
 fitDtu$dispersion
 ```
 
-Given the gene total, the transcript counts are no longer overdispersed by the biological variation of the gene expression, which cancels out in the usage.
-The model then reduces to a quasi-Poisson model on the usages, close to the quasi-binomial model of the dedicated DTU tool satuRn.
+- Given the gene total, the transcript counts are no longer overdispersed by the biological variation of the gene expression, which cancels out in the usage.
+
+- The model then reduces to a quasi-Poisson model on the usages, close to the quasi-binomial model of the dedicated DTU tool satuRn.
+
+### Fragment usage or molecular usage?
+
+- The counts are numbers of fragments.
+
+- Let $M_{gti}$ be the (unobserved) number of molecules of transcript $t$ of gene $g$ in the library of sample $i$, and 
+- $M_{g.i} = \sum_{t'} M_{gt'i}$ the numbers of molecules of all transcripts of the gene.
+
+- The **molecular usage** is the fraction of the molecules of the gene that are transcript $t$, 
+
+$$\rho_{gti} = M_{gti}/M_{g.i}$$
+
+A transcript produces fragments in proportion to its number of molecules times its effective length $l_{ti}$:
+
+$$
+E[Y_{gti} \mid M_{g\cdot i}] = k_i\, l_{ti}\,M_{gti}\,  = k_i\, l_{ti}\,\rho_{gti}\, M_{g.i},
+$$
+
+- with $k_i$ the expected number of sequenced fragments per molecule and per base in sample $i$. 
+- It depends on the sequencing depth and on the composition of the library, but it is the same for all transcripts in the sample.
+- Dividing by the effective length and summing over the transcripts of the gene gives 
+
+  $$
+  \sum_{t'} E[Y_{gt'i} \mid M_{g\cdot i}]/l_{t'i} = k_i M_{g.i},
+  $$
+
+  which we estimate by the length-normalised gene total $\sum_{t'} Y_{gt'i}/l_{t'i}$.
+
+Hence
+
+$$
+\log \mu_{gti} = \log \rho_{gti} + \log l_{ti} + \log \sum_{t'} \frac{Y_{gt'i}}{l_{t'i}}:
+$$
+
+- with $\log l_{ti} + \log \sum_{t'} Y_{gt'i}/l_{t'i}$ as offset, i.e. the log of the effective length of the transcript multiplied by the length-normalised gene total
+
+- The remaining model parameters of the mean model thus describe the log molecular usage, 
+
+$$\log \rho_{gti} = \mathbf{x}_i^T\boldsymbol{\beta}_{gt}$$
+
+With the gene total $Y_{g.i}$ as offset, we instead model the **fragment usage**: the expected fraction of the fragments of the gene that come from transcript $t$. 
+
+$$
+\pi_{gti} = \frac{l_{ti}\,\rho_{gti}}{\sum_{t'} l_{t'i}\, \rho_{gt'i}}.
+$$
+
+Indeed, 
+
+$$
+E[Y_{g.i} \mid M_{g\cdot i}] = k_i\, \sum\limits_{t'}  l_{t'i}\,M_{gt'i}\,  = k_i\, M_{g.i}\, \sum\limits_{t'} l_{t'i}\,\rho_{gt'i}
+$$
+
+
+- If a gene shifts towards longer transcripts, the fragment usage of a transcript whose molecular usage does not change, also decreases. Tests on the fragment usage can thus flag transcripts that do not change themselves.
+
+- The molecular usage is the quantity of biological interest.
+
+- Because salmon's TPM is proportional to $Y_{gti}/l_{ti}$, the estimated molecular usage $\hat\rho_{gti} = (Y_{gti}/l_{ti})/\sum_{t'} Y_{gt'i}/l_{t'i}$ is the TPM of the transcript divided by the TPM of the gene; as for the gene total, the sum uses the undivided counts, and $-\log c_t$ is added for the divided counts.
+
+- This is the offset counterpart of `countsFromAbundance = "dtuScaledTPM"` in tximport [@Love2018-swimdown].
+
+- The gene-level null hypothesis of no DTU is the same on both scales, but the transcript-level tests and log fold changes differ for genes whose transcripts differ strongly in length.
+
+We fit the offset model for the molecular usage on the macrophage data:
+
+```{r}
+effLength <- assay(macSt, "length")[rownames(dtu), ]
+lengthNormTotals <- rowsum(undivided / effLength, dtu$genes$gene)[dtu$genes$gene, ]
+
+dtuLength <- dtu
+# as for the gene totals, the offset of a gene with zero counts in a sample is set to 0
+dtuLength$offset <- log(effLength) + log(pmax(lengthNormTotals, 1 / effLength)) -
+  log(dtu$genes$Overdispersion)
+
+fitDtuLength <- glmQLFit(dtuLength, macDesign)
+qlfDtuLength <- glmQLFTest(fitDtuLength, coef = "conditionIFNg")
+table(fragment = p.adjust(qlfDtu$table$PValue, "BH") < 0.05,
+      molecular = p.adjust(qlfDtuLength$table$PValue, "BH") < 0.05)
+```
+
+- Most transcripts that are significant on one scale are also significant on the other, but a substantial fraction is only significant on one of both scales: these are transcripts of genes whose average transcript length changes between the conditions.
+- The transcript-level tutorial compares both offsets in more detail on the airway data, with a check that the difference between both log fold changes equals the change in the average transcript length of the gene.
 
 ### diffSplice
 
 edgeR and limma also have a dedicated function for differential usage.
 `diffSplice` uses the transcript-level fit with the usual offsets and tests whether the log fold change of a transcript differs from the log fold change of the gene as a whole.
 This is a test for a transcript $\times$ condition interaction within each gene.
-In recent versions of edgeR and limma, `diffSplice` is a generic function that works on both edgeR (`glmQLFit`) and limma (`voomLmFit`) fits; it replaces the older `diffSpliceDGE` [@Baldoni2025-dtu].
+In recent versions of edgeR and limma, `diffSplice` is a generic function that works on both edgeR (`glmQLFit`) and limma (`voomLmFit`) fits; for an edgeR fit it calls the method `diffSplice.DGEGLM` (see `?diffSplice.DGEGLM`). It replaces the older `diffSpliceDGE` [@Baldoni2025-dtu].
 
 ```{r}
 fitTx <- dteScaled$fit
@@ -1105,27 +1445,62 @@ stageR [@VandenBerge2017-stageR] controls the FDR at the gene level with a two-s
 1. **Screening stage**: test every gene for DTU (any transcript) and control the FDR over genes.
 2. **Confirmation stage**: for the significant genes only, test the individual transcripts with a family-wise error rate correction within the gene.
 
-We use the gene-level Simes test of `diffSplice` for screening and the transcript-level tests of the offset model for confirmation.
+We perform two stage-wise analyses, each of which uses a single DTU method for both stages:
+
+1. **diffSplice**: the gene-level Simes p-values of `diffSplice` for screening and its transcript-level tests for confirmation.
+2. **Offset model**: the Simes method applied to the transcript-level p-values of the offset model for screening, and the same transcript-level p-values for confirmation.
+
+The Simes p-value of a gene with $n$ transcripts combines the ordered transcript-level p-values $p_{(1)} \leq \ldots \leq p_{(n)}$ into $\min_k n\, p_{(k)}/k$.
 
 ```{r}
-pScreen <- as.vector(ds$gene.simes.p.value)
-names(pScreen) <- ds$gene.genes$gene
-pConfirmation <- matrix(qlfDtu$table$PValue, ncol = 1,
-                        dimnames = list(dtu$genes$tx, "transcript"))
-tx2gene <- data.frame(transcript = dtu$genes$tx, gene = dtu$genes$gene)
+simes <- function(p) min(sort(p) * length(p) / seq_along(p))
 
-stageRObj <- stageRTx(pScreen = pScreen, pConfirmation = pConfirmation, tx2gene = tx2gene)
-stageRObj <- stageWiseAdjustment(stageRObj, method = "dtu", alpha = 0.05)
-padj <- getAdjustedPValues(stageRObj, order = TRUE, onlySignificantGenes = TRUE)
-head(padj)
-c(genes = length(unique(padj$geneID)), transcripts = sum(padj$transcript < 0.05))
+stageWiseDtu <- function(pScreen, pTranscript, tx, gene) {
+  pConfirmation <- matrix(pTranscript, ncol = 1, dimnames = list(tx, "transcript"))
+  stageRObj <- stageRTx(pScreen = pScreen, pConfirmation = pConfirmation,
+                        tx2gene = data.frame(transcript = tx, gene = gene))
+  stageRObj <- stageWiseAdjustment(stageRObj, method = "dtu", alpha = 0.05)
+  getAdjustedPValues(stageRObj, order = TRUE, onlySignificantGenes = TRUE)
+}
+
+padjDs <- stageWiseDtu(
+  pScreen = setNames(as.vector(ds$gene.simes.p.value), ds$gene.genes$gene),
+  pTranscript = as.vector(ds$p.value), tx = ds$genes$tx, gene = ds$genes$gene
+)
+padjOffset <- stageWiseDtu(
+  pScreen = c(tapply(qlfDtu$table$PValue, dtu$genes$gene, simes)),
+  pTranscript = qlfDtu$table$PValue, tx = dtu$genes$tx, gene = dtu$genes$gene
+)
+padjLength <- stageWiseDtu(
+  pScreen = c(tapply(qlfDtuLength$table$PValue, dtu$genes$gene, simes)),
+  pTranscript = qlfDtuLength$table$PValue, tx = dtu$genes$tx, gene = dtu$genes$gene
+)
+head(padjDs)
+head(padjOffset)
+rbind(
+  diffSplice = c(genes = length(unique(padjDs$geneID)), transcripts = sum(padjDs$transcript < 0.05)),
+  offset = c(genes = length(unique(padjOffset$geneID)), transcripts = sum(padjOffset$transcript < 0.05)),
+  both = c(genes = length(intersect(padjDs$geneID, padjOffset$geneID)),
+           transcripts = length(intersect(padjDs$txID[padjDs$transcript < 0.05],
+                                          padjOffset$txID[padjOffset$transcript < 0.05]))),
+  `offset, molecular usage` = c(genes = length(unique(padjLength$geneID)),
+                                transcripts = sum(padjLength$transcript < 0.05)),
+  `offset, fragment and molecular` = c(genes = length(intersect(padjOffset$geneID, padjLength$geneID)),
+           transcripts = length(intersect(padjOffset$txID[padjOffset$transcript < 0.05],
+                                          padjLength$txID[padjLength$transcript < 0.05])))
+)
 ```
 
-We plot the usages of the transcripts of the top gene, *WARS1*, a gene that is strongly induced by interferon gamma:
+- Both stage-wise analyses find many genes with DTU, but they agree only moderately: they test a different quantity and estimate the variability differently.
+- `diffSplice` compares the log fold change of each transcript with that of the gene as a whole in the transcript-level DTE model. The offset model plugs in the observed gene total as a known offset and models the usage directly, with a separate QL dispersion for the usage of every transcript.
+- The offset models for the fragment and the molecular usage select almost the same number of genes, with a large overlap, but they differ more at the transcript level: the gene-level null hypothesis is the same on both scales, the transcript-level tests are not.
+- On these data the offset model finds more genes, while `diffSplice` was the most powerful method in the simulation study of @Baldoni2025-dtu. In the transcript-level tutorial on the airway data, `diffSplice` finds more genes: which method is the most powerful depends on the data.
+
+We plot the usages of the transcripts of the top gene of the `diffSplice` analysis, *WARS1*, a gene that is strongly induced by interferon gamma:
 
 ```{r}
-topGene <- padj$geneID[1]
-usage <- dtu$counts[dtu$genes$gene == topGene, ] /
+topGene <- padjDs$geneID[1]
+usage <- undivided[dtu$genes$gene == topGene, ] /
   geneTotals[dtu$genes$gene == topGene, ]
 usage |>
   as_tibble(rownames = "tx") |>
@@ -1144,9 +1519,8 @@ usage |>
 - GLMs are fitted with IRLS: iterated weighted least squares fits of a working response. Inference with Wald and likelihood ratio tests is asymptotic.
 - Quasi-likelihood only specifies the mean and the variance. The QL dispersion is estimated from the deviance and leads to t- and F-tests.
 - edgeR 4 combines a global NB dispersion with gene-specific QL dispersions with bias-adjusted degrees of freedom, moderated with empirical Bayes: the same strategy as limma and msqrob2.
-- Mock comparisons on real null data show that the edgeR 4 QL F-tests are well calibrated, while the legacy LRT is liberal. Ignoring that samples of the same donor are not independent (pseudo-replication) leads to massive numbers of false positives.
 - Normalisation methods (TMM, median of ratios) assume that most genes are not DE and provide offsets.
-- Independent filtering is valid when the filter does not use the group labels.
-- At the transcript level, read-to-transcript ambiguity adds variability. DTU can be analysed with the standard tools by replacing the library size offset with the gene total, and stage-wise testing controls the FDR at the gene level.
+- Filtering is only valid if the filter statistic is independent of the test statistic under $H_0$ (independent filtering).
+- At the transcript level, read-to-transcript ambiguity adds variability, which we divide out with the overdispersion estimated from the Gibbs samples. DTU can be analysed with the standard tools by replacing the library size offset with the gene totals; adding a length correction to the offset models the molecular instead of the fragment usage. Stage-wise testing controls the FDR at the gene level.
 
 # References {-}
