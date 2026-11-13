@@ -748,10 +748,10 @@ Under this assumption, it can be shown that
 - Posterior Mean for the variance parameter: 
 $$\tilde{s}^2_p = \text{E}\left[\sigma^2_p\vert s_p^2\right]=\frac{d_0 s_0^2+d_ps_p^2}{d_0+d_p}$$
 
-- $$\tilde{T}_p=\frac{\mathbf{L}_k \hat{ \boldsymbol{\beta_p}}}{\sqrt{\mathbf{L}_k^T(\mathbf{X}^T\mathbf{WX})^{-1}\mathbf{L}_k^T\tilde{s}_p^2}}
+- $$\tilde{T}_p=\frac{\mathbf{L}_k^T \hat{ \boldsymbol{\beta_p}}}{\sqrt{\mathbf{L}_k^T(\mathbf{X}^T\mathbf{WX})^{-1}\mathbf{L}_k\tilde{s}_p^2}}
 $$
 
-is t-distributed under $H_0: \mathbf{L}_j\boldsymbol{\beta} = 0$
+is t-distributed under $H_0: \mathbf{L}_k^T\boldsymbol{\beta}_p = 0$
 
 $$\tilde{T}_p \vert H_0 \sim t(d_0 + d_p)$$
 

@@ -214,7 +214,7 @@ with $\mathbf{A}$ a diagonal matrix with elements $a_{ii}=\left(\text{Var}[y_i]\
 
 Note that, 
 
--  only the **mean and the variance** of $y_i$ enter the score equations. This is the basis of quasi-likelihood.
+-  Only the **mean and the variance** of $y_i$ enter the score equations. This is the idea used by the quasi-likelihood implementation we already have seen in edgeR and allows us to specify a model with a more flexible model than members of the exponential family.
 
 - The score equations are non-linear in $\boldsymbol{\beta}$ because $\boldsymbol{\mu} = g(\boldsymbol{\eta})$.
 
@@ -522,23 +522,21 @@ $$
 \hat{\boldsymbol{\beta}} \stackrel{a}{\sim} N\left[\boldsymbol{\beta},\left(\mathbf{X}^T\mathbf{WX}\right)^{-1}\right].
 $$
 
-Under $H_0: \mathbf{L}^T\boldsymbol{\beta} = 0$,
+For a single contrast, $\mathbf{L}$ is a $p \times 1$ vector. Under $H_0: \mathbf{L}^T\boldsymbol{\beta} = 0$,
 
 $$
-\frac{L^T\hat{\boldsymbol{\beta}}}{\widehat{\text{SE}}_{L^T\hat{\boldsymbol{\beta}}}} \xrightarrow{d} \mathcal{N}(0, 1)
+z = \frac{\mathbf{L}^T\hat{\boldsymbol{\beta}}}{\widehat{\text{SE}}_{\mathbf{L}^T\hat{\boldsymbol{\beta}}}} \stackrel{a}{\sim} N(0, 1), \qquad \widehat{\text{SE}}_{\mathbf{L}^T\hat{\boldsymbol{\beta}}} = \sqrt{\mathbf{L}^T\widehat{\boldsymbol{\Sigma}}_{\hat{\boldsymbol{\beta}}}\mathbf{L}}.
 $$
 
+For $c$ contrasts simultaneously, $\mathbf{L}$ is a $p \times c$ matrix with one contrast per column. Under $H_0: \mathbf{L}^T\boldsymbol{\beta} = \mathbf{0}$,
 
-
-
-For $c$ contrasts simultaneously, $\mathbf{L}$ is a $p \times c$ matrix and
-
-Under $H_0: \mathbf{L}\boldsymbol{\beta} = \mathbf{0}$,
 $$
-W = (\mathbf{L}\hat{\boldsymbol{\beta}})^T 
-\left(\mathbf{L}\widehat{\boldsymbol{\Sigma}}_{\hat{\boldsymbol{\beta}}}\mathbf{L}^T\right)^{-1} 
-(\mathbf{L}\hat{\boldsymbol{\beta}}) \xrightarrow{d} \chi^2_c
+W = \left(\mathbf{L}^T\hat{\boldsymbol{\beta}}\right)^T
+\left(\mathbf{L}^T\widehat{\boldsymbol{\Sigma}}_{\hat{\boldsymbol{\beta}}}\mathbf{L}\right)^{-1}
+\left(\mathbf{L}^T\hat{\boldsymbol{\beta}}\right) \stackrel{a}{\sim} \chi^2_c,
 $$
+
+with $\widehat{\boldsymbol{\Sigma}}_{\hat{\boldsymbol{\beta}}} = \left(\mathbf{X}^T\mathbf{WX}\right)^{-1}$.
 
 ### Deviance and likelihood ratio test
 
@@ -550,7 +548,7 @@ It plays the role of the residual sum of squares in a linear model.
 
 - The **likelihood ratio test** compares a full model with a nested reduced model, e.g. without the treatment effect:
 $$
-H_0: \text{LRT} = 2\left[l(\hat{\boldsymbol{\beta}}_\text{full}) - l(\hat{\boldsymbol{\beta}}_0)\right]  \xrightarrow{d} \chi^2_c ,
+H_0: \text{LRT} = 2\left[l(\hat{\boldsymbol{\beta}}_\text{full}) - l(\hat{\boldsymbol{\beta}}_0)\right] = D_0 - D_full \xrightarrow{d} \chi^2_c ,
 $$
 with $c$ the number of parameters that are dropped.
 
@@ -629,6 +627,8 @@ the GLM counterpart of the residual variance $\hat\sigma^2 = \text{SSE}/(n-p)$ i
 The $t$ and $F$ distributions account for the uncertainty in $\hat\sigma^2$, as in linear models.
 
 ### Example: quasi-Poisson
+
+We use the example from the help page of `glm` [@Dobson1990]: a randomised controlled trial with three treatments and three outcome categories, where the counts are the numbers of patients per treatment and outcome.
 
 ```{r}
 counts <- c(18, 17, 15, 20, 10, 20, 25, 13, 12)
@@ -812,7 +812,7 @@ DESeq2 [@Love2014-deseq2] also uses an NB GLM, but
 
 - normalises with the median of ratios method (as in proteomics),
 - estimates gene-wise dispersions $\phi_g$ and shrinks them towards a trend with empirical Bayes,
-- uses Wald tests (or LRTs) based on the normal distribution,
+- uses Wald tests (or LRTs) using the asymptotic theory (normal distribution),
 - optionally shrinks the log fold changes (e.g. with apeglm) for ranking and visualisation.
 
 `DESeqDataSet` takes the tximeta object directly. It rounds the estimated counts and, like `DGEListFromTximeta` for edgeR, uses the average transcript lengths as additional offsets. Both analyses thus correct for transcript length.
