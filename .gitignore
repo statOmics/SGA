@@ -20,3 +20,6 @@ airwaySalmon.zip
 
 # Intermediate figures of a (failed) Quarto render
 /*_files/
+
+# Data of the single-cell lecture and tutorial (built with R/make_scrnaseq_data.R)
+scrnaseqData/
