@@ -214,12 +214,16 @@ Look up the top genes. Are these known targets of glucocorticoids?
 ## Quantification uncertainty
 
 We now analyse the counts of the individual transcripts.
-Reads that are compatible with several transcripts of the same gene are assigned with the EM algorithm, which makes the transcript counts more variable than the gene counts.
-`DGEListFromTximeta` estimates an overdispersion factor for every transcript from the Gibbs samples, and with `divide = TRUE` it returns the counts divided by this factor [@Baldoni2024-catchSalmon].
+As in the [lecture](./05-rnaseq-technical.html#quantification-uncertainty), `DGEListFromTximeta` estimates an overdispersion factor for every transcript from the Gibbs samples, and with `divide = TRUE` it returns the counts divided by this factor [@Baldoni2024-catchSalmon].
 
-Quantification uncertainty is especially an issue for transcripts.
-Most ambiguous reads are compatible with several transcripts of the same gene: the assignment of such a read changes the transcript counts, but not their sum.
-The gene counts are therefore much less affected, which is why we analysed the summed gene counts in Part 1 without accounting for the quantification uncertainty.
+::: {.callout-tip}
+## Question
+
+Why is quantification uncertainty much less of a problem for the gene-level counts?
+:::
+
+- Most ambiguous reads are compatible with several transcripts of the same gene: the assignment of such a read changes the transcript counts, but not their sum.
+- The gene counts are therefore much less affected, which is why we analysed the summed gene counts in Part 1 without accounting for the quantification uncertainty.
 
 ```{r}
 txRaw <- DGEListFromTximeta(st)
@@ -337,23 +341,8 @@ c(genes = length(multiTxGenes), transcripts = nrow(dtu))
 
 ## Juggling offsets
 
-We replace the offset by the log of the total count of the gene, so that the model parameters describe the log usage of the transcripts [@Segers2023-juggling].
-
-We model the divided counts $\tilde Y_{gti} = Y_{gti}/c_t$, with $c_t$ the overdispersion of transcript $t$, so that the quantification uncertainty of the transcripts is accounted for.
-We model the counts conditionally on the observed gene total $Y_{g.i}$.
-Given the gene total, their mean is the usage times the gene total, divided by $c_t$:
-
-$$
-E[\tilde Y_{gti} \mid Y_{g.i}] = \frac{\pi_{gti}\, Y_{g.i}}{c_t} \quad \Rightarrow \quad \text{offset} = \log Y_{g.i} - \log c_t,
-$$
-
-with $\pi_{gti}$ the usage of transcript $t$, i.e. the fraction of the fragments of gene $g$ that come from transcript $t$.
-
-- The gene total $Y_{g.i}$ is computed from the **undivided** counts. 
-- The undivided gene total is hardly affected by the quantification uncertainty: the ambiguity between transcripts of the same gene cancels out in the sum.
-
-- The term $-\log c_t$ is the same in all samples. It only changes the intercept of the transcript, not the log fold changes.
-
+We model the divided counts with the offset of the [lecture](./05-rnaseq-technical.html#juggling-offsets), $\log Y_{g.i} - \log c_t$ [@Segers2023-juggling]: the log of the gene total, computed from the **undivided** counts, minus the log of the overdispersion of the transcript.
+The model parameters then describe the log usage $\pi_{gti}$ of the transcript, i.e. the fraction of the fragments of gene $g$ that come from transcript $t$.
 The undivided counts are the divided counts multiplied by the overdispersion.
 
 ```{r}
@@ -405,14 +394,9 @@ Compare the genes that are found with the gene-level F-test and with the Simes t
 
 ## Stage-wise testing
 
-stageR [@VandenBerge2017-stageR] needs a gene-level p-value for the screening stage and transcript-level p-values for the confirmation stage.
-We perform two stage-wise analyses, each of which uses a single DTU method for both stages:
-
-1. **diffSplice**: the gene-level Simes p-values of `diffSplice` for screening and its transcript-level tests for confirmation.
-2. **Offset model**: the Simes method applied to the transcript-level p-values of the offset model for screening, and the same transcript-level p-values for confirmation.
-
-The Simes p-value of a gene with $n$ transcripts combines the ordered transcript-level p-values $p_{(1)} \leq \ldots \leq p_{(n)}$ into $\min_k n\, p_{(k)}/k$.
-Other aggregation methods exist, e.g. the minimum p-value with a Šidák correction (DEXSeq's `perGeneQValue`, which is used in the satuRn workflow) or the harmonic mean p-value [@Wilson2019-hmp], which @Gilis2025-dd used to combine dependent tests.
+We perform the same two stage-wise analyses with stageR [@VandenBerge2017-stageR] as in the [lecture](./05-rnaseq-technical.html#stage-wise-testing): one for `diffSplice` and one for the offset model.
+Each analysis uses gene-level Simes p-values in the screening stage and the transcript-level p-values of the same method in the confirmation stage.
+Other aggregation methods than Simes exist, e.g. the minimum p-value with a Šidák correction (DEXSeq's `perGeneQValue`, which is used in the satuRn workflow) or the harmonic mean p-value [@Wilson2019-hmp], which @Gilis2025-dd used to combine dependent tests.
 
 ```{r}
 simes <- function(p) min(sort(p) * length(p) / seq_along(p))
@@ -512,33 +496,15 @@ c(DTUgenes = length(dtuGenes), alsoDGE = sum(dtuGenes %in% dgeSig))
 
 ## Fragment usage or molecular usage?
 
-The counts are numbers of fragments.
-Let $M_{gti}$ be the (unobserved) number of molecules of transcript $t$ of gene $g$ in the library of sample $i$, $M_{g.i} = \sum_{t'} M_{gt'i}$, and $M_{g\cdot i}$ the numbers of molecules of all transcripts of the gene.
-The **molecular usage** is the fraction of the molecules of the gene that are transcript $t$, $\rho_{gti} = M_{gti}/M_{g.i}$.
-
-A transcript produces fragments in proportion to its number of molecules times its effective length $l_{ti}$:
-
-$$
-E[Y_{gti} \mid M_{g\cdot i}] = k_i\, M_{gti}\, l_{ti} = \rho_{gti}\; l_{ti}\; k_i M_{g.i},
-$$
-
-with $k_i$ the expected number of sequenced fragments per molecule and per base in sample $i$. It depends on the sequencing depth and on the composition of the library, but it is the same for all transcripts in the sample.
-Dividing by the effective length and summing over the transcripts of the gene gives $\sum_{t'} E[Y_{gt'i} \mid M_{g\cdot i}]/l_{t'i} = k_i M_{g.i}$, which we estimate by the length-normalised gene total $\sum_{t'} Y_{gt'i}/l_{t'i}$.
-Hence
-
-$$
-\log \mu_{gti} = \log \rho_{gti} + \log l_{ti} + \log \sum_{t'} \frac{Y_{gt'i}}{l_{t'i}}:
-$$
-
-with $\log l_{ti} + \log \sum_{t'} Y_{gt'i}/l_{t'i}$ as offset, i.e. the length-normalised gene total multiplied by the effective length of the transcript, the model parameters describe the log molecular usage, $\log \rho_{gti} = \mathbf{x}_i^T\boldsymbol{\beta}_{gt}$.
-
-With the gene total $Y_{g.i}$ as offset, we instead model the **fragment usage**: the expected fraction of the fragments of the gene that come from transcript $t$,
+With the gene total as offset, we model the **fragment usage** $\pi_{gti}$, the expected fraction of the fragments of the gene that come from transcript $t$.
+As shown in the [lecture](./05-rnaseq-technical.html#fragment-usage-or-molecular-usage), the offset $\log l_{ti} + \log \sum_{t'} Y_{gt'i}/l_{t'i} - \log c_t$, with $l_{ti}$ the effective length of the transcript, gives the **molecular usage** $\rho_{gti}$ instead: the fraction of the molecules of the gene that are transcript $t$.
+Both are related by
 
 $$
 \pi_{gti} = \frac{\rho_{gti}\, l_{ti}}{\sum_{t'} \rho_{gt'i}\, l_{t'i}}.
 $$
 
-It also changes when the gene shifts towards longer transcripts.
+The fragment usage thus also changes when the gene shifts towards longer transcripts.
 For example, consider a gene with two transcripts of 1000 and 3000 bp.
 In the control, both transcripts have the same number of molecules, but the long transcript produces three times as many fragments:
 
@@ -548,13 +514,9 @@ In the control, both transcripts have the same number of molecules, but the long
 | treatment | 0.4 | 0.6 | 0.18 | 0.82 |
 
 - Under treatment, the molecular usage of transcript 1 decreases with a factor 0.8, its fragment usage with a factor 0.73: the longer transcript, whose molecular usage increases, takes an even larger share of the fragments.
-- If a gene shifts towards longer transcripts, the fragment usage of a transcript whose molecular usage does not change, also decreases. Tests on the fragment usage can thus flag transcripts that do not change themselves.
 
-This is the offset counterpart of `countsFromAbundance = "dtuScaledTPM"` in tximport, which @Love2018-swimdown recommend for DTU analyses.
-
-- Because salmon's TPM is proportional to $Y_{gti}/l_{ti}$, the estimated molecular usage $\hat\rho_{gti} = (Y_{gti}/l_{ti})/\sum_{t'} Y_{gt'i}/l_{t'i}$ is the TPM of the transcript divided by the TPM of the gene.
-- As for the gene total, we compute the sum with the undivided counts and subtract $\log c_t$ for the divided counts.
-- We use the sample-specific effective lengths of salmon, which also account for the fragment length distribution and the sequence and GC bias of each sample.
+As for the gene total, we compute the length-normalised gene total with the undivided counts.
+We use the sample-specific effective lengths of salmon, which also account for the fragment length distribution and the sequence and GC bias of each sample.
 
 ```{r}
 effLength <- assay(st, "length")[rownames(dtu), ]
@@ -570,7 +532,7 @@ qlfDtuLength <- glmQLFTest(fitDtuLength, coef = "dextrt")
 ```
 
 Why do both analyses give different log fold changes?
-Dividing the numerator and denominator of the fragment usage by $M_{g.i}$ links both usages through the average transcript length of the gene, weighted by the number of molecules of each transcript:
+The molecular usages of a gene sum to one, so the denominator of the fragment usage is the average transcript length of the gene, weighted by the number of molecules of each transcript:
 
 $$
 \pi_{gti} = \rho_{gti}\, \frac{l_{ti}}{\bar L_{gi}}, \qquad \bar L_{gi} = \sum_{t'} \rho_{gt'i}\, l_{t'i}

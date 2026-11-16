@@ -9,6 +9,7 @@ format:
 In this tutorial we apply the edgeR quasi-likelihood workflow of the [bulk RNA-seq lecture](./04-rnaseq-intro.html) to a new dataset.
 In the first exercise we get acquainted with the workflow on a simple two-group comparison.
 In the second exercise we analyse the full experiment, which has a factorial design.
+In the third exercise we analyse a second dataset at the gene and transcript level, with the workflows of the [technical details and transcript usage lecture](./05-rnaseq-technical.html).
 
 Users who work with scripts can adapt the code of the macrophage workflow in the [bulk RNA-seq lecture](./04-rnaseq-intro.html).
 
@@ -112,5 +113,91 @@ The researchers want to answer the following questions:
 10. Perform an over-representation analysis of GO biological processes with `goana` (`species = "Mm"`) for the up- and down-regulated genes of the average early and late effects. Which biological processes are affected at day 4 and at day 8? How does the response of the cerebellum change over the course of the infection?
 
 11. The contrast for the sex difference before the infection uses the same day-0 mice as exercise 1. The full model, however, estimates the dispersions with all mice. Would you expect the full model to detect more genes? Does it? Estimate the common biological coefficient of variation (BCV) separately for each time point with `estimateDisp` and use it to explain your findings.
+
+# Dexamethasone and airway smooth muscle cells
+
+Glucocorticoids are anti-inflammatory drugs that are used, for example, by people with asthma to reduce the inflammation of the airways.
+@Himes2014-airway studied the effect of the synthetic glucocorticoid dexamethasone on human airway smooth muscle cells.
+Cells of four cell lines were treated with 1 µM dexamethasone for 18 hours or left untreated.
+The data are available in GEO under accession number [GSE52778](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE52778).
+
+The paired-end reads of the 8 samples were quantified with salmon against the GENCODE 29 human transcriptome.
+Salmon also drew 20 Gibbs samples per sample, which quantify the uncertainty of the transcript counts:
+
+```{bash, eval = FALSE}
+salmon quant -i salmon_gencode29_k31 -l A \
+  -1 SRR1039508_1.fastq.gz -2 SRR1039508_2.fastq.gz \
+  --gcBias --seqBias --numGibbsSamples 20 -o quants/SRR1039508
+```
+
+The salmon output is available as a [release of the course repository](https://github.com/statOmics/SGA/releases/tag/airway-salmon-v1) (215 MB). After unzipping, the folder `airwaySalmon` contains:
+
+- `coldata.csv`: the sample information, i.e. the run identifier (`names`), the cell line (`cell`) and the treatment (`dex`: `untrt` or `trt`) of every sample,
+- `quants/<run>/quant.sf.gz`: the estimated transcript counts, effective lengths and TPMs of each sample,
+- `quants/<run>/aux_info/bootstrap/`: the 20 Gibbs samples of each sample.
+
+The data can be imported with the code below.
+The default time-out of `download.file` (60 seconds) is too short for a file of this size.
+tximeta recognises the GENCODE 29 transcriptome from the checksum of the index, adds the transcript annotation and imports the Gibbs samples.
+
+```{r, eval = FALSE}
+library(tidyverse)
+library(edgeR)
+library(tximeta)
+
+zipUrl <- "https://github.com/statOmics/SGA/releases/download/airway-salmon-v1/airwaySalmon_gencode29.zip"
+if (!dir.exists("airwaySalmon")) {
+  options(timeout = 1200)
+  download.file(zipUrl, "airwaySalmon.zip", mode = "wb")
+  unzip("airwaySalmon.zip")
+  unlink("airwaySalmon.zip")
+}
+
+coldata <- read.csv("airwaySalmon/coldata.csv") |>
+  mutate(
+    cell = factor(cell),
+    dex = factor(dex, levels = c("untrt", "trt")),
+    files = file.path("airwaySalmon/quants", names, "quant.sf.gz")
+  )
+st <- tximeta(coldata)
+```
+
+Users who work with scripts can adapt the code of the macrophage workflow in the [technical details and transcript usage lecture](./05-rnaseq-technical.html).
+
+# Exercise 3: gene- and transcript-level analysis of the airway data
+
+## Differential gene expression
+
+1. Import the data. What is the experimental unit? Which type of design is this? Which model do you propose, and why do you include the cell line?
+
+2. Summarise the counts to the gene level with `summarizeToGene` and create a `DGEList` with `DGEListFromTximeta`. Which offsets does this function store, and why? Visualise the library sizes.
+
+3. Filter and normalise the data. Make an MDS plot, colour the samples by cell line and use a different symbol for the treatment. Which sources of variability do the first two dimensions capture?
+
+4. Fit the model and test for the effect of dexamethasone. How many genes are differentially expressed at an FDR of 5%? Use `glmTreat` to select the genes with a fold change that is significantly larger than 2.
+
+5. Look up the top genes. Are they known targets of glucocorticoids? Can they serve as a positive control for your workflow?
+
+## Differential transcript expression
+
+6. Create a transcript-level `DGEList` with `DGEListFromTximeta`, once with the raw counts and once with `divide = TRUE`. Plot the overdispersion against the number of transcripts of the gene. What do you observe? Explain.
+
+7. Analyse the raw and the divided counts with the same edgeR pipeline. Compare the number of transcripts that remain after filtering, the QL dispersions (`plotQLDisp`) and the number of differentially expressed transcripts. Explain the differences.
+
+8. Why is quantification uncertainty much less of a problem for the gene-level counts?
+
+9. Some genes have a differentially expressed transcript, but are not differentially expressed at the gene level. How is this possible?
+
+## Differential transcript usage
+
+10. Select the genes with at least two transcripts. Fit a model for the transcript usage with the log of the (undivided) gene total minus the log of the overdispersion as offset. Write down the model. Why do we not need TMM normalisation in this model? Interpret the estimated global NB dispersion.
+
+11. Test for DTU with `diffSplice`. Compare the genes that are found with the gene-level F-test and with the Simes test. When do you expect each test to be the most powerful?
+
+12. Perform a stage-wise analysis with stageR, once for `diffSplice` and once for the offset model. How does stage-wise testing control the error rates? Which method is the most powerful here?
+
+13. Plot the usage of the transcripts of the top gene for each cell line. Which transcripts change their usage? Is the gene also differentially expressed at the gene level?
+
+14. (Optional, advanced) With the gene total as offset you model the fragment usage. Build the offset for the molecular usage with the effective lengths of salmon. Show that the difference between both log fold changes equals the change in the log2 average transcript length of the gene.
 
 # References
