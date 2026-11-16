@@ -200,4 +200,8 @@ Users who work with scripts can adapt the code of the macrophage workflow in the
 
 14. (Optional, advanced) With the gene total as offset you model the fragment usage. Build the offset for the molecular usage with the effective lengths of salmon. Show that the difference between both log fold changes equals the change in the log2 average transcript length of the gene.
 
+## Perform gene-level differential expression analysis with other tools
+
+15. Perform the gene level analysis with DESeq2 and limma voom and compare the results with the edgeR workflow. 
+
 # References

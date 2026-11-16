@@ -4325,6 +4325,7 @@ window.Quarto = {
   <li><a href="#differential-gene-expression" id="toc-differential-gene-expression" class="nav-link" data-scroll-target="#differential-gene-expression"><span class="header-section-number">5.1</span> Differential gene expression</a></li>
   <li><a href="#differential-transcript-expression" id="toc-differential-transcript-expression" class="nav-link" data-scroll-target="#differential-transcript-expression"><span class="header-section-number">5.2</span> Differential transcript expression</a></li>
   <li><a href="#differential-transcript-usage" id="toc-differential-transcript-usage" class="nav-link" data-scroll-target="#differential-transcript-usage"><span class="header-section-number">5.3</span> Differential transcript usage</a></li>
+  <li><a href="#perform-gene-level-differential-expression-analysis-with-other-tools" id="toc-perform-gene-level-differential-expression-analysis-with-other-tools" class="nav-link" data-scroll-target="#perform-gene-level-differential-expression-analysis-with-other-tools"><span class="header-section-number">5.4</span> Perform gene-level differential expression analysis with other tools</a></li>
   </ul></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">6</span> References</a></li>
   </ul>
@@ -4515,6 +4516,12 @@ window.Quarto = {
 <li><p>Perform a stage-wise analysis with stageR, once for <code>diffSplice</code> and once for the offset model. How does stage-wise testing control the error rates? Which method is the most powerful here?</p></li>
 <li><p>Plot the usage of the transcripts of the top gene for each cell line. Which transcripts change their usage? Is the gene also differentially expressed at the gene level?</p></li>
 <li><p>(Optional, advanced) With the gene total as offset you model the fragment usage. Build the offset for the molecular usage with the effective lengths of salmon. Show that the difference between both log fold changes equals the change in the log2 average transcript length of the gene.</p></li>
+</ol>
+</section>
+<section id="perform-gene-level-differential-expression-analysis-with-other-tools" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="perform-gene-level-differential-expression-analysis-with-other-tools"><span class="header-section-number">5.4</span> Perform gene-level differential expression analysis with other tools</h2>
+<ol start="15" type="1">
+<li>Perform the gene level analysis with DESeq2 and limma voom and compare the results with the edgeR workflow.</li>
 </ol>
 </section>
 </section>
@@ -5188,7 +5195,11 @@ Himes, Blanca E, Xiaofeng Jiang, Peter Wagner, et al. 2014. <span>“<span>RNA-S
 <span id="cb5-200"><a href="#cb5-200" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-201"><a href="#cb5-201" aria-hidden="true" tabindex="-1"></a><span class="ss">14. </span>(Optional, advanced) With the gene total as offset you model the fragment usage. Build the offset for the molecular usage with the effective lengths of salmon. Show that the difference between both log fold changes equals the change in the log2 average transcript length of the gene.</span>
 <span id="cb5-202"><a href="#cb5-202" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-203"><a href="#cb5-203" aria-hidden="true" tabindex="-1"></a><span class="fu"># References</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal><i class="bi"></i></button></div>
+<span id="cb5-203"><a href="#cb5-203" aria-hidden="true" tabindex="-1"></a><span class="fu">## Perform gene-level differential expression analysis with other tools</span></span>
+<span id="cb5-204"><a href="#cb5-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-205"><a href="#cb5-205" aria-hidden="true" tabindex="-1"></a><span class="ss">15. </span>Perform the gene level analysis with DESeq2 and limma voom and compare the results with the edgeR workflow. </span>
+<span id="cb5-206"><a href="#cb5-206" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-207"><a href="#cb5-207" aria-hidden="true" tabindex="-1"></a><span class="fu"># References</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

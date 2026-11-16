@@ -17,3 +17,6 @@ _site/
 # Downloaded data of the transcript-level tutorial
 airwaySalmon/
 airwaySalmon.zip
+
+# Intermediate figures of a (failed) Quarto render
+/*_files/
