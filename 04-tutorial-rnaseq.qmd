@@ -2,7 +2,8 @@
 code-tools: true
 title: Tutorial on differential expression analysis of bulk RNA-seq data
 format:
-  html: default
+  html:
+    number-sections: false
   pdf: default
 ---
 

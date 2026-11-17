@@ -1,0 +1,498 @@
+---
+code-tools: true
+title: "Solution tutorial single-cell RNA-seq: COVID-19 and B cells"
+format:
+  html:
+    number-sections: false
+  pdf:
+    fig-format: png
+    fig-dpi: 150
+---
+
+```{r echo = FALSE}
+source("R/knitr_setup.R")
+```
+
+This is a solution of Exercise 2 of the [single-cell RNA-seq tutorial](./06-tutorial-scrnaseq.html).
+Several questions have more than one good answer: the code below is one possible analysis.
+
+```{r, warning = FALSE, message = FALSE}
+library(tidyverse)
+library(SingleCellExperiment)
+library(scrapper)
+library(omicsGMF)
+library(edgeR)
+library(stageR)
+library(patchwork)
+
+plotDims <- function(dims, color, colorName, title) {
+  # plot the cells in a random order, so that no group hides another
+  tibble(dim1 = dims[, 1], dim2 = dims[, 2], color = color) |>
+    slice_sample(prop = 1) |>
+    ggplot(aes(dim1, dim2, color = color)) +
+    geom_point(size = 0.3) +
+    labs(color = colorName, title = title) +
+    theme_bw() +
+    theme(legend.text = element_text(size = 6), legend.key.size = unit(0.3, "cm"))
+}
+```
+
+```{r}
+url <- "https://github.com/statOmics/SGA/releases/download/scrnaseq-v1/"
+dir.create("scrnaseqData", showWarnings = FALSE)
+if (!file.exists("scrnaseqData/covid_bcells.rds")) {
+  download.file(paste0(url, "covid_bcells.rds"), "scrnaseqData/covid_bcells.rds", mode = "wb")
+}
+covid <- readRDS("scrnaseqData/covid_bcells.rds")
+covid
+```
+
+# Design
+
+## 1. Donors, sites and disease status
+
+```{r}
+donors <- as_tibble(as.data.frame(colData(covid))) |>
+  dplyr::select(donor, site, sex, age, status) |>
+  distinct()
+nrow(donors)
+table(covid$celltype)
+table(site = donors$site, status = donors$status)
+```
+
+- There are `r ncol(covid)` cells of `r nrow(donors)` donors and `r nlevels(covid$celltype)` B-cell types.
+- The experimental unit is the donor: the disease status, the site, the sex and the age are properties of the donor, not of the cell. The cells of one donor are pseudoreplicates.
+- The design is unbalanced: the groups differ in size, and the sites have different numbers of donors per disease status.
+- The severe (`r sum(donors$status == "Severe")`) and critical (`r sum(donors$status == "Critical")`) groups and the asymptomatic patients (`r sum(donors$status == "Asymptomatic")`) contain few donors.
+- The asymptomatic patients are almost confounded with the site: `r sum(donors$status == "Asymptomatic" & donors$site == "Cambridge")` of the `r sum(donors$status == "Asymptomatic")` asymptomatic patients come from Cambridge. The comparison of the asymptomatic patients with the healthy donors relies on the assumption that the site effect is the same for all groups, and the site effect is mainly estimated from the other groups.
+
+```{r}
+table(sex = donors$sex, status = donors$status)
+table(age = donors$age, status = donors$status)
+```
+
+The sex and the age are also not balanced: the moderate group contains more men, and the critical patients are older than the healthy donors.
+
+## 2. Cells per donor and cell type
+
+```{r}
+cellsPerDonor <- table(donor = droplevels(covid$donor), celltype = covid$celltype)
+summary(as.data.frame.matrix(cellsPerDonor))
+colSums(cellsPerDonor >= 20)
+```
+
+The naive B cells are by far the most abundant cell type: almost all donors have more than 20 naive B cells.
+The immature, unswitched memory and the other B cells are rare: many donors have fewer than 20 of these cells.
+
+# Exploration
+
+## 3. Naive B cells
+
+```{r}
+naive <- covid[, covid$celltype == "naive B cell"]
+set.seed(1234)
+naive <- naive[, sample(ncol(naive), 4000)]
+naive <- naive[rowSums(counts(naive)) > 0, ]
+naive$sum <- colSums(counts(naive))
+naive <- normalizeRnaCounts.se(naive, size.factors = naive$sum)
+naive <- chooseRnaHvgs.se(naive)
+naive <- runPca.se(naive, features = rowData(naive)$hvg)
+set.seed(1234)
+naive <- runAllNeighborSteps.se(naive, tsne.output.name = NULL, cluster.output.name = NULL)
+```
+
+```{r, fig.width = 12, fig.height = 4.5}
+umap <- reducedDim(naive, "UMAP")
+plotDims(umap, naive$site, "Site", "Site") +
+  plotDims(umap, naive$status, "Status", "Disease status") +
+  plotDims(umap, naive$donor, "Donor", "Donor") +
+  theme(legend.position = "none")
+```
+
+```{r}
+pcs <- reducedDim(naive, "PCA")
+explained <- function(variable) {
+  sapply(1:5, function(k) summary(lm(pcs[, k] ~ variable))$r.squared)
+}
+round(rbind(site = explained(naive$site),
+            status = explained(naive$status),
+            donor = explained(naive$donor)), 2)
+```
+
+- The site dominates: the cells of the two sites are separated in the UMAP, and the site explains a large proportion of the variance of PC1.
+- The disease status explains little of the variance of the first PCs.
+- The donor explains more variance than the site, because the donor is nested in the site: the donor effect contains the site effect, and also the disease status, sex and age of the donor and its sample processing.
+
+## 4. Site effect and library size
+
+```{r, fig.width = 10, fig.height = 4}
+p1 <- tibble(site = naive$site, sum = naive$sum) |>
+  ggplot(aes(site, sum)) +
+  geom_boxplot() +
+  scale_y_log10() +
+  labs(y = "Library size") +
+  theme_bw()
+p2 <- tibble(PC1 = pcs[, 1], sum = naive$sum, site = naive$site) |>
+  ggplot(aes(sum, PC1, color = site)) +
+  geom_point(size = 0.3) +
+  scale_x_log10() +
+  labs(x = "Library size") +
+  theme_bw()
+p1 + p2
+```
+
+```{r}
+logSum <- log(naive$sum)
+anova(lm(pcs[, 1] ~ logSum + naive$site))
+```
+
+- The cells of Cambridge have larger libraries than those of Newcastle.
+- PC1 is associated with the library size, also within each site: the normalisation and the log-transformation do not remove the effect of the sequencing depth completely.
+- After a linear correction for the log library size, the site still explains a large part of the variance of PC1. This does not prove that the site effect is more than a difference in depth: the effect of the depth on the log-transformed counts is not linear, because of the pseudo-count and the many small counts.
+- Exercise 5 shows that the factors of a GMF, which models the library size as an offset on the count scale, are hardly associated with the site. So most of the site effect in the PCA is an artefact of the different sequencing depth in combination with the log-transformation.
+
+## 5. GMF with and without correction for the site
+
+```{r}
+set.seed(1234)
+sub <- naive[, sample(ncol(naive), 2000)]
+top1000 <- rownames(naive)[order(rowData(naive)$residuals, decreasing = TRUE)[1:1000]]
+sub <- sub[top1000, ]
+gmfOffset <- matrix(log(sub$sum), nrow(sub), ncol(sub), byrow = TRUE)
+set.seed(1234)
+sub <- runGMF(sub, family = poisson(), ncomponents = 10, offset = gmfOffset)
+X <- model.matrix(~ site, data = colData(sub))
+set.seed(1234)
+sub <- runGMF(sub, family = poisson(), ncomponents = 10, offset = gmfOffset,
+              X = X, name = "GMF_site")
+set.seed(1234)
+sub <- runAllNeighborSteps.se(sub, reddim.type = "GMF", umap.output.name = "UMAP_GMF",
+                              tsne.output.name = NULL, cluster.output.name = NULL)
+set.seed(1234)
+sub <- runAllNeighborSteps.se(sub, reddim.type = "GMF_site", umap.output.name = "UMAP_GMF_site",
+                              tsne.output.name = NULL, cluster.output.name = NULL)
+```
+
+```{r, fig.width = 10, fig.height = 8}
+(plotDims(reducedDim(sub, "UMAP_GMF"), sub$site, "Site", "GMF") +
+   plotDims(reducedDim(sub, "UMAP_GMF_site"), sub$site, "Site", "GMF, site corrected")) /
+  (plotDims(reducedDim(sub, "UMAP_GMF"), sub$status, "Status", "") +
+     plotDims(reducedDim(sub, "UMAP_GMF_site"), sub$status, "Status", "")) +
+  plot_layout(guides = "collect")
+```
+
+```{r}
+sub <- runPca.se(sub, features = rownames(sub), number = 10)
+r2 <- function(dims, variable) sapply(1:5, function(k) summary(lm(dims[, k] ~ variable))$r.squared)
+round(rbind(PCA = r2(reducedDim(sub, "PCA"), sub$site),
+            GMF = r2(reducedDim(sub, "GMF"), sub$site),
+            GMF_site = r2(reducedDim(sub, "GMF_site"), sub$site)), 3)
+```
+
+- The model of the GMF with correction is
+$$
+y_{gc} \sim \text{Poisson}(\mu_{gc}), \quad
+\log \mu_{gc} = \log N_c + \beta_{g0} + \beta_{g1} x_{c,\text{Ncl}} + \sum_{k=1}^{10} u_{ck} v_{gk}.
+$$
+- The site effect is much smaller in the GMF than in the PCA, also without correction: the GMF models the library size as an offset on the count scale, which removes most of the technical effect of the sequencing depth. The correction for the site removes the remaining association.
+- We can correct for the site because the site is not confounded with the disease status: both sites contain healthy donors and patients of all groups. In the Kang data, all stimulated cells were sequenced in one run and all control cells in another run: correcting for the run would also remove the effect of the stimulation.
+
+# Differential expression
+
+## 6. Pseudobulk samples
+
+```{r}
+pb <- aggregateAcrossCells.se(covid, factors = list(celltype = covid$celltype, donor = covid$donor))
+pb$site <- covid$site[match(pb$donor, covid$donor)]
+pb$sex <- covid$sex[match(pb$donor, covid$donor)]
+pb$age <- covid$age[match(pb$donor, covid$donor)]
+pb$status <- covid$status[match(pb$donor, covid$donor)]
+table(pb$counts >= 20, pb$celltype)
+pb <- pb[, pb$counts >= 20]
+```
+
+A pseudobulk sample of a few cells has a small library and a large variability, because the expression of a few cells is more variable than the average of many cells.
+The negative binomial / QL model assumes that the dispersion is the same for all samples, which does not hold when the samples are built from very different numbers of cells.
+Pseudobulk samples of few cells also give little information on the donor.
+
+## 7. Model for the naive B cells
+
+```{r}
+yNaive <- DGEList(assay(pb, "sums")[, pb$celltype == "naive B cell"],
+                  samples = as.data.frame(colData(pb)[pb$celltype == "naive B cell",
+                                                      c("donor", "site", "sex", "age", "status", "counts")]))
+yNaive$samples$status <- relevel(droplevels(yNaive$samples$status), ref = "Healthy")
+design <- model.matrix(~ site + sex + status, data = yNaive$samples)
+colnames(design)
+yNaive <- yNaive[filterByExpr(yNaive, design = design), , keep.lib.sizes = FALSE]
+yNaive <- normLibSizes(yNaive)
+fitNaive <- glmQLFit(yNaive, design)
+```
+
+We propose the model
+$$
+y_{gi} \sim NB(\mu_{gi}, \phi_g), \quad
+\log \mu_{gi} = \log N_i + \beta_{g0} + \beta_{g,\text{Ncl}} x_{i,\text{Ncl}} + \beta_{g,\text{male}} x_{i,\text{male}} + \sum_{s} \beta_{g,s} x_{i,s},
+$$
+with $y_{gi}$ the pseudobulk count of gene $g$ in donor $i$, $N_i$ the effective library size and $s$ the disease groups asymptomatic, mild, moderate, severe and critical.
+
+- The site is a known batch (blocking variable): it is not confounded with the disease status, and it has a strong effect on the expression (exercise 3).
+- The sex is unbalanced between the groups and has an effect on the expression of genes on the sex chromosomes.
+- We do not include the donor: there is one pseudobulk sample per donor, so the donor is the experimental unit and its variability is part of the residual variability.
+- Interpretation: $\beta_{g0}$ is the log expression of a healthy woman of Cambridge. $\beta_{g,\text{Ncl}}$ is the log fold change between Newcastle and Cambridge, $\beta_{g,\text{male}}$ between men and women, and $\beta_{g,s}$ is the log fold change between disease group $s$ and the healthy donors, for donors of the same site and sex.
+
+The age is a potential confounder: the critical patients are older than the healthy donors.
+The age is given in decades and would cost 6 parameters as a factor (with fewer than 100 donors), or 1 as a numeric variable (with the assumption of a linear trend in the decades).
+We refit the model with a linear effect of the age as a sensitivity analysis:
+
+```{r}
+yNaive$samples$ageNum <- as.integer(yNaive$samples$age)
+designAge <- model.matrix(~ site + sex + ageNum + status, data = yNaive$samples)
+fitAge <- glmQLFit(yNaive, designAge)
+summary(decideTests(glmQLFTest(fitAge, coef = "ageNum")))
+```
+
+## 8. Contrasts
+
+```{r}
+L <- cbind(
+  Asymptomatic = c(0, 0, 0, 1, 0, 0, 0, 0),
+  Mild = c(0, 0, 0, 0, 1, 0, 0, 0),
+  Moderate = c(0, 0, 0, 0, 0, 1, 0, 0),
+  Severe = c(0, 0, 0, 0, 0, 0, 1, 0),
+  Critical = c(0, 0, 0, 0, 0, 0, 0, 1),
+  Average = c(0, 0, 0, 1, 1, 1, 1, 1) / 5
+)
+rownames(L) <- colnames(design)
+L
+tests <- apply(L, 2, function(contrast) glmQLFTest(fitNaive, contrast = contrast), simplify = FALSE)
+nDE <- sapply(tests, function(test) summary(decideTests(test))[, 1])
+nDE
+table(yNaive$samples$status)
+```
+
+```{r}
+testsAge <- apply(rbind(L[1:3, ], ageNum = 0, L[4:8, ]), 2,
+                  function(contrast) glmQLFTest(fitAge, contrast = contrast), simplify = FALSE)
+sapply(testsAge, function(test) summary(decideTests(test))[, 1])
+```
+
+- The asymptomatic patients hardly differ from the healthy donors, the mild patients a little, and the moderate, severe and critical patients strongly.
+- The moderate group has the most DE genes: it is the largest group (25 donors). The severe and critical groups have fewer donors and less power, although their effects are probably at least as large.
+- The asymptomatic group is small, and its comparison with the healthy donors relies on the site effect estimated from the other groups.
+- The average contrast pools all patients, but it averages effects that differ between the groups and its interpretation is not clear-cut.
+- With the age in the model, only a few genes have a significant age effect, but the numbers of DE genes decrease, mostly for the severe and critical patients, who are older than the healthy donors. Part of the differences with the healthy donors can be explained by the age. Whether we should correct for the age depends on the question: the age is a risk factor for a severe disease, so the age is not a pure confounder.
+
+## 9. Omnibus test
+
+```{r}
+omnibus <- glmQLFTest(fitNaive, coef = grep("status", colnames(design)))
+summary(decideTests(omnibus))
+omnibus$df.test[1]
+```
+
+The omnibus test has `r omnibus$df.test[1]` degrees of freedom: it tests that the 5 parameters of the disease groups are all zero, i.e. that the expression is the same in all 6 groups.
+This test can be used as the screening stage of a stage-wise analysis, with the 5 comparisons with the healthy donors in the confirmation stage.
+
+## 10. Top genes critical vs healthy
+
+```{r}
+topTags(tests$Critical, n = 20)$table |>
+  dplyr::select(logFC, logCPM, F, FDR) |>
+  knitr::kable(digits = 3)
+```
+
+```{r}
+isg <- c("IFI27", "IFI44L", "IFI6", "ISG15", "MX1", "XAF1", "IFIT3", "PSME2")
+topTags(tests$Critical, n = Inf)$table[intersect(isg, rownames(yNaive)), c("logFC", "FDR")] |>
+  knitr::kable(digits = 3)
+```
+
+- The top genes are mainly not interferon-stimulated genes. Many are typical for antibody-secreting cells (plasmablasts): immunoglobulin genes (*IGHG1*, *IGHV* genes), genes of the endoplasmic reticulum and the unfolded protein response (*XBP1*, *MZB1*, *SDF2L1*, *FKBP11*, *SRPRB*), and genes of proliferating cells (*RRM2*, *CDC20*, *BUB1*, *PCLAF*, *GINS2*).
+- Critical COVID-19 is characterised by a strong expansion of plasmablasts [@Stephenson2021-covid]. These genes suggest that the naive B cells of the critical patients are contaminated with plasmablast signal: ambient RNA of the abundant plasmablasts, doublets, or activated cells that were annotated as naive B cells.
+- Of the classical interferon-stimulated genes, only *IFI27* (strongly) and *PSME2* are significantly up. The interferon response in the naive B cells of the critical patients is weak, compared to e.g. the Kang data of the lecture.
+
+## 11. Other cell types
+
+```{r}
+pseudobulkDE <- function(celltype) {
+  sel <- pb$celltype == celltype
+  y <- DGEList(assay(pb, "sums")[, sel],
+               samples = as.data.frame(colData(pb)[sel, c("donor", "site", "sex", "status", "counts")]))
+  y$samples$status <- relevel(droplevels(y$samples$status), ref = "Healthy")
+  design <- model.matrix(~ site + sex + status, data = y$samples)
+  y <- y[filterByExpr(y, design = design), , keep.lib.sizes = FALSE]
+  y <- normLibSizes(y)
+  fit <- glmQLFit(y, design)
+  statusCoef <- grep("status", colnames(design), value = TRUE)
+  sapply(statusCoef, function(coef) summary(decideTests(glmQLFTest(fit, coef = coef)))[, 1])
+}
+for (ct in levels(pb$celltype)) {
+  cat("\n", ct, "\n")
+  print(table(droplevels(pb$status[pb$celltype == ct])))
+}
+lapply(setNames(levels(pb$celltype), levels(pb$celltype)), pseudobulkDE)
+```
+
+- After removing the pseudobulk samples with fewer than 20 cells, the rare cell types have few donors per group: e.g. only 3 to 6 donors for several groups of the unswitched memory and the other B cells.
+- The analysis can be done for all cell types, because each group keeps at least a few donors. The power is much lower for the rare cell types: fewer donors, fewer cells per pseudobulk sample and fewer genes that pass the filtering. The comparisons of the small groups (asymptomatic, severe, critical) find (almost) no DE genes in the rare cell types.
+- The power depends more on the number of donors than on the number of cells: the moderate group (most donors) has the most DE genes in all cell types.
+
+# Differential detection
+
+## 12. Binarised pseudobulk
+
+```{r}
+detected <- Matrix::drop0(counts(covid))
+detected@x[] <- 1
+binCovid <- SingleCellExperiment(list(counts = detected), colData = colData(covid))
+pbBin <- aggregateAcrossCells.se(binCovid, factors = list(celltype = binCovid$celltype,
+                                                          donor = binCovid$donor))
+pbBin <- pbBin[, pbBin$counts >= 20]
+pbBin$site <- covid$site[match(pbBin$donor, covid$donor)]
+pbBin$sex <- covid$sex[match(pbBin$donor, covid$donor)]
+pbBin$status <- covid$status[match(pbBin$donor, covid$donor)]
+```
+
+The pseudobulk count of the binarised data is the number of cells of a donor and cell type in which the gene is detected (count > 0).
+Divided by the number of cells, it is the detection fraction of the gene.
+
+## 13. Differential detection for the naive B cells
+
+```{r}
+binNaive <- pbBin[, pbBin$celltype == "naive B cell"]
+detection <- sweep(assay(binNaive, "sums"), 2, binNaive$counts, "/")
+medDetection <- matrixStats::rowMedians(as.matrix(detection[rownames(yNaive), ]))
+keepDD <- rownames(yNaive)[medDetection < 0.9]
+length(keepDD)
+cdr <- colMeans(detection[keepDD, ])
+
+yDD <- DGEList(assay(binNaive, "sums")[keepDD, ],
+               samples = as.data.frame(colData(binNaive)[, c("donor", "site", "sex", "status", "counts")]))
+yDD$samples$status <- relevel(droplevels(yDD$samples$status), ref = "Healthy")
+yDD$offset <- log(binNaive$counts * cdr)
+designDD <- model.matrix(~ site + sex + status, data = yDD$samples)
+all.equal(colnames(designDD), colnames(design))
+yDD <- estimateDisp(yDD, designDD)
+fitDD <- glmQLFit(yDD, designDD, robust = TRUE)
+testsDD <- apply(L, 2, function(contrast) glmQLFTest(fitDD, contrast = contrast, poisson.bound = FALSE),
+                 simplify = FALSE)
+sapply(testsDD, function(test) summary(decideTests(test))[, 1])
+```
+
+- We start from the genes that pass the filtering of the DE analysis.
+- We remove the genes with a median detection fraction of 0.9 or more: these genes are detected in (almost) all cells, so their detection fraction cannot increase and contains no information beyond their expression level.
+- The offset is the log of the number of cells times the cellular detection rate (CDR), the average detection fraction of the cell type in a donor. The number of cells is the maximal count for each gene. The CDR corrects for differences in sequencing depth: in a donor with a deeper sequencing, all genes are detected in more cells. This is the normalisation of the DD analysis, the counterpart of the effective library size of the DE analysis.
+
+## 14. Stage-wise testing of DE and DD
+
+```{r}
+deCrit <- tests$Critical
+ddCrit <- testsDD$Critical
+pDE <- setNames(deCrit$table$PValue, rownames(deCrit))
+pDD <- setNames(rep(NA, length(pDE)), names(pDE))
+pDD[rownames(ddCrit)] <- ddCrit$table$PValue
+pScreen <- ifelse(is.na(pDD), pDE, 2 / (1 / pDE + 1 / pDD))
+
+stageRObj <- stageR(pScreen = pScreen, pConfirmation = cbind(DD = pDD, DE = pDE),
+                    pScreenAdjusted = FALSE)
+stageRObj <- stageWiseAdjustment(stageRObj, method = "none", alpha = 0.05, allowNA = TRUE)
+ddDe <- getResults(stageRObj)
+padj <- getAdjustedPValues(stageRObj, onlySignificantGenes = FALSE, order = FALSE)
+sum(padj[, "padjScreen"] <= 0.05)
+table(DD = ddDe[, "DD"], DE = ddDe[, "DE"])
+```
+
+```{r, fig.width = 6, fig.height = 5}
+ddGenes <- rownames(ddCrit)
+ddPlot <- tibble(gene = ddGenes,
+                 logFC_DE = deCrit$table[ddGenes, "logFC"],
+                 logFC_DD = ddCrit$table$logFC,
+                 DE = ddDe[ddGenes, "DE"] == 1,
+                 DD = ddDe[ddGenes, "DD"] == 1) |>
+  mutate(significant = case_when(DE & DD ~ "DE and DD", DE ~ "DE only",
+                                 DD ~ "DD only", TRUE ~ "none"))
+ggplot(ddPlot, aes(logFC_DE, logFC_DD, color = significant)) +
+  geom_point(size = 0.5) +
+  geom_abline(linetype = 2) +
+  labs(x = "log fold change DE", y = "log fold change DD", color = "") +
+  theme_bw()
+```
+
+- The screening stage finds `r sum(padj[, "padjScreen"] <= 0.05)` genes. Of these, `r sum(ddDe[, "DE"] == 1 & ddDe[, "DD"] == 0)` are DE only, `r sum(ddDe[, "DD"] == 1 & ddDe[, "DE"] == 0)` DD only and `r sum(ddDe[, "DD"] == 1 & ddDe[, "DE"] == 1)` both DE and DD.
+- With two hypotheses per gene, there is at most one true null hypothesis after a false screening hypothesis, so Shaffer's procedure needs no correction in the confirmation stage (`method = "none"`).
+- The DE and DD log fold changes are strongly correlated: most genes with a higher expression are also detected in more cells. The DD log fold changes are smaller, because the detection fraction cannot increase above 1.
+
+## 15. A gene that is DD but not DE (optional)
+
+```{r}
+ddOnly <- rownames(ddDe)[which(ddDe[, "DD"] == 1 & ddDe[, "DE"] == 0)]
+ddOnly <- ddOnly[order(ddCrit$table[ddOnly, "PValue"])]
+head(ddOnly, 20)
+# the first gene that is not an immunoglobulin variable gene
+gene <- ddOnly[!grepl("^IG[HKL]V", ddOnly)][1]
+gene
+```
+
+```{r, fig.width = 10, fig.height = 4}
+donorIndex <- match(yNaive$samples$donor, binNaive$donor)
+geneData <- tibble(status = yNaive$samples$status,
+                   detection = detection[gene, donorIndex] / cdr[donorIndex],
+                   cpm = cpm(yNaive)[gene, ])
+p1 <- ggplot(geneData, aes(status, detection)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.2, size = 0.7) +
+  labs(y = "Detection fraction / CDR", title = gene) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+p2 <- ggplot(geneData, aes(status, cpm)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.2, size = 0.7) +
+  labs(y = "Counts per million", title = gene) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+p1 + p2
+```
+
+We plot the detection fraction relative to the CDR of the donor, which is the quantity that the offset of the DD model corrects for.
+
+- Several of the DD-only genes are immunoglobulin variable genes (*IGHV*, *IGKV*, *IGLV*). Each B cell expresses one heavy and one light chain V gene, at a high level. The detection of a V gene reflects the fraction of B cells that use it, i.e. the clonal composition of the B cells, while the average expression is dominated by the few cells that express it at a very high level.
+- *IFITM1* is an interferon-stimulated gene. Its expression (CPM) is higher in all patient groups, but it is very variable between the patients: a few donors have a very high expression. For the critical patients, the DE test is therefore not significant. The detection fraction relative to the CDR is less sensitive to these donors with a very high expression in a few cells, and shows a consistent increase: here the DD analysis has more power than the DE analysis.
+- In general, a gene that is DD but not DE is detected in a different fraction of the cells, while its average expression does not change significantly.
+This can point to a change in the distribution of the expression over the cells: e.g. a gene that is expressed at a high level in a few cells in one group and at a low level in many cells in the other group.
+The DD analysis can also have more power for lowly expressed genes, for which the counts are mostly zeros and ones and the detection contains most of the information.
+
+# Differential abundance
+
+## 16. Composition of the B cells (optional)
+
+```{r}
+abundances <- unclass(table(covid$celltype, droplevels(covid$donor)))
+samplesDA <- donors[match(colnames(abundances), donors$donor), ]
+samplesDA$status <- relevel(droplevels(samplesDA$status), ref = "Healthy")
+yDA <- DGEList(abundances, samples = as.data.frame(samplesDA))
+yDA <- normLibSizes(yDA)
+designDA <- model.matrix(~ site + sex + status, data = yDA$samples)
+fitDA <- glmQLFit(yDA, designDA)
+testDA <- glmQLFTest(fitDA, coef = grep("status", colnames(designDA)))
+topTags(testDA)$table |>
+  knitr::kable(digits = 3)
+```
+
+```{r, fig.width = 9, fig.height = 4}
+as_tibble(as.data.frame(t(abundances) / colSums(abundances))) |>
+  bind_cols(samplesDA) |>
+  pivot_longer(levels(covid$celltype), names_to = "celltype", values_to = "proportion") |>
+  ggplot(aes(status, proportion)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.2, size = 0.5) +
+  facet_wrap(~ celltype, scales = "free_y", nrow = 1) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+- The proportion of the other B cells (`B cell`) changes most with the disease status: it increases in the moderate and critical patients. The changes of the memory B cells are smaller.
+- We use the same design as in the DE analysis, with the donor as experimental unit: the counts are the numbers of cells per cell type and donor, and the library size is the number of B cells of the donor.
+- The TMM normalisation assumes that most cell types do not change in abundance. With only 5 cell types this is a strong assumption: a large change in the naive B cells, which are the majority of the B cells, changes the proportions of all other cell types. The model can only describe the composition within the B cells: we do not know the total number of PBMCs, so we cannot tell whether a cell type becomes more abundant in the blood.
+
+# References

@@ -51,7 +51,7 @@ record 10391097 (doi:10.5281/zenodo.10391097, CC BY 4.0), with counts converted 
 raw integer counts from the normalised values of the atlas.
 
 - 51,735 cells of five B-cell types (naive, immature, unswitched memory, class switched
-  memory and other B cells) of 110 donors from two sites (Cambridge and Ncl);
+  memory and other B cells) of 100 donors from two sites (Cambridge and Ncl);
   genes with zero counts in all cells removed (17,423 genes).
 - `colData`: `donor`, `site`, `sex`, `age` (decade), `status` (Healthy, Asymptomatic,
   Mild, Moderate, Severe, Critical, on the day of sample collection) and `celltype`.

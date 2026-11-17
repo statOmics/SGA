@@ -1,0 +1,506 @@
+---
+code-tools: true
+title: "Solution tutorial single-cell RNA-seq: mouse retina"
+format:
+  html:
+    number-sections: false
+  pdf:
+    fig-format: png
+    fig-dpi: 150
+---
+
+```{r echo = FALSE}
+source("R/knitr_setup.R")
+```
+
+This is a solution of Exercise 1 of the [single-cell RNA-seq tutorial](./06-tutorial-scrnaseq.html).
+Several questions have more than one good answer: the code below is one possible analysis.
+
+```{r, warning = FALSE, message = FALSE}
+library(tidyverse)
+library(SingleCellExperiment)
+library(ExperimentHub)
+library(scrapper)
+library(scuttle)
+library(scDblFinder)
+library(omicsGMF)
+library(patchwork)
+
+plotDims <- function(dims, color, colorName, title) {
+  # plot the cells in a random order, so that no group hides another
+  tibble(dim1 = dims[, 1], dim2 = dims[, 2], color = color) |>
+    slice_sample(prop = 1) |>
+    ggplot(aes(dim1, dim2, color = color)) +
+    geom_point(size = 0.3) +
+    labs(color = colorName, title = title) +
+    theme_bw() +
+    theme(legend.text = element_text(size = 6), legend.key.size = unit(0.3, "cm"))
+}
+```
+
+# Data and quality control
+
+## 1. Import
+
+```{r, message = FALSE}
+eh <- ExperimentHub()
+counts <- eh[["EH2690"]]
+cellInfo <- eh[["EH2691"]]
+
+sce <- SingleCellExperiment(list(counts = counts), colData = cellInfo)
+sce$replicate <- factor(sub("_.*", "", colnames(sce)))
+sce$cluster <- factor(sce$cluster)
+sce
+table(sce$replicate)
+```
+
+- There are `r nrow(sce)` genes and `r ncol(sce)` cells.
+- The numbers of cells per batch are round numbers (4000, 6600, 9000, ...). The authors did not decide which barcodes are cells with a statistical procedure. They kept a fixed number of barcodes with the largest numbers of UMIs per batch, i.e. they cut the barcode rank plot at a chosen rank.
+- `emptyDrops` needs the counts of *all* barcodes, including the empty droplets, to estimate the ambient RNA profile. The data only contain the selected barcodes, so `emptyDrops` cannot be used.
+
+## 2. Published clusters
+
+```{r}
+table(cluster = sce$cluster, batch = sce$replicate, useNA = "ifany")
+```
+
+We look at the composition in proportions per batch:
+
+```{r, fig.width = 8, fig.height = 4}
+as_tibble(table(cluster = sce$cluster, batch = sce$replicate, useNA = "ifany")) |>
+  group_by(batch) |>
+  mutate(proportion = n / sum(n)) |>
+  ggplot(aes(factor(cluster, levels = c(1:39, NA)), proportion, fill = batch)) +
+  geom_col(position = "dodge") +
+  labs(x = "Published cluster") +
+  theme_bw() +
+  theme(axis.text.x = element_text(size = 6))
+```
+
+```{r}
+mean(sce$cluster == "24", na.rm = TRUE)
+mean(is.na(sce$cluster))
+```
+
+- Cluster 24 contains `r round(100 * mean(sce$cluster == "24", na.rm = TRUE))`% of the labelled cells. These are the rod photoreceptors (see exercise 12). The other clusters are much smaller: the retina has a few very abundant and many rare cell types.
+- The composition is similar in the batches `r1` to `r6`. Batch `p1` deviates: it has relatively fewer rods and more amacrine cells, cones and cells without a label. The data do not tell why: a difference in the dissection or the processing of this sample is a plausible explanation.
+- Cells without a label (`NA`) were not assigned to a cluster by the authors, e.g. because they were considered to be of low quality, doublets or contaminants. Exercises 4 and 5 look at these cells.
+
+## 3. Subset and mitochondrial genes
+
+```{r}
+sce <- sce[, sce$replicate %in% c("r1", "r2")]
+sce$replicate <- droplevels(sce$replicate)
+sce <- sce[rowSums(counts(sce)) > 0, ]
+mito <- grepl("^MT-", rownames(sce))
+rownames(sce)[mito]
+dim(sce)
+```
+
+## 4. QC metrics
+
+```{r}
+sce <- quickRnaQc.se(sce, subsets = list(mito = mito), block = sce$replicate)
+metadata(sce)$qc$thresholds
+table(keep = sce$keep, batch = sce$replicate)
+```
+
+```{r, fig.width = 10, fig.height = 4}
+qcData <- as_tibble(as.data.frame(colData(sce)))
+p1 <- ggplot(qcData, aes(sum, detected, color = keep)) +
+  geom_point(size = 0.3) +
+  scale_x_log10() +
+  scale_y_log10() +
+  facet_wrap(~ replicate) +
+  labs(x = "Library size", y = "Detected genes") +
+  theme_bw()
+p2 <- ggplot(qcData, aes(detected, subset.proportion.mito, color = keep)) +
+  geom_point(size = 0.3) +
+  scale_x_log10() +
+  facet_wrap(~ replicate) +
+  labs(x = "Detected genes", y = "Mitochondrial proportion") +
+  theme_bw()
+p1 / p2 + plot_layout(guides = "collect")
+```
+
+```{r}
+qcData |>
+  group_by(replicate) |>
+  summarise(medianSum = median(sum), medianDetected = median(detected),
+            medianMito = median(subset.proportion.mito))
+
+# chimera data of the lecture
+chimera <- readRDS("scrnaseqData/chimera_sample5.rds")
+chimera <- quickRnaQc.se(chimera, subsets = list(mito = rowData(chimera)$chr_mito))
+c(medianSum = median(chimera$sum), medianDetected = median(chimera$detected),
+  medianMito = median(chimera$subset.proportion.mito))
+rm(chimera)
+
+# reason for removal
+thr <- metadata(sce)$qc$thresholds
+batch <- as.character(qcData$replicate)
+qcData |>
+  mutate(lowSum = sum < thr$sum[batch],
+         lowDetected = detected < thr$detected[batch],
+         highMito = subset.proportion.mito > thr$subset.proportion$mito[batch]) |>
+  filter(!keep) |>
+  summarise(lowSum = sum(lowSum), lowDetected = sum(lowDetected), highMito = sum(highMito))
+```
+
+- The libraries are much smaller than in the chimera data of the lecture (10x Genomics), and fewer genes are detected per cell: Drop-seq captures fewer molecules per cell. The mitochondrial proportions are also lower.
+- The lower thresholds on the library size and the number of detected genes are very low (about 100), because the distributions are broad. With these thresholds, `r sum(!sce$keep)` cells are removed, almost all because of a high mitochondrial proportion (above about 6%).
+- The thresholds are computed per batch with `block`, because the sequencing depth differs between the batches.
+
+```{r}
+table(keep = sce$keep, published = !is.na(sce$cluster))
+qcData |>
+  mutate(published = !is.na(cluster)) |>
+  group_by(published) |>
+  summarise(medianSum = median(sum), medianDetected = median(detected),
+            medianMito = median(subset.proportion.mito))
+```
+
+- The cells without a published cluster label have *larger* libraries and more detected genes than the labelled cells, and a similar mitochondrial proportion. They are not of low quality: large libraries are rather typical for doublets (see exercise 5).
+- Our QC removes a different set of cells: almost all cells without a label pass our thresholds, and most removed cells have a published label. The default thresholds (3 MADs) are an arbitrary choice, and the authors used a different strategy.
+
+```{r}
+sce <- sce[, sce$keep]
+```
+
+## 5. Doublets
+
+```{r}
+set.seed(1234)
+sce <- scDblFinder(sce, samples = sce$replicate)
+table(sce$scDblFinder.class, sce$replicate)
+table(cluster = sce$cluster, class = sce$scDblFinder.class, useNA = "ifany") |>
+  as.data.frame.matrix() |>
+  rownames_to_column("cluster") |>
+  mutate(fraction = doublet / (singlet + doublet)) |>
+  arrange(desc(fraction)) |>
+  head(10)
+```
+
+- Doublets can only arise between cells of the same droplet run. With `samples`, scDblFinder generates the artificial doublets and estimates the expected doublet rate per batch.
+- About `r round(100 * mean(sce$scDblFinder.class == "doublet"))`% of the cells are called doublets.
+- The fraction of doublets is highest in the cones (cluster 25) and in some small amacrine and bipolar clusters. Most doublets contain a rod, because the rods are the majority of the cells. A doublet of a rod and a rare cell looks like the rare cell with some extra rod transcripts, and is assigned to the cluster of the rare cell type, where it forms a large fraction of the cells.
+- The cells without a label have a higher doublet fraction than the average, in line with their large libraries: the authors probably removed part of the doublets.
+
+```{r}
+sce <- sce[, sce$scDblFinder.class == "singlet"]
+```
+
+# Normalisation and feature selection
+
+## 6. Size factors
+
+```{r}
+libFactors <- sce$sum / mean(sce$sum)
+# quick clustering on the log-expression with library size normalisation
+quick <- normalizeRnaCounts.se(sce)
+quick <- chooseRnaHvgs.se(quick)
+quick <- runPca.se(quick, features = rowData(quick)$hvg)
+set.seed(1234)
+quick <- runAllNeighborSteps.se(quick, umap.output.name = NULL, tsne.output.name = NULL)
+quickClusters <- quick$clusters
+rm(quick)
+pooledFactors <- pooledSizeFactors(sce, clusters = quickClusters)
+```
+
+```{r, fig.width = 7, fig.height = 4.5}
+cellType <- function(cluster) {
+  cl <- as.integer(as.character(cluster))
+  case_when(cl == 1 ~ "horizontal", cl == 2 ~ "ganglion", cl %in% 3:23 ~ "amacrine",
+            cl == 24 ~ "rod", cl == 25 ~ "cone", cl %in% 26:33 ~ "bipolar",
+            cl == 34 ~ "Muller glia", cl %in% 35:39 ~ "other", TRUE ~ "no label")
+}
+sce$celltype <- cellType(sce$cluster)
+tibble(library = libFactors, deconvolution = pooledFactors, celltype = sce$celltype) |>
+  ggplot(aes(library, deconvolution, color = celltype)) +
+  geom_point(size = 0.3) +
+  geom_abline(intercept = 0, slope = 1) +
+  scale_x_log10() +
+  scale_y_log10() +
+  labs(x = "Library size factor", y = "Deconvolution size factor", color = "Cell type") +
+  theme_bw()
+```
+
+The cell types follow the annotation of @Macosko2015-dropseq (see exercise 12).
+
+```{r}
+# median log2 ratio of the deconvolution and the library size factors per cell type
+round(tapply(log2(pooledFactors / libFactors), sce$celltype, median), 2)
+round(tapply(sce$sum, sce$celltype, median))
+```
+
+- Both size factors are strongly correlated, but the cell types are shifted with respect to each other.
+- The rods and the Müller glia have a deconvolution size factor that is smaller than their library size factor, the amacrine and bipolar cells a larger one. The rods express a few genes at very high levels (e.g. *RHO*, *SAG*, *GNGT1*): these genes take a large part of their library, so the library size overestimates the sequencing depth for the other genes. The deconvolution size factors are estimated on pools of cells and are robust to such strongly DE genes, under the assumption that most genes are not DE between the pools.
+- The rods also have the smallest libraries: the library size differs between the cell types, so a part of the variability of the library size is biological (cell size and RNA content).
+
+```{r}
+sce <- normalizeRnaCounts.se(sce, size.factors = pooledFactors)
+```
+
+## 7. Feature selection
+
+```{r}
+sce <- chooseRnaHvgs.se(sce, block = sce$replicate)
+
+y <- counts(sce)
+N <- colSums(y)
+piHat <- rowSums(y) / sum(N)
+nonzero <- summary(y)
+devNonzero <- rowsum(nonzero$x * log(nonzero$x / (piHat[nonzero$i] * N[nonzero$j])), nonzero$i)
+deviance <- numeric(nrow(y))
+deviance[as.integer(rownames(devNonzero))] <- 2 * devNonzero[, 1]
+rowData(sce)$highDeviance <- rank(-deviance) <= sum(rowData(sce)$hvg)
+table(hvg = rowData(sce)$hvg, highDeviance = rowData(sce)$highDeviance)
+```
+
+- About half of the selected genes are shared.
+- The deviance compares the counts with a Poisson model with a constant relative expression for all cells and the library size as offset. It is computed on the counts, and is thus consistent with the count model of the lecture. The HVGs are based on the variance of the log-transformed normalised counts, which depends on the pseudo-count and is affected by the transformation of the many small counts.
+
+# Dimension reduction
+
+## 8. PCA and UMAP
+
+```{r}
+sce <- runPca.se(sce, features = rowData(sce)$hvg, number = 30)
+pcaInfo <- metadata(sce)$PCA
+tibble(pc = seq_along(pcaInfo$variance.explained),
+       explained = pcaInfo$variance.explained / pcaInfo$total.variance) |>
+  ggplot(aes(pc, explained)) +
+  geom_point() +
+  geom_line() +
+  labs(x = "PC", y = "Proportion of variance explained") +
+  theme_bw()
+```
+
+The first PC explains `r round(100 * pcaInfo$variance.explained[1] / pcaInfo$total.variance, 1)`% of the variance, and the elbow is at about 5 PCs.
+There are many (rare) cell types, and each PC explains only a small part of the variance, so we keep more PCs than the elbow suggests: e.g. the 30 computed PCs (the default of scrapper is 25). A rare cell type only contributes to the variance of a later PC, and would be lost with 5 PCs.
+
+```{r}
+set.seed(1234)
+sce <- runAllNeighborSteps.se(sce, tsne.output.name = NULL)
+```
+
+```{r, fig.width = 12, fig.height = 4.5}
+umap <- reducedDim(sce, "UMAP")
+plotDims(umap, sce$replicate, "Batch", "Batch") +
+  plotDims(umap, sce$celltype, "Cell type", "Published cluster") +
+  plotDims(umap, log10(sce$sum), "log10 library size", "Library size") +
+  scale_color_viridis_c()
+```
+
+- The cell type is the main source of variability: the rods form a large group, and the bipolar and amacrine cells form groups of smaller clusters.
+- The cells of both batches overlap: the batch effect is small.
+- The library size differs between the cell types (the rods have the smallest libraries), but also varies within the cell types.
+
+```{r}
+pcs <- reducedDim(sce, "PCA")
+round(rbind(batch = sapply(1:5, function(k) summary(lm(pcs[, k] ~ sce$replicate))$r.squared),
+            logLibSize = sapply(1:5, function(k) summary(lm(pcs[, k] ~ log(sce$sum)))$r.squared)), 3)
+```
+
+The log library size explains a large part of the variance of PC1, the batch almost nothing. PC1 separates the rods from the other cells, which have larger libraries: the association with the library size is (at least in part) biological.
+
+## 9. GMF
+
+```{r}
+set.seed(1234)
+cellSub <- sample(ncol(sce), 2000)
+top1000 <- rownames(sce)[order(rowData(sce)$residuals, decreasing = TRUE)[1:1000]]
+sub <- sce[top1000, cellSub]
+gmfOffset <- matrix(log(sub$sum), nrow(sub), ncol(sub), byrow = TRUE)
+set.seed(1234)
+sub <- runGMF(sub, family = poisson(), ncomponents = 10, offset = gmfOffset)
+sub <- runPca.se(sub, features = rownames(sub), number = 10)
+```
+
+```{r}
+set.seed(1234)
+sub <- runAllNeighborSteps.se(sub, tsne.output.name = NULL, cluster.output.name = NULL)
+set.seed(1234)
+sub <- runAllNeighborSteps.se(sub, reddim.type = "GMF", umap.output.name = "UMAP_GMF",
+                              tsne.output.name = NULL, cluster.output.name = NULL)
+```
+
+```{r, fig.width = 10, fig.height = 8}
+(plotDims(reducedDim(sub, "PCA"), sub$celltype, "Cell type", "PCA") +
+   plotDims(reducedDim(sub, "GMF"), sub$celltype, "Cell type", "GMF")) /
+  (plotDims(reducedDim(sub, "UMAP"), sub$celltype, "Cell type", "UMAP on PCA") +
+     plotDims(reducedDim(sub, "UMAP_GMF"), sub$celltype, "Cell type", "UMAP on GMF")) +
+  plot_layout(guides = "collect")
+```
+
+```{r}
+cor(reducedDim(sub, "PCA")[, 1:3], log(sub$sum))
+cor(reducedDim(sub, "GMF")[, 1:3], log(sub$sum))
+```
+
+- Both methods separate the main cell types, and the UMAPs are similar.
+- The first components of both methods are correlated with the library size, although the GMF uses the library size as an offset. The library size differs between the cell types: a component that separates the rods from the other cells is also correlated with the library size. An offset removes the effect of the sequencing depth on the counts, not the biological differences in RNA content between cell types.
+
+## 10. GMF with batch correction
+
+The GMF with the batch as covariate models the count $y_{gc}$ of gene $g$ in cell $c$ as
+
+$$
+y_{gc} \sim \text{Poisson}(\mu_{gc}), \quad
+\log \mu_{gc} = \log N_c + \beta_{g0} + \beta_{g1} x_c + \sum_{k=1}^{K} u_{ck} v_{gk},
+$$
+
+with $N_c$ the library size, $x_c$ an indicator for batch `r2`, $\beta_{g0}$ and $\beta_{g1}$ the gene-specific intercept and batch effect, and $u_{ck}$ and $v_{gk}$ the scores and loadings of the $K = 10$ factors.
+The factors now describe the variability that remains after removing a batch effect per gene.
+
+```{r}
+X <- model.matrix(~ replicate, data = colData(sub))
+head(X)
+set.seed(1234)
+subBatch <- runGMF(sub, family = poisson(), ncomponents = 10, offset = gmfOffset,
+                   X = X, name = "GMF_batch")
+set.seed(1234)
+subBatch <- runAllNeighborSteps.se(subBatch, reddim.type = "GMF_batch",
+                                   umap.output.name = "UMAP_GMF_batch",
+                                   tsne.output.name = NULL, cluster.output.name = NULL)
+```
+
+```{r, fig.width = 10, fig.height = 8}
+(plotDims(reducedDim(subBatch, "UMAP_GMF"), subBatch$replicate, "Batch", "GMF") +
+   plotDims(reducedDim(subBatch, "UMAP_GMF_batch"), subBatch$replicate, "Batch", "GMF, batch corrected")) /
+  (plotDims(reducedDim(subBatch, "UMAP_GMF"), subBatch$celltype, "Cell type", "") +
+     plotDims(reducedDim(subBatch, "UMAP_GMF_batch"), subBatch$celltype, "Cell type", "")) +
+  plot_layout(guides = "collect")
+```
+
+```{r}
+r2 <- function(dims) sapply(1:5, function(k) summary(lm(dims[, k] ~ subBatch$replicate))$r.squared)
+round(rbind(GMF = r2(reducedDim(subBatch, "GMF")),
+            GMF_batch = r2(reducedDim(subBatch, "GMF_batch"))), 3)
+```
+
+The batch explains almost none of the variance of the factors, also without correction: the batch effect between `r1` and `r2` is small, and the correction hardly changes the UMAP.
+Note that the batches are not confounded with the cell types here: both batches contain all cell types, so we can estimate a batch effect.
+
+# Clustering and annotation
+
+## 11. Clustering
+
+```{r}
+table(sce$clusters)
+```
+
+```{r, fig.width = 9, fig.height = 6}
+as_tibble(table(cluster = sce$clusters, published = sce$cluster, useNA = "ifany")) |>
+  group_by(cluster) |>
+  mutate(proportion = n / sum(n)) |>
+  ggplot(aes(factor(cluster, levels = sort(unique(sce$clusters))),
+             factor(published, levels = c(1:39, NA)), fill = proportion)) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  labs(x = "Our cluster", y = "Published cluster") +
+  theme_bw() +
+  theme(axis.text.y = element_text(size = 6))
+```
+
+```{r}
+table(cluster = sce$clusters, published = sce$celltype)
+```
+
+- Our clusters agree with the published cell classes: each cluster consists mainly of one class. Four clusters split the rods, while all amacrine subtypes and the ganglion cells end up in a single cluster, and the bipolar cells in two clusters.
+- The cells without a published label are spread over all clusters.
+
+```{r}
+resolutions <- c(0.25, 0.5, 1, 2, 4)
+nClusters <- sapply(resolutions, function(res) {
+  set.seed(1234)
+  tmp <- runAllNeighborSteps.se(sce, umap.output.name = NULL, tsne.output.name = NULL,
+                                more.cluster.graph.args = list(multilevel.resolution = res))
+  length(unique(tmp$clusters))
+})
+tibble(resolution = resolutions, clusters = nClusters)
+```
+
+- The number of clusters increases with the resolution.
+- There is no correct number of clusters: the resolution determines the level of detail. A low resolution gives the main cell classes (rods, cones, bipolar, amacrine, ...), a high resolution splits them into subtypes, but also splits large homogeneous populations (the rods) into clusters without a clear biological meaning. The authors found 39 clusters, of which 21 amacrine subtypes: with 2 batches and the default settings we cannot resolve these rare subtypes. The choice depends on the question, and the clusters need to be interpreted with marker genes.
+
+## 12. Marker genes
+
+```{r, fig.width = 12, fig.height = 9}
+markerGenes <- c("RHO", "ARR3", "OPN1MW", "VSX2", "RLBP1", "GAD1", "SLC6A9", "POU4F1")
+wrap_plots(lapply(markerGenes, function(g)
+  plotDims(umap, logcounts(sce)[g, ], "log-expr", g) +
+    scale_color_viridis_c()), ncol = 3)
+```
+
+```{r, fig.width = 10, fig.height = 8}
+as_tibble(t(as.matrix(logcounts(sce)[markerGenes, ]))) |>
+  mutate(cluster = factor(sce$clusters)) |>
+  pivot_longer(-cluster, names_to = "gene", values_to = "expression") |>
+  ggplot(aes(cluster, expression)) +
+  geom_violin(scale = "width") +
+  facet_wrap(~ gene, ncol = 2) +
+  labs(y = "log-expression") +
+  theme_bw()
+```
+
+```{r}
+markerMean <- sapply(markerGenes, function(g) tapply(logcounts(sce)[g, ], sce$clusters, mean))
+round(markerMean, 1)
+```
+
+- *RHO* is expressed in the largest group of cells: the largest published cluster (24) and our largest clusters are rod photoreceptors.
+- *RHO* is also detected in the other clusters: the rods are so abundant that their mRNA is present as ambient RNA in all droplets, and part of the rod-like signal may come from doublets. We therefore cannot annotate a cluster with the marker with the highest expression.
+- The other markers each mark a cluster: *ARR3*/*OPN1MW* the cones, *VSX2* the bipolar cells (two clusters, and lower in the Müller glia), *RLBP1* the Müller glia, *GAD1*/*SLC6A9* the amacrine cells. *POU4F1* is expressed at a low level in the amacrine cluster: the few ganglion cells are merged with the amacrine cells.
+- Two clusters express none of the markers: the next exercise identifies them as horizontal cells and non-neuronal cells.
+
+## 13. Marker genes of the clusters
+
+```{r}
+markers <- scoreMarkers.se(sce, sce$clusters, block = sce$replicate)
+topMarkers <- sapply(markers, function(m) paste(head(rownames(m)[order(m$auc.mean, decreasing = TRUE)], 5), collapse = ", "))
+tibble(cluster = names(topMarkers), top5 = topMarkers) |>
+  knitr::kable()
+```
+
+- The top markers confirm the annotation: *RHO*, *GNGT1*, *PDE6G*, *SAG* for the rod clusters, *PDE6H*, *GNAT2*, *ARR3* for the cones, *TRPM1*, *PCP2*, *ISL1* for the rod bipolar cells and *NEUROD4*, *SCGN* for the cone bipolar cells, *APOE*, *GLUL*, *CLU* for the Müller glia, and *CALB1* for the horizontal cells. The cluster with *SPARC*, *IGFBP7* and *SPARCL1* contains the non-neuronal cells (astrocytes, endothelial cells, pericytes, ...).
+- The rod clusters differ in the type of rod genes among their top markers: highly expressed phototransduction genes (*RHO*, *GNGT1*, *PDE6G*) in some clusters, long transcripts and nuclear RNA (*RP1*, *RPGRIP1*, *NR2E3*, *MALAT1*) in others. This rather points to technical differences, e.g. in the capture of cytoplasmic and nuclear RNA or in the library size, than to different types of rods.
+- The clusters were defined with the same data that we now use to test the differences between clusters. The clustering separates the cells based on their expression, so the genes differ between clusters by construction, even if the cells come from a single homogeneous population (see the simulation in the lecture). P-values of such a test are not valid: this is a form of double dipping. The marker statistics are useful to rank and interpret the genes, but not to claim that they are DE.
+
+## 14. All batches (optional)
+
+```{r}
+all <- SingleCellExperiment(list(counts = counts), colData = cellInfo)
+all$replicate <- factor(sub("_.*", "", colnames(all)))
+all$cluster <- factor(all$cluster)
+all$celltype <- cellType(all$cluster)
+all <- all[rowSums(counts(all)) > 0, ]
+all <- quickRnaQc.se(all, subsets = list(mito = grepl("^MT-", rownames(all))), block = all$replicate)
+all <- all[, all$keep]
+all <- normalizeRnaCounts.se(all, block = all$replicate)
+all <- chooseRnaHvgs.se(all, block = all$replicate)
+all <- runPca.se(all, features = rowData(all)$hvg, number = 30)
+set.seed(1234)
+all <- runAllNeighborSteps.se(all, tsne.output.name = NULL)
+```
+
+```{r, fig.width = 12, fig.height = 5}
+plotDims(reducedDim(all, "UMAP"), all$replicate, "Batch", "Batch") +
+  plotDims(reducedDim(all, "UMAP"), all$celltype, "Cell type", "Published cluster")
+```
+
+```{r}
+round(prop.table(table(all$clusters, all$replicate), 2), 2)
+```
+
+```{r}
+table(cluster = all$clusters, published = all$celltype)
+```
+
+- The non-rod cell types of all batches are mixed in the same clusters.
+- The rods, however, are split by batch: some rod clusters contain mainly cells of `r1` to `r3`, others mainly cells of `r4` to `r6`. There is a batch effect between these groups of batches that is not visible with only `r1` and `r2`. It is most visible in the rods, the largest and most homogeneous population, where a small batch effect is enough to separate the cells.
+- Batch `p1` contains the same cell types, but in other proportions: fewer rods and relatively more amacrine cells, cones and cells without a label.
+- A difference in the composition of a batch is not a batch effect: the cells of `p1` fall in the same clusters as the cells of the same type of other batches. A batch correction that forces all batches to have the same distribution would remove this difference.
+- To remove the batch effect for the clustering, we could use the batch as `block` in the PCA, a GMF with the batch in the design matrix or MNN correction.
+
+# References

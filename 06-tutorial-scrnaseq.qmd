@@ -2,7 +2,8 @@
 code-tools: true
 title: Tutorial on single-cell RNA-seq data analysis
 format:
-  html: default
+  html:
+    number-sections: false
   pdf: default
 ---
 
