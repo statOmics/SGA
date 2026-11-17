@@ -1428,10 +1428,14 @@ c(
 table(offsets = dtuComparison$offsets, diffSplice = dtuComparison$diffSplice)
 ```
 
-Both approaches agree well on the direction and size of the usage changes, but only moderately on the ranking.
-The offset model estimates a dispersion per transcript, while diffSplice shares one dispersion across all transcripts of a gene, so transcripts with a variability that differs from the rest of their gene are ranked differently.
+- Both approaches agree well on the direction and size of the usage changes, but only moderately on the ranking.
 
-Dedicated DTU methods also exist, e.g. DEXSeq, DRIMSeq and satuRn.
+- The offset model estimates a dispersion per transcript, while - DiffSplice:
+
+    - shares one dispersion across all transcripts of a gene
+    - So transcripts with a variability that differs from the rest of their gene are ranked differently.
+
+- Dedicated DTU methods also exist, e.g. DEXSeq, DRIMSeq and satuRn.
 
 # Multiple hypotheses per gene: stage-wise testing {#stage-wise-testing}
 
@@ -1730,11 +1734,13 @@ knitr::include_graphics("./figs/rnaseq/stageR_dteSimulation.png")
 ```
 
 - Tests that aggregate the evidence at the gene level are much more powerful than transcript-level tests, but they do not tell which transcripts change.
+
 - The stage-wise transcript-level analysis keeps the transcript-level resolution, has a somewhat higher power than the conventional transcript-level analysis and a better FDR control.
 
 We perform two stage-wise analyses, each of which uses a single DTU method for both stages:
 
 1. **diffSplice**: the gene-level Simes p-values of `diffSplice` for screening and its transcript-level tests for confirmation.
+
 2. **Offset model**: the Simes method applied to the transcript-level p-values of the offset model for screening, and the same transcript-level p-values for confirmation.
 
 The Simes p-value of a gene with $n$ transcripts combines the ordered transcript-level p-values $p_{(1)} \leq \ldots \leq p_{(n)}$ into $\min_k n\, p_{(k)}/k$.
@@ -1778,12 +1784,26 @@ rbind(
 )
 ```
 
-- Both stage-wise analyses find many genes with DTU, but they agree only moderately: they test a different quantity and estimate the variability differently.
-- `diffSplice` compares the log fold change of each transcript with that of the gene as a whole in the transcript-level DTE model. The offset model plugs in the observed gene total as a known offset and models the usage directly, with a separate QL dispersion for the usage of every transcript.
-- The offset models for the fragment and the molecular usage select almost the same number of genes, with a large overlap, but they differ more at the transcript level: the gene-level null hypothesis is the same on both scales, the transcript-level tests are not.
-- On these data the offset model finds more genes, while `diffSplice` was the most powerful method in the simulation study of @Baldoni2025-dtu. In the transcript-level tutorial on the airway data, `diffSplice` finds more genes: which method is the most powerful depends on the data.
+- Both stage-wise analyses find many genes with DTU, but only moderately agree
 
-We plot the usages of the transcripts of the top gene of the `diffSplice` analysis, *WARS1*, a gene that is strongly induced by interferon gamma:
+- They test different quantity and estimate variability differently.
+
+- `diffSplice`: compares log fold change of each transcript with that of the gene as a whole in a transcript-level DTE model. 
+
+- The offset model plugs the observed gene total as a known offset and models the usage directly, with a separate QL dispersion for the usage of every transcript.
+
+- The offset models for the fragment and the molecular usage select almost the same number of genes, with a large overlap.
+
+- But they differ more at the transcript level: 
+
+    - their gene-level null hypothesis is the same on both scales,
+    - their transcript-level tests are not.
+
+- On these data the offset model finds more genes, while `diffSplice` was the most powerful method in the simulation study of @Baldoni2025-dtu. 
+
+- In the transcript-level tutorial on the airway data, `diffSplice` finds more genes: which method is the most powerful depends on the data.
+
+- We plot the usages of the transcripts of the top gene of the `diffSplice` analysis, *WARS1*, a gene that is strongly induced by interferon gamma:
 
 ```{r}
 topGene <- padjDs$geneID[1]

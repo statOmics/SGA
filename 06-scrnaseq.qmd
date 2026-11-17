@@ -31,8 +31,14 @@ library(stageR)
 library(patchwork)
 ```
 
-In the [bulk RNA-seq lectures](./04-rnaseq-intro.html) we modelled counts with negative binomial (NB) generalised linear models, with the library size as offset, and we analysed them with the edgeR quasi-likelihood pipeline.
+In the [bulk RNA-seq lectures](./04-rnaseq-intro.html) we modelled counts:
+
+  - with negative binomial (NB) generalised linear models, 
+  - with the library size as offset, and 
+  - implemented in the edgeR quasi-likelihood pipeline.
+
 Single-cell RNA-seq (scRNA-seq) measures the expression of thousands of individual cells.
+
 Most of these concepts carry over, but the data bring new challenges:
 
 1. **Preprocessing**: which droplets contain a cell, and which cells are of good quality?
@@ -68,7 +74,7 @@ knitr::include_graphics("./figs/sc_scRNA-seqTechnologies.png")
 knitr::include_graphics("./figs/sc_umiVsFullLenghtRisso.png")
 ```
 
-- **Full-length protocols** (typically plate-based, e.g. Smart-seq2): a count is the number of reads that map to a gene, as in bulk RNA-seq. Few cells, but a high sequencing depth per cell and information on the full transcript.
+- **Full-length protocols** (typically plate-based, e.g. Smart-seq2 and Smart-seq3): a count is the number of reads that map to a gene, as in bulk RNA-seq. Few cells, but a high sequencing depth per cell and information on the full transcript.
 - **UMI-based protocols** (typically droplet-based, e.g. 10x Genomics): every molecule gets a unique molecular identifier (UMI) before amplification. Reads with the same UMI are collapsed, so that a count is the number of observed molecules: PCR duplicates are removed. Many cells, but only the 3' or 5' end of the transcript is sequenced.
 - Both suffer from a low **capture efficiency**: only a fraction of the molecules in a cell is captured and sequenced.
 
@@ -519,8 +525,14 @@ $$
 - $\mathbf{u}_i$ are the scores of cell $i$ on $K$ latent factors and $\mathbf{v}_g$ the loadings of gene $g$. They play the role of the PC scores and loadings, but they are estimated on the scale of the linear predictor, by maximising the (penalised) likelihood.
 - With a Gaussian distribution, identity link and no offset, GMF reduces to PCA.
 
-GLM-PCA [@Townes2019-glmpca] is an early implementation for scRNA-seq.
-`omicsGMF` [@Segers2025-ce] uses a fast stochastic gradient descent algorithm, so that it scales to large datasets, and also handles Gaussian data with missing values, e.g. proteomics data.
+- GLM-PCA [@Townes2019-glmpca] is an early implementation for scRNA-seq.
+
+- `omicsGMF` [@Segers2025-ce]: 
+
+    - uses a fast stochastic gradient descent algorithm [sgdGMF, @Castiglione2026-sgdgmf],
+    - so that it scales better to large datasets, and 
+    - it can also handle Gaussian data with missing values, e.g. proteomics data.
+    - It is a successor of ZINB-WaVE [@Risso2018-zinbwave] and NewWave [@Agostinis2022-newwave].
 
 ```{r}
 hvgSce <- sce[rowData(sce)$hvg, ]
