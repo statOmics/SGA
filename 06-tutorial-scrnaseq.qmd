@@ -70,7 +70,7 @@ If ExperimentHub cannot connect to the internet but you have downloaded the data
 
 9. Select a random subset of 2000 cells and the top 1000 highly variable genes, and fit a Poisson GMF with 10 components and the log library size as offset (a few minutes). Compare the first components and the UMAP with those of the PCA on the same cells.
 
-10. Fit the GMF again with the batch as known covariate (argument `X = model.matrix(~ replicate, ...)`). Write down the model. Is the batch effect large in these data? Does the correction change the UMAP?
+10. Fit the GMF again, now correcting for the batch. Write down the model. Is the batch effect large in these data? Does the correction change the UMAP?
 
 ## Clustering and annotation
 
@@ -119,13 +119,13 @@ covid
 
 4. The two sites have a different sequencing depth. Is the site effect only a difference in library size?
 
-5. Select 2000 of these cells and the top 1000 highly variable genes, and fit a Poisson GMF with and without the site as known covariate (a few minutes each). Compare the UMAPs. Why can we correct for the site here, while we could not correct for the run in the Kang data of the lecture?
+5. Select 2000 of these cells and the top 1000 highly variable genes, and fit a Poisson GMF (a few minutes). Can you correct the GMF for the source of unwanted variation that you found in exercise 3? Compare the UMAPs with and without correction. Why can we correct for it here, while we could not correct for the run in the Kang data of the lecture?
 
 ## Differential expression
 
 6. Create pseudobulk samples per donor and cell type with `aggregateAcrossCells.se`. Remove the pseudobulk samples with fewer than 20 cells. Why?
 
-7. Analyse the naive B cells with the edgeR QL pipeline, with the model `~ site + sex + status`. Write down the model and interpret the parameters. Why do we include the site and the sex? Would you also include the age?
+7. Analyse the naive B cells with the edgeR QL pipeline. Which model do you propose? Which variables do you include, and why? Write down the model and interpret its parameters. Would you also include the age?
 
 8. Build the contrasts that compare each disease status with the healthy donors, and the contrast for the average of all COVID-19 groups vs the healthy donors. Test them with `glmQLFTest`. How many genes are differentially expressed for each contrast? Relate the numbers to the number of donors in each group.
 
@@ -139,7 +139,7 @@ covid
 
 12. Binarise the counts and create pseudobulk samples of the binarised counts per donor and cell type. What does a pseudobulk count of the binarised data represent?
 
-13. Analyse the naive B cells with the `edgeR_NB_optim` workflow of the lecture: remove the genes with a median detection fraction of 0.9 or more, use $\log(n_s \, \text{CDR}_s)$ as offset and set `poisson.bound = FALSE`. Explain each of these choices. Test the same contrasts as in the DE analysis.
+13. Analyse the naive B cells with the differential detection workflow of the lecture. Which offset do you use, which genes do you remove, and why? Test the same contrasts as in the DE analysis.
 
 14. Combine the DE and DD results for the comparison of the critical patients with the healthy donors with stage-wise testing. How many genes are found in the screening stage? How many genes are DE only, DD only, or both? Plot the DD log fold changes against the DE log fold changes.
 
@@ -147,6 +147,6 @@ covid
 
 ## Differential abundance
 
-16. (Optional) Does the B-cell composition change with the disease status? Count the cells per donor and cell type, and model the counts with the edgeR QL pipeline and the model `~ site + sex + status`. Which assumption does the TMM normalisation make here?
+16. (Optional) Does the B-cell composition change with the disease status? Count the cells per donor and cell type, and model the counts with the edgeR QL pipeline. Which design do you use? Which assumption does the TMM normalisation make here?
 
 # References
