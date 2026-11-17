@@ -1,0 +1,152 @@
+---
+code-tools: true
+title: Tutorial on single-cell RNA-seq data analysis
+format:
+  html: default
+  pdf: default
+---
+
+In this tutorial we apply the workflows of the [single-cell RNA-seq lecture](./06-scrnaseq.html) to two new datasets.
+In the first exercise we explore the cells of one tissue: quality control, normalisation, dimension reduction, clustering and cell type annotation.
+In the second exercise we compare conditions in a multi-sample experiment with pseudobulk analyses for differential expression and differential detection.
+
+Users who work with scripts can adapt the code of the lecture.
+
+# Mouse retina
+
+@Macosko2015-dropseq developed Drop-seq, one of the first droplet-based scRNA-seq protocols, and used it to profile the retina of 14-day-old mice.
+The retina contains a few very abundant cell types, e.g. the rod photoreceptors, and many rare cell types, e.g. the different types of bipolar, amacrine and ganglion cells.
+The cells were sequenced in seven batches, labelled `r1` to `r6` and `p1` in the cell barcodes.
+The authors clustered the cells into 39 clusters.
+
+The data are available in Bioconductor's ExperimentHub, a repository of public datasets.
+`query` searches the repository, and the data are downloaded once and stored in a local cache.
+The first time, ExperimentHub may ask to create a cache directory: answer `yes`.
+The data are stored by the `scRNAseq` package, so ExperimentHub may print a message that this package is not installed: you can ignore it.
+
+```{r, eval = FALSE}
+library(tidyverse)
+library(SingleCellExperiment)
+library(ExperimentHub)
+
+eh <- ExperimentHub()
+query(eh, c("scRNAseq", "Macosko"))
+
+# use the local cache if the data were downloaded before
+counts <- eh[["EH2690"]]
+cellInfo <- eh[["EH2691"]]
+
+sce <- SingleCellExperiment(list(counts = counts), colData = cellInfo)
+sce$replicate <- factor(sub("_.*", "", colnames(sce)))
+sce$cluster <- factor(sce$cluster)
+sce
+```
+
+If ExperimentHub cannot connect to the internet but you have downloaded the data before, use `eh <- ExperimentHub(localHub = TRUE)`.
+
+# Exercise 1: cell types of the mouse retina
+
+## Data and quality control
+
+1. Import the data. How many genes and cells are there? How many cells were sequenced per batch? The numbers of cells per batch are round numbers: what does that tell you about how the cell-containing droplets were selected? Can you use `emptyDrops` on these data?
+
+2. Make a table of the published clusters and the batches. Is the composition of the batches similar? Which fraction of the cells belongs to the largest cluster? Some cells have no cluster label (`NA`): what could be the reason?
+
+3. To limit the computation time, we analyse the batches `r1` and `r2` in exercises 3 to 13. Select these cells. Find the mitochondrial genes: note that the gene symbols are written in capitals, e.g. `MT-CO1`.
+
+4. Compute the QC metrics with `quickRnaQc.se`, using the batch as `block`. Visualise the library size, the number of detected genes and the mitochondrial proportion, and compare them with those of the chimera data of the lecture. Which cells are removed with the default thresholds? How do the removed cells relate to the cells without a published cluster label?
+
+5. Detect doublets with `scDblFinder`, with the batch as `samples`. Why do we give the batch? How many doublets do you find, and in which published clusters?
+
+## Normalisation and feature selection
+
+6. Normalise the data with the library size factors and with the deconvolution size factors (`scuttle::pooledSizeFactors`, with a quick clustering as `clusters`). Plot both size factors against each other and colour the cells according to the published cluster. Which cells deviate, and why?
+
+7. Select the highly variable genes with `chooseRnaHvgs.se`, and the genes with the highest Poisson deviance. How large is the overlap? Which of the two selections is more consistent with the count model of the lecture?
+
+## Dimension reduction
+
+8. Perform a PCA on the highly variable genes. How many components do you retain? Compute a UMAP and colour the cells according to the batch, the published cluster and the library size. Which sources of variability do you see?
+
+9. Select a random subset of 2000 cells and the top 1000 highly variable genes, and fit a Poisson GMF with 10 components and the log library size as offset (a few minutes). Compare the first components and the UMAP with those of the PCA on the same cells.
+
+10. Fit the GMF again with the batch as known covariate (argument `X = model.matrix(~ replicate, ...)`). Write down the model. Is the batch effect large in these data? Does the correction change the UMAP?
+
+## Clustering and annotation
+
+11. Cluster the cells with `runAllNeighborSteps.se`. Compare the clusters with the published clusters in a table. Change the resolution of the clustering (argument `more.cluster.graph.args = list(multilevel.resolution = ...)`, see `?clusterGraph`): how does the number of clusters change? Is there a correct number of clusters?
+
+12. The published clusters have numbers, not names. Identify the cell types with marker genes, e.g. *RHO* (rod photoreceptors), *ARR3* and *OPN1MW* (cone photoreceptors), *VSX2* (bipolar cells), *RLBP1* (Müller glia), *GAD1* and *SLC6A9* (amacrine cells) and *POU4F1* (retinal ganglion cells). Visualise their expression on the UMAP and per cluster. Which cell type is the largest cluster?
+
+13. Find the marker genes of your clusters with `scoreMarkers.se`. Look at the top markers of a few clusters: do they confirm your annotation? Why can you not use the p-values of a test between clusters to claim that these genes are differentially expressed?
+
+14. (Optional) Repeat the clustering with all batches. Do the cells of the different batches cluster together?
+
+# COVID-19 and B cells
+
+@Stephenson2021-covid sequenced the peripheral blood mononuclear cells (PBMCs) of COVID-19 patients and healthy donors, recruited in three UK centres, with 10x Genomics.
+The patients were classified according to the severity of their disease on the day of sample collection: asymptomatic, mild, moderate, severe or critical.
+@Gilis2025-dd used the B cells of this atlas to illustrate their workflows for differential detection.
+We use the same data: the B cells of the COVID-19 patients and healthy donors of the centres in Cambridge and Newcastle (`Ncl`).
+The third centre was removed, because it has few patients and no healthy donors.
+
+The data are available as a release of the course repository (see [the release](https://github.com/statOmics/SGA/releases/tag/scrnaseq-v1) for a description):
+
+```{r, eval = FALSE}
+url <- "https://github.com/statOmics/SGA/releases/download/scrnaseq-v1/"
+dir.create("scrnaseqData", showWarnings = FALSE)
+if (!file.exists("scrnaseqData/covid_bcells.rds")) {
+  download.file(paste0(url, "covid_bcells.rds"), "scrnaseqData/covid_bcells.rds", mode = "wb")
+}
+covid <- readRDS("scrnaseqData/covid_bcells.rds")
+covid
+```
+
+- `donor`, `site`, `sex`, `age` (decade) and `status` describe the donor of each cell.
+- `celltype` is the B-cell type, as annotated in the atlas.
+
+# Exercise 2: B-cell responses in COVID-19
+
+## Design
+
+1. How many cells, donors and cell types are there? Make a table of the number of donors per site and disease status. What is the experimental unit? Is the design balanced? Which comparisons rely on few donors, and which comparison is (almost) confounded with the site?
+
+2. Make a table of the number of cells per donor and cell type. Which cell types are rare?
+
+## Exploration
+
+3. Select a random subset of 4000 naive B cells. Normalise the data, select the highly variable genes, perform a PCA and compute a UMAP. Colour the cells according to the site, the disease status and the donor. Which source of variability dominates? Compute for the first PCs the proportion of the variance that is explained by the site, the disease status and the donor.
+
+4. The two sites have a different sequencing depth. Is the site effect only a difference in library size?
+
+5. Select 2000 of these cells and the top 1000 highly variable genes, and fit a Poisson GMF with and without the site as known covariate (a few minutes each). Compare the UMAPs. Why can we correct for the site here, while we could not correct for the run in the Kang data of the lecture?
+
+## Differential expression
+
+6. Create pseudobulk samples per donor and cell type with `aggregateAcrossCells.se`. Remove the pseudobulk samples with fewer than 20 cells. Why?
+
+7. Analyse the naive B cells with the edgeR QL pipeline, with the model `~ site + sex + status`. Write down the model and interpret the parameters. Why do we include the site and the sex? Would you also include the age?
+
+8. Build the contrasts that compare each disease status with the healthy donors, and the contrast for the average of all COVID-19 groups vs the healthy donors. Test them with `glmQLFTest`. How many genes are differentially expressed for each contrast? Relate the numbers to the number of donors in each group.
+
+9. Test the omnibus hypothesis that the expression does not differ between any of the disease groups. How many degrees of freedom does this test have?
+
+10. Look at the top genes of the comparison between the critical patients and the healthy donors. Do you recognise genes of the immune response, e.g. interferon-stimulated genes?
+
+11. Repeat the analysis for the other cell types. For which cell types is the analysis possible, and for which contrasts?
+
+## Differential detection
+
+12. Binarise the counts and create pseudobulk samples of the binarised counts per donor and cell type. What does a pseudobulk count of the binarised data represent?
+
+13. Analyse the naive B cells with the `edgeR_NB_optim` workflow of the lecture: remove the genes with a median detection fraction of 0.9 or more, use $\log(n_s \, \text{CDR}_s)$ as offset and set `poisson.bound = FALSE`. Explain each of these choices. Test the same contrasts as in the DE analysis.
+
+14. Combine the DE and DD results for the comparison of the critical patients with the healthy donors with stage-wise testing. How many genes are found in the screening stage? How many genes are DE only, DD only, or both? Plot the DD log fold changes against the DE log fold changes.
+
+15. (Optional) Look at a gene that is DD but not DE. Plot its detection fraction and its mean expression (counts per million) per donor. How do you interpret such a gene?
+
+## Differential abundance
+
+16. (Optional) Does the B-cell composition change with the disease status? Count the cells per donor and cell type, and model the counts with the edgeR QL pipeline and the model `~ site + sex + status`. Which assumption does the TMM normalisation make here?
+
+# References
