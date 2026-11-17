@@ -1531,9 +1531,11 @@ fluDge <- normLibSizes(fluDge)
 fluFit <- glmQLFit(fluDge, fluDesign)
 ```
 
-The research questions concern the early effect (day 4 vs day 0), the late effect (day 8 vs day 0) and the change between the early and the late phase (day 8 vs day 4) in each sex, and whether these effects differ between the sexes (interactions):
+The research questions concern the early effect (day 4 vs day 0), the late effect (day 8 vs day 0) and the change between the early and the late phase (day 8 vs day 4) in each sex, and whether these effects differ between the sexes (interactions).
+This gives nine hypotheses per gene: three effects in females, the same three effects in males, and the three differences between the sexes.
+Building the corresponding contrasts is part of the [tutorial](./04-tutorial-rnaseq.html), so we do not show the code here.
 
-```{r}
+```{r, echo = FALSE}
 contrastNames <- c("early_F", "early_M", "late_F", "late_M", "lateVsEarly_F", "lateVsEarly_M",
                    "early_MvsF", "late_MvsF", "lateVsEarly_MvsF")
 fluL <- matrix(0, ncol(fluDesign), length(contrastNames),
@@ -1548,11 +1550,10 @@ for (sex in c("F", "M")) {
 for (effect in c("early", "late", "lateVsEarly")) {
   fluL[, paste0(effect, "_MvsF")] <- fluL[, paste0(effect, "_M")] - fluL[, paste0(effect, "_F")]
 }
-t(fluL)
 ```
 
-- **Screening**: the omnibus F-test of the four time parameters, $\beta_\text{D4} = \beta_\text{D8} = \beta_\text{M:D4} = \beta_\text{M:D8} = 0$. The nine contrasts are linear combinations of these four parameters and span the same space, so the global null hypothesis of the nine contrasts is exactly this null hypothesis.
-- **Confirmation**: the F-tests of the nine contrasts, with a FWER correction within each gene.
+- **Screening**: the omnibus F-test that the expression does not change over time in either sex, i.e. that all parameters involving time are zero. The nine hypotheses together are equivalent to this global null hypothesis.
+- **Confirmation**: the F-tests of the nine contrasts (stored in the matrix `fluL`), with a FWER correction within each gene.
 
 ```{r}
 pScreenFlu <- glmQLFTest(fluFit, coef = c("timeDay4", "timeDay8",
