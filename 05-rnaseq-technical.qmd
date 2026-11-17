@@ -1439,38 +1439,81 @@ Dedicated DTU methods also exist, e.g. DEXSeq, DRIMSeq and satuRn.
 
 Contemporary experiments often involve several hypotheses of interest for every gene:
 
-- **Complex designs**: in the macrophage experiment, the effect of IFN$\gamma$ in uninfected and in infected cells, the effect of *Salmonella* in naive and in primed cells, and the interaction.
-- **Transcript-level analyses**: a DTE or DTU test for every transcript of the gene.
-- **Single-cell experiments**: the effect of a treatment in every cell type, differences in the effect between cell types, and differential expression and differential detection (see the [single-cell lecture](./06-scrnaseq.html)).
+- **Complex designs** e.g. in the macrophage experiment: 
 
-The conventional strategy assesses every hypothesis separately, controls the FDR at level $\alpha$ for each contrast, and reports a list of top genes for each contrast.
+    - effect of IFN$\gamma$ in uninfected and in infected cells,
+    - effect of *Salmonella* in naive and in primed cells, and
+    - interaction.
+    
+- **Transcript-level analyses**: a DTE or DTU test for every transcript of the gene.
+
+- **Single-cell experiments** (see later chapters): 
+    
+    - effect of a treatment in every cell type, 
+    - differences in the effect between cell types, and
+    - differential expression and differential detection.
+
+Conventional strategy: 
+
+1. assesses every hypothesis separately $\rightarrow$ control FDR at level $\alpha$ for each contrast, 
+2. reports list of top genes for each contrast.
+
 However,
 
-- biologists want a short list of interesting genes, and the follow-up and validation are done at the gene level;
-- a gene with at least one false positive hypothesis is a false positive gene. With many hypotheses per gene, the false positives of the different contrasts accumulate, and the **FDR at the gene level** is not controlled;
-- tests that aggregate the evidence of all hypotheses of a gene (an omnibus test, or a combination of the p-values) are more powerful, but they do not tell which hypotheses are responsible: we lose the resolution on the biology.
+- biologists often want a short list of interesting genes
+- follow-up and validation are done at the gene level
+- how priortize DE genes according to importance
+- No FDR control at the gene level 
+
+- Gene with at least one false positive hypothesis is false positive gene. 
+
+- tests that aggregate evidence of all hypotheses of a gene, e.g. an omnibus test are more powerful
+- but they do not tell which hypotheses are responsible: we lose the resolution on the biology.
 
 ## The stage-wise procedure
 
-Stage-wise testing [@Heller2009-stagewise; @VandenBerge2017-stageR] aggregates the evidence to screen the genes, and splits it again for the significant genes.
+Stage-wise testing [@Heller2009-stagewise; @VandenBerge2017-stageR] aggregates evidence to screen genes, and provide posthoc tests for genes passing the screening omnibus hypothesis.
 
 ```{r, echo = FALSE, out.width = "70%", fig.cap = "The stage-wise testing paradigm for the $n_g$ hypotheses of gene $g$ (Van den Berge et al., 2017, Genome Biology 18:151)."}
 knitr::include_graphics("./figs/rnaseq/stageR_paradigm.png")
 ```
 
-1. **Screening stage**: test for every gene $g$ the global null hypothesis $H_{0g}$ that all its hypotheses are true, e.g. with an omnibus F-test or by aggregating the p-values of the individual hypotheses. Apply the BH procedure to the screening p-values of all $G$ genes at FDR level $\alpha$. Let $R$ be the number of genes that pass the screening.
-2. **Confirmation stage**: for each of the $R$ genes, test the individual hypotheses, and control the family-wise error rate within the gene at the adjusted level $\alpha_{II} = R\alpha/G$, e.g. with the Holm method.
+1. **Screening stage**: Omnibus hypothesis test 
+
+    - for every gene $g$ assess the global null hypothesis $H_{0g}$ that all its hypotheses are true, 
+    - e.g. with an omnibus F-test or 
+    - by aggregating the p-values of the individual hypotheses.
+    - Apply the BH procedure to the screening p-values of all $G$ genes to control the FDR level $\alpha$. 
+    - Let $R$ be the number of genes that pass the screening.
+
+2. **Confirmation stage**: posthoc analysis
+
+    - for each of the $R$ genes, 
+    - test the individual hypotheses
+    - control the family-wise error rate within the gene at the adjusted level $\alpha_{II} = R\alpha/G$, e.g. with the Holm method.
 
 - A gene is only reported if at least one of its hypotheses is rejected in the confirmation stage.
+
 - The procedure controls the FDR at the gene level, the **overall FDR** (OFDR): the expected fraction of reported genes with at least one false positive hypothesis.
-- The screening stage keeps the power of the aggregated test. Hypotheses with weak evidence, e.g. interactions, benefit from it: a gene that passes the screening because of strong main effects is tested for the interaction at the more lenient level $\alpha_{II}$, with a correction for only a few hypotheses within the gene.
-- The procedure is implemented in the stageR package. `stageR()` takes the screening and confirmation p-values, `stageWiseAdjustment()` performs both stages and returns stage-wise adjusted p-values that are compared with $\alpha$.
+
+- The screening stage keeps 
+
+    - the power of the aggregated test. 
+    - Hypotheses with weak evidence, e.g. interactions, benefit from it
+    - a gene that passes the screening because of strong main effects is tested for the interaction at the more lenient level $\alpha_{II}$, with a correction for only a few hypotheses within the gene.
+
+The procedure is implemented in the stageR package. 
+
+- `stageR()` takes the screening and confirmation p-values, 
+- `stageWiseAdjustment()` performs both stages and 
+- returns stage-wise adjusted p-values that are compared with $\alpha$.
 
 ## Simulation: FDR at the gene level
 
-We simulate the p-values of 5 hypotheses for 10 000 genes.
-20% of the genes are DE: their first hypothesis is false and each of the other hypotheses is false with probability 0.5.
-A gene is a false positive if at least one of its rejected hypotheses is true.
+- Simulate p-values of 5 hypotheses for 10 000 genes.
+- For 80% of genes, all five null hypotheses are true. 
+- Other 20% of genes have at least one effect: the first null hypothesis is always false (there is an effect), and each of the other four null hypotheses is false with probability 0.5. 
+- Reported gene is a false positive if at least one of its rejected null hypotheses is true.
 
 ```{r}
 simulateStagewise <- function(G = 10000, k = 5, propDE = 0.2, effect = 3) {
@@ -1504,70 +1547,94 @@ simRes <- replicate(20, simulateStagewise())
 round(rowMeans(simRes), 3)
 ```
 
-- With the conventional strategy, every hypothesis is controlled at an FDR of 5%, but the FDR at the gene level is inflated to `r round(100 * mean(simRes["OFDR_conventional", ]), 1)`%: the false positives of the different hypotheses end up in different genes.
-- The stage-wise procedure controls the gene-level FDR (`r round(100 * mean(simRes["OFDR_stagewise", ]), 1)`%), at the price of a loss of power for the individual hypotheses.
+With the conventional strategy:
 
-## Complex designs: influenza infection and the mouse brain
+- every hypothesis is controlled at an FDR of 5%, 
+- but the FDR at the gene level is inflated to `r round(100 * mean(simRes["OFDR_conventional", ]), 1)`% 
+- false positives of different hypotheses end up in different genes.
 
-Stage-wise testing is most useful when some hypotheses have little power, e.g. interactions.
-We illustrate this with the influenza data of the [bulk RNA-seq tutorial](./04-tutorial-rnaseq.html): the cerebellum of female and male mice before (day 0), 4 days and 8 days after an influenza infection, in a completely randomised $2 \times 3$ factorial design [@Blackmore2017-influenza].
-In the tutorial, no gene had a significant sex $\times$ time interaction.
+The stage-wise procedure:
+- controls the gene-level FDR (`r round(100 * mean(simRes["OFDR_stagewise", ]), 1)`%), 
+- at the price of a loss of power for the individual hypotheses.
 
-```{r}
-fluUrl <- paste0("https://github.com/carpentries-incubator/",
-                 "bioc-rnaseq/raw/main/episodes/data/")
-fluCounts <- data.table::fread(paste0(fluUrl, "GSE96870_counts_cerebellum.csv"),
-                               data.table = FALSE) |>
-  column_to_rownames("gene")
-fluSamples <- data.table::fread(paste0(fluUrl, "GSE96870_coldata_cerebellum.csv"),
-                                data.table = FALSE) |>
-  mutate(sex = factor(sex), time = factor(time, levels = c("Day0", "Day4", "Day8")))
-all(colnames(fluCounts) == fluSamples$sample)
+## Complex designs: the Hammer experiment
 
-fluDge <- DGEList(fluCounts, samples = fluSamples)
-fluDesign <- model.matrix(~ sex * time, data = fluDge$samples)
-fluDge <- fluDge[filterByExpr(fluDge, fluDesign), , keep.lib.sizes = FALSE]
-fluDge <- normLibSizes(fluDge)
-fluFit <- glmQLFit(fluDge, fluDesign)
+- Stage-wise testing is most useful when some hypotheses have little power, e.g. interactions.
+
+- @Hammer2010-snl studied chronic neuropathic pain in Sprague Dawley rats
+- mRNA-seq of the L4 dorsal root ganglion (DRG) of rats with an L5 spinal nerve ligation (SNL) and of control rats
+- Sequenced 2 weeks and 2 months after the surgery, with 2 rats per group.
+
+- $2 \times 2$ factorial design is also the example of @VandenBerge2017-stageR,
+- Data are available in the stageR package.
+
+```{r, echo = FALSE, out.width = "80%", fig.cap = "Design of the Hammer experiment and the mean of each group in terms of the model parameters. In the design matrix below, $\\beta_1$ corresponds to `treatSNL`, $\\beta_2$ to `time2months` and $\\beta_3$ to `time2months:treatSNL`."}
+knitr::include_graphics("./figs/rnaseq/hammerDesign.png")
 ```
 
-The research questions concern the early effect (day 4 vs day 0), the late effect (day 8 vs day 0) and the change between the early and the late phase (day 8 vs day 4) in each sex, and whether these effects differ between the sexes (interactions).
-This gives nine hypotheses per gene: three effects in females, the same three effects in males, and the three differences between the sexes.
-Building the corresponding contrasts is part of the [tutorial](./04-tutorial-rnaseq.html), so we do not show the code here.
+```{r}
+data(hammer.eset, package = "stageR")
+hammerSamples <- Biobase::pData(hammer.eset) |>
+  mutate(time = factor(ifelse(grepl("week", Time), "2weeks", "2months"),
+                       levels = c("2weeks", "2months")),
+         treat = factor(ifelse(protocol == "control", "control", "SNL"),
+                        levels = c("control", "SNL")))
+table(hammerSamples$time, hammerSamples$treat)
 
-```{r, echo = FALSE}
-contrastNames <- c("early_F", "early_M", "late_F", "late_M", "lateVsEarly_F", "lateVsEarly_M",
-                   "early_MvsF", "late_MvsF", "lateVsEarly_MvsF")
-fluL <- matrix(0, ncol(fluDesign), length(contrastNames),
-               dimnames = list(colnames(fluDesign), contrastNames))
-fluL["timeDay4", "early_F"] <- 1
-fluL[c("timeDay4", "sexMale:timeDay4"), "early_M"] <- 1
-fluL["timeDay8", "late_F"] <- 1
-fluL[c("timeDay8", "sexMale:timeDay8"), "late_M"] <- 1
-for (sex in c("F", "M")) {
-  fluL[, paste0("lateVsEarly_", sex)] <- fluL[, paste0("late_", sex)] - fluL[, paste0("early_", sex)]
-}
-for (effect in c("early", "late", "lateVsEarly")) {
-  fluL[, paste0(effect, "_MvsF")] <- fluL[, paste0(effect, "_M")] - fluL[, paste0(effect, "_F")]
-}
+hDge <- DGEList(Biobase::exprs(hammer.eset), samples = hammerSamples[, c("time", "treat")])
+hDesign <- model.matrix(~ time * treat, data = hDge$samples)
+hDge <- hDge[filterByExpr(hDge, hDesign), , keep.lib.sizes = FALSE]
+hDge <- normLibSizes(hDge)
+hFit <- glmQLFit(hDge, hDesign)
+colnames(hDesign)
 ```
 
-- **Screening**: the omnibus F-test that the expression does not change over time in either sex, i.e. that all parameters involving time are zero. The nine hypotheses together are equivalent to this global null hypothesis.
-- **Confirmation**: the F-tests of the nine contrasts (stored in the matrix `fluL`), with a FWER correction within each gene.
+Research questions:
+
+- effect of SNL at 2 weeks 
+- effect of SNL at 2 months, 
+- whether it changes over time (interaction)
+- average effect of SNL over both time points.
+
+We also define the effect of time in the control and in the SNL rats, which we use in a second analysis.
 
 ```{r}
-pScreenFlu <- glmQLFTest(fluFit, coef = c("timeDay4", "timeDay8",
-                                          "sexMale:timeDay4", "sexMale:timeDay8"))$table$PValue
-names(pScreenFlu) <- rownames(fluFit)
-pContrasts <- sapply(contrastNames, function(k) glmQLFTest(fluFit, contrast = fluL[, k])$table$PValue)
-rownames(pContrasts) <- rownames(fluFit)
+hL <- cbind(SNL_2weeks      = c(0, 0, 1, 0),
+            SNL_2months     = c(0, 0, 1, 1),
+            SNL_interaction = c(0, 0, 0, 1),
+            SNL_average     = c(0, 0, 1, 0.5),
+            time_control    = c(0, 1, 0, 0),
+            time_SNL        = c(0, 1, 0, 1))
+rownames(hL) <- colnames(hDesign)
+hL
+
+pContrasts <- sapply(colnames(hL), function(k) glmQLFTest(hFit, contrast = hL[, k])$table$PValue)
+rownames(pContrasts) <- rownames(hFit)
+```
+
+**Analysis 1: the effect of SNL**
+
+- **Screening**: omnibus F-test that SNL has no effect at any time point, $\beta_\text{SNL} = \beta_\text{2months:SNL} = 0$. The four SNL contrasts are linear combinations of these two parameters and span the same space, so their global null hypothesis is exactly this null hypothesis.
+
+- **Confirmation**: the F-tests of the four SNL contrasts, with a FWER correction within each gene.
+
+```{r}
+snlContrasts <- c("SNL_2weeks", "SNL_2months", "SNL_interaction", "SNL_average")
+pScreenSNL <- setNames(glmQLFTest(hFit, coef = c("treatSNL", "time2months:treatSNL"))$table$PValue,
+                       rownames(hFit))
 ```
 
 **Holm and Shaffer**
 
-- The Holm method sorts the p-values of a gene and multiplies the $j$-th smallest p-value with $n - j + 1$, the number of hypotheses that can still be true. Because the gene passed the screening, at least one hypothesis is false, and stageR uses $(n-1, n-1, n-2, \ldots, 1)$.
-- The contrasts are, however, logically related: e.g. if there is no early effect in females and no early effect in males, there is no difference in the early effect between the sexes either. Not every combination of true and false hypotheses is possible.
-- Shaffer's method [@Shaffer1986-msrb] replaces $n - j + 1$ by the maximum number of hypotheses that can still be true simultaneously, given that at least $j - 1$ hypotheses are false.
+- Both control FWER.
+- Holm method sorts the p-values of a gene and multiplies the $j$-th smallest p-value with $n - j + 1$, the number of hypotheses that can still be true. 
+- Because the gene passed the screening, at least one hypothesis is false, and stageR uses $(n-1, n-1, n-2, \ldots, 1)$.
+
+The contrasts are, however, logically related:
+- e.g. if there is no effect of SNL at 2 weeks and no effect at 2 months, there is no interaction and no average effect either. 
+
+- Not every combination of true and false hypotheses is possible.
+- Shaffer's method [@Shaffer1986-msrb] replaces $n - j + 1$ by maximum number of hypotheses that can still be true simultaneously, given that at least $j - 1$ hypotheses are false.
 - For linear contrasts, these numbers follow from the contrast matrix: if the contrasts of a set $S$ are zero, all contrasts in the span of $S$ are zero as well. The possible numbers of true hypotheses are thus the numbers of contrasts in the span of the subsets of contrasts.
 
 ```{r}
@@ -1585,33 +1652,58 @@ shafferS1 <- function(L, screening = TRUE) {
   if (screening) adjustment[1] <- max(sizes[sizes <= n - 1])
   adjustment
 }
-rbind(holm = c(8, 8:1), shaffer = shafferS1(fluL))
+shafferS1(hL[, snlContrasts])
 ```
 
-- After the screening, at most 5 of the 9 hypotheses can be true, instead of 8: the correction is much milder.
-- For the Hammer example of @VandenBerge2017-stageR (an effect at two time points and their interaction) and for the combination of DE and DD in the [single-cell lecture](./06-scrnaseq.html), `shafferS1` returns only ones: no correction is needed in the confirmation stage (`method = "none"`).
+- Every two of the four SNL contrasts are linearly independent and span the space of the two SNL parameters: as soon as two of them are true, all four are true.
+- After the screening, at least one hypothesis is false, so at most one hypothesis can still be true: Shaffer's method requires no correction at all in the confirmation stage (`method = "none"`), whereas Holm's method corrects for 3 hypotheses.
+- Adding the average effect of SNL is thus for free: it does not increase the correction for the other contrasts.
 
 ```{r}
-stagewiseFlu <- function(method, adjustment = NULL) {
-  sw <- stageR(pScreen = pScreenFlu, pConfirmation = pContrasts, pScreenAdjusted = FALSE)
+stagewiseHammer <- function(pScreen, contrasts, method, adjustment = NULL) {
+  sw <- stageR(pScreen = pScreen, pConfirmation = pContrasts[, contrasts], pScreenAdjusted = FALSE)
   sw <- stageWiseAdjustment(sw, method = method, alpha = 0.05, adjustment = adjustment)
-  colSums(getResults(sw))[contrastNames]
+  colSums(getResults(sw))
 }
-conventionalFlu <- colSums(apply(pContrasts, 2, p.adjust, method = "BH") < 0.05)
-fluResults <- rbind(conventional = conventionalFlu,
-                    `stage-wise Holm` = stagewiseFlu("holm"),
-                    `stage-wise Shaffer` = stagewiseFlu("user", shafferS1(fluL)))
-t(fluResults)
+conventional <- function(contrasts) {
+  c(padjScreen = NA, colSums(apply(pContrasts[, contrasts], 2, p.adjust, method = "BH") < 0.05))
+}
+rbind(conventional = conventional(snlContrasts),
+      `stage-wise Holm` = stagewiseHammer(pScreenSNL, snlContrasts, "holm"),
+      `stage-wise Shaffer` = stagewiseHammer(pScreenSNL, snlContrasts, "none"))
 ```
 
-- The conventional analysis finds no gene with an interaction, and hardly any genes with an early effect.
-- The stage-wise analyses find genes with an early effect and genes with an interaction: many genes pass the screening because of their strong late effect, and are then tested for the other contrasts at the lenient level $\alpha_{II}$, with a correction for only a few hypotheses within the gene.
-- For the strong late effects, the stage-wise analyses find fewer genes than the conventional analysis per contrast: this is the price for the control of the FDR at the gene level.
-- Shaffer's method is more powerful than Holm's method for all contrasts.
-- Shaffer's S1 method only uses the number of rejected hypotheses. The S2 method also uses which hypotheses were rejected, which requires gene-specific adjustments; here it would only help from the fourth hypothesis of a gene onwards.
+- The conventional analysis finds (almost) no gene with an interaction.
+- The stage-wise analyses find hundreds of genes with an interaction: many genes pass the screening because of their strong effect of SNL, and their interaction is then tested at the lenient level $\alpha_{II}$, with no or only a small correction within the gene.
+- For the main effects, the stage-wise analyses find somewhat fewer genes than the conventional analysis per contrast: this is the price for the control of the FDR at the gene level. With Shaffer's method, this price is small.
+- By adding the average contrast, every gene that passes the screening has at least one significant contrast: the average contrast combines the information of both time points. 
+- The average contrast comes at no additional cost! 
+
+**Analysis 2: the effects of SNL and of time**
+
+For didactical purposes, we now also assess the effect of time in the control and in the SNL rats.
+
+The screening tests whether the gene responds to SNL or to time, i.e. whether all parameters except the intercept are zero.
+
+```{r}
+pScreenAll <- setNames(glmQLFTest(hFit, coef = 2:4)$table$PValue, rownames(hFit))
+rbind(`stageR Holm` = c(5, 5:1), shaffer = shafferS1(hL))
+rbind(conventional = conventional(colnames(hL)),
+      `stage-wise Holm` = stagewiseHammer(pScreenAll, colnames(hL), "holm"),
+      `stage-wise Shaffer` = stagewiseHammer(pScreenAll, colnames(hL), "user",
+                                             adjustment = shafferS1(hL)))
+```
+
+- With six contrasts in a space of three parameters, not every combination is possible: e.g. if there is no effect of SNL at both time points and no effect of time in the controls, there is no effect of time in the SNL rats either. After the screening, at most 4 of the 6 hypotheses can be true, instead of 5.
+- Shaffer's method is therefore more powerful than Holm's method for all contrasts.
+- The effect of time in the controls is hardly found in the conventional analysis, but for many genes in the stage-wise analysis.
+- With more hypotheses per gene, the correction within the gene is larger, and fewer genes are found per contrast than in the first analysis: add only hypotheses of interest.
+- Shaffer's S1 method only uses the number of rejected hypotheses. 
+- Shaffer's S2 method also uses which hypotheses were rejected, which requires gene-specific adjustments.
 - For the macrophage data, stage-wise testing gains little: the interaction between IFN$\gamma$ and *Salmonella* is strong, and is already found for thousands of genes with the conventional analysis.
 
 In real data we do not know which genes are truly differentially expressed, so we cannot assess the error rates.
+
 @VandenBerge2017-stageR did so in a simulation study based on the design of @Hammer2010-snl: two conditions and two time points, with an effect of the condition at each time point and their interaction (limma-voom, five replicates per group).
 
 ```{r, echo = FALSE, out.width = "100%", fig.cap = "DGE simulation study for a 2 $\\times$ 2 factorial design. (A) Empirical false discovery proportions over 30 simulations for all hypotheses, at the gene level (OFDR) and for the null genes, for the conventional approach and two stage-wise procedures; the red dotted lines indicate the nominal level. (B) Power for the interaction effect (Van den Berge et al., 2017, Genome Biology 18:151)."}
@@ -1620,7 +1712,7 @@ knitr::include_graphics("./figs/rnaseq/stageR_dgeSimulation.png")
 
 - The conventional approach controls the FDR over all hypotheses, but it is too liberal for the FDR at the gene level (OFDR).
 - The stage-wise procedure of @Heller2009-stagewise controls the OFDR at all levels.
-- It has a higher power for the interaction effect, as in the influenza example.
+- It has a higher power for the interaction effect, as in the analysis of the real data above.
 
 ## Transcript-level analyses: stage-wise DTU
 
