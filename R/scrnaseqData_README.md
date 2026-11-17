@@ -26,6 +26,10 @@ Labelled reference for cell type annotation with SingleR: mouse gastrulation atl
 sample 29 (`EmbryoAtlasData`), 2,000 random cells with a cell type label, cell types
 with fewer than 10 cells removed (1,975 cells, 20 cell types).
 
+The choice of the sample and the construction of the reference follow the Carpentries
+lesson "Orchestrating Large-Scale Single-Cell Analysis with Bioconductor"
+(https://carpentries-incubator.github.io/bioc-scrnaseq/, CC BY 4.0).
+
 ## kang.rds
 
 Peripheral blood mononuclear cells (PBMCs) of 8 lupus patients, untreated (`ctrl`) or
