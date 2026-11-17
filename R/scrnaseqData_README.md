@@ -2,7 +2,8 @@
 
 The files are `SingleCellExperiment` objects with sparse raw counts (`counts` assay),
 saved with `saveRDS`. They were built with `R/make_scrnaseq_data.R` in the course
-repository from the Bioconductor data packages MouseGastrulationData and muscData.
+repository from the Bioconductor data packages MouseGastrulationData and muscData, and
+with `R/make_covid_data.R` from Zenodo record 10391097.
 
 ## chimera_sample5.rds
 
@@ -37,12 +38,28 @@ condition and assigned to a patient with demuxlet, based on their genotype.
 - `colData`: `patient`, `stim` and `celltype` (8 cell types, as annotated by the authors).
 - The data contain no counts for mitochondrial genes, so mitochondrial QC is not possible.
 
+## covid_bcells.rds
+
+B cells from the peripheral blood of COVID-19 patients and healthy donors (Stephenson
+et al. 2021, Nature Medicine 27:904-916), as used in the case study of Gilis et al.
+2025, BMC Genomics 26:886. Source: `Covid_case/objects/sce_Covid_Bcells.rds` of Zenodo
+record 10391097 (doi:10.5281/zenodo.10391097, CC BY 4.0), with counts converted back to
+raw integer counts from the normalised values of the atlas.
+
+- 51,735 cells of five B-cell types (naive, immature, unswitched memory, class switched
+  memory and other B cells) of 110 donors from two sites (Cambridge and Ncl);
+  genes with zero counts in all cells removed (17,423 genes).
+- `colData`: `donor`, `site`, `sex`, `age` (decade), `status` (Healthy, Asymptomatic,
+  Mild, Moderate, Severe, Critical, on the day of sample collection) and `celltype`.
+  Every donor belongs to a single site.
+- The data contain no counts for mitochondrial genes.
+
 ## Download in R
 
 ```r
 url <- "https://github.com/statOmics/SGA/releases/download/scrnaseq-v1/"
 dir.create("scrnaseqData", showWarnings = FALSE)
-for (f in c("chimera_sample5.rds", "embryo_atlas_ref.rds", "kang.rds")) {
+for (f in c("chimera_sample5.rds", "embryo_atlas_ref.rds", "kang.rds", "covid_bcells.rds")) {
   if (!file.exists(file.path("scrnaseqData", f))) {
     download.file(paste0(url, f), file.path("scrnaseqData", f), mode = "wb")
   }
