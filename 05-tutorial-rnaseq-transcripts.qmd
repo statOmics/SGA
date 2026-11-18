@@ -341,7 +341,7 @@ c(genes = length(multiTxGenes), transcripts = nrow(dtu))
 
 ## Juggling offsets
 
-We model the divided counts with the offset of the [lecture](./05-rnaseq-technical.html#juggling-offsets), $\log Y_{g.i} - \log c_t$ [@Segers2023-juggling]: the log of the gene total, computed from the **undivided** counts, minus the log of the overdispersion of the transcript.
+We model the divided counts with the offset of the [lecture](./05-rnaseq-technical.html#juggling-offsets), $\log Y_{g.i} - \log c_t$ [@Segers2026-saser]: the log of the gene total, computed from the **undivided** counts, minus the log of the overdispersion of the transcript.
 The model parameters then describe the log usage $\pi_{gti}$ of the transcript, i.e. the fraction of the fragments of gene $g$ that come from transcript $t$.
 The undivided counts are the divided counts multiplied by the overdispersion.
 

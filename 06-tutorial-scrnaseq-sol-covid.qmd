@@ -423,6 +423,15 @@ ggplot(ddPlot, aes(logFC_DE, logFC_DD, color = significant)) +
 - With two hypotheses per gene, there is at most one true null hypothesis after a false screening hypothesis, so Shaffer's procedure needs no correction in the confirmation stage (`method = "none"`).
 - The DE and DD log fold changes are strongly correlated: most genes with a higher expression are also detected in more cells. The DD log fold changes are smaller, because the detection fraction cannot increase above 1.
 
+::: {.callout-note}
+## Comparison with Gilis et al. (2025)
+
+@Gilis2025-dd analysed the same data with the same design, filtering and DD workflow, but with edgeR 3.40.
+We use edgeR 4, in which `glmQLFit` estimates the quasi-likelihood dispersions with a new method by default.
+With the settings of the paper (`estimateDisp` and `glmQLFit(..., robust = TRUE, legacy = TRUE)`, also for the DE analysis), we reproduce the numbers of the paper almost exactly: e.g. for the naive B cells of critical patients 1152 genes in the screening stage, of which 449 DD and 1122 DE (paper: 1149, 453 and 1125).
+With the default of edgeR 4, we find more genes, mainly more DD genes, but the conclusions are the same.
+:::
+
 ## 15. A gene that is DD but not DE (optional)
 
 ```{r}

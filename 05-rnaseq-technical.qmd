@@ -1226,7 +1226,7 @@ c(genes = length(multiTxGenes), transcripts = nrow(dtu))
 ### Juggling offsets
 
 In DGE we use the (effective) library size as offset, so that the parameters model the expression relative to the sequencing depth.
-For DTU we **replace this offset by the total count of the gene** [@Segers2023-juggling]:
+For DTU we **replace this offset by the total count of the gene** [@Segers2026-saser]:
 
 $$
 \left\{
@@ -1246,6 +1246,7 @@ $$
 - The gene total already accounts for the sequencing depth: no further normalisation is needed.
 - Everything else in the edgeR pipeline stays the same: QL dispersions, empirical Bayes and moderated F-tests. The same trick works with DESeq2.
 - The gene total is plugged in as known; its uncertainty is ignored.
+- We used this idea the first time in the context of single-cell RNA-seq data: the number of cells of a pseudobulk sample in which a gene is detected is modelled with the number of cells (times the cellular detection rate) as offset, so that the parameters model the detection fraction [@Gilis2025-dd] (in which we explicitly acknowledged the students of the 2021/2022 course, who helped assess the binomial GLM workflows for differential detection).
 
 - The total count offset above would work for raw transcript counts.
 

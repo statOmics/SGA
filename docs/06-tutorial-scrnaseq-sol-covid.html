@@ -5250,6 +5250,19 @@ DD     0    1
 <li>With two hypotheses per gene, there is at most one true null hypothesis after a false screening hypothesis, so Shaffer’s procedure needs no correction in the confirmation stage (<code>method = &quot;none&quot;</code>).</li>
 <li>The DE and DD log fold changes are strongly correlated: most genes with a higher expression are also detected in more cells. The DD log fold changes are smaller, because the detection fraction cannot increase above 1.</li>
 </ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Comparison with Gilis et al. (2025)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><span class="citation" data-cites="Gilis2025-dd">Gilis et al. (<a href="#ref-Gilis2025-dd" role="doc-biblioref">2025</a>)</span> analysed the same data with the same design, filtering and DD workflow, but with edgeR 3.40. We use edgeR 4, in which <code>glmQLFit</code> estimates the quasi-likelihood dispersions with a new method by default. With the settings of the paper (<code>estimateDisp</code> and <code>glmQLFit(..., robust = TRUE, legacy = TRUE)</code>, also for the DE analysis), we reproduce the numbers of the paper almost exactly: e.g. for the naive B cells of critical patients 1152 genes in the screening stage, of which 449 DD and 1122 DE (paper: 1149, 453 and 1125). With the default of edgeR 4, we find more genes, mainly more DD genes, but the conclusions are the same.</p>
+</div>
+</div>
 </section>
 <section id="a-gene-that-is-dd-but-not-de-optional" class="level2">
 <h2 class="anchored" data-anchor-id="a-gene-that-is-dd-but-not-de-optional">15. A gene that is DD but not DE (optional)</h2>
@@ -5447,6 +5460,9 @@ DD     0    1
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-Gilis2025-dd" class="csl-entry" role="listitem">
+Gilis, Jeroen, Laura Perin, Milan Malfait, et al. 2025. <span>“Differential Detection Workflows for Multi-Sample Single-Cell <span class="nocase">RNA-seq</span> Data.”</span> <em>BMC Genomics</em> 26: 886. <a href="https://doi.org/10.1186/s12864-025-12102-x">https://doi.org/10.1186/s12864-025-12102-x</a>.
+</div>
 <div id="ref-Stephenson2021-covid" class="csl-entry" role="listitem">
 <span class="nocase">Stephenson, Emily, Gary Reynolds, et al.</span> 2021. <span>“Single-Cell Multi-Omics Analysis of the Immune Response in <span>COVID-19</span>.”</span> <em>Nature Medicine</em> 27 (5): 904–16. <a href="https://doi.org/10.1038/s41591-021-01329-2">https://doi.org/10.1038/s41591-021-01329-2</a>.
 </div>
@@ -6327,79 +6343,88 @@ DD     0    1
 <span id="cb74-465"><a href="#cb74-465" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>With two hypotheses per gene, there is at most one true null hypothesis after a false screening hypothesis, so Shaffer&#39;s procedure needs no correction in the confirmation stage (<span class="in">`method = &quot;none&quot;`</span>).</span>
 <span id="cb74-466"><a href="#cb74-466" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The DE and DD log fold changes are strongly correlated: most genes with a higher expression are also detected in more cells. The DD log fold changes are smaller, because the detection fraction cannot increase above 1.</span>
 <span id="cb74-467"><a href="#cb74-467" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-468"><a href="#cb74-468" aria-hidden="true" tabindex="-1"></a><span class="fu">## 15. A gene that is DD but not DE (optional)</span></span>
-<span id="cb74-469"><a href="#cb74-469" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-472"><a href="#cb74-472" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb74-473"><a href="#cb74-473" aria-hidden="true" tabindex="-1"></a>ddOnly <span class="ot">&lt;-</span> <span class="fu">rownames</span>(ddDe)[<span class="fu">which</span>(ddDe[, <span class="st">&quot;DD&quot;</span>] <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> ddDe[, <span class="st">&quot;DE&quot;</span>] <span class="sc">==</span> <span class="dv">0</span>)]</span>
-<span id="cb74-474"><a href="#cb74-474" aria-hidden="true" tabindex="-1"></a>ddOnly <span class="ot">&lt;-</span> ddOnly[<span class="fu">order</span>(ddCrit<span class="sc">$</span>table[ddOnly, <span class="st">&quot;PValue&quot;</span>])]</span>
-<span id="cb74-475"><a href="#cb74-475" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ddOnly, <span class="dv">20</span>)</span>
-<span id="cb74-476"><a href="#cb74-476" aria-hidden="true" tabindex="-1"></a><span class="co"># the first gene that is not an immunoglobulin variable gene</span></span>
-<span id="cb74-477"><a href="#cb74-477" aria-hidden="true" tabindex="-1"></a>gene <span class="ot">&lt;-</span> ddOnly[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;^IG[HKL]V&quot;</span>, ddOnly)][<span class="dv">1</span>]</span>
-<span id="cb74-478"><a href="#cb74-478" aria-hidden="true" tabindex="-1"></a>gene</span>
-<span id="cb74-479"><a href="#cb74-479" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb74-480"><a href="#cb74-480" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-481"><a href="#cb74-481" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, fig.width = 10, fig.height = 4}</span></span>
-<span id="cb74-482"><a href="#cb74-482" aria-hidden="true" tabindex="-1"></a>donorIndex <span class="ot">&lt;-</span> <span class="fu">match</span>(yNaive<span class="sc">$</span>samples<span class="sc">$</span>donor, binNaive<span class="sc">$</span>donor)</span>
-<span id="cb74-483"><a href="#cb74-483" aria-hidden="true" tabindex="-1"></a>geneData <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">status =</span> yNaive<span class="sc">$</span>samples<span class="sc">$</span>status,</span>
-<span id="cb74-484"><a href="#cb74-484" aria-hidden="true" tabindex="-1"></a>                   <span class="at">detection =</span> detection[gene, donorIndex] <span class="sc">/</span> cdr[donorIndex],</span>
-<span id="cb74-485"><a href="#cb74-485" aria-hidden="true" tabindex="-1"></a>                   <span class="at">cpm =</span> <span class="fu">cpm</span>(yNaive)[gene, ])</span>
-<span id="cb74-486"><a href="#cb74-486" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(geneData, <span class="fu">aes</span>(status, detection)) <span class="sc">+</span></span>
-<span id="cb74-487"><a href="#cb74-487" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.shape =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb74-488"><a href="#cb74-488" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">size =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
-<span id="cb74-489"><a href="#cb74-489" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">&quot;Detection fraction / CDR&quot;</span>, <span class="at">title =</span> gene) <span class="sc">+</span></span>
-<span id="cb74-490"><a href="#cb74-490" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb74-491"><a href="#cb74-491" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
-<span id="cb74-492"><a href="#cb74-492" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(geneData, <span class="fu">aes</span>(status, cpm)) <span class="sc">+</span></span>
-<span id="cb74-493"><a href="#cb74-493" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.shape =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb74-494"><a href="#cb74-494" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">size =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
-<span id="cb74-495"><a href="#cb74-495" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">&quot;Counts per million&quot;</span>, <span class="at">title =</span> gene) <span class="sc">+</span></span>
-<span id="cb74-496"><a href="#cb74-496" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb74-497"><a href="#cb74-497" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
-<span id="cb74-498"><a href="#cb74-498" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">+</span> p2</span>
-<span id="cb74-499"><a href="#cb74-499" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb74-500"><a href="#cb74-500" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-501"><a href="#cb74-501" aria-hidden="true" tabindex="-1"></a>We plot the detection fraction relative to the CDR of the donor, which is the quantity that the offset of the DD model corrects for.</span>
-<span id="cb74-502"><a href="#cb74-502" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-503"><a href="#cb74-503" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Several of the DD-only genes are immunoglobulin variable genes (*IGHV*, *IGKV*, *IGLV*). Each B cell expresses one heavy and one light chain V gene, at a high level. The detection of a V gene reflects the fraction of B cells that use it, i.e. the clonal composition of the B cells, while the average expression is dominated by the few cells that express it at a very high level.</span>
-<span id="cb74-504"><a href="#cb74-504" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>*IFITM1* is an interferon-stimulated gene. Its expression (CPM) is higher in all patient groups, but it is very variable between the patients: a few donors have a very high expression. For the critical patients, the DE test is therefore not significant. The detection fraction relative to the CDR is less sensitive to these donors with a very high expression in a few cells, and shows a consistent increase: here the DD analysis has more power than the DE analysis.</span>
-<span id="cb74-505"><a href="#cb74-505" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>In general, a gene that is DD but not DE is detected in a different fraction of the cells, while its average expression does not change significantly.</span>
-<span id="cb74-506"><a href="#cb74-506" aria-hidden="true" tabindex="-1"></a>This can point to a change in the distribution of the expression over the cells: e.g. a gene that is expressed at a high level in a few cells in one group and at a low level in many cells in the other group.</span>
-<span id="cb74-507"><a href="#cb74-507" aria-hidden="true" tabindex="-1"></a>The DD analysis can also have more power for lowly expressed genes, for which the counts are mostly zeros and ones and the detection contains most of the information.</span>
-<span id="cb74-508"><a href="#cb74-508" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-509"><a href="#cb74-509" aria-hidden="true" tabindex="-1"></a><span class="fu"># Differential abundance</span></span>
-<span id="cb74-510"><a href="#cb74-510" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-511"><a href="#cb74-511" aria-hidden="true" tabindex="-1"></a><span class="fu">## 16. Composition of the B cells (optional)</span></span>
-<span id="cb74-512"><a href="#cb74-512" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-515"><a href="#cb74-515" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb74-516"><a href="#cb74-516" aria-hidden="true" tabindex="-1"></a>abundances <span class="ot">&lt;-</span> <span class="fu">unclass</span>(<span class="fu">table</span>(covid<span class="sc">$</span>celltype, <span class="fu">droplevels</span>(covid<span class="sc">$</span>donor)))</span>
-<span id="cb74-517"><a href="#cb74-517" aria-hidden="true" tabindex="-1"></a>samplesDA <span class="ot">&lt;-</span> donors[<span class="fu">match</span>(<span class="fu">colnames</span>(abundances), donors<span class="sc">$</span>donor), ]</span>
-<span id="cb74-518"><a href="#cb74-518" aria-hidden="true" tabindex="-1"></a>samplesDA<span class="sc">$</span>status <span class="ot">&lt;-</span> <span class="fu">relevel</span>(<span class="fu">droplevels</span>(samplesDA<span class="sc">$</span>status), <span class="at">ref =</span> <span class="st">&quot;Healthy&quot;</span>)</span>
-<span id="cb74-519"><a href="#cb74-519" aria-hidden="true" tabindex="-1"></a>yDA <span class="ot">&lt;-</span> <span class="fu">DGEList</span>(abundances, <span class="at">samples =</span> <span class="fu">as.data.frame</span>(samplesDA))</span>
-<span id="cb74-520"><a href="#cb74-520" aria-hidden="true" tabindex="-1"></a>yDA <span class="ot">&lt;-</span> <span class="fu">normLibSizes</span>(yDA)</span>
-<span id="cb74-521"><a href="#cb74-521" aria-hidden="true" tabindex="-1"></a>designDA <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span> site <span class="sc">+</span> sex <span class="sc">+</span> status, <span class="at">data =</span> yDA<span class="sc">$</span>samples)</span>
-<span id="cb74-522"><a href="#cb74-522" aria-hidden="true" tabindex="-1"></a>fitDA <span class="ot">&lt;-</span> <span class="fu">glmQLFit</span>(yDA, designDA)</span>
-<span id="cb74-523"><a href="#cb74-523" aria-hidden="true" tabindex="-1"></a>testDA <span class="ot">&lt;-</span> <span class="fu">glmQLFTest</span>(fitDA, <span class="at">coef =</span> <span class="fu">grep</span>(<span class="st">&quot;status&quot;</span>, <span class="fu">colnames</span>(designDA)))</span>
-<span id="cb74-524"><a href="#cb74-524" aria-hidden="true" tabindex="-1"></a><span class="fu">topTags</span>(testDA)<span class="sc">$</span>table <span class="sc">|&gt;</span></span>
-<span id="cb74-525"><a href="#cb74-525" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span>
-<span id="cb74-526"><a href="#cb74-526" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb74-527"><a href="#cb74-527" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-528"><a href="#cb74-528" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, fig.width = 9, fig.height = 4}</span></span>
-<span id="cb74-529"><a href="#cb74-529" aria-hidden="true" tabindex="-1"></a><span class="fu">as_tibble</span>(<span class="fu">as.data.frame</span>(<span class="fu">t</span>(abundances) <span class="sc">/</span> <span class="fu">colSums</span>(abundances))) <span class="sc">|&gt;</span></span>
-<span id="cb74-530"><a href="#cb74-530" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(samplesDA) <span class="sc">|&gt;</span></span>
-<span id="cb74-531"><a href="#cb74-531" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">levels</span>(covid<span class="sc">$</span>celltype), <span class="at">names_to =</span> <span class="st">&quot;celltype&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;proportion&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb74-532"><a href="#cb74-532" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(status, proportion)) <span class="sc">+</span></span>
-<span id="cb74-533"><a href="#cb74-533" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.shape =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb74-534"><a href="#cb74-534" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">size =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb74-535"><a href="#cb74-535" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> celltype, <span class="at">scales =</span> <span class="st">&quot;free_y&quot;</span>, <span class="at">nrow =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb74-536"><a href="#cb74-536" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb74-537"><a href="#cb74-537" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
-<span id="cb74-538"><a href="#cb74-538" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb74-539"><a href="#cb74-539" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-540"><a href="#cb74-540" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The proportion of the other B cells (<span class="in">`B cell`</span>) changes most with the disease status: it increases in the moderate and critical patients. The changes of the memory B cells are smaller.</span>
-<span id="cb74-541"><a href="#cb74-541" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>We use the same design as in the DE analysis, with the donor as experimental unit: the counts are the numbers of cells per cell type and donor, and the library size is the number of B cells of the donor.</span>
-<span id="cb74-542"><a href="#cb74-542" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The TMM normalisation assumes that most cell types do not change in abundance. With only 5 cell types this is a strong assumption: a large change in the naive B cells, which are the majority of the B cells, changes the proportions of all other cell types. The model can only describe the composition within the B cells: we do not know the total number of PBMCs, so we cannot tell whether a cell type becomes more abundant in the blood.</span>
-<span id="cb74-543"><a href="#cb74-543" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-544"><a href="#cb74-544" aria-hidden="true" tabindex="-1"></a><span class="fu"># References</span></span>
+<span id="cb74-468"><a href="#cb74-468" aria-hidden="true" tabindex="-1"></a>::: {.callout-note}</span>
+<span id="cb74-469"><a href="#cb74-469" aria-hidden="true" tabindex="-1"></a><span class="fu">## Comparison with Gilis et al. (2025)</span></span>
+<span id="cb74-470"><a href="#cb74-470" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-471"><a href="#cb74-471" aria-hidden="true" tabindex="-1"></a>@Gilis2025-dd analysed the same data with the same design, filtering and DD workflow, but with edgeR 3.40.</span>
+<span id="cb74-472"><a href="#cb74-472" aria-hidden="true" tabindex="-1"></a>We use edgeR 4, in which <span class="in">`glmQLFit`</span> estimates the quasi-likelihood dispersions with a new method by default.</span>
+<span id="cb74-473"><a href="#cb74-473" aria-hidden="true" tabindex="-1"></a>With the settings of the paper (<span class="in">`estimateDisp`</span> and <span class="in">`glmQLFit(..., robust = TRUE, legacy = TRUE)`</span>, also for the DE analysis), we reproduce the numbers of the paper almost exactly: e.g. for the naive B cells of critical patients 1152 genes in the screening stage, of which 449 DD and 1122 DE (paper: 1149, 453 and 1125).</span>
+<span id="cb74-474"><a href="#cb74-474" aria-hidden="true" tabindex="-1"></a>With the default of edgeR 4, we find more genes, mainly more DD genes, but the conclusions are the same.</span>
+<span id="cb74-475"><a href="#cb74-475" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb74-476"><a href="#cb74-476" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-477"><a href="#cb74-477" aria-hidden="true" tabindex="-1"></a><span class="fu">## 15. A gene that is DD but not DE (optional)</span></span>
+<span id="cb74-478"><a href="#cb74-478" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-481"><a href="#cb74-481" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb74-482"><a href="#cb74-482" aria-hidden="true" tabindex="-1"></a>ddOnly <span class="ot">&lt;-</span> <span class="fu">rownames</span>(ddDe)[<span class="fu">which</span>(ddDe[, <span class="st">&quot;DD&quot;</span>] <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> ddDe[, <span class="st">&quot;DE&quot;</span>] <span class="sc">==</span> <span class="dv">0</span>)]</span>
+<span id="cb74-483"><a href="#cb74-483" aria-hidden="true" tabindex="-1"></a>ddOnly <span class="ot">&lt;-</span> ddOnly[<span class="fu">order</span>(ddCrit<span class="sc">$</span>table[ddOnly, <span class="st">&quot;PValue&quot;</span>])]</span>
+<span id="cb74-484"><a href="#cb74-484" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ddOnly, <span class="dv">20</span>)</span>
+<span id="cb74-485"><a href="#cb74-485" aria-hidden="true" tabindex="-1"></a><span class="co"># the first gene that is not an immunoglobulin variable gene</span></span>
+<span id="cb74-486"><a href="#cb74-486" aria-hidden="true" tabindex="-1"></a>gene <span class="ot">&lt;-</span> ddOnly[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;^IG[HKL]V&quot;</span>, ddOnly)][<span class="dv">1</span>]</span>
+<span id="cb74-487"><a href="#cb74-487" aria-hidden="true" tabindex="-1"></a>gene</span>
+<span id="cb74-488"><a href="#cb74-488" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb74-489"><a href="#cb74-489" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-490"><a href="#cb74-490" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, fig.width = 10, fig.height = 4}</span></span>
+<span id="cb74-491"><a href="#cb74-491" aria-hidden="true" tabindex="-1"></a>donorIndex <span class="ot">&lt;-</span> <span class="fu">match</span>(yNaive<span class="sc">$</span>samples<span class="sc">$</span>donor, binNaive<span class="sc">$</span>donor)</span>
+<span id="cb74-492"><a href="#cb74-492" aria-hidden="true" tabindex="-1"></a>geneData <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">status =</span> yNaive<span class="sc">$</span>samples<span class="sc">$</span>status,</span>
+<span id="cb74-493"><a href="#cb74-493" aria-hidden="true" tabindex="-1"></a>                   <span class="at">detection =</span> detection[gene, donorIndex] <span class="sc">/</span> cdr[donorIndex],</span>
+<span id="cb74-494"><a href="#cb74-494" aria-hidden="true" tabindex="-1"></a>                   <span class="at">cpm =</span> <span class="fu">cpm</span>(yNaive)[gene, ])</span>
+<span id="cb74-495"><a href="#cb74-495" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(geneData, <span class="fu">aes</span>(status, detection)) <span class="sc">+</span></span>
+<span id="cb74-496"><a href="#cb74-496" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.shape =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb74-497"><a href="#cb74-497" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">size =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb74-498"><a href="#cb74-498" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">&quot;Detection fraction / CDR&quot;</span>, <span class="at">title =</span> gene) <span class="sc">+</span></span>
+<span id="cb74-499"><a href="#cb74-499" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb74-500"><a href="#cb74-500" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
+<span id="cb74-501"><a href="#cb74-501" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(geneData, <span class="fu">aes</span>(status, cpm)) <span class="sc">+</span></span>
+<span id="cb74-502"><a href="#cb74-502" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.shape =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb74-503"><a href="#cb74-503" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">size =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb74-504"><a href="#cb74-504" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">&quot;Counts per million&quot;</span>, <span class="at">title =</span> gene) <span class="sc">+</span></span>
+<span id="cb74-505"><a href="#cb74-505" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb74-506"><a href="#cb74-506" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
+<span id="cb74-507"><a href="#cb74-507" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">+</span> p2</span>
+<span id="cb74-508"><a href="#cb74-508" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb74-509"><a href="#cb74-509" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-510"><a href="#cb74-510" aria-hidden="true" tabindex="-1"></a>We plot the detection fraction relative to the CDR of the donor, which is the quantity that the offset of the DD model corrects for.</span>
+<span id="cb74-511"><a href="#cb74-511" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-512"><a href="#cb74-512" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Several of the DD-only genes are immunoglobulin variable genes (*IGHV*, *IGKV*, *IGLV*). Each B cell expresses one heavy and one light chain V gene, at a high level. The detection of a V gene reflects the fraction of B cells that use it, i.e. the clonal composition of the B cells, while the average expression is dominated by the few cells that express it at a very high level.</span>
+<span id="cb74-513"><a href="#cb74-513" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>*IFITM1* is an interferon-stimulated gene. Its expression (CPM) is higher in all patient groups, but it is very variable between the patients: a few donors have a very high expression. For the critical patients, the DE test is therefore not significant. The detection fraction relative to the CDR is less sensitive to these donors with a very high expression in a few cells, and shows a consistent increase: here the DD analysis has more power than the DE analysis.</span>
+<span id="cb74-514"><a href="#cb74-514" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>In general, a gene that is DD but not DE is detected in a different fraction of the cells, while its average expression does not change significantly.</span>
+<span id="cb74-515"><a href="#cb74-515" aria-hidden="true" tabindex="-1"></a>This can point to a change in the distribution of the expression over the cells: e.g. a gene that is expressed at a high level in a few cells in one group and at a low level in many cells in the other group.</span>
+<span id="cb74-516"><a href="#cb74-516" aria-hidden="true" tabindex="-1"></a>The DD analysis can also have more power for lowly expressed genes, for which the counts are mostly zeros and ones and the detection contains most of the information.</span>
+<span id="cb74-517"><a href="#cb74-517" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-518"><a href="#cb74-518" aria-hidden="true" tabindex="-1"></a><span class="fu"># Differential abundance</span></span>
+<span id="cb74-519"><a href="#cb74-519" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-520"><a href="#cb74-520" aria-hidden="true" tabindex="-1"></a><span class="fu">## 16. Composition of the B cells (optional)</span></span>
+<span id="cb74-521"><a href="#cb74-521" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-524"><a href="#cb74-524" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb74-525"><a href="#cb74-525" aria-hidden="true" tabindex="-1"></a>abundances <span class="ot">&lt;-</span> <span class="fu">unclass</span>(<span class="fu">table</span>(covid<span class="sc">$</span>celltype, <span class="fu">droplevels</span>(covid<span class="sc">$</span>donor)))</span>
+<span id="cb74-526"><a href="#cb74-526" aria-hidden="true" tabindex="-1"></a>samplesDA <span class="ot">&lt;-</span> donors[<span class="fu">match</span>(<span class="fu">colnames</span>(abundances), donors<span class="sc">$</span>donor), ]</span>
+<span id="cb74-527"><a href="#cb74-527" aria-hidden="true" tabindex="-1"></a>samplesDA<span class="sc">$</span>status <span class="ot">&lt;-</span> <span class="fu">relevel</span>(<span class="fu">droplevels</span>(samplesDA<span class="sc">$</span>status), <span class="at">ref =</span> <span class="st">&quot;Healthy&quot;</span>)</span>
+<span id="cb74-528"><a href="#cb74-528" aria-hidden="true" tabindex="-1"></a>yDA <span class="ot">&lt;-</span> <span class="fu">DGEList</span>(abundances, <span class="at">samples =</span> <span class="fu">as.data.frame</span>(samplesDA))</span>
+<span id="cb74-529"><a href="#cb74-529" aria-hidden="true" tabindex="-1"></a>yDA <span class="ot">&lt;-</span> <span class="fu">normLibSizes</span>(yDA)</span>
+<span id="cb74-530"><a href="#cb74-530" aria-hidden="true" tabindex="-1"></a>designDA <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span> site <span class="sc">+</span> sex <span class="sc">+</span> status, <span class="at">data =</span> yDA<span class="sc">$</span>samples)</span>
+<span id="cb74-531"><a href="#cb74-531" aria-hidden="true" tabindex="-1"></a>fitDA <span class="ot">&lt;-</span> <span class="fu">glmQLFit</span>(yDA, designDA)</span>
+<span id="cb74-532"><a href="#cb74-532" aria-hidden="true" tabindex="-1"></a>testDA <span class="ot">&lt;-</span> <span class="fu">glmQLFTest</span>(fitDA, <span class="at">coef =</span> <span class="fu">grep</span>(<span class="st">&quot;status&quot;</span>, <span class="fu">colnames</span>(designDA)))</span>
+<span id="cb74-533"><a href="#cb74-533" aria-hidden="true" tabindex="-1"></a><span class="fu">topTags</span>(testDA)<span class="sc">$</span>table <span class="sc">|&gt;</span></span>
+<span id="cb74-534"><a href="#cb74-534" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span>
+<span id="cb74-535"><a href="#cb74-535" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb74-536"><a href="#cb74-536" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-537"><a href="#cb74-537" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, fig.width = 9, fig.height = 4}</span></span>
+<span id="cb74-538"><a href="#cb74-538" aria-hidden="true" tabindex="-1"></a><span class="fu">as_tibble</span>(<span class="fu">as.data.frame</span>(<span class="fu">t</span>(abundances) <span class="sc">/</span> <span class="fu">colSums</span>(abundances))) <span class="sc">|&gt;</span></span>
+<span id="cb74-539"><a href="#cb74-539" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(samplesDA) <span class="sc">|&gt;</span></span>
+<span id="cb74-540"><a href="#cb74-540" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">levels</span>(covid<span class="sc">$</span>celltype), <span class="at">names_to =</span> <span class="st">&quot;celltype&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;proportion&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb74-541"><a href="#cb74-541" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(status, proportion)) <span class="sc">+</span></span>
+<span id="cb74-542"><a href="#cb74-542" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.shape =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb74-543"><a href="#cb74-543" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">size =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb74-544"><a href="#cb74-544" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> celltype, <span class="at">scales =</span> <span class="st">&quot;free_y&quot;</span>, <span class="at">nrow =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb74-545"><a href="#cb74-545" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb74-546"><a href="#cb74-546" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
+<span id="cb74-547"><a href="#cb74-547" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb74-548"><a href="#cb74-548" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-549"><a href="#cb74-549" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The proportion of the other B cells (<span class="in">`B cell`</span>) changes most with the disease status: it increases in the moderate and critical patients. The changes of the memory B cells are smaller.</span>
+<span id="cb74-550"><a href="#cb74-550" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>We use the same design as in the DE analysis, with the donor as experimental unit: the counts are the numbers of cells per cell type and donor, and the library size is the number of B cells of the donor.</span>
+<span id="cb74-551"><a href="#cb74-551" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The TMM normalisation assumes that most cell types do not change in abundance. With only 5 cell types this is a strong assumption: a large change in the naive B cells, which are the majority of the B cells, changes the proportions of all other cell types. The model can only describe the composition within the B cells: we do not know the total number of PBMCs, so we cannot tell whether a cell type becomes more abundant in the blood.</span>
+<span id="cb74-552"><a href="#cb74-552" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-553"><a href="#cb74-553" aria-hidden="true" tabindex="-1"></a><span class="fu"># References</span></span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
