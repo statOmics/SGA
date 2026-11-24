@@ -47,6 +47,8 @@ website:
           href: 04-rnaseq-intro.html
         - text: 1.2 Bulk RNA-seq - technical details and transcript usage
           href: 05-rnaseq-technical.html
+        - text: 2.1 Intro to scRNA-seq
+          href: 06-scrnaseq.html
 
       - text: "Tutorials"
         icon: fa-laptop
@@ -64,6 +66,8 @@ website:
         - text: "---- MODULE II: TRANSCRIPTOMICS ----"
         - text: 1.1 Tutorial Differential Expression Analysis of Bulk RNA-seq
           href: 04-tutorial-rnaseq.html
+        - text: 2.1 Tutorial on scRNA-seq
+          href: 06-tutorial-scrnaseq.html
 
 
 bibliography: references.bib

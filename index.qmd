@@ -63,7 +63,28 @@ BiocManager::install(c(
    "ggpubr",
    "callr",
    "curl",
-   "httpuv"
+   "httpuv",
+   # bulk RNA-seq
+   "edgeR",
+   "DESeq2",
+   "tximeta",
+   "macrophage",
+   "org.Hs.eg.db",
+   "stageR",
+   "pheatmap",
+   "plotly",
+   "matrixStats",
+   "tidyverse",
+   # single-cell RNA-seq
+   "SingleCellExperiment",
+   "ExperimentHub",
+   "MouseGastrulationData",
+   "DropletUtils",
+   "scrapper",
+   "scuttle",
+   "scDblFinder",
+   "SingleR",
+   "omicsGMF"
 ))
 ```
 
@@ -140,6 +161,23 @@ We also introduce differential expression and differential transcript usage anal
 
 - Lecture Technical details and transcript usage: [HTML](05-rnaseq-technical.html), [PDF](05-rnaseq-technical.pdf)
 - Background on transcript-level quantification: [Soneson et al. 2016](https://f1000research.com/articles/4-1521/v2)
+
+### 2. Introduction to Single Cell Transcriptomics (scRNA-seq) {-}
+
+This part introduces single-cell RNA-seq, from droplet-based protocols to a count matrix per cell, and the preprocessing workflow: detection of empty droplets, quality control, doublet detection and normalisation.
+We show that UMI counts are well described by Poisson and negative binomial models without zero inflation, and we use count models for feature selection (deviance) and dimension reduction (generalised matrix factorisation), followed by clustering, marker genes and cell type annotation.
+For multi-sample experiments, we discuss pseudoreplication and the experimental design, and analyse differential expression, differential detection and differential abundance between conditions with pseudobulk analyses in edgeR.
+The concepts are illustrated on mouse chimeric embryos and on peripheral blood mononuclear cells of lupus patients that were stimulated with interferon beta.
+
+- Lecture Intro to scRNA-seq: [HTML](06-scrnaseq.html), [PDF](06-scrnaseq.pdf)
+- Tutorial on scRNA-seq: [HTML](06-tutorial-scrnaseq.html), [PDF](06-tutorial-scrnaseq.pdf)
+
+<!--
+Solutions:
+
+- Retina data (Macosko et al. 2015): [script](06-tutorial-scrnaseq-sol-macosko.html)
+- B cells of COVID-19 patients: [script](06-tutorial-scrnaseq-sol-covid.html)
+-->
 
 ## License {-}
 
