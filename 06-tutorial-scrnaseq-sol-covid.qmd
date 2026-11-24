@@ -202,13 +202,14 @@ with $\alpha_c$ the intercept of cell $c$, which captures its library size.
 ## 6. Pseudobulk samples
 
 ```{r}
-pb <- aggregateAcrossCells.se(covid, factors = list(celltype = covid$celltype, donor = covid$donor))
+pb <- aggregateAcrossCells.se(covid, factors = list(celltype = covid$celltype, donor = covid$donor),
+                              counts.name = "ncells")
 pb$site <- covid$site[match(pb$donor, covid$donor)]
 pb$sex <- covid$sex[match(pb$donor, covid$donor)]
 pb$age <- covid$age[match(pb$donor, covid$donor)]
 pb$status <- covid$status[match(pb$donor, covid$donor)]
-table(pb$counts >= 20, pb$celltype)
-pb <- pb[, pb$counts >= 20]
+table(pb$ncells >= 20, pb$celltype)
+pb <- pb[, pb$ncells >= 20]
 ```
 
 A pseudobulk sample of a few cells has a small library and a large variability, because the expression of a few cells is more variable than the average of many cells.
@@ -220,7 +221,7 @@ Pseudobulk samples of few cells also give little information on the donor.
 ```{r}
 yNaive <- DGEList(assay(pb, "sums")[, pb$celltype == "naive B cell"],
                   samples = as.data.frame(colData(pb)[pb$celltype == "naive B cell",
-                                                      c("donor", "site", "sex", "age", "status", "counts")]))
+                                                      c("donor", "site", "sex", "age", "status", "ncells")]))
 yNaive$samples$status <- relevel(droplevels(yNaive$samples$status), ref = "Healthy")
 design <- model.matrix(~ site + sex + status, data = yNaive$samples)
 colnames(design)
@@ -318,7 +319,7 @@ topTags(tests$Critical, n = Inf)$table[intersect(isg, rownames(yNaive)), c("logF
 pseudobulkDE <- function(celltype) {
   sel <- pb$celltype == celltype
   y <- DGEList(assay(pb, "sums")[, sel],
-               samples = as.data.frame(colData(pb)[sel, c("donor", "site", "sex", "status", "counts")]))
+               samples = as.data.frame(colData(pb)[sel, c("donor", "site", "sex", "status", "ncells")]))
   y$samples$status <- relevel(droplevels(y$samples$status), ref = "Healthy")
   design <- model.matrix(~ site + sex + status, data = y$samples)
   y <- y[filterByExpr(y, design = design), , keep.lib.sizes = FALSE]
@@ -342,16 +343,12 @@ lapply(setNames(levels(pb$celltype), levels(pb$celltype)), pseudobulkDE)
 
 ## 12. Binarised pseudobulk
 
+Binarising the counts ($z_{gi} = 1$ if $y_{gi} > 0$) and summing them per donor and cell type gives the number of cells in which each gene is detected.
+`aggregateAcrossCells.se` already stores this in the assay `detected` of the pseudobulk object `pb` of exercise 6, next to the summed counts (assay `sums`).
+
 ```{r}
-detected <- Matrix::drop0(counts(covid))
-detected@x[] <- 1
-binCovid <- SingleCellExperiment(list(counts = detected), colData = colData(covid))
-pbBin <- aggregateAcrossCells.se(binCovid, factors = list(celltype = binCovid$celltype,
-                                                          donor = binCovid$donor))
-pbBin <- pbBin[, pbBin$counts >= 20]
-pbBin$site <- covid$site[match(pbBin$donor, covid$donor)]
-pbBin$sex <- covid$sex[match(pbBin$donor, covid$donor)]
-pbBin$status <- covid$status[match(pbBin$donor, covid$donor)]
+assayNames(pb)
+assay(pb, "detected")[1:5, 1:4]
 ```
 
 The pseudobulk count of the binarised data is the number of cells of a donor and cell type in which the gene is detected (count > 0).
@@ -360,17 +357,17 @@ Divided by the number of cells, it is the detection fraction of the gene.
 ## 13. Differential detection for the naive B cells
 
 ```{r}
-binNaive <- pbBin[, pbBin$celltype == "naive B cell"]
-detection <- sweep(assay(binNaive, "sums"), 2, binNaive$counts, "/")
+pbNaive <- pb[, pb$celltype == "naive B cell"]
+detection <- sweep(assay(pbNaive, "detected"), 2, pbNaive$ncells, "/")
 medDetection <- matrixStats::rowMedians(as.matrix(detection[rownames(yNaive), ]))
 keepDD <- rownames(yNaive)[medDetection < 0.9]
 length(keepDD)
 cdr <- colMeans(detection[keepDD, ])
 
-yDD <- DGEList(assay(binNaive, "sums")[keepDD, ],
-               samples = as.data.frame(colData(binNaive)[, c("donor", "site", "sex", "status", "counts")]))
+yDD <- DGEList(assay(pbNaive, "detected")[keepDD, ],
+               samples = as.data.frame(colData(pbNaive)[, c("donor", "site", "sex", "status", "ncells")]))
 yDD$samples$status <- relevel(droplevels(yDD$samples$status), ref = "Healthy")
-yDD$offset <- log(binNaive$counts * cdr)
+yDD$offset <- log(pbNaive$ncells * cdr)
 designDD <- model.matrix(~ site + sex + status, data = yDD$samples)
 all.equal(colnames(designDD), colnames(design))
 yDD <- estimateDisp(yDD, designDD)
@@ -444,7 +441,7 @@ gene
 ```
 
 ```{r, fig.width = 10, fig.height = 4}
-donorIndex <- match(yNaive$samples$donor, binNaive$donor)
+donorIndex <- match(yNaive$samples$donor, pbNaive$donor)
 geneData <- tibble(status = yNaive$samples$status,
                    detection = detection[gene, donorIndex] / cdr[donorIndex],
                    cpm = cpm(yNaive)[gene, ])
@@ -471,9 +468,67 @@ We plot the detection fraction relative to the CDR of the donor, which is the qu
 This can point to a change in the distribution of the expression over the cells: e.g. a gene that is expressed at a high level in a few cells in one group and at a low level in many cells in the other group.
 The DD analysis can also have more power for lowly expressed genes, for which the counts are mostly zeros and ones and the detection contains most of the information.
 
+## 16. All B cell types with muscat (optional)
+
+`prepSCE` standardises the names of the cell type (`cluster_id`), sample (`sample_id`) and group (`group_id`) columns.
+`aggregateData` sums the counts (`fun = "sum"`) or the binarised counts (`fun = "num.detected"`) per cell type and donor, with one assay per cell type.
+The donor characteristics (site, sex) are kept in the `colData` of the pseudobulk object, so we can use the same design.
+The contrast matrix `L` of exercise 8 can be reused: only the names of the status coefficients change (`group_id` instead of `status`).
+
+```{r}
+library(muscat)
+sceMuscat <- covid
+sceMuscat$status <- relevel(droplevels(factor(sceMuscat$status)), ref = "Healthy")
+sceMuscat <- prepSCE(sceMuscat, kid = "celltype", sid = "donor", gid = "status")
+pbSum <- aggregateData(sceMuscat, assay = "counts", fun = "sum")
+pbDet <- aggregateData(sceMuscat, assay = "counts", fun = "num.detected")
+designMuscat <- model.matrix(~ site + sex + group_id, data = as.data.frame(colData(pbSum)))
+LMuscat <- L
+rownames(LMuscat) <- colnames(designMuscat)
+LMuscat
+resDS <- pbDS(pbSum, design = designMuscat, contrast = LMuscat, min_cells = 20, verbose = FALSE)
+resDD <- pbDD(pbDet, design = designMuscat, contrast = LMuscat, min_cells = 20, verbose = FALSE)
+resStagewise <- stagewise_DS_DD(resDS, resDD)
+```
+
+The results are stored per contrast and per cell type.
+The number of DE and DD genes (FDR 5% within each cell type) for the comparison of the moderate patients with the healthy donors:
+
+```{r}
+sapply(names(resDS$table$Moderate), function(ct)
+  c(DE = sum(resDS$table$Moderate[[ct]]$p_adj.loc < 0.05),
+    DD = sum(resDD$table$Moderate[[ct]]$p_adj.loc < 0.05)))
+```
+
+We compare the results for the naive B cells with our own analysis of exercises 8 and 13:
+
+```{r}
+compareMuscat <- t(sapply(colnames(L), function(contrast) {
+  ownDE <- tests[[contrast]]$table
+  ownDD <- testsDD[[contrast]]$table
+  mDE <- resDS$table[[contrast]][["naive B cell"]]
+  mDD <- resDD$table[[contrast]][["naive B cell"]]
+  genesDD <- intersect(rownames(ownDD), mDD$gene)
+  c(DE_own = sum(p.adjust(ownDE$PValue, "BH") < 0.05),
+    DE_muscat = sum(mDE$p_adj.loc < 0.05),
+    DD_own = sum(p.adjust(ownDD$PValue, "BH") < 0.05),
+    DD_muscat = sum(mDD$p_adj.loc < 0.05),
+    DD_genes_own = nrow(ownDD),
+    DD_genes_muscat = nrow(mDD),
+    cor_pDD = cor(log10(ownDD[genesDD, "PValue"]), log10(mDD$p_val[match(genesDD, mDD$gene)])))
+}))
+round(compareMuscat, 3)
+```
+
+- The DE results are (almost) identical: `pbDS` uses the same filtering, TMM normalisation and edgeR QL pipeline as our own analysis.
+- For DD, the p-values of the shared genes are identical (correlation `r round(min(compareMuscat[, "cor_pDD"]), 3)`): `pbDD` implements the same workflow, with the filter on the median detection fraction, the CDR offset and `poisson.bound = FALSE`.
+- The numbers of DD genes differ because the analyses test different genes: `pbDD` filters the genes with `filterByExpr` on the number of detected cells, whereas we started from the genes that pass `filterByExpr` on the counts of the DE analysis. Here, muscat tests `r compareMuscat[1, "DD_genes_muscat"]` genes and our analysis `r compareMuscat[1, "DD_genes_own"]`: some of the genes that only we test are DD.
+- muscat analyses all B cell types in one call, and also reports p-values that are adjusted over all cell types together (`p_adj.glb`).
+- `stagewise_DS_DD` combines the DE and DD results of each cell type with the stage-wise test of exercise 14.
+
 # Differential abundance
 
-## 16. Composition of the B cells (optional)
+## 17. Composition of the B cells (optional)
 
 ```{r}
 abundances <- unclass(table(covid$celltype, droplevels(covid$donor)))

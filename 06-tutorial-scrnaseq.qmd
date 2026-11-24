@@ -138,7 +138,7 @@ covid
 
 ## Differential detection
 
-12. Binarise the counts and create pseudobulk samples of the binarised counts per donor and cell type. What does a pseudobulk count of the binarised data represent?
+12. Binarising the counts and summing them per donor and cell type gives the number of cells in which each gene is detected. Where do you find this in the pseudobulk object of exercise 6? What does a pseudobulk count of the binarised data represent?
 
 13. Analyse the naive B cells with the differential detection workflow of the lecture. Which offset do you use, which genes do you remove, and why? Test the same contrasts as in the DE analysis.
 
@@ -146,8 +146,10 @@ covid
 
 15. (Optional) Look at a gene that is DD but not DE. Plot its detection fraction and its mean expression (counts per million) per donor. How do you interpret such a gene?
 
+16. (Optional) The muscat package performs the DE and DD analyses for all cell types at once (see the lecture). Repeat the analyses of exercises 7, 8 and 13 for all B cell types with `prepSCE`, `aggregateData` (`fun = "sum"` and `fun = "num.detected"`), `pbDS`, `pbDD` and `stagewise_DS_DD`, with the same design, the contrasts of exercise 8 and at least 20 cells per pseudobulk sample. Compare the results for the naive B cells with your own analysis. How do you explain the differences?
+
 ## Differential abundance
 
-16. (Optional) Does the B-cell composition change with the disease status? Count the cells per donor and cell type, and model the counts with the edgeR QL pipeline. Which design do you use? Which assumption does the TMM normalisation make here?
+17. (Optional) Does the B-cell composition change with the disease status? Count the cells per donor and cell type, and model the counts with the edgeR QL pipeline. Which design do you use? Which assumption does the TMM normalisation make here?
 
 # References

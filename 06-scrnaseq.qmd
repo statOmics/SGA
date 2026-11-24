@@ -8,7 +8,9 @@ author:
 search: false
 format:
   html: default
-  pdf: default
+  pdf:
+    fig-format: png
+    fig-dpi: 200
 ---
 
 ```{r echo = FALSE}
@@ -58,12 +60,6 @@ knitr::include_graphics("./figs/sc_lego.jpeg")
 - Bulk RNA-seq blends all cells of the tissue: we only see the average expression.
 - scRNA-seq resolves the individual cells, but the cells are dissociated from the tissue and their location is lost.
 - Spatial transcriptomics measures the expression in the tissue, and keeps the location.
-
-## Exciting applications
-
-```{r, echo = FALSE, out.width = "100%", fig.cap = "Hwang et al., 2018, doi: 10.1038/s12276-018-0071-8"}
-knitr::include_graphics("./figs/sc_applications.png")
-```
 
 ## Protocol
 
@@ -460,7 +456,7 @@ Are the zeros in UMI data more frequent than expected under an NB model?
 We assess this for the `r ct` cells, the largest cell type of the published annotation [@Svensson2020-zeroinflation].
 Under the model above with a common relative abundance $\pi_g$ for all cells of a homogeneous population,
 
-- the maximum likelihood estimator of $\pi_g$ is $\hat\pi_g = \sum_i y_{gi} / \sum_i N_i$,
+- the relative abundance is estimated as $\hat\pi_g = \sum_i y_{gi} / \sum_i N_i$. This is the maximum likelihood estimator under the Poisson model; under the NB model it is a moment estimator, which is unbiased because $\text{E}[y_{gi}] = N_i \pi_g$,
 - the expected fraction of zeros under a Poisson model is $\frac{1}{n}\sum_i e^{-\hat\mu_{gi}}$,
 - and under an NB model $\frac{1}{n}\sum_i (1 + \phi_g \hat\mu_{gi})^{-1/\phi_g}$, with $\phi_g$ estimated with the method of moments.
 
@@ -511,6 +507,23 @@ p1 + p2 + plot_layout(widths = c(1, 1.6))
 
 In a heterogeneous population, many zeros are biological: the gene is not expressed in a cell type.
 They are captured by the cell type effects in the mean model, not by a zero-inflation component.
+
+**A gene that is expressed in every cell.**
+The cells of sample 5 were sorted on the fluorescence of tdTomato, a red fluorescent protein that is expressed by all cells derived from the injected embryonic stem cells.
+The tdTomato sequence was added to the reference genome, so the counts contain a feature `tomato-td`.
+
+```{r}
+yTomato <- counts(sce)["tomato-td", ]
+table(yTomato)
+NTomato <- colSums(counts(sce))
+muTomato <- NTomato * sum(yTomato) / sum(NTomato)
+c(observed = mean(yTomato > 0), Poisson = mean(1 - exp(-muTomato)))
+```
+
+- Although every cell expresses tdTomato, the transcript is detected in only `r round(100 * mean(yTomato > 0))`% of the cells, with on average `r round(mean(yTomato), 2)` UMI per cell.
+- A Poisson model with the library size as offset and the same relative abundance in all cells predicts that the transcript is detected in `r round(100 * mean(1 - exp(-muTomato)))`% of the cells.
+- The zeros are thus fully explained by the low capture efficiency, i.e. the sampling of a few molecules per cell. No separate dropout mechanism is needed.
+- A zero in a single cell is therefore weak evidence that a gene is not expressed.
 
 ## Normalisation
 
@@ -664,7 +677,7 @@ We project the cells into a low-dimensional space that retains as much of the st
 - It is typically performed on the log-normalised counts of the highly variable genes, and the top 10 to 50 principal components (PCs) are retained.
 
 ```{r}
-sce <- runPca.se(sce, features = rowData(sce)$hvg)
+sce <- runPca.se(sce, features = rowData(sce)$hvg, number = 30)
 pcaInfo <- metadata(sce)$PCA
 tibble(pc = seq_along(pcaInfo$variance.explained),
        explained = pcaInfo$variance.explained / pcaInfo$total.variance) |>
@@ -673,6 +686,12 @@ tibble(pc = seq_along(pcaInfo$variance.explained),
   geom_line() +
   labs(x = "PC", y = "Proportion of variance explained") +
   theme_bw()
+```
+
+We retain the first 10 PCs, the same number of components as for GMF below, so that both embeddings can be compared on an equal footing.
+
+```{r}
+reducedDim(sce, "PCA") <- reducedDim(sce, "PCA")[, 1:10]
 ```
 
 ## Generalised matrix factorisation
@@ -741,7 +760,7 @@ plotDims(reducedDim(sce, "PCA"), sce$celltype.published, "Cell type", "PCA") +
 ```
 
 - Both methods separate the erythroid cells from the other cell types along the first dimension.
-- On these data, with a large sequencing depth per cell, both embeddings capture a similar structure. The advantages of GMF are largest for sparse data with low counts, where the log transformation and the pseudocount distort the data most [@Townes2019-glmpca], and when known covariates such as batch have to be corrected for.
+- On these data, with a large sequencing depth per cell, both embeddings look similar in the first two dimensions. The clustering on all components, however, agrees better with the published cell types for GMF than for PCA for most numbers of components (see [clustering](#clustering)). The advantages of GMF are largest for sparse data with low counts, where the log transformation and the pseudocount distort the data most [@Townes2019-glmpca], and when known covariates such as batch have to be corrected for.
 
 How many components should we retain?
 
@@ -771,13 +790,13 @@ We used 10 components: retaining a few components too many is less harmful for c
 - The results depend on random initialisation and tuning parameters (e.g. the perplexity of t-SNE and the number of neighbours of UMAP).
 - They are visualisation tools: downstream analyses such as clustering are performed on the PCs or GMF components, not on the t-SNE or UMAP coordinates.
 
-`runAllNeighborSteps.se` computes the nearest neighbours of each cell once, and uses them for t-SNE, UMAP and clustering.
+`runAllNeighborSteps.se` computes the nearest neighbours of each cell once, and uses them for t-SNE and UMAP. It can also cluster the cells, but we do this separately in the next section.
 
 ```{r}
 set.seed(1234)
-sce <- runAllNeighborSteps.se(sce)
+sce <- runAllNeighborSteps.se(sce, cluster.output.name = NULL)
 sce <- runAllNeighborSteps.se(sce, reddim.type = "GMF", umap.output.name = "UMAP_GMF",
-                              tsne.output.name = NULL, cluster.output.name = "clusters_GMF")
+                              tsne.output.name = NULL, cluster.output.name = NULL)
 reducedDimNames(sce)
 ```
 
@@ -791,23 +810,107 @@ plotDims(reducedDim(sce, "UMAP"), sce$celltype.published, "Cell type", "UMAP on 
 
 We identify groups of cells with a similar expression profile, which we will interpret as cell types or states.
 
-- Classical clustering methods such as k-means or hierarchical clustering scale poorly to many cells and need the number of clusters.
-- **Graph-based clustering** is most common:
-  1. Build a nearest-neighbour graph in the PC (or GMF) space: every cell is a node, and it is connected to its $k$ nearest neighbours. Edges are weighted by the number of shared neighbours.
-  2. Detect communities in the graph with the Louvain or Leiden algorithm, which maximise the **modularity**: the density of the edges within communities compared with that between communities.
-- The number of neighbours $k$ and the resolution of the community detection determine the granularity: there is no optimal number of clusters. Cells can be described by a hierarchy of cell types and states.
+- Cells of the same type have a similar expression profile, so they are each other's nearest neighbours in the PC (or GMF) space.
+- **Graph-based clustering** links every cell to its $k$ nearest neighbours (here $k = 10$), and then looks for groups of cells that are more strongly linked among themselves than with the rest of the cells (Louvain or Leiden algorithm).
+- The number of neighbours sets the granularity: a larger $k$ gives fewer, larger clusters.
+- There is no "correct" number of clusters. As with a microscope, you choose a magnification: cell types can often be split further into subtypes or states.
+
+See [OSCA, chapter 5](https://bioconductor.org/books/release/OSCA.basic/clustering.html) for details.
+
+We cluster the cells on the 10 GMF components, and for comparison on the 10 PCs.
+`buildSnnGraph` builds the graph of the nearest neighbours and `clusterGraph` detects the groups with the Louvain algorithm.
+
+```{r}
+sce$clusters <- clusterGraph(buildSnnGraph(t(reducedDim(sce, "GMF")), num.neighbors = 10))$membership
+sce$clustersPCA <- clusterGraph(buildSnnGraph(t(reducedDim(sce, "PCA")), num.neighbors = 10))$membership
+```
+
+The number of clusters for different numbers of neighbours:
+
+```{r}
+sapply(c(5, 10, 20, 50), function(k)
+  nlevels(clusterGraph(buildSnnGraph(t(reducedDim(sce, "GMF")), num.neighbors = k))$membership)) |>
+  setNames(paste0("k = ", c(5, 10, 20, 50)))
+```
+
+We compare the clusters of PCA and GMF with the published cell types.
+Each cell type is labelled in its largest cluster.
+
+```{r, fig.width = 11, fig.height = 10}
+labelPlot <- function(dims, group, title, anchor = group, minSize = 1, palette = NULL) {
+  df <- tibble(dim1 = dims[, 1], dim2 = dims[, 2], group = group, anchor = anchor)
+  # label each group at the median of its cells in its largest anchor group
+  centres <- df |>
+    filter(!is.na(group)) |>
+    group_by(group) |>
+    filter(n() >= minSize) |>
+    group_by(group, anchor) |>
+    mutate(nAnchor = n()) |>
+    group_by(group) |>
+    filter(nAnchor == max(nAnchor)) |>
+    summarise(dim1 = median(dim1), dim2 = median(dim2))
+  p <- ggplot(df, aes(dim1, dim2, color = group)) +
+    geom_point(size = 0.3, show.legend = FALSE) +
+    ggrepel::geom_label_repel(data = centres, aes(label = group), color = "black", size = 2.5,
+                              label.padding = unit(0.1, "lines"), alpha = 0.8,
+                              max.overlaps = Inf, min.segment.length = 0) +
+    labs(title = title) +
+    theme_bw()
+  if (!is.null(palette)) p <- p + scale_color_manual(values = palette, na.value = "grey80")
+  p
+}
+types <- sort(unique(na.omit(sce$celltype.published)))
+typeColors <- colorspace::qualitative_hcl(length(types), palette = "Dark 3")
+typeColors <- setNames(typeColors[order(seq_along(types) %% 3)], types)
+(labelPlot(reducedDim(sce, "UMAP"), factor(sce$clustersPCA), "PCA: clusters") +
+    labelPlot(reducedDim(sce, "UMAP"), sce$celltype.published, "PCA: published cell types",
+              anchor = sce$clustersPCA, minSize = 20, palette = typeColors)) /
+  (labelPlot(reducedDim(sce, "UMAP_GMF"), factor(sce$clusters), "GMF: clusters") +
+     labelPlot(reducedDim(sce, "UMAP_GMF"), sce$celltype.published, "GMF: published cell types",
+               anchor = sce$clusters, minSize = 20, palette = typeColors))
+```
+
+We quantify the agreement with the published cell types (without the doublets and stripped nuclei) with
+
+- the **adjusted Rand index** (ARI): the agreement between two partitions of the cells, corrected for chance, with 1 for a perfect agreement and 0 for a random clustering, and
+- the **purity**: the fraction of the cells that belong to the most frequent cell type of their cluster.
+
+```{r}
+ari <- function(a, b) {
+  tab <- table(a, b)
+  sumPairs <- sum(choose(tab, 2))
+  sumA <- sum(choose(rowSums(tab), 2))
+  sumB <- sum(choose(colSums(tab), 2))
+  expected <- sumA * sumB / choose(sum(tab), 2)
+  (sumPairs - expected) / ((sumA + sumB) / 2 - expected)
+}
+purity <- function(cl, lab) {
+  tab <- table(cl, lab)
+  sum(apply(tab, 1, max)) / sum(tab)
+}
+labelled <- !is.na(sce$celltype.published) & !sce$celltype.published %in% c("Doublet", "Stripped")
+agreement <- sapply(list(PCA = sce$clustersPCA, GMF = sce$clusters), function(cl)
+  c(clusters = nlevels(factor(cl)),
+    ARI = ari(cl[labelled], sce$celltype.published[labelled]),
+    purity = purity(cl[labelled], sce$celltype.published[labelled])))
+round(agreement, 2)
+```
+
+- With 10 components, the clusters of GMF agree better with the published cell types than those of PCA: ARI `r round(agreement["ARI", "GMF"], 2)` versus `r round(agreement["ARI", "PCA"], 2)`.
+- The number of components is a tuning parameter. In a sensitivity analysis with 5 to 30 components and 10 or 20 neighbours, the clusters of GMF agreed better with the published cell types in most settings, but the difference depends on these choices: it was largest for few components, and small or even reversed for 30 components.
+- In two dimensions, both UMAPs show a similar structure, but the clustering uses all components, where the count model of GMF captures the differences between the cell types better.
+- Note that the published labels are the annotation of the authors, not the ground truth.
+
+In the remainder, we use the clusters of GMF.
 
 ```{r}
 table(sce$clusters)
 ```
 
-```{r, fig.width = 10, fig.height = 4.5}
-plotDims(reducedDim(sce, "UMAP"), factor(sce$clusters), "Cluster", "Clusters") +
-  plotDims(reducedDim(sce, "UMAP"), sce$celltype.published, "Cell type", "Published labels")
-```
-
 ```{r, fig.width = 8, fig.height = 5}
-as_tibble(table(cluster = sce$clusters, celltype = sce$celltype.published)) |>
+tab <- table(cluster = sce$clusters, celltype = sce$celltype.published)
+clusterPurity <- apply(tab, 1, max) / rowSums(tab)
+as_tibble(tab) |>
   group_by(cluster) |>
   mutate(proportion = n / sum(n)) |>
   ggplot(aes(factor(cluster, levels = sort(unique(sce$clusters))), celltype, fill = proportion)) +
@@ -817,7 +920,10 @@ as_tibble(table(cluster = sce$clusters, celltype = sce$celltype.published)) |>
   theme_bw()
 ```
 
-Most clusters correspond to one published cell type, while some cell types are split into several clusters.
+- Most clusters are dominated by one published cell type: in `r sum(clusterPurity > 0.8)` of the `r length(clusterPurity)` clusters, more than 80% of the cells have the same label.
+- Some cell types are split into several clusters, e.g. the cells of the forebrain, midbrain and hindbrain.
+- Other clusters combine related cell types, e.g. the erythroid cells at different stages of differentiation and the blood progenitors.
+- This is the granularity of the clustering: it depends on $k$, and the published annotation is only one possible granularity.
 
 # Marker genes
 
@@ -889,9 +995,9 @@ Clusters can be annotated manually with known marker genes.
 Alternatively, cells can be annotated with a labelled **reference dataset**.
 SingleR [@Aran2019-SingleR]
 
-1. selects marker genes between every pair of labels in the reference,
-2. computes the Spearman correlation between the expression of each cell and each reference label on these genes,
-3. assigns the label with the highest correlation, followed by a fine-tuning step in which the analysis is repeated with only the top-scoring labels.
+1. identifies marker genes that discriminate between each pair of cell types in the reference,
+2. calculates, on these marker genes, the Spearman correlation between the expression profile of each query cell and each cell of the reference; the score of a cell type is a high quantile (by default the 80% quantile) of the correlations with the reference cells of that type,
+3. assigns each cell to the cell type with the highest score, after a fine-tuning step: the cell types with a score close to the highest score are retained, new marker genes are selected between these cell types only, and the scores are recomputed.
 
 The reference must be representative: the same tissue and developmental stage, and ideally the same technology. Cell types that are absent in the reference cannot be found.
 We use a sample of the mouse gastrulation atlas of the same study as reference.
@@ -915,6 +1021,11 @@ as_tibble(table(cluster = sce$clusters, label = pred$labels)) |>
   labs(x = "Cluster", y = "SingleR label") +
   theme_bw()
 ```
+
+- Most clusters get one dominant SingleR label, and clusters that combine related cell types (e.g. the erythroid cells at different stages) also get a mix of the corresponding labels.
+- `r round(100 * mean(pred$labels == sce$celltype.published, na.rm = TRUE))`% of the cells with a published label get the same SingleR label. This is not an independent validation: the published labels were themselves obtained by mapping the chimera cells onto the same atlas (`celltype.mapped`), so both annotations rely on the cell type assignments of the atlas.
+- Reference-based annotation can only be as good as the labels of the reference, and cell types that are absent from the reference cannot be found, e.g. the cells that the authors labelled as doublets or stripped nuclei, and the rare cell types that we removed from the reference.
+- SingleR sets the label of a cell to `NA` in `pruned.labels` when the difference between its score for the assigned label and its median score over all labels is unusually small compared with the other cells of that label (more than 3 MADs below their median): `r sum(is.na(pred$pruned.labels))` cells are ambiguous in this sense.
 
 # Multi-sample experiments
 
@@ -1001,13 +1112,17 @@ The clusters or labels of the exploration define which cells form a pseudobulk s
 
 **Batch effects can differ between cell types.**
 A covariate $\mathbf{x}_i$ for the batch gives each gene one batch effect, which is the same for all cells.
-We illustrate what this implies on a random subset of 5000 cells of the Kang data.
-We remove the effect of the condition from the log-normalised expression values, either with one effect per gene for all cells, or with a separate effect per gene in each cell type.
+We illustrate what this implies on a random subset of 1000 cells of the Kang data, where the condition plays the role of the batch.
+We remove the effect of the condition
+
+- with a linear model on the log-normalised expression values, either with one effect per gene for all cells, or with a separate effect per gene in each cell type (using the known cell types, which is not possible in practice), and
+- with GMF, with the condition as covariate (argument `X`), i.e. with one effect per gene on the log scale of the counts.
 
 ```{r}
 set.seed(1234)
-cellSub <- sample(ncol(kangExpl), 5000)
-logExpr <- as.matrix(logcounts(kangExpl)[rowData(kangExpl)$hvg, cellSub])
+cellSub <- sample(ncol(kangExpl), 1000)
+hvgKang <- rowData(kangExpl)$hvg
+logExpr <- as.matrix(logcounts(kangExpl)[hvgKang, cellSub])
 cellInfo <- as.data.frame(colData(kangExpl)[cellSub, c("stim", "celltype")])
 
 # remove the effect of the condition on each gene with a linear model
@@ -1029,33 +1144,66 @@ for (ct in as.character(unique(cellInfo$celltype))) {
   }
 }
 
-umapOf <- function(y) {
-  pcs <- runPca(y, number = 20)$components
-  set.seed(1234)
-  runUmap(pcs)
+# GMF on the counts, without and with the condition as covariate
+kangSub <- kangExpl[hvgKang, cellSub]
+kangSub <- kangSub[rowSums(counts(kangSub)) > 0, ]
+set.seed(1234)
+gmfNone <- runGMF(kangSub, family = poisson(), ncomponents = 10, exprs_values = "counts")
+set.seed(1234)
+gmfStim <- runGMF(kangSub, family = poisson(), ncomponents = 10, exprs_values = "counts",
+                  X = model.matrix(~ stim, data = cellInfo))
+
+# embeddings with 10 dimensions (dimensions x cells)
+embeddings <- list(
+  "Linear model: no correction" = runPca(logExpr, number = 10)$components,
+  "Linear model: one effect per gene" = runPca(logMain, number = 10)$components,
+  "Linear model: one effect per gene and cell type" = runPca(logPerType, number = 10)$components,
+  "GMF: no covariate" = t(reducedDim(gmfNone, "GMF")),
+  "GMF: one effect per gene" = t(reducedDim(gmfStim, "GMF"))
+)
+
+# fraction of the 10 nearest neighbours of a cell with the same condition (0.5: fully mixed)
+mixing <- function(emb) {
+  nn <- BiocNeighbors::queryKNN(t(emb), t(emb), k = 11)$index[, -1]
+  mean(cellInfo$stim[nn] == rep(cellInfo$stim, 10))
 }
-umaps <- lapply(list(logExpr, logMain, logPerType), umapOf)
+mixingScores <- sapply(embeddings, mixing)
+round(mixingScores, 2)
+
+umaps <- lapply(embeddings, function(emb) {
+  set.seed(1234)
+  runUmap(emb)
+})
 ```
 
-```{r, fig.width = 12, fig.height = 7.5}
-titles <- c("No correction", "One effect per gene", "One effect per gene and cell type")
+```{r, fig.width = 18, fig.height = 7.5}
 wrap_plots(c(
-  lapply(1:3, function(i) plotDims(umaps[[i]], cellInfo$stim, "Condition", titles[i])),
-  lapply(1:3, function(i) plotDims(umaps[[i]], cellInfo$celltype, "Cell type", ""))
+  lapply(seq_along(umaps), function(i)
+    plotDims(umaps[[i]], cellInfo$stim, "Condition", names(umaps)[i]) +
+      labs(subtitle = paste("mixing:", round(mixingScores[i], 2))) +
+      theme(plot.title = element_text(size = 9))),
+  lapply(seq_along(umaps), function(i)
+    plotDims(umaps[[i]], cellInfo$celltype, "Cell type", ""))
 ), nrow = 2, guides = "collect")
 ```
 
-- With one effect per gene, the separation between the conditions decreases, but does not disappear.
-- Only when the effect is removed separately in each cell type, the control and stimulated cells of each cell type overlap.
-- The effect of the condition (and the run) differs between cell types: e.g. the fold changes are larger in the monocytes than in the T cells, and partly involve other genes.
-- A batch covariate in GMF or in a linear model only removes the part of the batch effect that is shared by all cells. Removing the cell-type-specific part requires an interaction with the cell type, which is unknown at this stage, as the cell types are what we want to find. Integration methods such as MNN correct locally, and can therefore also remove batch effects that differ between cell types.
+The **mixing** is the fraction of the 10 nearest neighbours of a cell (in the 10-dimensional embedding) that have the same condition, averaged over the cells: 1 when the conditions are completely separated, 0.5 when they are fully mixed.
+
+- With one effect per gene in the linear model, the separation between the conditions decreases, but most cell types are still split into a control and a stimulated cluster (mixing `r round(mixingScores[2], 2)`).
+- Only when the effect is removed separately in each cell type, the control and stimulated cells of each cell type overlap (mixing `r round(mixingScores[3], 2)`). This requires the cell types, which are unknown at this stage, as the cell types are what we want to find.
+- With one effect per gene in GMF, the conditions are much better mixed (mixing `r round(mixingScores[5], 2)`), while the cell types remain separated.
+- A plausible explanation: the linear model works on $\log(y/s + 1)$. A fold change that is the same in all cells becomes, on this scale, a shift that depends on the expression level of the cell, because the pseudocount compresses the low counts. One effect per gene on the log-normalised scale can therefore not remove a constant fold change, and part of the "cell-type-specific" effect is an artifact of the transformation. GMF models the counts with a log link, so that a constant fold change is one effect per gene.
+- Still, a batch covariate in GMF or in a linear model only removes the part of the batch effect that is shared by all cells: the mixing remains above 0.5. 
+- Removing a genuinely cell-type-specific part requires an interaction with the cell type. 
+- However, this is not possible in practice as the cell-types are typically unknown at this stage.
+- Integration methods such as MNN correct locally, and can therefore also remove batch effects that differ between cell types.
 
 **Pitfalls**
 
 - Integration methods assume that the batches contain (largely) the same cell types in the same states. They can therefore also remove genuine biological differences between batches (**overcorrection**).
 - Batch correction cannot rescue a design in which the batch is confounded with the condition.
-  In the Kang data, the right panels look like a successful correction, but they remove the effect of the run *and* the effect of IFN-$\beta$, as both cannot be distinguished.
-  Including the run in the pseudobulk model is impossible for the same reason: the run and condition columns of the design matrix are identical.
+- In the Kang data, the corrected embeddings look like a successful correction, but they remove the effect of the run *and* the effect of IFN-$\beta$, as both cannot be distinguished.
+-  Including the run in the pseudobulk model is impossible for the same reason: the run and condition columns of the design matrix are identical.
 - For the annotation of the cell types, aligning the conditions can still be useful: the same cell types are then found in both conditions, and the effect of the condition is assessed afterwards with the pseudobulk analysis.
 
 ## Pseudoreplication
@@ -1145,12 +1293,13 @@ For each cell type, we sum the counts of the cells per patient and condition, an
 ```{r}
 pb <- aggregateAcrossCells.se(kang, factors = list(celltype = kang$celltype,
                                                    patient = kang$patient,
-                                                   stim = kang$stim))
+                                                   stim = kang$stim),
+                              counts.name = "ncells")
 pb
-summary(pb$counts)
+summary(pb$ncells)
 ```
 
-Every pseudobulk sample consists of `r min(pb$counts)` to `r max(pb$counts)` cells.
+Every pseudobulk sample consists of `r min(pb$ncells)` to `r max(pb$ncells)` cells.
 As in the airway data, we block for the patient:
 
 $$
@@ -1164,7 +1313,7 @@ Because of the confounding, $\beta_{g,\text{stim}}$ estimates the sum of the eff
 pseudobulkDE <- function(celltype) {
   sel <- pb$celltype == celltype
   y <- DGEList(assay(pb, "sums")[, sel],
-               samples = as.data.frame(colData(pb)[sel, c("patient", "stim", "counts")]))
+               samples = as.data.frame(colData(pb)[sel, c("patient", "stim", "ncells")]))
   y <- y[filterByExpr(y, group = y$samples$stim), , keep.lib.sizes = FALSE]
   y <- normLibSizes(y)
   design <- model.matrix(~ patient + stim, data = y$samples)
@@ -1185,9 +1334,14 @@ topTags(deResults[["CD14+ Monocytes"]], n = 10)$table |>
 
 - Many genes differ between the conditions in most cell types. The number of DE genes is much smaller for cell types with few cells, e.g. the megakaryocytes: their pseudobulk samples have low counts, so that fewer genes pass the filter and the power is lower.
 - The top genes of the CD14+ monocytes include interferon-stimulated genes such as *IFITM1*, *CD38* and *SOCS1*. This is prior knowledge that supports a genuine response to IFN-$\beta$.
-- The design, however, does not allow to attribute the individual DE genes, or the number of DE genes, to the stimulation: each of them can equally well be a run effect. The analysis is valid for the comparison of the two runs, not for the comparison of the two treatments.
+- The design, however, does not allow to attribute the individual DE genes, or the number of DE genes, to the stimulation: each of them can equally well be a run effect. 
 - With many DE genes, TREAT (`glmTreat`) can be used to focus on large fold changes.
-- The analysis per cell type allows to find cell-type-specific responses. A formal test of whether the response differs between cell types would require a model with a cell type $\times$ condition interaction on the pseudobulk samples of all cell types. Such a model assumes that the variability between patients is the same in all cell types, which is often not the case, e.g. because the pseudobulk samples of different cell types consist of very different numbers of cells. Pseudobulk workflows such as muscat [@Crowell2020-muscat] therefore analyse each cell type separately.
+- The analysis per cell type allows to find cell-type-specific responses. 
+
+A formal test of whether the response differs between cell types would require a model with a cell type $\times$ condition interaction on the pseudobulk samples of all cell types. 
+
+- Such a model assumes that the variability between patients is the same in all cell types, which is often not the case, e.g. because the pseudobulk samples of different cell types consist of very different numbers of cells. 
+- Pseudobulk workflows such as muscat [@Crowell2020-muscat] therefore analyse each cell type separately.
 
 ## Differential detection
 
@@ -1200,6 +1354,8 @@ topTags(deResults[["CD14+ Monocytes"]], n = 10)$table |>
 @Gilis2025-dd show that changes in the average fraction of cells in which a gene is detected (**differential detection**, DD) provide information that is complementary to DE.
 
 **Data**: we binarise the counts ($z_{gi} = 1$ if $y_{gi} > 0$) and sum them per sample: $Z_{gs} = \sum_{i \in s} z_{gi}$ is the number of cells of sample $s$ in which gene $g$ is detected, out of $n_s$ cells.
+We do not have to compute this ourselves: `aggregateAcrossCells.se` stores $Z_{gs}$ in the assay `detected` of the pseudobulk object `pb`, next to the summed counts (assay `sums`) that we used for DE.
+DE and DD thus start from the same pseudobulk samples, but summarise the cells differently: the total number of UMIs versus the number of cells with at least one UMI.
 
 **Model**: the same NB GLM with the edgeR QL pipeline,
 
@@ -1216,22 +1372,20 @@ This is the workflow `edgeR_NB_optim` of @Gilis2025-dd, which performed best in 
 We use it for the CD14+ monocytes, on the genes of the DE analysis.
 
 ```{r}
-mono <- kang[, kang$celltype == "CD14+ Monocytes"]
-detected <- Matrix::drop0(counts(mono))
-detected@x[] <- 1
-binMono <- SingleCellExperiment(list(counts = detected), colData = colData(mono))
-pbBin <- aggregateAcrossCells.se(binMono, factors = list(patient = binMono$patient,
-                                                         stim = binMono$stim))
+selDD <- pb$celltype == "CD14+ Monocytes"
+# number of cells of each sample in which each gene is detected
+Z <- assay(pb, "detected")[, selDD]
+nCells <- pb$ncells[selDD]
 
 deMono <- deResults[["CD14+ Monocytes"]]
-detection <- sweep(assay(pbBin, "sums"), 2, pbBin$counts, "/")
+detection <- sweep(Z, 2, nCells, "/")
 medDetection <- matrixStats::rowMedians(as.matrix(detection[rownames(deMono), ]))
 keepDD <- rownames(deMono)[medDetection < 0.9]
 cdr <- colMeans(detection[keepDD, ])
 
-yDD <- DGEList(assay(pbBin, "sums")[keepDD, ],
-               samples = as.data.frame(colData(pbBin)[, c("patient", "stim", "counts")]))
-yDD$offset <- log(pbBin$counts * cdr)
+yDD <- DGEList(Z[keepDD, ],
+               samples = as.data.frame(colData(pb)[selDD, c("patient", "stim", "ncells")]))
+yDD$offset <- log(nCells * cdr)
 designDD <- model.matrix(~ patient + stim, data = yDD$samples)
 yDD <- estimateDisp(yDD, designDD)
 fitDD <- glmQLFit(yDD, designDD, robust = TRUE)
@@ -1277,7 +1431,34 @@ tibble(gene = rownames(ddMono),
 - The log fold changes of DE and DD are strongly correlated: for most genes, a change in mean expression goes together with a change in detection.
 - Still, `r sum(ddDe[, "DD"] == 1 & ddDe[, "DE"] == 0, na.rm = TRUE)` genes are only found in the DD analysis, and `r sum(ddDe[, "DE"] == 1 & ddDe[, "DD"] == 0, na.rm = TRUE)` only in the DE analysis: both analyses provide complementary information, and @Gilis2025-dd recommend to perform both.
 - The DD log fold changes are relative to the CDR of the sample, and are interpreted as the change in the detection fraction compared to an average gene.
-- The confounding with the run also applies here: e.g. differences in capture efficiency between the runs affect the detection of genes. The CDR offset only corrects for the global part of such differences.
+- The confounding with the run also applies here: e.g. differences in capture efficiency between the runs affect the detection of genes. The CDR offset is one factor per sample: it corrects for differences in detection that affect all genes equally, but not for technical differences that affect genes differently, e.g. because the detection of lowly and highly expressed genes responds differently to the capture efficiency.
+
+**All cell types with muscat**
+
+We analysed DD for one cell type, to show the model.
+The [muscat](https://bioconductor.org/packages/muscat) package [@Crowell2020-muscat] implements the same pseudobulk workflows, and performs the DE and DD analyses for all cell types in one call:
+
+- `aggregateData()` sums the counts (`fun = "sum"`) or the binarised counts (`fun = "num.detected"`) per cell type and sample, as the `sums` and `detected` assays of `pb`. The result contains one assay per cell type.
+- `pbDS()` performs the pseudobulk DE analysis with the edgeR QL pipeline, and `pbDD()` the DD analysis with the workflow above: the filter on the median detection fraction, the CDR offset, and `poisson.bound = FALSE`. Before that, `pbDD()` filters the genes with `filterByExpr` on the number of detected cells, so it can test a slightly different set of genes than we did. Both fit a separate model for each cell type, and return one table of results per cell type. The p-values are adjusted for multiple testing within each cell type (`p_adj.loc`) and over all cell types together (`p_adj.glb`).
+- `stagewise_DS_DD()` combines the DE and DD results of each cell type with the stage-wise test of this section.
+- Cell types with too few cells per sample are skipped (argument `min_cells`).
+
+The [DD vignette](https://bioconductor.org/packages/release/bioc/vignettes/muscat/inst/doc/detection.html) of muscat illustrates this on the same Kang data, with the default design `~ group_id`.
+To block for the patient, as we did, pass a design matrix:
+
+```{r, eval = FALSE}
+sce <- kang
+sce$id <- paste0(sce$stim, sce$patient)
+sce <- muscat::prepSCE(sce, kid = "celltype", sid = "id", gid = "stim")
+pbSum <- muscat::aggregateData(sce, assay = "counts", fun = "sum")
+pbDet <- muscat::aggregateData(sce, assay = "counts", fun = "num.detected")
+design <- model.matrix(~ patient + group_id, data = as.data.frame(colData(pbDet)))
+resDS <- muscat::pbDS(pbSum, design = design, coef = ncol(design))
+resDD <- muscat::pbDD(pbDet, design = design, coef = ncol(design))
+resStagewise <- muscat::stagewise_DS_DD(resDS, resDD)
+# results for one cell type
+resStagewise[[1]][["CD14+ Monocytes"]]
+```
 
 ## Differential abundance
 

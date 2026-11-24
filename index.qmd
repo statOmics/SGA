@@ -84,7 +84,9 @@ BiocManager::install(c(
    "scuttle",
    "scDblFinder",
    "SingleR",
-   "omicsGMF"
+   "omicsGMF",
+   "colorspace",
+   "muscat"
 ))
 ```
 
