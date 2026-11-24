@@ -4267,6 +4267,10 @@ window.Quarto = {
     <a class="dropdown-item" href="./05-rnaseq-technical.html">
  <span class="dropdown-text">1.2 Bulk RNA-seq - technical details and transcript usage</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./06-scrnaseq.html">
+ <span class="dropdown-text">2.1 Intro to scRNA-seq</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -4298,6 +4302,10 @@ window.Quarto = {
         <li>
     <a class="dropdown-item" href="./04-tutorial-rnaseq.html">
  <span class="dropdown-text">1.1 Tutorial Differential Expression Analysis of Bulk RNA-seq</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./06-tutorial-scrnaseq.html">
+ <span class="dropdown-text">2.1 Tutorial on scRNA-seq</span></a>
   </li>  
     </ul>
   </li>
@@ -4891,10 +4899,9 @@ logLibSize 0.277 0.008 0.008 0.000 0.035</code></pre>
 <span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>cellSub <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">ncol</span>(sce), <span class="dv">2000</span>)</span>
 <span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>top1000 <span class="ot">&lt;-</span> <span class="fu">rownames</span>(sce)[<span class="fu">order</span>(<span class="fu">rowData</span>(sce)<span class="sc">$</span>residuals, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>]]</span>
 <span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>sub <span class="ot">&lt;-</span> sce[top1000, cellSub]</span>
-<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>gmfOffset <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">log</span>(sub<span class="sc">$</span>sum), <span class="fu">nrow</span>(sub), <span class="fu">ncol</span>(sub), <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
-<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>sub <span class="ot">&lt;-</span> <span class="fu">runGMF</span>(sub, <span class="at">family =</span> <span class="fu">poisson</span>(), <span class="at">ncomponents =</span> <span class="dv">10</span>, <span class="at">offset =</span> gmfOffset)</span>
-<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>sub <span class="ot">&lt;-</span> <span class="fu">runPca.se</span>(sub, <span class="at">features =</span> <span class="fu">rownames</span>(sub), <span class="at">number =</span> <span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>sub <span class="ot">&lt;-</span> <span class="fu">runGMF</span>(sub, <span class="at">family =</span> <span class="fu">poisson</span>(), <span class="at">ncomponents =</span> <span class="dv">10</span>)</span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>sub <span class="ot">&lt;-</span> <span class="fu">runPca.se</span>(sub, <span class="at">features =</span> <span class="fu">rownames</span>(sub), <span class="at">number =</span> <span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
@@ -4935,7 +4942,7 @@ PC3 0.2089664</code></pre>
 </div>
 <ul>
 <li>Both methods separate the main cell types, and the UMAPs are similar.</li>
-<li>The first components of both methods are correlated with the library size, although the GMF uses the library size as an offset. The library size differs between the cell types: a component that separates the rods from the other cells is also correlated with the library size. An offset removes the effect of the sequencing depth on the counts, not the biological differences in RNA content between cell types.</li>
+<li>The first components of both methods are correlated with the library size, although the GMF has an intercept for each cell, which captures the library size. The library size differs between the cell types: a component that separates the rods from the other cells is also correlated with the library size. The cell intercept absorbs the differences in total count between the cells, but not the differences in composition between the cell types, which the factors capture.</li>
 </ul>
 </section>
 <section id="gmf-with-batch-correction" class="level2">
@@ -4943,9 +4950,9 @@ PC3 0.2089664</code></pre>
 <p>The GMF with the batch as covariate models the count <span class="math inline">\(y_{gc}\)</span> of gene <span class="math inline">\(g\)</span> in cell <span class="math inline">\(c\)</span> as</p>
 <p><span class="math display">\[
 y_{gc} \sim \text{Poisson}(\mu_{gc}), \quad
-\log \mu_{gc} = \log N_c + \beta_{g0} + \beta_{g1} x_c + \sum_{k=1}^{K} u_{ck} v_{gk},
+\log \mu_{gc} = \beta_{g0} + \beta_{g1} x_c + \alpha_c + \sum_{k=1}^{K} u_{ck} v_{gk},
 \]</span></p>
-<p>with <span class="math inline">\(N_c\)</span> the library size, <span class="math inline">\(x_c\)</span> an indicator for batch <code>r2</code>, <span class="math inline">\(\beta_{g0}\)</span> and <span class="math inline">\(\beta_{g1}\)</span> the gene-specific intercept and batch effect, and <span class="math inline">\(u_{ck}\)</span> and <span class="math inline">\(v_{gk}\)</span> the scores and loadings of the <span class="math inline">\(K = 10\)</span> factors. The factors now describe the variability that remains after removing a batch effect per gene.</p>
+<p>with <span class="math inline">\(x_c\)</span> an indicator for batch <code>r2</code>, <span class="math inline">\(\beta_{g0}\)</span> and <span class="math inline">\(\beta_{g1}\)</span> the gene-specific intercept and batch effect, <span class="math inline">\(\alpha_c\)</span> the intercept of cell <span class="math inline">\(c\)</span>, which captures its library size, and <span class="math inline">\(u_{ck}\)</span> and <span class="math inline">\(v_{gk}\)</span> the scores and loadings of the <span class="math inline">\(K = 10\)</span> factors. The design matrix <code>X</code> replaces the default gene intercept of <code>runGMF</code>, so it has to contain the intercept itself, as <code>model.matrix</code> does. The factors now describe the variability that remains after removing a batch effect per gene.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span> replicate, <span class="at">data =</span> <span class="fu">colData</span>(sub))</span>
 <span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(X)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -4959,7 +4966,7 @@ r2_ACGGCTAAGTCA           1           1
 r2_GTCTTTTCTGTT           1           1</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
-<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>subBatch <span class="ot">&lt;-</span> <span class="fu">runGMF</span>(sub, <span class="at">family =</span> <span class="fu">poisson</span>(), <span class="at">ncomponents =</span> <span class="dv">10</span>, <span class="at">offset =</span> gmfOffset,</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>subBatch <span class="ot">&lt;-</span> <span class="fu">runGMF</span>(sub, <span class="at">family =</span> <span class="fu">poisson</span>(), <span class="at">ncomponents =</span> <span class="dv">10</span>,</span>
 <span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">X =</span> X, <span class="at">name =</span> <span class="st">&quot;GMF_batch&quot;</span>)</span>
 <span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
 <span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>subBatch <span class="ot">&lt;-</span> <span class="fu">runAllNeighborSteps.se</span>(subBatch, <span class="at">reddim.type =</span> <span class="st">&quot;GMF_batch&quot;</span>,</span>
@@ -6080,53 +6087,53 @@ cluster  rod
 <span id="cb86-345"><a href="#cb86-345" aria-hidden="true" tabindex="-1"></a>cellSub <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">ncol</span>(sce), <span class="dv">2000</span>)</span>
 <span id="cb86-346"><a href="#cb86-346" aria-hidden="true" tabindex="-1"></a>top1000 <span class="ot">&lt;-</span> <span class="fu">rownames</span>(sce)[<span class="fu">order</span>(<span class="fu">rowData</span>(sce)<span class="sc">$</span>residuals, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>]]</span>
 <span id="cb86-347"><a href="#cb86-347" aria-hidden="true" tabindex="-1"></a>sub <span class="ot">&lt;-</span> sce[top1000, cellSub]</span>
-<span id="cb86-348"><a href="#cb86-348" aria-hidden="true" tabindex="-1"></a>gmfOffset <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">log</span>(sub<span class="sc">$</span>sum), <span class="fu">nrow</span>(sub), <span class="fu">ncol</span>(sub), <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb86-349"><a href="#cb86-349" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
-<span id="cb86-350"><a href="#cb86-350" aria-hidden="true" tabindex="-1"></a>sub <span class="ot">&lt;-</span> <span class="fu">runGMF</span>(sub, <span class="at">family =</span> <span class="fu">poisson</span>(), <span class="at">ncomponents =</span> <span class="dv">10</span>, <span class="at">offset =</span> gmfOffset)</span>
-<span id="cb86-351"><a href="#cb86-351" aria-hidden="true" tabindex="-1"></a>sub <span class="ot">&lt;-</span> <span class="fu">runPca.se</span>(sub, <span class="at">features =</span> <span class="fu">rownames</span>(sub), <span class="at">number =</span> <span class="dv">10</span>)</span>
-<span id="cb86-352"><a href="#cb86-352" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb86-353"><a href="#cb86-353" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb86-356"><a href="#cb86-356" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb86-357"><a href="#cb86-357" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
-<span id="cb86-358"><a href="#cb86-358" aria-hidden="true" tabindex="-1"></a>sub <span class="ot">&lt;-</span> <span class="fu">runAllNeighborSteps.se</span>(sub, <span class="at">tsne.output.name =</span> <span class="cn">NULL</span>, <span class="at">cluster.output.name =</span> <span class="cn">NULL</span>)</span>
-<span id="cb86-359"><a href="#cb86-359" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
-<span id="cb86-360"><a href="#cb86-360" aria-hidden="true" tabindex="-1"></a>sub <span class="ot">&lt;-</span> <span class="fu">runAllNeighborSteps.se</span>(sub, <span class="at">reddim.type =</span> <span class="st">&quot;GMF&quot;</span>, <span class="at">umap.output.name =</span> <span class="st">&quot;UMAP_GMF&quot;</span>,</span>
-<span id="cb86-361"><a href="#cb86-361" aria-hidden="true" tabindex="-1"></a>                              <span class="at">tsne.output.name =</span> <span class="cn">NULL</span>, <span class="at">cluster.output.name =</span> <span class="cn">NULL</span>)</span>
-<span id="cb86-362"><a href="#cb86-362" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb86-363"><a href="#cb86-363" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb86-364"><a href="#cb86-364" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, fig.width = 10, fig.height = 8}</span></span>
-<span id="cb86-365"><a href="#cb86-365" aria-hidden="true" tabindex="-1"></a>(<span class="fu">plotDims</span>(<span class="fu">reducedDim</span>(sub, <span class="st">&quot;PCA&quot;</span>), sub<span class="sc">$</span>celltype, <span class="st">&quot;Cell type&quot;</span>, <span class="st">&quot;PCA&quot;</span>) <span class="sc">+</span></span>
-<span id="cb86-366"><a href="#cb86-366" aria-hidden="true" tabindex="-1"></a>   <span class="fu">plotDims</span>(<span class="fu">reducedDim</span>(sub, <span class="st">&quot;GMF&quot;</span>), sub<span class="sc">$</span>celltype, <span class="st">&quot;Cell type&quot;</span>, <span class="st">&quot;GMF&quot;</span>)) <span class="sc">/</span></span>
-<span id="cb86-367"><a href="#cb86-367" aria-hidden="true" tabindex="-1"></a>  (<span class="fu">plotDims</span>(<span class="fu">reducedDim</span>(sub, <span class="st">&quot;UMAP&quot;</span>), sub<span class="sc">$</span>celltype, <span class="st">&quot;Cell type&quot;</span>, <span class="st">&quot;UMAP on PCA&quot;</span>) <span class="sc">+</span></span>
-<span id="cb86-368"><a href="#cb86-368" aria-hidden="true" tabindex="-1"></a>     <span class="fu">plotDims</span>(<span class="fu">reducedDim</span>(sub, <span class="st">&quot;UMAP_GMF&quot;</span>), sub<span class="sc">$</span>celltype, <span class="st">&quot;Cell type&quot;</span>, <span class="st">&quot;UMAP on GMF&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb86-369"><a href="#cb86-369" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_layout</span>(<span class="at">guides =</span> <span class="st">&quot;collect&quot;</span>)</span>
-<span id="cb86-370"><a href="#cb86-370" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb86-371"><a href="#cb86-371" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb86-374"><a href="#cb86-374" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb86-375"><a href="#cb86-375" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(<span class="fu">reducedDim</span>(sub, <span class="st">&quot;PCA&quot;</span>)[, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>], <span class="fu">log</span>(sub<span class="sc">$</span>sum))</span>
-<span id="cb86-376"><a href="#cb86-376" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(<span class="fu">reducedDim</span>(sub, <span class="st">&quot;GMF&quot;</span>)[, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>], <span class="fu">log</span>(sub<span class="sc">$</span>sum))</span>
-<span id="cb86-377"><a href="#cb86-377" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb86-378"><a href="#cb86-378" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb86-379"><a href="#cb86-379" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Both methods separate the main cell types, and the UMAPs are similar.</span>
-<span id="cb86-380"><a href="#cb86-380" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The first components of both methods are correlated with the library size, although the GMF uses the library size as an offset. The library size differs between the cell types: a component that separates the rods from the other cells is also correlated with the library size. An offset removes the effect of the sequencing depth on the counts, not the biological differences in RNA content between cell types.</span>
-<span id="cb86-381"><a href="#cb86-381" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb86-382"><a href="#cb86-382" aria-hidden="true" tabindex="-1"></a><span class="fu">## 10. GMF with batch correction</span></span>
-<span id="cb86-383"><a href="#cb86-383" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb86-384"><a href="#cb86-384" aria-hidden="true" tabindex="-1"></a>The GMF with the batch as covariate models the count $y_{gc}$ of gene $g$ in cell $c$ as</span>
-<span id="cb86-385"><a href="#cb86-385" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb86-386"><a href="#cb86-386" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb86-387"><a href="#cb86-387" aria-hidden="true" tabindex="-1"></a>y_{gc} \sim \text{Poisson}(\mu_{gc}), \quad</span>
-<span id="cb86-388"><a href="#cb86-388" aria-hidden="true" tabindex="-1"></a>\log \mu_{gc} = \log N_c + \beta_{g0} + \beta_{g1} x_c + \sum_{k=1}^{K} u_{ck} v_{gk},</span>
-<span id="cb86-389"><a href="#cb86-389" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb86-390"><a href="#cb86-390" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb86-391"><a href="#cb86-391" aria-hidden="true" tabindex="-1"></a>with $N_c$ the library size, $x_c$ an indicator for batch <span class="in">`r2`</span>, $\beta_{g0}$ and $\beta_{g1}$ the gene-specific intercept and batch effect, and $u_{ck}$ and $v_{gk}$ the scores and loadings of the $K = 10$ factors.</span>
+<span id="cb86-348"><a href="#cb86-348" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb86-349"><a href="#cb86-349" aria-hidden="true" tabindex="-1"></a>sub <span class="ot">&lt;-</span> <span class="fu">runGMF</span>(sub, <span class="at">family =</span> <span class="fu">poisson</span>(), <span class="at">ncomponents =</span> <span class="dv">10</span>)</span>
+<span id="cb86-350"><a href="#cb86-350" aria-hidden="true" tabindex="-1"></a>sub <span class="ot">&lt;-</span> <span class="fu">runPca.se</span>(sub, <span class="at">features =</span> <span class="fu">rownames</span>(sub), <span class="at">number =</span> <span class="dv">10</span>)</span>
+<span id="cb86-351"><a href="#cb86-351" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb86-352"><a href="#cb86-352" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb86-355"><a href="#cb86-355" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb86-356"><a href="#cb86-356" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb86-357"><a href="#cb86-357" aria-hidden="true" tabindex="-1"></a>sub <span class="ot">&lt;-</span> <span class="fu">runAllNeighborSteps.se</span>(sub, <span class="at">tsne.output.name =</span> <span class="cn">NULL</span>, <span class="at">cluster.output.name =</span> <span class="cn">NULL</span>)</span>
+<span id="cb86-358"><a href="#cb86-358" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb86-359"><a href="#cb86-359" aria-hidden="true" tabindex="-1"></a>sub <span class="ot">&lt;-</span> <span class="fu">runAllNeighborSteps.se</span>(sub, <span class="at">reddim.type =</span> <span class="st">&quot;GMF&quot;</span>, <span class="at">umap.output.name =</span> <span class="st">&quot;UMAP_GMF&quot;</span>,</span>
+<span id="cb86-360"><a href="#cb86-360" aria-hidden="true" tabindex="-1"></a>                              <span class="at">tsne.output.name =</span> <span class="cn">NULL</span>, <span class="at">cluster.output.name =</span> <span class="cn">NULL</span>)</span>
+<span id="cb86-361"><a href="#cb86-361" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb86-362"><a href="#cb86-362" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb86-363"><a href="#cb86-363" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, fig.width = 10, fig.height = 8}</span></span>
+<span id="cb86-364"><a href="#cb86-364" aria-hidden="true" tabindex="-1"></a>(<span class="fu">plotDims</span>(<span class="fu">reducedDim</span>(sub, <span class="st">&quot;PCA&quot;</span>), sub<span class="sc">$</span>celltype, <span class="st">&quot;Cell type&quot;</span>, <span class="st">&quot;PCA&quot;</span>) <span class="sc">+</span></span>
+<span id="cb86-365"><a href="#cb86-365" aria-hidden="true" tabindex="-1"></a>   <span class="fu">plotDims</span>(<span class="fu">reducedDim</span>(sub, <span class="st">&quot;GMF&quot;</span>), sub<span class="sc">$</span>celltype, <span class="st">&quot;Cell type&quot;</span>, <span class="st">&quot;GMF&quot;</span>)) <span class="sc">/</span></span>
+<span id="cb86-366"><a href="#cb86-366" aria-hidden="true" tabindex="-1"></a>  (<span class="fu">plotDims</span>(<span class="fu">reducedDim</span>(sub, <span class="st">&quot;UMAP&quot;</span>), sub<span class="sc">$</span>celltype, <span class="st">&quot;Cell type&quot;</span>, <span class="st">&quot;UMAP on PCA&quot;</span>) <span class="sc">+</span></span>
+<span id="cb86-367"><a href="#cb86-367" aria-hidden="true" tabindex="-1"></a>     <span class="fu">plotDims</span>(<span class="fu">reducedDim</span>(sub, <span class="st">&quot;UMAP_GMF&quot;</span>), sub<span class="sc">$</span>celltype, <span class="st">&quot;Cell type&quot;</span>, <span class="st">&quot;UMAP on GMF&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb86-368"><a href="#cb86-368" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_layout</span>(<span class="at">guides =</span> <span class="st">&quot;collect&quot;</span>)</span>
+<span id="cb86-369"><a href="#cb86-369" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb86-370"><a href="#cb86-370" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb86-373"><a href="#cb86-373" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb86-374"><a href="#cb86-374" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(<span class="fu">reducedDim</span>(sub, <span class="st">&quot;PCA&quot;</span>)[, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>], <span class="fu">log</span>(sub<span class="sc">$</span>sum))</span>
+<span id="cb86-375"><a href="#cb86-375" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(<span class="fu">reducedDim</span>(sub, <span class="st">&quot;GMF&quot;</span>)[, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>], <span class="fu">log</span>(sub<span class="sc">$</span>sum))</span>
+<span id="cb86-376"><a href="#cb86-376" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb86-377"><a href="#cb86-377" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb86-378"><a href="#cb86-378" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Both methods separate the main cell types, and the UMAPs are similar.</span>
+<span id="cb86-379"><a href="#cb86-379" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The first components of both methods are correlated with the library size, although the GMF has an intercept for each cell, which captures the library size. The library size differs between the cell types: a component that separates the rods from the other cells is also correlated with the library size. The cell intercept absorbs the differences in total count between the cells, but not the differences in composition between the cell types, which the factors capture.</span>
+<span id="cb86-380"><a href="#cb86-380" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb86-381"><a href="#cb86-381" aria-hidden="true" tabindex="-1"></a><span class="fu">## 10. GMF with batch correction</span></span>
+<span id="cb86-382"><a href="#cb86-382" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb86-383"><a href="#cb86-383" aria-hidden="true" tabindex="-1"></a>The GMF with the batch as covariate models the count $y_{gc}$ of gene $g$ in cell $c$ as</span>
+<span id="cb86-384"><a href="#cb86-384" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb86-385"><a href="#cb86-385" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb86-386"><a href="#cb86-386" aria-hidden="true" tabindex="-1"></a>y_{gc} \sim \text{Poisson}(\mu_{gc}), \quad</span>
+<span id="cb86-387"><a href="#cb86-387" aria-hidden="true" tabindex="-1"></a>\log \mu_{gc} = \beta_{g0} + \beta_{g1} x_c + \alpha_c + \sum_{k=1}^{K} u_{ck} v_{gk},</span>
+<span id="cb86-388"><a href="#cb86-388" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb86-389"><a href="#cb86-389" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb86-390"><a href="#cb86-390" aria-hidden="true" tabindex="-1"></a>with $x_c$ an indicator for batch <span class="in">`r2`</span>, $\beta_{g0}$ and $\beta_{g1}$ the gene-specific intercept and batch effect, $\alpha_c$ the intercept of cell $c$, which captures its library size, and $u_{ck}$ and $v_{gk}$ the scores and loadings of the $K = 10$ factors.</span>
+<span id="cb86-391"><a href="#cb86-391" aria-hidden="true" tabindex="-1"></a>The design matrix <span class="in">`X`</span> replaces the default gene intercept of <span class="in">`runGMF`</span>, so it has to contain the intercept itself, as <span class="in">`model.matrix`</span> does.</span>
 <span id="cb86-392"><a href="#cb86-392" aria-hidden="true" tabindex="-1"></a>The factors now describe the variability that remains after removing a batch effect per gene.</span>
 <span id="cb86-393"><a href="#cb86-393" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb86-396"><a href="#cb86-396" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb86-397"><a href="#cb86-397" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span> replicate, <span class="at">data =</span> <span class="fu">colData</span>(sub))</span>
 <span id="cb86-398"><a href="#cb86-398" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(X)</span>
 <span id="cb86-399"><a href="#cb86-399" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
-<span id="cb86-400"><a href="#cb86-400" aria-hidden="true" tabindex="-1"></a>subBatch <span class="ot">&lt;-</span> <span class="fu">runGMF</span>(sub, <span class="at">family =</span> <span class="fu">poisson</span>(), <span class="at">ncomponents =</span> <span class="dv">10</span>, <span class="at">offset =</span> gmfOffset,</span>
+<span id="cb86-400"><a href="#cb86-400" aria-hidden="true" tabindex="-1"></a>subBatch <span class="ot">&lt;-</span> <span class="fu">runGMF</span>(sub, <span class="at">family =</span> <span class="fu">poisson</span>(), <span class="at">ncomponents =</span> <span class="dv">10</span>,</span>
 <span id="cb86-401"><a href="#cb86-401" aria-hidden="true" tabindex="-1"></a>                   <span class="at">X =</span> X, <span class="at">name =</span> <span class="st">&quot;GMF_batch&quot;</span>)</span>
 <span id="cb86-402"><a href="#cb86-402" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
 <span id="cb86-403"><a href="#cb86-403" aria-hidden="true" tabindex="-1"></a>subBatch <span class="ot">&lt;-</span> <span class="fu">runAllNeighborSteps.se</span>(subBatch, <span class="at">reddim.type =</span> <span class="st">&quot;GMF_batch&quot;</span>,</span>

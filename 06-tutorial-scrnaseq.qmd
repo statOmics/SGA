@@ -69,7 +69,7 @@ If ExperimentHub cannot connect to the internet but you have downloaded the data
 
 8. Perform a PCA on the highly variable genes. How many components do you retain? Compute a UMAP and colour the cells according to the batch, the published cluster and the library size. Which sources of variability do you see?
 
-9. Select a random subset of 2000 cells and the top 1000 highly variable genes, and fit a Poisson GMF with 10 components and the log library size as offset (a few minutes). Compare the first components and the UMAP with those of the PCA on the same cells.
+9. Select a random subset of 2000 cells and the top 1000 highly variable genes, and fit a Poisson GMF with 10 components, with the default intercepts for each gene and each cell (a few minutes). Compare the first components and the UMAP with those of the PCA on the same cells.
 
 10. Fit the GMF again, now correcting for the batch. Write down the model. Is the batch effect large in these data? Does the correction change the UMAP?
 

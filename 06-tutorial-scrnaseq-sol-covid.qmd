@@ -149,7 +149,7 @@ anova(lm(pcs[, 1] ~ logSum + naive$site))
 - The cells of Cambridge have larger libraries than those of Newcastle.
 - PC1 is associated with the library size, also within each site: the normalisation and the log-transformation do not remove the effect of the sequencing depth completely.
 - After a linear correction for the log library size, the site still explains a large part of the variance of PC1. This does not prove that the site effect is more than a difference in depth: the effect of the depth on the log-transformed counts is not linear, because of the pseudo-count and the many small counts.
-- Exercise 5 shows that the factors of a GMF, which models the library size as an offset on the count scale, are hardly associated with the site. So most of the site effect in the PCA is an artefact of the different sequencing depth in combination with the log-transformation.
+- Exercise 5 shows that the factors of a GMF, which models the library size on the count scale with an intercept for each cell, are hardly associated with the site. So most of the site effect in the PCA is an artefact of the different sequencing depth in combination with the log-transformation.
 
 ## 5. GMF with and without correction for the site
 
@@ -158,12 +158,11 @@ set.seed(1234)
 sub <- naive[, sample(ncol(naive), 2000)]
 top1000 <- rownames(naive)[order(rowData(naive)$residuals, decreasing = TRUE)[1:1000]]
 sub <- sub[top1000, ]
-gmfOffset <- matrix(log(sub$sum), nrow(sub), ncol(sub), byrow = TRUE)
 set.seed(1234)
-sub <- runGMF(sub, family = poisson(), ncomponents = 10, offset = gmfOffset)
+sub <- runGMF(sub, family = poisson(), ncomponents = 10)
 X <- model.matrix(~ site, data = colData(sub))
 set.seed(1234)
-sub <- runGMF(sub, family = poisson(), ncomponents = 10, offset = gmfOffset,
+sub <- runGMF(sub, family = poisson(), ncomponents = 10,
               X = X, name = "GMF_site")
 set.seed(1234)
 sub <- runAllNeighborSteps.se(sub, reddim.type = "GMF", umap.output.name = "UMAP_GMF",
@@ -192,9 +191,10 @@ round(rbind(PCA = r2(reducedDim(sub, "PCA"), sub$site),
 - The model of the GMF with correction is
 $$
 y_{gc} \sim \text{Poisson}(\mu_{gc}), \quad
-\log \mu_{gc} = \log N_c + \beta_{g0} + \beta_{g1} x_{c,\text{Ncl}} + \sum_{k=1}^{10} u_{ck} v_{gk}.
+\log \mu_{gc} = \beta_{g0} + \beta_{g1} x_{c,\text{Ncl}} + \alpha_c + \sum_{k=1}^{10} u_{ck} v_{gk},
 $$
-- The site effect is much smaller in the GMF than in the PCA, also without correction: the GMF models the library size as an offset on the count scale, which removes most of the technical effect of the sequencing depth. The correction for the site removes the remaining association.
+with $\alpha_c$ the intercept of cell $c$, which captures its library size.
+- The site effect is much smaller in the GMF than in the PCA, also without correction: the cell intercept of the GMF models the library size on the count scale, which removes most of the technical effect of the sequencing depth. The correction for the site removes the remaining association.
 - We can correct for the site because the site is not confounded with the disease status: both sites contain healthy donors and patients of all groups. In the Kang data, all stimulated cells were sequenced in one run and all control cells in another run: correcting for the run would also remove the effect of the stimulation.
 
 # Differential expression
@@ -232,7 +232,7 @@ fitNaive <- glmQLFit(yNaive, design)
 We propose the model
 $$
 y_{gi} \sim NB(\mu_{gi}, \phi_g), \quad
-\log \mu_{gi} = \log N_i + \beta_{g0} + \beta_{g,\text{Ncl}} x_{i,\text{Ncl}} + \beta_{g,\text{male}} x_{i,\text{male}} + \sum_{s} \beta_{g,s} x_{i,s},
+\log \mu_{gi} = \beta_{g0} + \beta_{g,\text{Ncl}} x_{i,\text{Ncl}} + \beta_{g,\text{male}} x_{i,\text{male}} + \sum_{s} \beta_{g,s} x_{i,s} + \log N_i,
 $$
 with $y_{gi}$ the pseudobulk count of gene $g$ in donor $i$, $N_i$ the effective library size and $s$ the disease groups asymptomatic, mild, moderate, severe and critical.
 

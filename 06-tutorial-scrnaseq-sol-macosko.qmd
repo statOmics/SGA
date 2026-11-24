@@ -311,9 +311,8 @@ set.seed(1234)
 cellSub <- sample(ncol(sce), 2000)
 top1000 <- rownames(sce)[order(rowData(sce)$residuals, decreasing = TRUE)[1:1000]]
 sub <- sce[top1000, cellSub]
-gmfOffset <- matrix(log(sub$sum), nrow(sub), ncol(sub), byrow = TRUE)
 set.seed(1234)
-sub <- runGMF(sub, family = poisson(), ncomponents = 10, offset = gmfOffset)
+sub <- runGMF(sub, family = poisson(), ncomponents = 10)
 sub <- runPca.se(sub, features = rownames(sub), number = 10)
 ```
 
@@ -339,7 +338,7 @@ cor(reducedDim(sub, "GMF")[, 1:3], log(sub$sum))
 ```
 
 - Both methods separate the main cell types, and the UMAPs are similar.
-- The first components of both methods are correlated with the library size, although the GMF uses the library size as an offset. The library size differs between the cell types: a component that separates the rods from the other cells is also correlated with the library size. An offset removes the effect of the sequencing depth on the counts, not the biological differences in RNA content between cell types.
+- The first components of both methods are correlated with the library size, although the GMF has an intercept for each cell, which captures the library size. The library size differs between the cell types: a component that separates the rods from the other cells is also correlated with the library size. The cell intercept absorbs the differences in total count between the cells, but not the differences in composition between the cell types, which the factors capture.
 
 ## 10. GMF with batch correction
 
@@ -347,17 +346,18 @@ The GMF with the batch as covariate models the count $y_{gc}$ of gene $g$ in cel
 
 $$
 y_{gc} \sim \text{Poisson}(\mu_{gc}), \quad
-\log \mu_{gc} = \log N_c + \beta_{g0} + \beta_{g1} x_c + \sum_{k=1}^{K} u_{ck} v_{gk},
+\log \mu_{gc} = \beta_{g0} + \beta_{g1} x_c + \alpha_c + \sum_{k=1}^{K} u_{ck} v_{gk},
 $$
 
-with $N_c$ the library size, $x_c$ an indicator for batch `r2`, $\beta_{g0}$ and $\beta_{g1}$ the gene-specific intercept and batch effect, and $u_{ck}$ and $v_{gk}$ the scores and loadings of the $K = 10$ factors.
+with $x_c$ an indicator for batch `r2`, $\beta_{g0}$ and $\beta_{g1}$ the gene-specific intercept and batch effect, $\alpha_c$ the intercept of cell $c$, which captures its library size, and $u_{ck}$ and $v_{gk}$ the scores and loadings of the $K = 10$ factors.
+The design matrix `X` replaces the default gene intercept of `runGMF`, so it has to contain the intercept itself, as `model.matrix` does.
 The factors now describe the variability that remains after removing a batch effect per gene.
 
 ```{r}
 X <- model.matrix(~ replicate, data = colData(sub))
 head(X)
 set.seed(1234)
-subBatch <- runGMF(sub, family = poisson(), ncomponents = 10, offset = gmfOffset,
+subBatch <- runGMF(sub, family = poisson(), ncomponents = 10,
                    X = X, name = "GMF_batch")
 set.seed(1234)
 subBatch <- runAllNeighborSteps.se(subBatch, reddim.type = "GMF_batch",

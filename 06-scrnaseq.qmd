@@ -26,7 +26,6 @@ library(scDblFinder)
 library(SingleR)
 library(omicsGMF)
 library(edgeR)
-library(limma)
 library(stageR)
 library(patchwork)
 ```
@@ -49,6 +48,22 @@ Most of these concepts carry over, but the data bring new challenges:
 We follow the workflow of the Bioconductor book *Orchestrating single-cell analysis* [@Amezquita2020-osca] and the [Carpentries lesson on single-cell analysis with Bioconductor](https://carpentries-incubator.github.io/bioc-scrnaseq/), with the `scrapper` package, which replaces the computational functions of `scran`, `scater` and `scuttle`.
 
 # From bulk to single cell
+
+## Evolution of gene expression measurements
+
+```{r, echo = FALSE, out.width = "100%", fig.cap = "Image credit: Bo Xia"}
+knitr::include_graphics("./figs/sc_lego.jpeg")
+```
+
+- Bulk RNA-seq blends all cells of the tissue: we only see the average expression.
+- scRNA-seq resolves the individual cells, but the cells are dissociated from the tissue and their location is lost.
+- Spatial transcriptomics measures the expression in the tissue, and keeps the location.
+
+## Exciting applications
+
+```{r, echo = FALSE, out.width = "100%", fig.cap = "Hwang et al., 2018, doi: 10.1038/s12276-018-0071-8"}
+knitr::include_graphics("./figs/sc_applications.png")
+```
 
 ## Protocol
 
@@ -90,6 +105,18 @@ knitr::include_graphics("./figs/sc_kangMultiplexing.png")
 - Multiplexing reduces the cost and avoids that the individual is confounded with the run.
 - This is a matter of **experimental design**: we come back to this in the [multi-sample section](#multi-sample-experiments).
 
+The PBMCs of 8 lupus patients were left untreated or stimulated with interferon beta [@Kang2018-demuxlet].
+The UMAP below summarises the expression of all cells in two dimensions (see [dimension reduction](#dimension-reduction)).
+
+```{r, echo = FALSE, out.width = "100%", fig.cap = "UMAP of the Kang data, coloured by cell type, condition and patient. Made with R/make_scrnaseq_figs.R."}
+knitr::include_graphics("./figs/sc_kangUMAP.png")
+```
+
+- Every cell type splits into a control and a stimulated cluster: a huge effect of the treatment on all cell types. If we see such large effects, we always have to be on our guard!
+- The cells of the patients mix within each cluster: the cells of the 8 patients were pooled and demultiplexed on their genotype.
+- But all control cells were sequenced in a first run and all stimulated cells in a second run.
+- So the large effect might be an effect of the batch!
+
 ## Workflow
 
 ```{r, echo = FALSE, out.width = "100%", fig.cap = "Image credit: OSCA book"}
@@ -114,19 +141,80 @@ We use two datasets:
 - **Mouse chimeric embryos** [@PijuanSala2019-gastrulation]: cells of a tdTomato-positive embryonic stem cell line were injected into wild-type mouse embryos, which were collected at E8.5 and sequenced with 10x Genomics. We analyse sample 5 to illustrate the workflow for a single sample.
 - **Kang data** [@Kang2018-demuxlet]: peripheral blood mononuclear cells (PBMCs) of 8 lupus patients, untreated or stimulated with interferon beta. We use them for the multi-sample analyses.
 
-The data are available as a [release of the course repository](https://github.com/statOmics/SGA/releases/tag/scrnaseq-v1).
-The chimera data contain the cell-containing droplets of sample 5 before quality control.
-The script `R/make_scrnaseq_data.R` in the course repository shows how the files were built from the Bioconductor packages MouseGastrulationData and muscData.
+The chimera data are available in the Bioconductor package MouseGastrulationData.
+The other data are available as a [release of the course repository](https://github.com/statOmics/SGA/releases/tag/scrnaseq-v1).
+The script `R/make_scrnaseq_data.R` in the course repository shows how these files were built from the Bioconductor packages MouseGastrulationData and muscData.
 
 ```{r}
 dataUrl <- "https://github.com/statOmics/SGA/releases/download/scrnaseq-v1/"
 dir.create("scrnaseqData", showWarnings = FALSE)
-for (f in c("chimera_sample5.rds", "embryo_atlas_ref.rds", "kang.rds")) {
+for (f in c("embryo_atlas_ref.rds", "kang.rds")) {
   if (!file.exists(file.path("scrnaseqData", f))) {
     download.file(paste0(dataUrl, f), file.path("scrnaseqData", f), mode = "wb")
   }
 }
 ```
+
+## Exploring a SingleCellExperiment
+
+We start from the raw counts of sample 5 of the chimera data: the counts of all droplets, as delivered by Cell Ranger.
+
+```{r}
+raw <- WTChimeraData(samples = 5, type = "raw")[[1]]
+raw
+```
+
+The counts are stored as an assay, with one row per gene and one column per droplet (barcode), as for the `SummarizedExperiment` of the [bulk RNA-seq lectures](./04-rnaseq-intro.html).
+
+```{r}
+assays(raw)
+counts(raw)[1:6, 1:6]
+class(counts(raw))
+1 - Matrix::nnzero(counts(raw)) / length(counts(raw))
+```
+
+- `r round(100 * (1 - Matrix::nnzero(counts(raw)) / length(counts(raw))), 2)`% of the counts are zero.
+- The counts are therefore stored as a **sparse matrix** (`dgCMatrix`), which only stores the non-zero counts and their position.
+- A dense matrix stores every count, with 8 bytes per count:
+
+```{r}
+format(object.size(counts(raw)), units = "GB")
+as.numeric(nrow(raw)) * ncol(raw) * 8 / 1024^3
+```
+
+The feature annotation is stored in `rowData`, the droplet annotation in `colData`.
+
+```{r}
+rowData(raw)
+colData(raw)
+```
+
+- The rownames are Ensembl gene identifiers, the gene symbols are stored in `rowData(raw)$SYMBOL`.
+- The last feature, `tomato-td`, is the tdTomato marker of the injected embryonic stem cells.
+- The colnames are the cell barcodes. The `colData` is still empty: we will add the results of the preprocessing.
+
+The results of the dimension reduction will be stored in `reducedDims`, which is also still empty.
+
+```{r}
+reducedDimNames(raw)
+```
+
+All slots are linked.
+We add the total count of each droplet to the `colData`, and subset the droplets with a total count above 100: the corresponding `colData` is subsetted along.
+
+```{r}
+raw$total <- colSums(counts(raw))
+colData(raw)
+sub <- raw[, raw$total > 100]
+dim(sub)
+summary(sub$total)
+```
+
+```{r echo = FALSE}
+rm(sub)
+```
+
+Only `r sum(raw$total > 100)` of the `r ncol(raw)` droplets have a total count above 100.
 
 # Preprocessing
 
@@ -134,12 +222,6 @@ for (f in c("chimera_sample5.rds", "embryo_atlas_ref.rds", "kang.rds")) {
 
 Most droplets do not contain a cell.
 Still, they contain some RNA: **ambient RNA** of cells that were lysed or damaged before the droplets were formed.
-We first look at all droplets of sample 5 with the raw data of the MouseGastrulationData package.
-
-```{r}
-raw <- WTChimeraData(samples = 5, type = "raw")[[1]]
-raw
-```
 
 ```{r}
 ranks <- barcodeRanks(counts(raw))
@@ -162,24 +244,66 @@ as_tibble(as.data.frame(ranks)) |>
 
 **emptyDrops** [@Lun2019-emptyDrops] uses the composition of the counts instead:
 
-1. The ambient profile $\mathbf{p}_A$, i.e. the expected fraction of the ambient RNA that comes from each gene, is estimated from the barcodes with a total count below 100, which are assumed to be empty.
+1. The ambient profile $\mathbf{p}_A$, i.e. the expected fraction of the ambient RNA that comes from each gene, is estimated from the barcodes with a total count of at most 100, which are assumed to be empty.
 2. Under the null hypothesis that barcode $i$ is empty, its counts $\mathbf{y}_i$ are a sample from the ambient profile: given its total count $N_i$, they follow a Dirichlet-multinomial distribution with mean $N_i \mathbf{p}_A$.
 3. The likelihood of the observed counts under this null is compared with that of random samples of the ambient profile with the same total count, which gives a **Monte Carlo p-value**.
 4. The p-values are corrected for multiple testing, and barcodes with an FDR $\leq 0.001$ are called cells. Barcodes above the knee are always retained.
 
 A cell differs from the ambient profile in its composition, regardless of its total count.
-The emptyDrops results are stored in the data of the release:
+The p-values are based on random samples, so we set a seed.
 
 ```{r}
-sce <- readRDS("scrnaseqData/chimera_sample5.rds")
+set.seed(20261116)
+ed <- emptyDrops(counts(raw))
+ed
+```
+
+- The barcodes with a total count of at most 100 are not tested: their FDR is `NA`.
+- We use a very low FDR threshold, so that very few empty droplets are called cells.
+
+```{r}
+isCell <- !is.na(ed$FDR) & ed$FDR <= 0.001
+table(tested = !is.na(ed$FDR), cell = isCell)
+```
+
+```{r}
+table(limited = ed$Limited, cell = isCell)
+```
+
+- `Limited = TRUE` means that none of the random samples of the ambient profile had a lower likelihood than the barcode: its p-value is the smallest possible Monte Carlo p-value, $1/(\text{niters} + 1)$ with `niters = 10000` random samples by default.
+- For barcodes that are not called a cell but have `Limited = TRUE`, more random samples (argument `niters`) could lower the p-value. Here, all limited barcodes are called cells.
+
+```{r}
+as_tibble(as.data.frame(ed)) |>
+  mutate(cell = isCell) |>
+  filter(!is.na(FDR)) |>
+  ggplot(aes(Total, -LogProb, color = cell)) +
+  geom_point(size = 0.5) +
+  geom_vline(xintercept = metadata(ranks)$knee, color = "dodgerblue", linetype = 2) +
+  geom_vline(xintercept = metadata(ranks)$inflection, color = "darkgreen", linetype = 2) +
+  scale_x_log10() +
+  scale_y_log10() +
+  labs(x = "Total UMI count", y = "-log likelihood under the ambient profile",
+       color = "Cell", caption = "tested barcodes; blue: knee, green: inflection point") +
+  theme_bw()
+```
+
+- The log-likelihood decreases with the total count: a barcode with more counts has a smaller probability of every specific outcome.
+- For the same total count, the barcodes called cells have a much lower likelihood under the ambient profile: their composition differs from that of the ambient RNA.
+- Hence, barcodes with the same total count can be called a cell or not: emptyDrops does not use a threshold on the total count, and also calls cells below the knee and the inflection point.
+
+We keep the cells and store the results of emptyDrops in the `colData`.
+
+```{r}
+sce <- raw[, isCell]
+colData(sce) <- ed[isCell, c("Total", "LogProb", "PValue", "FDR")]
 sce
-summary(sce$Total)
 ```
 
 `r ncol(sce)` of the `r ncol(raw)` barcodes contain a cell.
 
 ```{r echo = FALSE}
-rm(raw)
+rm(raw, ed, ranks)
 ```
 
 ## Quality control
@@ -203,6 +327,14 @@ $$
 with MAD the median absolute deviation, a robust estimate of the standard deviation.
 For normally distributed data, the threshold of 3 MADs only removes 0.13% of the cells in each direction.
 The library size and the number of detected genes are assessed on the log scale with a lower threshold, the mitochondrial proportion with an upper threshold.
+
+The mitochondrial genes of the mouse have a gene symbol that starts with "mt-".
+We flag them in the `rowData`.
+
+```{r}
+rowData(sce)$chr_mito <- grepl("^mt-", rowData(sce)$SYMBOL)
+rowData(sce)$SYMBOL[rowData(sce)$chr_mito]
+```
 
 ```{r}
 sce <- quickRnaQc.se(sce, subsets = list(mito = rowData(sce)$chr_mito))
@@ -230,10 +362,16 @@ p1 + p2 + plot_layout(guides = "collect")
 - A concern is that we may remove a biologically distinct cell type, e.g. cells with a naturally low RNA content or a high metabolic activity.
 - QC metrics are therefore often explored per cluster, or the removed cells are compared with the retained cells.
 
-The authors of the study performed their own QC.
-Cells that they removed have no published cell type label:
+The authors of the study performed their own QC and annotated the remaining cells.
+Their cell type labels are available in the processed data of MouseGastrulationData.
+We add them to the `colData` to compare them with our results later on.
+The processed data identify the cells with their barcode.
+Cells that the authors removed get no label (`NA`).
 
 ```{r}
+processed <- WTChimeraData(samples = 5)
+sce$celltype.published <- processed$celltype.mapped[match(colnames(sce), processed$barcode)]
+rm(processed)
 table(keep = sce$keep, published = !is.na(sce$celltype.published))
 sce <- sce[, sce$keep]
 ```
@@ -265,6 +403,26 @@ sce <- sce[, sce$scDblFinder.class == "singlet"]
 ```
 
 As for QC, we should be careful: rare transitional cell populations can be hard to distinguish from doublets.
+
+## Filtering genes
+
+Many genes are not detected in any of the remaining cells.
+
+```{r}
+detectedCells <- rowSums(counts(sce) > 0)
+table(cut(detectedCells, c(-Inf, 0, 9, Inf), labels = c("0", "1-9", ">= 10")))
+```
+
+- Genes that are not detected or only in a few cells carry no information about the differences between the cells.
+- We remove the genes that are detected in fewer than 10 cells. This reduces the memory and the computation time of all subsequent steps.
+- We filter after QC and doublet removal, so that the detection is counted in good cells only. Before emptyDrops, a detection in a droplet would mostly reflect ambient RNA.
+- The threshold is deliberately low: a strict threshold could remove the marker genes of rare cell types.
+- This filter only removes uninformative genes. Selecting informative genes for the exploration of the cells is the goal of [feature selection](#feature-selection), and for differential expression we filter the genes again on the pseudobulk counts.
+
+```{r}
+sce <- sce[detectedCells >= 10, ]
+sce
+```
 
 # The count model and normalisation
 
@@ -305,6 +463,9 @@ Under the model above with a common relative abundance $\pi_g$ for all cells of 
 - the maximum likelihood estimator of $\pi_g$ is $\hat\pi_g = \sum_i y_{gi} / \sum_i N_i$,
 - the expected fraction of zeros under a Poisson model is $\frac{1}{n}\sum_i e^{-\hat\mu_{gi}}$,
 - and under an NB model $\frac{1}{n}\sum_i (1 + \phi_g \hat\mu_{gi})^{-1/\phi_g}$, with $\phi_g$ estimated with the method of moments.
+
+Here, $\hat\mu_{gi} = N_i \hat\pi_g$: we set the normalisation factors $s_i$ to one and only correct for the library size.
+Normalisation factors correct for differences in the composition of the cells, which are negligible within a homogeneous population of cells.
 
 ```{r}
 y <- counts(sce)[, which(sce$celltype.published == ct)]
@@ -385,7 +546,10 @@ tibble(library = libFactors, deconvolution = pooledFactors,
 
 - Both size factors largely agree, but the deviations are cell type specific.
 - The erythroid cells systematically get a smaller deconvolution size factor than their library size factor: a large part of their library consists of haemoglobin transcripts. This is a composition bias: with library size factors, all other genes appear to be expressed at a lower level in erythroid cells.
-- In practice, library size factors are mostly used for exploration and clustering.
+- In practice, library size factors are mostly used for exploration and clustering: composition bias shifts the expression of all genes of a cell type by roughly the same factor, which rarely creates or removes clusters.
+- In the exploration below, we therefore use library size factors, i.e. $s_i = 1$ and an offset $\log N_i$, for the log-normalised counts, the highly variable genes and the deviance.
+  The deconvolution size factors estimate $s_i N_i$ up to a constant. To use them, we would pass them to `normalizeRnaCounts.se(sce, size.factors = pooledFactors)` for the log-normalised counts, and use their log as offset in the count models.
+- GMF, in contrast, estimates an intercept for each cell, which captures the library size and the normalisation factor (see [generalised matrix factorisation](#generalised-matrix-factorisation)).
 - For differential expression between conditions, we will aggregate the counts into pseudobulk samples, which can again be normalised with TMM (see [multi-sample experiments](#multi-sample-experiments)).
 
 ## Log-normalised counts
@@ -410,7 +574,7 @@ knitr::include_graphics("./figs/sc_glmPCAFig2.png")
 ```
 
 - @Townes2019-glmpca simulated data without any biological signal. After log normalisation, the first principal component is strongly related to the fraction of zeros in a cell.
-- This motivates count models with offsets, also for dimension reduction: see [generalised matrix factorisation](#generalised-matrix-factorisation).
+- This motivates count models that account for the library size on the count scale, also for dimension reduction: see [generalised matrix factorisation](#generalised-matrix-factorisation).
 
 # Feature selection
 
@@ -483,6 +647,13 @@ has a variance of approximately one for all genes that follow the null model, wh
 Genes with a large variance of the Pearson residuals, $\sum_i r_{gi}^2/(n-1)$, are informative.
 Note that $\sum_i r_{gi}^2$ and $D_g$ are the Pearson and deviance goodness-of-fit statistics, i.e. the numerators of the two estimators of the quasi-likelihood dispersion of the [technical lecture](./05-rnaseq-technical.html#quasi-likelihood).
 
+**The selected genes are only used for exploration**: dimension reduction, visualisation and clustering.
+For differential expression, we use all genes, and only remove lowly expressed genes with a filter that does not use the group labels (`filterByExpr`, see [multi-sample experiments](#multi-sample-experiments)).
+A filter on the variance would distort the inference [@Bourgon2010-filtering]:
+
+- The variance across all cells also contains the differences between the conditions, so that the selection depends on the outcome of the test: the filter is not independent of the test statistic under the null hypothesis.
+- Retaining only genes with a high variance distorts the empirical Bayes prior of limma and edgeR, which is estimated across the genes.
+
 # Dimension reduction
 
 We project the cells into a low-dimensional space that retains as much of the structure as possible, for visualisation, clustering and the detection of batch effects.
@@ -515,17 +686,28 @@ $$
 \left\{
 \begin{array}{lcl}
 y_{gi} &\sim& \text{Poisson}(\mu_{gi}) \text{ or } NB(\mu_{gi}, \phi)\\
-\log \mu_{gi} &=& \log N_i + \mathbf{x}_i^T\boldsymbol{\beta}_g + \mathbf{u}_i^T\mathbf{v}_g
+\log \mu_{gi} &=& \mathbf{x}_i^T\boldsymbol{\beta}_g + \boldsymbol{\alpha}_i^T\mathbf{z}_g + \mathbf{u}_i^T\mathbf{v}_g
 \end{array}
 \right.
 $$
 
-- $\log N_i$ is an offset, as in the bulk RNA-seq models: no log transformation or pseudocount is needed.
-- $\mathbf{x}_i$ are known covariates of cell $i$, e.g. the sample or the batch, with gene-specific effects $\boldsymbol{\beta}_g$: GMF can correct for them, which can be used for batch correction.
+- $\mathbf{x}_i$ are known covariates of cell $i$, e.g. the sample or the batch, with gene-specific effects $\boldsymbol{\beta}_g$ (argument `X`). By default, $\mathbf{x}_i = 1$: an intercept $\beta_{g0}$ for each gene, which models its average expression. GMF can correct for known covariates, which can be used for batch correction.
+- $\mathbf{z}_g$ are known covariates of gene $g$, e.g. its GC content or length, with cell-specific effects $\boldsymbol{\alpha}_i$ (argument `Z`). By default, $\mathbf{z}_g = 1$: an intercept $\alpha_i$ for each cell.
+- The cell intercept $\alpha_i$ plays the role of the offset $\log(s_i N_i)$ of the bulk RNA-seq models, but it is estimated: it captures the library size and the normalisation factor of the cell. No log transformation or pseudocount is needed.
 - $\mathbf{u}_i$ are the scores of cell $i$ on $K$ latent factors and $\mathbf{v}_g$ the loadings of gene $g$. They play the role of the PC scores and loadings, but they are estimated on the scale of the linear predictor, by maximising the (penalised) likelihood.
-- With a Gaussian distribution, identity link and no offset, GMF reduces to PCA.
+- A fixed offset can be added to the linear predictor (argument `offset`), e.g. the log library size. With a cell intercept in the model, this is not needed.
 
-- GLM-PCA [@Townes2019-glmpca] is an early implementation for scRNA-seq.
+Hence, GMF generalises PCA to the exponential family. 
+
+- The idea goes back to exponential family PCA [@Collins2001-expfampca].
+- With a Gaussian distribution, identity link and only the gene intercepts, GMF reduces to PCA on the centred data.
+
+
+
+scRNA-seq implementations: 
+
+- Implementations for scRNA-seq include ZINB-WaVE [@Risso2018-zinbwave], which adds a zero-inflation component, GLM-PCA [@Townes2019-glmpca] and NewWave [@Agostinis2022-newwave]. They fit the same type of model, with known covariates of the cells and the genes.
+- They differ in the normalisation: GLM-PCA, e.g., uses the log library size as a fixed offset by default, while omicsGMF estimates an intercept for each cell.
 
 - `omicsGMF` [@Segers2025-ce]: 
 
@@ -536,13 +718,13 @@ $$
 
 ```{r}
 hvgSce <- sce[rowData(sce)$hvg, ]
-gmfOffset <- matrix(log(hvgSce$sum), nrow(hvgSce), ncol(hvgSce), byrow = TRUE)
 set.seed(1234)
-hvgSce <- runGMF(hvgSce, family = poisson(), ncomponents = 10, offset = gmfOffset)
+hvgSce <- runGMF(hvgSce, family = poisson(), ncomponents = 10)
 reducedDim(sce, "GMF") <- reducedDim(hvgSce, "GMF")
 ```
 
-The offset is a matrix with the same dimensions as the data: here, the log library size of each cell, which is the same for all genes.
+We use the default covariates, i.e. an intercept for each gene and an intercept for each cell, as in the vignettes of omicsGMF.
+Adding the log library size as offset gives exactly the same latent factors: an offset that is the same for all genes of a cell is absorbed by the cell intercept $\alpha_i$.
 
 ```{r, fig.width = 10, fig.height = 4.5}
 plotDims <- function(dims, color, colorName, title) {
@@ -568,7 +750,7 @@ How many components should we retain?
 
 ```{r}
 set.seed(1234)
-rankFit <- runRankGMF(hvgSce, family = poisson(), maxcomp = 30, offset = gmfOffset)
+rankFit <- runRankGMF(hvgSce, family = poisson(), maxcomp = 30)
 tibble(component = 1:30, eigenvalue = metadata(rankFit)$rank_GMF$lambdas[1:30]) |>
   ggplot(aes(component, eigenvalue)) +
   geom_point() +
@@ -810,7 +992,7 @@ How we deal with the batch depends on the goal of the analysis.
 
 **Exploration** (visualisation, clustering, annotation) needs coordinates for each cell in which the batch effect is removed:
 
-- *Model-based*: GMF can include the batch as a known covariate, $\log \mu_{ig} = o_i + \mathbf{x}_i^\top \boldsymbol\beta_g + \mathbf{u}_i^\top \mathbf{v}_g$, with $\mathbf{x}_i$ the batch of cell $i$ (argument `X` of `runGMF`). The latent factors $\mathbf{u}_i$ then capture the structure that remains after accounting for the batch.
+- *Model-based*: GMF can include the batch as a known covariate, $\log \mu_{gi} = \mathbf{x}_i^T \boldsymbol\beta_g + \alpha_i + \mathbf{u}_i^T \mathbf{v}_g$, with $\mathbf{x}_i$ the intercept and the batch of cell $i$ (argument `X` of `runGMF`, e.g. `model.matrix(~ batch)`). Note that `X` replaces the default intercept, so it has to contain the intercept itself. The latent factors $\mathbf{u}_i$ then capture the structure that remains after accounting for the batch.
 - *Integration*: methods such as mutual nearest neighbours [MNN, @Haghverdi2018-mnn] or Harmony align the cells of the batches in the PC space. MNN pairs each cell with the cells of the other batch that are among its nearest neighbours, and vice versa. These pairs are assumed to be of the same cell type, and their differences estimate the batch effect, locally in each region of the PC space.
 
 **Inference** (DE, DA) models the batch: it is included in the design of the pseudobulk model, as we do for the patient.
@@ -897,17 +1079,18 @@ mono$group <- factor(ifelse(mono$patient %in% groupA, "A", "B"))
 table(mono$patient, mono$group)
 ```
 
-**Cells as replicates**: a limma analysis of the log-normalised counts of all cells.
+**Cells as replicates**: the edgeR QL pipeline on the counts of all cells, with the library size of each cell as offset.
+We only keep genes that are detected in more than 10% of the cells.
 
 ```{r}
-mono <- normalizeRnaCounts.se(mono)
 keepGenes <- rowMeans(counts(mono) > 0) > 0.1
-fitCells <- lmFit(as.matrix(logcounts(mono)[keepGenes, ]), model.matrix(~ group, data = colData(mono)))
-fitCells <- eBayes(fitCells)
-sum(p.adjust(fitCells$p.value[, "groupB"], "BH") < 0.05)
+yCells <- DGEList(counts(mono)[keepGenes, ], lib.size = colSums(counts(mono)))
+fitCells <- glmQLFit(yCells, model.matrix(~ group, data = colData(mono)))
+resCells <- glmQLFTest(fitCells, coef = "groupB")
+sum(p.adjust(resCells$table$PValue, "BH") < 0.05)
 ```
 
-**Pseudobulk**: the counts of all cells of a patient are summed, and the pseudobulk samples are analysed with the edgeR QL pipeline.
+**Pseudobulk**: the counts of all cells of a patient are summed, and the pseudobulk samples are analysed with the same edgeR QL pipeline.
 
 ```{r}
 pbMono <- aggregateAcrossCells.se(mono, factors = list(patient = mono$patient))
@@ -919,8 +1102,30 @@ fitMono <- glmQLFit(yMono, model.matrix(~ group, data = yMono$samples))
 summary(decideTests(glmQLFTest(fitMono, coef = "groupB")))
 ```
 
-- When cells are treated as replicates, `r sum(p.adjust(fitCells$p.value[, "groupB"], "BH") < 0.05)` genes are "differentially expressed" between two random groups of patients: the differences between patients are mistaken for differences between the groups.
+```{r, echo = FALSE}
+# repeat both analyses for all 35 splits of the 8 patients in two groups of 4
+patients <- levels(mono$patient)
+splits <- combn(patients, 4, simplify = FALSE)
+splits <- splits[sapply(splits, function(s) patients[1] %in% s)]
+nDeSplits <- t(sapply(splits, function(groupA) {
+  groupCells <- factor(ifelse(mono$patient %in% groupA, "A", "B"))
+  fitC <- glmQLFit(yCells, model.matrix(~ groupCells))
+  nCells <- sum(p.adjust(glmQLFTest(fitC, coef = 2)$table$PValue, "BH") < 0.05)
+  groupPb <- factor(ifelse(pbMono$patient %in% groupA, "A", "B"))
+  yPb <- DGEList(assay(pbMono, "sums"))
+  yPb <- yPb[filterByExpr(yPb, group = groupPb), , keep.lib.sizes = FALSE]
+  yPb <- normLibSizes(yPb)
+  fitPb <- glmQLFit(yPb, model.matrix(~ groupPb))
+  nPb <- sum(p.adjust(glmQLFTest(fitPb, coef = 2)$table$PValue, "BH") < 0.05)
+  c(cells = nCells, pseudobulk = nPb)
+}))
+```
+
+- When cells are treated as replicates, `r sum(p.adjust(resCells$table$PValue, "BH") < 0.05)` genes are "differentially expressed" between two random groups of patients: the differences between patients are mistaken for differences between the groups.
 - The pseudobulk analysis correctly finds no or hardly any DE genes.
+- Both analyses use the same model: only the experimental unit differs. With cells as replicates, the dispersion only captures the variability between the cells of the same patient, not the variability between patients.
+- This does not depend on the random split: over all `r nrow(nDeSplits)` splits of the 8 patients in two groups of 4, the analysis of the cells finds between `r min(nDeSplits[, "cells"])` and `r max(nDeSplits[, "cells"])` DE genes, the pseudobulk analysis none in `r sum(nDeSplits[, "pseudobulk"] == 0)` splits.
+- The same happens with tests on the log-normalised counts of the cells, e.g. t-tests or Wilcoxon tests, which are common in single-cell workflows.
 
 ```{r, echo = FALSE, out.width = "80%", fig.cap = "Crowell et al., 2020, doi: 10.1038/s41467-020-19894-4"}
 knitr::include_graphics("./figs/sc_muscat.png")
@@ -930,8 +1135,8 @@ knitr::include_graphics("./figs/sc_muscat.png")
 knitr::include_graphics("./figs/sc_pseudoreplicationComparison.png")
 ```
 
-Benchmarks confirm that pseudobulk methods control the false discovery rate and are among the most powerful methods [@Crowell2020-muscat; @Squair2021-pseudobulk; @Junttila2022-benchmark].
-Mixed models with a random effect for the patient are an alternative, but they are computationally much more demanding and not more powerful.
+- Benchmarks confirm that pseudobulk methods control the false discovery rate and are among the most powerful methods [@Crowell2020-muscat; @Squair2021-pseudobulk; @Junttila2022-benchmark].
+- Mixed models with a random effect for the patient are an alternative, but they are computationally much more demanding and not more powerful.
 
 ## Differential expression between conditions
 
@@ -949,7 +1154,7 @@ Every pseudobulk sample consists of `r min(pb$counts)` to `r max(pb$counts)` cel
 As in the airway data, we block for the patient:
 
 $$
-\log \mu_{gpc} = \log(s_{pc} N_{pc}) + \beta_{g0} + \beta_{g,p} + \beta_{g,\text{stim}}\, x_{c},
+\log \mu_{gpc} = \beta_{g0} + \beta_{g,p} + \beta_{g,\text{stim}}\, x_{c} + \log(s_{pc} N_{pc}),
 $$
 
 with $p$ the patient, $c$ the condition and $x_c$ an indicator for the stimulated cells.
@@ -986,8 +1191,12 @@ topTags(deResults[["CD14+ Monocytes"]], n = 10)$table |>
 
 ## Differential detection
 
-Pseudobulk DE analyses test for changes in the mean expression.
-With the low counts of scRNA-seq data, whether a gene is detected in a cell at all is also informative.
+- Pseudobulk DE analyses test for changes in the mean expression.
+- However, the distribution of the gene expression can also change in other aspects. 
+- With the low counts of scRNA-seq data, whether a gene is detected in a cell at all is also informative.
+- Note, that methods exists for assessing differential distributions, i.e. differences in location and shape. 
+- Here, we will focus on one specific modality, i.e. differential detection.  
+
 @Gilis2025-dd show that changes in the average fraction of cells in which a gene is detected (**differential detection**, DD) provide information that is complementary to DE.
 
 **Data**: we binarise the counts ($z_{gi} = 1$ if $y_{gi} > 0$) and sum them per sample: $Z_{gs} = \sum_{i \in s} z_{gi}$ is the number of cells of sample $s$ in which gene $g$ is detected, out of $n_s$ cells.
@@ -995,7 +1204,7 @@ With the low counts of scRNA-seq data, whether a gene is detected in a cell at a
 **Model**: the same NB GLM with the edgeR QL pipeline,
 
 $$
-\log \text{E}[Z_{gs}] = \log(n_s \, \text{CDR}_s) + \mathbf{x}_s^\top \boldsymbol\beta_g,
+\log \text{E}[Z_{gs}] = \mathbf{x}_s^\top \boldsymbol\beta_g + \log(n_s \, \text{CDR}_s),
 $$
 
 - The offset contains the number of cells $n_s$: we model the fraction of cells in which the gene is detected, as the library size in the DE analysis.
@@ -1093,6 +1302,7 @@ topTags(glmQLFTest(fitDA, coef = "stimstim"))$table |>
 - The proportions are **compositional**: if one cell type increases, the proportions of all other cell types decrease. A change in one cell type therefore shows up as a change in the opposite direction in all other cell types.
 - TMM normalisation assumes that most cell types do not change. With only a few cell types this is a strong assumption. Alternatively, TREAT can be used to focus on large changes, which are unlikely to be due to a compositional effect of another cell type.
 - Here, the cell types were annotated after the stimulation: the stimulation can change the expression of the marker genes, and thus the labels.
+- A large literature exists on addressing compositionality, which is beyond the scope of the course.  
 
 # Summary
 
