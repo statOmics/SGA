@@ -1235,7 +1235,7 @@ keepGenes <- rowMeans(counts(mono) > 0) > 0.1
 yCells <- DGEList(counts(mono)[keepGenes, ], lib.size = colSums(counts(mono)))
 fitCells <- glmQLFit(yCells, model.matrix(~ group, data = colData(mono)))
 resCells <- glmQLFTest(fitCells, coef = "groupB")
-sum(p.adjust(resCells$table$PValue, "BH") < 0.05)
+summary(decideTests(resCells))
 ```
 
 **Pseudobulk**: the counts of all cells of a patient are summed, and the pseudobulk samples are analysed with the same edgeR QL pipeline.
@@ -1247,7 +1247,8 @@ yMono <- DGEList(assay(pbMono, "sums"),
 yMono <- yMono[filterByExpr(yMono, group = yMono$samples$group), , keep.lib.sizes = FALSE]
 yMono <- normLibSizes(yMono)
 fitMono <- glmQLFit(yMono, model.matrix(~ group, data = yMono$samples))
-summary(decideTests(glmQLFTest(fitMono, coef = "groupB")))
+resMono <- glmQLFTest(fitMono, coef = "groupB")
+summary(decideTests(resMono))
 ```
 
 ```{r, echo = FALSE}
@@ -1269,7 +1270,7 @@ nDeSplits <- t(sapply(splits, function(groupA) {
 }))
 ```
 
-- When cells are treated as replicates, `r sum(p.adjust(resCells$table$PValue, "BH") < 0.05)` genes are "differentially expressed" between two random groups of patients: the differences between patients are mistaken for differences between the groups.
+- When cells are treated as replicates, `r sum(summary(decideTests(resCells))[c("Down", "Up"), 1])` genes are "differentially expressed" between two random groups of patients: the differences between patients are mistaken for differences between the groups.
 - The pseudobulk analysis correctly finds no or hardly any DE genes.
 - Both analyses use the same model: only the experimental unit differs. With cells as replicates, the dispersion only captures the variability between the cells of the same patient, not the variability between patients.
 - This does not depend on the random split: over all `r nrow(nDeSplits)` splits of the 8 patients in two groups of 4, the analysis of the cells finds between `r min(nDeSplits[, "cells"])` and `r max(nDeSplits[, "cells"])` DE genes, the pseudobulk analysis none in `r sum(nDeSplits[, "pseudobulk"] == 0)` splits.
