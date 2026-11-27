@@ -181,6 +181,10 @@ Solutions:
 - B cells of COVID-19 patients: [script](06-tutorial-scrnaseq-sol-covid.html)
 -->
 
+## Formulary {-}
+
+- [Formulary (pdf)](./formulary.pdf)
+
 ## License {-}
 
 <a rel="license"
