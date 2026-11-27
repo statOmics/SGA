@@ -118,8 +118,6 @@ format:
 
 **edgeR quasi-likelihood model.** $\log\mu_{gi}=\mathbf x_i^T\boldsymbol\beta_g+\log N^\text{eff}_i$, $\text{Var}[Y_{gi}]=\sigma_g^2(\mu_{gi}+\phi\mu_{gi}^2)$, $N^\text{eff}_i$ = effective library size (library size $\times$ normalisation factor).
 
-**Interaction.** $\log\mu_{gi}=\beta_{g0}+\ldots+\beta_{g,A}x_{iA}+\beta_{g,B}x_{iB}+\beta_{g,A:B}x_{iA}x_{iB}+\log N^\text{eff}_i$; $\beta_{g,A:B}=\log FC$ of B in level A of the first factor $-\log FC$ of B in the reference level ($\log_2$ scale on the plots).
-
 # II. GLMs and edgeR
 
 **Exponential family.** $f(y_i\mid\theta_i,\phi)=\exp\left\{\frac{y_i\theta_i-b(\theta_i)}{a(\phi)}+c(y_i,\phi)\right\}$; Poisson: $\theta_i=\log\mu_i$, $b(\theta)=e^\theta$, $a(\phi)=1$.
@@ -148,7 +146,7 @@ format:
 
 **Quantification uncertainty.** Transcript counts are overdispersed: $\text{Var}(Y_{ti})\approx c_t\mu_{ti}$; scaled counts $\tilde Y_{ti}=Y_{ti}/c_t$ restore $\text{Var}(\tilde Y_{ti})=E[\tilde Y_{ti}]$.
 
-**Differential transcript usage.** Usage $\pi_{gti}=\dfrac{E[Y_{gti}]}{E[Y_{g.i}]}$, $Y_{g.i}=\sum_tY_{gti}$; offset $\log Y_{g.i}$ gives $\log\pi_{gti}=\mathbf x_i^T\boldsymbol\beta_{gt}$; with scaled counts the offset becomes $\log Y_{g.i}-\log c_t$.
+**Differential transcript usage.** Fragment usage $\pi_{gti}=\dfrac{E[Y_{gti}]}{E[Y_{g.i}]}$, $Y_{g.i}=\sum_tY_{gti}$; offset $\log Y_{g.i}$ gives $\log\pi_{gti}=\mathbf x_i^T\boldsymbol\beta_{gt}$. Molecular usage $\rho_{gti}=M_{gti}/M_{g.i}$ (fraction of the molecules of the gene), $E[Y_{gti}]=k_i\,l_{ti}\,\rho_{gti}\,M_{g.i}$ with $l_{ti}$ the effective length; offset $\log l_{ti}+\log\sum_{t^\prime}Y_{gt^\prime i}/l_{t^\prime i}$ gives $\log\rho_{gti}=\mathbf x_i^T\boldsymbol\beta_{gt}$; $\pi_{gti}=l_{ti}\rho_{gti}/\sum_{t^\prime}l_{t^\prime i}\rho_{gt^\prime i}$. With scaled counts, $-\log c_t$ is added to the offset.
 
 **Stage-wise testing.** Screening: omnibus test per gene, BH on the screening p-values of all $G$ genes at level $\alpha$; $R$ genes pass. Confirmation: test the individual hypotheses of these genes with FWER control (e.g. Holm, Shaffer) at $\alpha_{II}=R\alpha/G$. Controls the overall FDR (OFDR) at the gene level.
 
